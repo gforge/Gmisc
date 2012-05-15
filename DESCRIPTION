@@ -1,0 +1,24 @@
+Package: Gmisc
+Version: 0.1
+Date: 2012-05-13
+Title: My First Collection of Functions
+Authors: c(person("Max Gordon",
+    "Developer",
+    email = "max@gforge.se"))
+Author: Max Gordon
+Maintainer: Max Gordon <max@gforge.se>
+Description: This is a collection of functions that I like to use
+License: GPL (>= 2)
+URL: http://gforge.se
+Collate:
+    'forestplot2.R'
+    'base_functions.R'
+    'forestplot2_helpers.R'
+    'modify_rownames.R'
+    'plotHR.R'
+    'regression_output.R'
+    'termplot2.R'
+Depends:
+    rmeta,
+    testthat,
+    miscTools
