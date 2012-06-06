@@ -1,7 +1,8 @@
 Package: Gmisc
 Version: 0.1
 Date: 2012-05-13
-Title: My First Collection of Functions
+Title: A collection of different functions that I've found useful when plotting
+    complex data, creating tables etc. The
 Authors: c(person("Max Gordon",
     "Developer",
     email = "max@gforge.se"))
@@ -12,13 +13,24 @@ License: GPL (>= 2)
 URL: http://gforge.se
 Collate:
     'forestplot2.R'
-    'base_functions.R'
-    'forestplot2_helpers.R'
-    'modify_rownames.R'
     'plotHR.R'
-    'regression_output.R'
     'termplot2.R'
+    'forestplotCombineRegrObj.R'
+    'forestplotRegrObj.R'
+    'getCphRegrObjData.R'
+    'getCrudeAndAdjustedModelData.R'
+    'isFitCoxPH.R'
+    'isFitLogit.R'
+    'latexCrudeAndAdjustedModel.R'
+    'printSimpleFit.R'
+    'private_functions.R'
+    'selectCommonAndChange2Boolean.R'
+    'getXTicks.R'
 Depends:
-    rmeta,
+    grid,
     testthat,
-    miscTools
+    miscTools,
+    rms,
+    Hmisc,
+    survival,
+    cmprsk

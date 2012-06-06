@@ -7,16 +7,21 @@
     fontfamily.labelrow = NULL, clip = c(-Inf, Inf),
     xlab = "", zero = 0, graphwidth = unit(51, "mm"),
     col = meta.colors(), xlog = FALSE, xticks = NULL,
-    increase.line_height = 1.2, lwd.xaxis = NULL,
-    lwd.zero = NULL, lwd.forestlines = NULL, cex = 1,
+    lineHeight.inc = 1.2, lwd.xaxis = NULL,
+    lwd.zero = NULL, lwd.ci = NULL, cex = 1,
     boxsize = NULL, ...)
 }
 \arguments{
-  \item{labeltext}{A list with the names of each row. This
-  has to have the same amount of rows that the means but it
-  can have more if you want to have more complex rowlabels
-  where you might want to have the estimates in plain text.
-  Use NA:s for blank spaces}
+  \item{labeltext}{A list, matrix, vector or expression
+  with the names of each row. The list should be wrapped in
+  m x n number to resemble a matrix: list(list("rowname 1
+  col 1", "rowname 2 col 1"), list("r1c2",
+  expression(beta)) You can also provide a matrix although
+  this cannot have expressions by design: matrix(c("rowname
+  1 col 1", "rowname 2 col 1", "r1c2", "beta"), ncol=2) Use
+  NA:s for blank spaces and if you provide a full column
+  with NA then that column is a empty column that adds some
+  space.}
 
   \item{mean}{A vector with te averages}
 
@@ -55,15 +60,15 @@
   Specify NULL to use the defaults,numeric(0) to omit the
   x-axis.}
 
-  \item{increase.line_height}{If you plot multiple bars for
-  each line you often want to increase the line height.}
+  \item{lineHeight.inc}{If you plot multiple bars for each
+  line you often want to increase the line height.}
 
   \item{lwd.xaxis}{lwd for the xaxis}
 
   \item{lwd.zero}{lwd for the vertical line that gives the
   no-effect line}
 
-  \item{lwd.forestlines}{lwd for the confidence bands}
+  \item{lwd.ci}{lwd for the confidence bands}
 
   \item{cex}{The font adjustment}
 
@@ -89,40 +94,77 @@
 }
 \examples{
 #
-# Simple examples of how to do a forestplots with forestplot2
+# Simple examples of how to do a forestplot with forestplot2
 #
 ###############################################################################
 
-# A basic test
+ask <- par(ask=TRUE)
+
+# A basic example, create some fake data
 row_names <- list(list("test = 1", expression(test >= 2)))
 test_data <- data.frame(coef=c(1.59, 1.24),
-        low=c(1.3, 0.99),
-        high=c(1.8, 1.55))
-ask <- par(ask=TRUE)
+  low=c(1.3, 0.99),
+  high=c(1.8, 1.55))
 forestplot2(row_names, test_data$coef, test_data$low, test_data$high, zero = 1)
 
 
 # An advanced test
 row_names <- list(
-        list("variable = 0", "variable = 1", expression(variable >= 2)),
-        list(expression(bar(x)==1.8), expression(bar(x) == 1.4), "some cell data"))
+  list("variable = 0", "variable = 1", expression(variable >= 2)),
+  list(expression(bar(x)==1.8), expression(bar(x) == 1.4), "some cell data"))
+
 test_data <- data.frame(coef1=c(1.59, 1.3, 1.24),
-        coef2=c(1.7, 1.4, 1.04),
-        low1=c(1.3, 1.1, 0.99),
-        low2=c(1.6, 1.2, 0.7),
-        high1=c(1.94, 1.6, 1.55),
-        high2=c(1.8, 1.55, 1.33))
+  coef2=c(1.7, 1.4, 1.04),
+  low1=c(1.3, 1.1, 0.99),
+  low2=c(1.6, 1.2, 0.7),
+  high1=c(1.94, 1.6, 1.55),
+  high2=c(1.8, 1.55, 1.33))
 
 attach(test_data)
+
 coef <- cbind(coef1, coef2)
 low <- cbind(low1, low2)
 high <- cbind(high1, high2)
 forestplot2(row_names, coef, low, high, zero = 1, 
-        col=meta.colors(box=c("royalblue", "gold"), ,line=c("darkblue", "orange"), summary="royalblue"))
+  col=meta.colors(box=c("royalblue", "gold"),
+    line=c("darkblue", "orange")))
+
 detach(test_data)
+
+# An example of how the exponential works
+row_names <- list(list("Variable A", "Variable B"))
+test_data <- data.frame(coef=c(2.45, 0.43),
+  low=c(1.5, 0.25),
+  high=c(4, 0.75),
+  boxsize=c(0.5, 0.5))
+
+forestplot2(labeltext = row_names, 
+  mean      = test_data$coef, 
+  lower     = test_data$low, 
+  upper     = test_data$high, 
+  boxsize   = test_data$boxsize,
+  zero      = 1,
+  xlog      = TRUE,
+  col = meta.colors(lines="red", box="darkred"))
+
+my_ticks <- getXTicks(low = test_data$low, 
+  high      = test_data$high, 
+  clip      = c(-Inf, Inf), 
+  exp       = TRUE)
+forestplot2(labeltext = row_names, 
+  mean      = test_data$coef, 
+  lower     = test_data$low, 
+  upper     = test_data$high, 
+  boxsize   = test_data$boxsize,
+  zero      = 1,
+  xlog      = TRUE,
+  xticks    = my_ticks,
+  graphwidth= unit(100, "mm"),
+  col = meta.colors(lines="red", box="darkred"))
+
 par(ask=ask)
 }
 \author{
-  max
+  Max Gordon, Thomas Lumley
 }
 

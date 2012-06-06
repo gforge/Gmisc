@@ -84,270 +84,287 @@
 #' @aliases par 
 #' @param axes A boolean that is used to identify if axes are to be plotted 
 #' @param ... Any additional values that are to be sent to the plot() function
-#' @returnType Void
 #' @return The function does not return anything
 #' @references \url{http://rforge.org/plothr/}
 #' 
+#' @example examples/plotHR_example.R
+#' 
 #' @author Reinhard Seifert, Max Gordon
 #' @export
-plotHR <- function (models, terms = 1 , se = TRUE , polygon_ci = TRUE, rug = "density" , 
-        xlab = "" , ylab = "Hazard Ratio" , 
-        main = NULL , xlim = NULL , ylim = NULL, 
-        col.term = "#08519C", col.se = "#DEEBF7", col.dens=grey(.9),
-        lwd.term = 3, lty.term=1, lwd.se=2,
-        x.ticks = NULL, y.ticks = NULL, ylog=TRUE,
-        cex = 1, bty = "n", axes = TRUE, ...){
+plotHR <- function (models, 
+  terms      = 1, 
+  se         = TRUE , 
+  polygon_ci = TRUE, 
+  rug        = "density", 
+  xlab       = "", 
+  ylab       = "Hazard Ratio" , 
+  main       = NULL, 
+  xlim       = NULL, 
+  ylim       = NULL, 
+  col.term   = "#08519C", 
+  col.se     = "#DEEBF7", 
+  col.dens   = grey(.9),
+  lwd.term   = 3, 
+  lty.term   = 1, 
+  lwd.se     = 2,
+  x.ticks    = NULL, 
+  y.ticks    = NULL, 
+  ylog       = TRUE,
+  cex        = 1, 
+  bty        = "n", 
+  axes       = TRUE, 
+  ...){
+  
+  # If the user wants to compare different models the same graph
+  # the first dataset is then choosen as the default dataset
+  # for getting the rug data.  
+  if (length(class(models)) != 1 || class(models) != "list"){
+    models <- list(models)
+  }
+  
+  # Create vectors of the colors, line types etc to 
+  # allow for specific settings for each model
+  col.se <- rep(col.se, length.out=length(models))
+  col.term <- rep(col.term, length.out=length(models))
+  polygon_ci <- rep(polygon_ci, length.out=length(models))
+  lty.term <- rep(lty.term, length.out=length(models))
+  lwd.term <- rep(lwd.term, length.out=length(models))
+  
+  # set plotting parameters
+  par(las = 1 , cex = cex)
+  
+  # The y-limit needs to be log transformed to work as expected
+  if(length(ylim) && ylog==TRUE){
+    ylim <- log(ylim)
+  }
+  
+  getCleanLabels <- function(){
+    ## extract the names of all model covariates
+    all.labels <- attr(models[[1]]$terms , "term.labels")
     
-    # If the user wants to compare different models the same graph
-    # the first dataset is then choosen as the default dataset
-    # for getting the rug data.  
-    if (length(class(models)) != 1 || class(models) != "list"){
-        models <- list(models)
+    # remove 'strata()' / 'factor()' / 'pspline()' / 'rcs()' / 'as.integer()'
+    all.labels <- sub ( "[a-zA-Z\\._]+[0-9a-zA-Z\\._][(]([a-zA-Z._0-9]*)[, .a-zA-Z_0-9=]*[)]" , "\\1" , all.labels) 
+    
+    return(all.labels)    
+  }
+  all.labels <- getCleanLabels()
+  
+  # Allow the term searched for be a string
+  if (is.character(terms)){
+    terms <- grep(terms, all.labels)
+    if(length(terms) == 0){
+      stop(paste("Could not find term:", terms))
     }
-    
-    # Create vectors of the colors, line types etc to 
-    # allow for specific settings for each model
-    col.se <- rep(col.se, length.out=length(models))
-    col.term <- rep(col.term, length.out=length(models))
-    polygon_ci <- rep(polygon_ci, length.out=length(models))
-    lty.term <- rep(lty.term, length.out=length(models))
-    lwd.term <- rep(lwd.term, length.out=length(models))
-    
-    # set plotting parameters
-    par(las = 1 , cex = cex)
-    
-    # The y-limit needs to be log transformed to work as expected
-    if(length(ylim) && ylog==TRUE){
-        ylim <- log(ylim)
-    }
-    
-    getCleanLabels <- function(){
-        ## extract the names of all model covariates
-        all.labels <- attr(models[[1]]$terms , "term.labels")
-        
-        # remove 'strata()' / 'factor()' / 'pspline()' / 'rcs()' / 'as.integer()'
-        all.labels <- sub ( "[a-zA-Z\\._]+[0-9a-zA-Z\\._][(]([a-zA-Z._0-9]*)[, .a-zA-Z_0-9=]*[)]" , "\\1" , all.labels) 
-
-        return(all.labels)    
-    }
-    all.labels <- getCleanLabels()
-    
-    # Allow the term searched for be a string
-    if (is.character(terms)){
-        terms <- grep(terms, all.labels)
-        if(length(terms) == 0){
-            stop(paste("Could not find term:", terms))
-        }
-    }
-    
-    # pick the name of the main term which is goint to be plotted
-    term.label <- all.labels[terms]
-    if (is.na(term.label)){
-        stop(paste("Term", terms, "not found"))
-    }
-    
-    # Remove interaction terms since the data can't be found, ex. male_gender:prosthesis
-    terms_with_interaction <- grep("[_.a-zA-Z0-9]+:[_.a-zA-Z0-9]+", all.labels)
-    if(length(terms_with_interaction)>0){
-        all.labels <- all.labels[-terms_with_interaction]
-    }
-    
-    ## extract data from model;
-    # only the covariates really used in the model
-    # only complete covariate records (only used in the model anyway)
-    # 'as.data.frame()' and 'names()' have to be explicitly specified in case of a univariate model
-    getDataFromModel <- function(m){
-        data <- eval(m$call$data)
-        data <- as.data.frame(na.exclude(data[ , all.labels]))
-        names(data) <- all.labels
-        return(data)
-    }
-    
-    ### _______________ the smooth term prediction ____________
-    ## calculate the HR for all the covariate values found in the dataset
-    getFitAndConfidenceInterval <- function(model){
-        if(length(grep("cph", class(model))) > 0){
-                # If this is a cph model then don't exclude the na values
-                term <- predict (model , type="terms" , se.fit = TRUE , expand.na=FALSE, na.action=na.pass)
-                
-                # The cph model fails to pick the terms of interest
-                if (NCOL(term$fit) > 1){
-                    col_2_pick = which(colnames(term$fit) == term.label)
-                    term$fit <- term$fit[,col_2_pick]
-                    term$se.fit <- term$se.fit[,col_2_pick]
-                } 
-        }else{
-                term <- predict (model , type="terms" , se.fit = TRUE , terms = terms)
-        }
-        
-        # attach the smooth fit for the HR ('fit') and the CI's to the dataset
-        # The as.double is a fix since the data.frame otherwise changes name if pspline in coxph
-        df <- data.frame(xvalues= getDataFromModel(model)[,term.label],
-                fit = as.double(term$fit), 
-                ucl = as.double(term$fit + 1.96 * term$se.fit),
-                lcl = as.double(term$fit - 1.96 * term$se.fit))
-        
-        # Change to exponential form
-		if (ylog == FALSE){
-			df$fit <- exp(df$fit)
-			df$ucl <- exp(df$ucl)
-			df$lcl <- exp(df$lcl)
-		}
-        
-        # The line doesn't get any better if the value is a duplicate 
-        # but the PDF gets very large if the dataset is large. By removing
-        # duplicates this is avoided
-        dups <- duplicated(df$xvalues)
-        df <- df[dups == FALSE, ]
-        
-        return(df)    
-    }
-    
-    if (length(ylim) > 0){
-        plot_boundaries.y <- ylim
+  }
+  
+  # pick the name of the main term which is goint to be plotted
+  term.label <- all.labels[terms]
+  if (is.na(term.label)){
+    stop(paste("Term", terms, "not found"))
+  }
+  
+  # Remove interaction terms since the data can't be found, ex. male_gender:prosthesis
+  terms_with_interaction <- grep("[_.a-zA-Z0-9]+:[_.a-zA-Z0-9]+", all.labels)
+  if(length(terms_with_interaction)>0){
+    all.labels <- all.labels[-terms_with_interaction]
+  }
+  
+  ## extract data from model;
+  # only the covariates really used in the model
+  # only complete covariate records (only used in the model anyway)
+  # 'as.data.frame()' and 'names()' have to be explicitly specified in case of a univariate model
+  getDataFromModel <- function(m){
+    data <- eval(m$call$data)
+    data <- as.data.frame(na.exclude(data[ , all.labels]))
+    names(data) <- all.labels
+    return(data)
+  }
+  
+  ### _______________ the smooth term prediction ____________
+  ## calculate the HR for all the covariate values found in the dataset
+  getFitAndConfidenceInterval <- function(model){
+    if(length(grep("cph", class(model))) > 0){
+      # If this is a cph model then don't exclude the na values
+      term <- predict (model , type="terms" , se.fit = TRUE , expand.na=FALSE, na.action=na.pass)
+      
+      # The cph model fails to pick the terms of interest
+      if (NCOL(term$fit) > 1){
+        col_2_pick = which(colnames(term$fit) == term.label)
+        term$fit <- term$fit[,col_2_pick]
+        term$se.fit <- term$se.fit[,col_2_pick]
+      } 
     }else{
-        plot_boundaries.y <- NULL
-    }
-
-    # Just add the boundary values
-    getYBoundaries <- function(ylim, variable){
-        variable <- variable[is.infinite(variable) == FALSE]
-        return (c(min(ylim, variable), max(ylim, variable)))
-    } 
-    
-    xvalues <- NULL
-    multi_data <- list()
-    for (m in models){
-        line_data <- getFitAndConfidenceInterval(m)
-        multi_data <- append(multi_data, list(line_data))
-        plot_boundaries.y <- getYBoundaries(plot_boundaries.y, line_data$fit)
-        if (NROW(line_data) > length(xvalues)){
-            xvalues <- line_data$xvalues
-        }
+      term <- predict (model , type="terms" , se.fit = TRUE , terms = terms)
     }
     
+    # attach the smooth fit for the HR ('fit') and the CI's to the dataset
+    # The as.double is a fix since the data.frame otherwise changes name if pspline in coxph
+    df <- data.frame(xvalues= getDataFromModel(model)[,term.label],
+      fit = as.double(term$fit), 
+      ucl = as.double(term$fit + 1.96 * term$se.fit),
+      lcl = as.double(term$fit - 1.96 * term$se.fit))
     
-    ### _______________ this is the main extraction __________
-    
-    
-    
-    ### _______________ what now follows is the graphical manipulation of the plots ______
-    
-    # plot empty plot with coordinatesystem and labels
-    plot_boundaries.x <- range(xvalues)
-    plot(y=plot_boundaries.y, x=plot_boundaries.x, xlim = xlim , ylim = ylim , xlab = xlab,
-             ylab = ylab , main = main, type = "n" , axes = FALSE, ...)
-    
-    # plot CI as polygon shade - if 'se = TRUE' (default)
-    if (se) {
-        plot_conf_interval <- function(model_data, line_or_polygon_color, polygon_ci){
-            current_i.backw <- order(model_data$xvalues , decreasing = TRUE)
-            current_i.forw <- order(model_data$xvalues)
-            
-            if (polygon_ci == TRUE){
-                # The x-axel is always the same
-                x.poly <- c(model_data$xvalues[current_i.forw] , model_data$xvalues[current_i.backw])
-                # The y axel is based upin the current model
-                y.poly <- c(model_data$ucl[current_i.forw] , model_data$lcl[current_i.backw])
-                polygon(x.poly , y.poly , col = line_or_polygon_color, border = NA)
-            }else{
-                lines(model_data$xvalues[current_i.forw] , model_data$ucl[current_i.forw], col = line_or_polygon_color, lwd = lwd.se, lty=2)
-                lines(model_data$xvalues[current_i.forw] , model_data$lcl[current_i.forw], col = line_or_polygon_color, lwd = lwd.se, lty=2)
-            }
-        }
-        
-        # Plot the last on top
-        for (i in rev(1:length(models))) {
-            plot_conf_interval(multi_data[[i]], col.se[[i]], polygon_ci[[i]])
-        }
+    # Change to exponential form
+    if (ylog == FALSE){
+      df$fit <- exp(df$fit)
+      df$ucl <- exp(df$ucl)
+      df$lcl <- exp(df$lcl)
     }
     
+    # The line doesn't get any better if the value is a duplicate 
+    # but the PDF gets very large if the dataset is large. By removing
+    # duplicates this is avoided
+    dups <- duplicated(df$xvalues)
+    df <- df[dups == FALSE, ]
     
-    # Use first model for density data
-    base_data <- getDataFromModel(models[[1]])
-    xvalues_4_density <- base_data[,term.label]
-    
-    # Choose within limits
-    if (length(xlim) == 2){
-        xvalues_4_density <- xvalues_4_density[xvalues_4_density >= min(xlim) & xvalues_4_density <= max(xlim)]
+    return(df)    
+  }
+  
+  if (length(ylim) > 0){
+    plot_boundaries.y <- ylim
+  }else{
+    plot_boundaries.y <- NULL
+  }
+  
+  # Just add the boundary values
+  getYBoundaries <- function(ylim, variable){
+    variable <- variable[is.infinite(variable) == FALSE]
+    return (c(min(ylim, variable), max(ylim, variable)))
+  } 
+  
+  xvalues <- NULL
+  multi_data <- list()
+  for (m in models){
+    line_data <- getFitAndConfidenceInterval(m)
+    multi_data <- append(multi_data, list(line_data))
+    plot_boundaries.y <- getYBoundaries(plot_boundaries.y, line_data$fit)
+    if (NROW(line_data) > length(xvalues)){
+      xvalues <- line_data$xvalues
+    }
+  }
+  
+  
+  ### _______________ this is the main extraction __________
+  
+  
+  
+  ### _______________ what now follows is the graphical manipulation of the plots ______
+  
+  # plot empty plot with coordinatesystem and labels
+  plot_boundaries.x <- range(xvalues)
+  plot(y=plot_boundaries.y, x=plot_boundaries.x, xlim = xlim , ylim = ylim , xlab = xlab,
+    ylab = ylab , main = main, type = "n" , axes = FALSE, ...)
+  
+  # plot CI as polygon shade - if 'se = TRUE' (default)
+  if (se) {
+    plot_conf_interval <- function(model_data, line_or_polygon_color, polygon_ci){
+      current_i.backw <- order(model_data$xvalues , decreasing = TRUE)
+      current_i.forw <- order(model_data$xvalues)
+      
+      if (polygon_ci == TRUE){
+        # The x-axel is always the same
+        x.poly <- c(model_data$xvalues[current_i.forw] , model_data$xvalues[current_i.backw])
+        # The y axel is based upin the current model
+        y.poly <- c(model_data$ucl[current_i.forw] , model_data$lcl[current_i.backw])
+        polygon(x.poly , y.poly , col = line_or_polygon_color, border = NA)
+      }else{
+        lines(model_data$xvalues[current_i.forw] , model_data$ucl[current_i.forw], col = line_or_polygon_color, lwd = lwd.se, lty=2)
+        lines(model_data$xvalues[current_i.forw] , model_data$lcl[current_i.forw], col = line_or_polygon_color, lwd = lwd.se, lty=2)
+      }
     }
     
-    ### _______________ rug = "density" ____________________________________________________
-    ### density plot at bottom of panel if rug = "density" in function call
-    if (rug == "density") {
-        # calculate the coordinates of the density function
-        density <- density( xvalues_4_density )
-        # the height of the densityity curve
-        max.density <- max(density$y)
-
-        # Get the boundaries of the plot to
-        # put the density polygon at the x-line
-		plot_coordinates <- par("usr")
-        
-        # get the "length" and range of the y-axis
-        y.scale <- plot_coordinates[4] - plot_coordinates[3]
-        
-        # transform the y-coordinates of the density
-        # to the lower 10% of the plotting panel
-        density$y <- (0.1 * y.scale / max.density) * density$y + plot_coordinates[3]
-        
-        ## plot the polygon
-        polygon( density$x , density$y , border = F , col = col.dens)
-    }
-    
-    ## get the quartiles of the main term 
-    quantiles <- quantile(xvalues , probs = c(0.025,0.25,0.50,0.75,0.975))
-    
-    # plot white lines (background color) for 2.5%tile, 1Q, median, 3Q and 97.5%tile through confidence shade and density plot
-    axis( side = 1 , at = quantiles , labels = FALSE , lwd = 0 , col.ticks = "white"  , lwd.ticks = 1 , tck = 1 )
-    
-    
-    ### _______________ rug = "ticks" ____________________________________________________
-    ### rug plot if "ticks" is specified in function call
-    if (rug == "ticks") {
-        
-        # rugs at datapoints
-        axis(side = 1 , line = -1.2 , at = jitter(xvalues_4_density) , labels = F , tick = T , tcl = 0.8 , lwd.ticks = 0.1 , lwd = 0)
-        # rugs and labels at 1Q, median and 3Q
-        axis(side = 1 , line = -1.0 , at = fivenum(xvalues_4_density)[2:4], lwd = 0 , tick = T, tcl = 1.2 , lwd.ticks = 1 , col.ticks = "black" , labels = c("Quartile 1","Median","Quartile 3"), cex.axis = 0.7, col.axis = "black" , padj = -2.8)
-        axis(side = 1 , line = 0.0 , at = fivenum(xvalues_4_density)[2:4], lwd = 0 , tick = T, tcl = 0.2 , lwd.ticks = 1 , col.ticks = "black", labels = FALSE)
-    }
-    
-    
-    # Plot the last fit on top, therefore use the reverse
+    # Plot the last on top
     for (i in rev(1:length(models))) {
-        current_i.forw <- order(multi_data[[i]]$xvalues)
+      plot_conf_interval(multi_data[[i]], col.se[[i]], polygon_ci[[i]])
+    }
+  }
+  
+  
+  # Use first model for density data
+  base_data <- getDataFromModel(models[[1]])
+  xvalues_4_density <- base_data[,term.label]
+  
+  # Choose within limits
+  if (length(xlim) == 2){
+    xvalues_4_density <- xvalues_4_density[xvalues_4_density >= min(xlim) & xvalues_4_density <= max(xlim)]
+  }
+  
+  ### _______________ rug = "density" ____________________________________________________
+  ### density plot at bottom of panel if rug = "density" in function call
+  if (rug == "density") {
+    # calculate the coordinates of the density function
+    density <- density( xvalues_4_density )
+    # the height of the densityity curve
+    max.density <- max(density$y)
     
-        # Plots the actual regression line
-        lines(multi_data[[i]]$xvalues[current_i.forw], 
-                multi_data[[i]]$fit[current_i.forw], 
-                col = col.term[[i]], 
-                lwd = lwd.term[[i]],
-                lty = lty.term[[i]])
+    # Get the boundaries of the plot to
+    # put the density polygon at the x-line
+    plot_coordinates <- par("usr")
+    
+    # get the "length" and range of the y-axis
+    y.scale <- plot_coordinates[4] - plot_coordinates[3]
+    
+    # transform the y-coordinates of the density
+    # to the lower 10% of the plotting panel
+    density$y <- (0.1 * y.scale / max.density) * density$y + plot_coordinates[3]
+    
+    ## plot the polygon
+    polygon( density$x , density$y , border = F , col = col.dens)
+  }
+  
+  ## get the quartiles of the main term 
+  quantiles <- quantile(xvalues , probs = c(0.025,0.25,0.50,0.75,0.975))
+  
+  # plot white lines (background color) for 2.5%tile, 1Q, median, 3Q and 97.5%tile through confidence shade and density plot
+  axis( side = 1 , at = quantiles , labels = FALSE , lwd = 0 , col.ticks = "white"  , lwd.ticks = 1 , tck = 1 )
+  
+  
+  ### _______________ rug = "ticks" ____________________________________________________
+  ### rug plot if "ticks" is specified in function call
+  if (rug == "ticks") {
+    
+    # rugs at datapoints
+    axis(side = 1 , line = -1.2 , at = jitter(xvalues_4_density) , labels = F , tick = T , tcl = 0.8 , lwd.ticks = 0.1 , lwd = 0)
+    # rugs and labels at 1Q, median and 3Q
+    axis(side = 1 , line = -1.0 , at = fivenum(xvalues_4_density)[2:4], lwd = 0 , tick = T, tcl = 1.2 , lwd.ticks = 1 , col.ticks = "black" , labels = c("Quartile 1","Median","Quartile 3"), cex.axis = 0.7, col.axis = "black" , padj = -2.8)
+    axis(side = 1 , line = 0.0 , at = fivenum(xvalues_4_density)[2:4], lwd = 0 , tick = T, tcl = 0.2 , lwd.ticks = 1 , col.ticks = "black", labels = FALSE)
+  }
+  
+  
+  # Plot the last fit on top, therefore use the reverse
+  for (i in rev(1:length(models))) {
+    current_i.forw <- order(multi_data[[i]]$xvalues)
+    
+    # Plots the actual regression line
+    lines(multi_data[[i]]$xvalues[current_i.forw], 
+      multi_data[[i]]$fit[current_i.forw], 
+      col = col.term[[i]], 
+      lwd = lwd.term[[i]],
+      lty = lty.term[[i]])
+  }
+  
+  # ___________ main plot _____________
+  
+  
+  # plot the axes
+  if (axes){
+    axis(side = 1, at = x.ticks)
+    if (is.null(y.ticks)){
+      y.ticks <- axTicks(2)
+    }else if (ylog == TRUE){
+      # This is an assumption that the ticks
+      # aren't provided in logar
+      y.ticks <- log(y.ticks)
     }
     
-    # ___________ main plot _____________
-    
-    
-    # plot the axes
-    if (axes){
-        axis(side = 1, at = x.ticks)
-        if (is.null(y.ticks)){
-            y.ticks <- axTicks(2)
-        }else if (ylog == TRUE){
-            # This is an assumption that the ticks
-            # aren't provided in logar
-            y.ticks <- log(y.ticks)
-        }
-        
-        if (ylog == TRUE){
-            # Get familiar y-axis instead of the log
-            axis(side = 2 , at = y.ticks , label = round( exp(y.ticks) , digits = 1))
-        }else{
-            axis(side = 2 , at = y.ticks)
-        }
+    if (ylog == TRUE){
+      # Get familiar y-axis instead of the log
+      axis(side = 2 , at = y.ticks , labels = round( exp(y.ticks) , digits = 1))
+    }else{
+      axis(side = 2 , at = y.ticks)
     }
-        
-    # plot a box around plotting panel if specified - not plotted by default
-    box(bty = bty)
+  }
+  
+  # plot a box around plotting panel if specified - not plotted by default
+  box(bty = bty)
 }

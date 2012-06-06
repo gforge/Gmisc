@@ -1,8 +1,8 @@
-\name{select_frequent_scores}
-\alias{select_frequent_scores}
+\name{prSelectFrequentVariables}
+\alias{prSelectFrequentVariables}
 \title{A functions for selecting the scores that have a certain frequency}
 \usage{
-  select_frequent_scores(score, censored, min,
+  prSelectFrequentVariables(score, censored, min,
     min_with_occurences = NULL,
     censored_indicator = "reoperation")
 }

@@ -1,8 +1,8 @@
-\name{print_adjusted_and_unadjusted}
-\alias{print_adjusted_and_unadjusted}
+\name{getCrudeAndAdjustedModelData}
+\alias{getCrudeAndAdjustedModelData}
 \title{This function helps with printing regression models}
 \usage{
-  print_adjusted_and_unadjusted(fit, digits = 2)
+  getCrudeAndAdjustedModelData(fit, digits = 2)
 }
 \arguments{
   \item{fit}{The regression model}
@@ -34,6 +34,23 @@
   The function skips by default all spline variables since
   this becomes very complicated and there is no simple
   \deqn{\beta}{beta} to display.
+}
+\examples{
+# simulated data to use 
+set.seed(10)
+ftime <- rexp(200)
+fstatus <- sample(0:1,200,replace=TRUE)
+cov <- data.frame(
+		x1 = runif(200),
+		x2 = runif(200),
+		x3 = runif(200))
+
+library(rms)
+fit <- cph(Surv(ftime, fstatus == 1) ~ x1 + x2 + x3, data=cov)
+
+data_matrix <- getCrudeAndAdjustedModelData(fit)
+
+print(data_matrix)
 }
 \author{
   max

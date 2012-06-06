@@ -1,8 +1,8 @@
-\name{calc_4_table}
-\alias{calc_4_table}
+\name{prCalc4Table}
+\alias{prCalc4Table}
 \title{Not sure when I use this}
 \usage{
-  calc_4_table(cox)
+  prCalc4Table(cox)
 }
 \arguments{
   \item{cox}{A model fit}
