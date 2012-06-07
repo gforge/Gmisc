@@ -24,7 +24,6 @@ Collate:
     'latexCrudeAndAdjustedModel.R'
     'printSimpleFit.R'
     'private_functions.R'
-    'selectCommonAndChange2Boolean.R'
     'getXTicks.R'
 Depends:
     grid,

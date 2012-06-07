@@ -1,20 +1,25 @@
 # simulated data to use 
 set.seed(10)
-ftime <- rexp(200)
-fstatus <- sample(0:1,200,replace=TRUE)
-cov <- data.frame(
-		x1 = runif(200),
-		x2 = runif(200),
-		x3 = runif(200))
+ds <- data.frame(
+  ftime = rexp(200),
+  fstatus = sample(0:1,200,replace=TRUE),
+  x1 = runif(200),
+  x2 = runif(200),
+  x3 = runif(200))
 
 library(survival)
 library(rms)
-fit <- cph(Surv(ftime, fstatus == 1) ~ x1 + x2 + x3, data=cov)
+
+dd <- datadist(ds)
+options(datadist="dd")
+
+s <- Surv(ds$ftime, ds$fstatus == 1)
+fit <- cph(s ~ x1 + x2 + x3, data=ds)
 
 if (isFitCoxPH(fit))
   print("Correct, the cph is of cox PH hazard type")
 
-fit <- coxph(Surv(ftime, fstatus == 1) ~ x1 + x2 + x3, data=cov)
+fit <- coxph(s ~ x1 + x2 + x3, data=ds)
 if (isFitCoxPH(fit))
   print("Correct, the coxph is of cox PH hazard type")
 

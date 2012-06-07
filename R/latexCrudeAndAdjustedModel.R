@@ -94,6 +94,8 @@ latexCrudeAndAdjustedModel <- function(x,
     rn <- list()
     for (name in rownames(reorderd_groups))
       rn <- append(rowname.fn(name))
+  }else{
+    rn <- rownames(reorderd_groups)
   }
   
   return(latex(reorderd_groups, 

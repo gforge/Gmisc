@@ -119,17 +119,16 @@ termplot2 <- function (model,
     y.poly <- c(upper_ci[current_i.forw], lower_ci[current_i.backw])
     polygon(x.poly , y.poly , col = col.se, border = NA)
   }
-  plot.density <- function(xx){
-    # calculate the coordinates of the density function
-    density <- density( xx )
-    # the height of the densityity curve
-    max.density <- max(density$y)
-    
+  
+  plot.density.continuous <- function(xx){
     # transform the y-coordinates of the density
     if (density.proportion >= 1){
       warning("Can't have a density proportion of 100 % of the plot, recommended is less than 0.2")
       density.proportion <- .1
     }
+    
+    # calculate the coordinates of the density function
+    density <- density( xx )
     
     # Get the boundaries of the plot to
     # put the density polygon at the x-line
@@ -137,7 +136,7 @@ termplot2 <- function (model,
     # get the "length" and range of the y-axis
     yspan <- max(yscale) - min(yscale)
     
-    density_percent <- density$y/max.density
+    density_percent <- density$y/max(density$y)
     height <- density.proportion * density_percent * yspan  + min(yscale)
     if (par("ylog")){
       # For some odd reason the default log scale is 10-based
@@ -148,7 +147,44 @@ termplot2 <- function (model,
     ## plot the polygon
     polygon( density$x , height, border = F, col = col.dens)
   }
-  plot.rug <- function(xx){
+  
+  plot.density.factor <- function(xx, ff){
+    density <- table(xx)
+    
+    # the height of the densityity curve
+    max.density <- max(density)
+    
+    # Should always reach the "roof"
+    density_percent <- density/max.density
+    
+    # Get the boundaries of the plot to
+    # put the density polygon at the x-line
+    yscale <- par("usr")[3:4]
+    # get the "length" and range of the y-axis
+    yspan <- max(yscale) - min(yscale)
+    
+    ll <- levels(ff)
+    for (j in seq_along(ll)) {
+      xrange <- j + c(-0.4, 0.4)
+      
+      bottom <- min(yscale)
+      top <- density.proportion * density_percent[j] * yspan + min(yscale)
+      if (par("ylog")){
+        # For some odd reason the default log scale is 10-based
+        # when the y-scale is logarithmic
+        height <- 10^(height)
+      }
+      
+      rect(xleft = min(xrange),
+        xright = max(xrange),
+        ybottom = bottom,
+        ytop = top,
+        col = col.dens,
+        border = NA)
+    }
+  }
+  
+  plot.rug <- function(xx, ylims, xlims){
     n <- length(xx)
     lines(rep.int(jitter(xx), rep.int(3, n)), rep.int(ylims[1L] + 
           c(0, 0.05, NA) * diff(ylims), n))
@@ -169,7 +205,7 @@ termplot2 <- function (model,
   }
   
   getXlims.continuos <- function(xx){
-    range(xx, na.rm = TRUE)
+    xlims <- range(xx, na.rm = TRUE)
     if (rug && rug.type != "density") 
       xlims[1L] <- xlims[1L] - 0.07 * diff(xlims)
     
@@ -178,20 +214,20 @@ termplot2 <- function (model,
   
   plot.factor <- function(i, ff, xx, 
     xlab, ylab, main,
-    xlims = xlims){
+    xlims = xlims,
+    ylims = ylims){
     
     if (!is.null(model$na.action)) 
       ff <- naresid(model$na.action, ff)
     
-    tmp_ylims <- ylims
     if (identical(yscale, "exponential")){
-      tmp_ylims <- exp(tmp_ylims)
+      ylims <- exp(ylims)
     }
     plot(1, 0, type = "n", 
       xlab = xlab, 
       ylab = ylab, 
       xlim = xlims, 
-      ylim = tmp_ylims, 
+      ylim = ylims, 
       main = main, 
       xaxt = "n", 
       ...)
@@ -225,7 +261,8 @@ termplot2 <- function (model,
   plot.continuous <- function(i,
     xx, 
     xlab, ylab, main,
-    xlims = xlims){
+    xlims = xlims,
+    ylims = ylims){
     
     
     if (!is.null(use.rows)) 
@@ -234,13 +271,12 @@ termplot2 <- function (model,
     oo <- order(xx)
     
     yvalues <- tms[, i]
-    tmp_ylims <- ylims
     if (identical(yscale, "exponential")){
       yvalues <- exp(yvalues)
-      tmp_ylims <- exp(tmp_ylims)
+      ylims <- exp(ylims)
     }
-    plot(range(xx), range(yvalues), type = "n", xlab = xlab,  log=log,
-      ylab = ylab, xlim = xlims, ylim = tmp_ylims, 
+    plot(range(xx), range(yvalues), type = "n", xlab = xlab,
+      ylab = ylab, xlim = xlims, ylim = ylims, 
       main = main[i], 
       ...)
     
@@ -374,7 +410,8 @@ termplot2 <- function (model,
         xx=xx,
         xlab=xlabs[i], ylab=ylabs[i],
         main=main[i],
-        xlims = xlims)
+        xlims = xlims,
+        ylims = ylims)
     }
     else {
       xx <- carrier(cn[[i]])
@@ -383,7 +420,8 @@ termplot2 <- function (model,
         xlab=xlabs[i], 
         ylab=ylabs[i],
         main=main[i],
-        xlims = xlims)
+        xlims = xlims,
+        ylims = ylims)
       
     }
     if (partial.resid) {
@@ -398,11 +436,13 @@ termplot2 <- function (model,
     
     if (rug){
       if (rug.type == "density") {
-        plot.density(xx, xlims = xlims, ylims = ylims)
+        if (is.fac[i])
+          plot.density.factor(xx=xx, ff=ff)
+        else
+          plot.density.continuous(xx)
       }else {
         plot.rug(xx, xlims = xlims, ylims = ylims)
       }
-      
     }
   }
   invisible(n.tms)

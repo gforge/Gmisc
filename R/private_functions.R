@@ -6,66 +6,6 @@
 ###############################################################################
 
 
-#' A functions for selecting the scores that have a certain frequency
-#' 
-#' Used to remove for instance HIV from Charlsons, Elixhausers and other
-#' rare scores that probably don't have any predictive value due to their 
-#' rareness. 
-#' 
-#' @param score A matrix/df with all the columns being scores that are checked  
-#' @param censored This is the censored/outcome vector. If a score occurs 
-#'   not so frequently but it is _very_ strongly related to the outcome the
-#'   you have a less strict selection. This selection is the min_with_occurrences
-#' @param min The minimum of times that the score may occur and still be interesting.
-#'   Note this is NOT a percentage since it may be interesting to have very low 
-#'   percentages if your material is big.
-#' @param min_with_occurences A smaller number than min since this gives an option
-#'   to select more rare indicators if they're strongly associated with the 
-#'   outcome
-#' @param censored_indicator The indicator for the censored vector that indicates
-#'   that an event/outcome has occurred 
-#' @return Returns a vector with the column names that are to be kept, colnames(score)[keepers]
-#' 
-#' @author max
-prSelectFrequentVariables <- function(score, 
-  censored, 
-  min,  
-  min_with_occurences = NULL,
-  censored_indicator = "reoperation"){
-  if (is.null(min_with_occurences)){
-    min_with_occurences <- min
-  }else if (min > min_with_occurences){
-    warning("Your min_with occurences is smaller than the min - this must be a misstake")
-    min = min_with_occurences
-  }
-  
-  cat("\n\n* Begin selecting common scores *")
-  keepers <- c()
-  for(i in 1:length(score)){
-    occurences <- sum(score[,i] > 0)
-    if (occurences >= min_with_occurences){
-      events <- length(censored[score[,i] > 0 & censored=="reoperation"])
-      if (occurences > min | events > min_with_occurences){
-        keepers <- append(keepers, i)
-        # Normalize score to values 0 or 1
-        score[,i] <- (score[,i] > 0)*1
-      }else{
-        cat("\nRemoving:", 
-          colnames(score)[i],
-          "occurences=",
-          occurences, "re-operations=", events)
-      }
-    }else{
-      cat("\nRemoving:", 
-        colnames(score)[i],
-        "occurences=", occurences)
-    }
-  }
-  
-  cat("\n* End selecting common scores *")
-  
-  return(keepers)
-}
 
 #' Not sure when I use this
 #' 
