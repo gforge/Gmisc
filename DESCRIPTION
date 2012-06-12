@@ -1,5 +1,5 @@
 Package: Gmisc
-Version: 0.1
+Version: 0.2
 Date: 2012-05-13
 Title: A collection of different functions that I've found useful when plotting
     complex data, creating tables etc. The
@@ -25,6 +25,8 @@ Collate:
     'printSimpleFit.R'
     'private_functions.R'
     'getXTicks.R'
+    'getDescriptionStatsBy.R'
+    'simpleRmsAnovaLatex.R'
 Depends:
     grid,
     testthat,

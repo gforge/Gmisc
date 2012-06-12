@@ -89,7 +89,12 @@ getCrudeAndAdjustedModelData <- function(fit, digits=2){
   # Remove all the splines, rcs etc
   rn <- rownames(adjusted)
   remove <- grep("(\'{1,}|[[][0-9]+[]]|[)][0-9]+)$", rn)
-  remove <- union(remove, grep(regex_for_unwanted_vars, rn))
+  # Add the intercept if this is a model with an intercept
+  if(length(grep("intercept", names(coef(fit))[1], ignore.case=TRUE)) > 0)
+    remove <- union(remove, skip_variables+1)
+  else
+    remove <- union(remove, skip_variables)
+  
   
   # Remove the unwanted rows if any found
   if (length(remove) > 0){

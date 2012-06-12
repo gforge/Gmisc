@@ -16,7 +16,8 @@
 #'   return a string or expression.  
 #' @param ... Passed onto the latex function @seealso Hmisc::latex
 #' @return Returns a latex formatted table
-#' @importMethodsFrom miscTools insertRow
+#' 
+#' @import miscTools
 #' 
 #' @example examples/latexCrudeAndAdjustedModel_example.R
 #' 
@@ -54,7 +55,7 @@ latexCrudeAndAdjustedModel <- function(x,
       greps <- append(greps, list(new_vars))
     }
   }
-  
+    
   reorderd_groups <- x[unlist(greps), ]
   if (length(add_references) == length(greps)){
     line_row <- 1
@@ -93,7 +94,7 @@ latexCrudeAndAdjustedModel <- function(x,
   if (is.function(rowname.fn)){
     rn <- list()
     for (name in rownames(reorderd_groups))
-      rn <- append(rowname.fn(name))
+      rn <- append(rn, rowname.fn(name))
   }else{
     rn <- rownames(reorderd_groups)
   }
