@@ -52,7 +52,7 @@ forestplot2(labeltext = row_names,
   xlog      = TRUE,
   col = meta.colors(lines="red", box="darkred"))
 
-my_ticks <- getXTicks(low = test_data$low, 
+my_ticks <- getTicks(low = test_data$low, 
   high      = test_data$high, 
   clip      = c(-Inf, Inf), 
   exp       = TRUE)

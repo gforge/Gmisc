@@ -420,9 +420,10 @@ forestplot2 <- function (labeltext,
       
       xax <- xaxisGrob(gp = gpar(cex = cex*0.6, col = col$axes, lwd=lwd.xaxis), 
         at = log(ticks), name = "xax")
+      ticklabels <- ifelse(ticks < 1 | abs(floor(ticks*10)-ticks*10) > 0, 
+        format(ticks, digits = 2), format(ticks, digits = 1))
       xax1 <- editGrob(xax, gPath("labels"), 
-        label = format(ticks, 
-          digits = 2))
+        label = ticklabels)
       grid.draw(xax1)
     }
     

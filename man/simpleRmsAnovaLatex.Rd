@@ -2,7 +2,8 @@
 \alias{simpleRmsAnovaLatex}
 \title{A simpler latex output of the latex.anova.rms}
 \usage{
-  simpleRmsAnovaLatex(anova_output, subregexps = NA, ...)
+  simpleRmsAnovaLatex(anova_output, subregexps = NA,
+    html = FALSE, ...)
 }
 \arguments{
   \item{anova_output}{An object from the anova() function}
@@ -12,7 +13,10 @@
   regular expression should be located in column 1 and the
   substitution in column 2.}
 
-  \item{...}{Passed on to latex()}
+  \item{html}{If HTML output through the htmlTable should
+  be used instead of traditional latex() function}
+
+  \item{...}{Passed on to latex() or htmlTable}
 }
 \value{
   void See the latex() function

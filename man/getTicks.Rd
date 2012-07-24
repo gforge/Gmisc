@@ -1,28 +1,33 @@
-\name{getXTicks}
-\alias{getXTicks}
-\title{Gets the x-ticks in a formatted version. This is since I'm not always
+\name{getTicks}
+\alias{getTicks}
+\title{Gets the ticks in a formatted version. This is since I'm not always
 that fond of just pretty(1:10/5). In exponential form the ticks are
 determined from the 2-base, meaning that you get an intuitive feeling
 for when the value is doubled.}
 \usage{
-  getXTicks(low, high, clip = c(-Inf, Inf), exp = FALSE)
+  getTicks(low, high = low, clip = c(-Inf, Inf),
+    exp = FALSE, digits = 0)
 }
 \arguments{
-  \item{low}{lower bound}
+  \item{low}{lower bound, can be a single number or a
+  vector}
 
-  \item{high}{upper bound}
+  \item{high}{upper bound - optional, you can just have all
+  data in the low variable}
 
   \item{clip}{if the ci are clipped}
 
   \item{exp}{If the value should be in exponential form
   (default)}
+
+  \item{digits}{Number of digits - used in exp mode}
 }
 \value{
   Returns a vector with the ticks apropriate
 }
 \description{
-  Gets the x-ticks in a formatted version. This is since
-  I'm not always that fond of just pretty(1:10/5). In
+  Gets the ticks in a formatted version. This is since I'm
+  not always that fond of just pretty(1:10/5). In
   exponential form the ticks are determined from the
   2-base, meaning that you get an intuitive feeling for
   when the value is doubled.
@@ -34,16 +39,26 @@ test_data <- data.frame(coef=c(2, 0.5),
   boxsize=c(0.5, 0.5))
 
 # Exponential form where the exponent base i 2 for easier understanding
-getXTicks(low = test_data$low, 
+getTicks(low = test_data$low, 
   high = test_data$high, 
   clip=c(-Inf, Inf), 
   exp=TRUE)
 
 # Non exponential form with using pretty
-getXTicks(low = test_data$low, 
+getTicks(low = test_data$low, 
   high = test_data$high, 
   clip=c(-Inf, Inf), 
   exp=FALSE)
+
+
+# A very simple example
+getTicks(1:5*2.33, 
+  exp=FALSE)
+
+# A slightly more advanced exponential version
+getTicks(1:10*.33, 
+  digits=2,
+  exp=TRUE)
 }
 \author{
   max

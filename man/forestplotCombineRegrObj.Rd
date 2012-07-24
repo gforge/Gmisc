@@ -7,7 +7,9 @@
     clip = c(-Inf, Inf), col.zero = "lightgray",
     reference.names = NULL, rowname.fn = NULL,
     box.default.size = 0.5, xlab = NULL, xlog = FALSE,
-    estimate.txt = NULL, zero = NULL, exp = TRUE, ...)
+    estimate.txt = NULL, zero = NULL, exp = TRUE,
+    add_first_as_ref = FALSE, ref_txt = "ref.",
+    ref_labels = c(), digits = 1, ...)
 }
 \arguments{
   \item{regr.obj}{A list with all the fits that have
@@ -52,6 +54,19 @@
 
   \item{exp}{Report in exponential form. Default true since
   the function was built for use with survival models.}
+
+  \item{add_first_as_ref}{If you want that the first
+  variable should be reference for that group of variables.
+  The ref is a variable with the estimate 1 or 0 depending
+  if exp() and the confidence interval 0.}
+
+  \item{ref_labels}{If add_first_as_ref is TRUE then this
+  vector is used for the model fits.}
+
+  \item{ref_txt}{Text instead of estimate number}
+
+  \item{digits}{Number of digits to use for the estimate
+  output}
 
   \item{...}{Passed to forestplot2}
 }

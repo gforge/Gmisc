@@ -11,14 +11,16 @@
 #'   to search for and their substitutions. The regular expression
 #'   should be located in column 1 and the substitution in column
 #'   2.
-#' @param ... Passed on to latex() 
+#' @param html If HTML output through the htmlTable should be used 
+#'   instead of traditional latex() function
+#' @param ... Passed on to latex() or htmlTable
 #' @return void See the latex() function 
 #' 
 #' @example examples/simpleRmsAnovaLatex_example.R
 #' 
 #' @author max
 #' @export
-simpleRmsAnovaLatex <- function(anova_output, subregexps = NA, ...){
+simpleRmsAnovaLatex <- function(anova_output, subregexps = NA, html=FALSE, ...){
   rownames <- names(attr(anova_output, "which"))
   if (is.matrix(subregexps) && NCOL(subregexps) == 2){
     for (i in 1:NROW(subregexps))
@@ -28,8 +30,13 @@ simpleRmsAnovaLatex <- function(anova_output, subregexps = NA, ...){
   rownames <- sub("INTERACTION", "interaction", rownames)
   rownames <- sub("NONLINEAR", "nonlinear", rownames)
   rownames <- sub("\\(Factor\\+Higher Order Factors\\)", "", rownames)
-  rownames <- sub("^ ", "\\\\hspace{3 mm}", latexTranslate(rownames))
   
   mtrx <- as.matrix(anova_output)
-  latex(mtrx, rowname=rownames, n.rgroup=c(NROW(mtrx)-4, 4), rgroup=c("Variables", "Total"), ...)
+  if (html){
+    rownames <- sub("^ ", "&nbsp;&nbsp;", rownames)
+    htmlTable(mtrx, rowname=rownames, n.rgroup=c(NROW(mtrx)-4, 4), rgroup=c("Variables", "Total"), ...)
+  }else{
+    rownames <- sub("^ ", "\\\\hspace{3 mm}", latexTranslate(rownames))
+    latex(mtrx, rowname=rownames, n.rgroup=c(NROW(mtrx)-4, 4), rgroup=c("Variables", "Total"), ...)
+  }
 }

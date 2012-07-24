@@ -78,9 +78,10 @@
 #'   2.0 should be the same. This will only show on a logarithmic scale and therefore it is
 #'   strongly recommended to use the logarithmic scale.
 #' @param cex Increase if you want larger font size in the graph.
-#' @param bty Type of box that you want. See the bty description in graphical parameters (par)
+#' @param plot.bty Type of box that you want. See the bty description in graphical parameters (par)
 #'   If bty is one of "o" (the default), "l", "7", "c", "u", or "]" the resulting box resembles 
 #'   the corresponding upper case letter. A value of "n" suppresses the box.
+#' @param y_axis_side The side that the y axis is to be plotted, see axis() for details
 #' @aliases par 
 #' @param axes A boolean that is used to identify if axes are to be plotted 
 #' @param ... Any additional values that are to be sent to the plot() function
@@ -111,7 +112,8 @@ plotHR <- function (models,
   y.ticks    = NULL, 
   ylog       = TRUE,
   cex        = 1, 
-  bty        = "n", 
+  y_axis_side = 2,
+  plot.bty   = "n", 
   axes       = TRUE, 
   ...){
   
@@ -353,18 +355,23 @@ plotHR <- function (models,
       y.ticks <- axTicks(2)
     }else if (ylog == TRUE){
       # This is an assumption that the ticks
-      # aren't provided in logar
+      # aren't provided in log
       y.ticks <- log(y.ticks)
     }
     
+    
     if (ylog == TRUE){
+      y.ticks <- ifelse(exp(y.ticks) >= 1, 
+        sprintf("%0.1f", exp(y.ticks)),
+        sprintf("%0.2f", exp(y.ticks)))
       # Get familiar y-axis instead of the log
-      axis(side = 2 , at = y.ticks , labels = round( exp(y.ticks) , digits = 1))
+      axis(side = y_axis_side, at = log(as.double(y.ticks)), 
+           labels = y.ticks)
     }else{
-      axis(side = 2 , at = y.ticks)
+      axis(side = y_axis_side , at = y.ticks)
     }
   }
   
   # plot a box around plotting panel if specified - not plotted by default
-  box(bty = bty)
+  box(bty = plot.bty)
 }

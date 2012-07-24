@@ -2,13 +2,19 @@
 \alias{getCrudeAndAdjustedModelData}
 \title{This function helps with printing regression models}
 \usage{
-  getCrudeAndAdjustedModelData(fit, digits = 2)
+  getCrudeAndAdjustedModelData(fit, digits = 2, max = Inf)
 }
 \arguments{
   \item{fit}{The regression model}
 
   \item{digits}{Number of digits you want in your
   estimates}
+
+  \item{max}{A number that specifies if any values should
+  be abbreviated above this value, for instance a value of
+  1000 would give a value of > 1000 for a value of 1001.
+  This gives a prettier table when you have very wide
+  confidence intervals.}
 }
 \value{
   Returns a matrix with the columns c("Crude", "95% CI",
@@ -33,7 +39,9 @@
 
   The function skips by default all spline variables since
   this becomes very complicated and there is no simple
-  \deqn{\beta}{beta} to display.
+  \deqn{\beta}{beta} to display. For the same reason it
+  skips any interaction variables since it's probably
+  better to display these as a contrast table.
 }
 \examples{
 # simulated data to use 

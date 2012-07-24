@@ -12,10 +12,14 @@
 #' reports the exp() values instead of the original values
 #' 
 #' The function skips by default all spline variables since this becomes very complicated
-#' and there is no simple \deqn{\beta}{beta} to display. 
+#' and there is no simple \deqn{\beta}{beta} to display. For the same reason it skips
+#' any interaction variables since it's probably better to display these as a contrast table. 
 #' 
 #' @param fit The regression model
 #' @param digits Number of digits you want in your estimates
+#' @param max A number that specifies if any values should be abbreviated above this value,
+#'   for instance a value of 1000 would give a value of > 1000 for a value of 1001. This gives
+#'   a prettier table when you have very wide confidence intervals.
 #' @return Returns a matrix with the columns c("Crude", "95% CI", "Adjusted", "95% CI").
 #'   The rows are not changed from the original fit.
 #' 
@@ -23,7 +27,7 @@
 #' 
 #' @author max
 #' @export
-getCrudeAndAdjustedModelData <- function(fit, digits=2){
+getCrudeAndAdjustedModelData <- function(fit, digits=2, max=Inf){
   # Just a prettifier for the output an alternative could be:
   # paste(round(x[,1],1), " (95% CI ", min(round(x[,2:3])), "-", max(round(x[,2:3])), ")", sep="")  
   get_coef_and_ci <- function(fit, skip_intercept=FALSE){
@@ -57,18 +61,35 @@ getCrudeAndAdjustedModelData <- function(fit, digits=2){
       ci <- exp(ci)
     }
     
-    
-    confidence_string <- sprintf("%%0.%df - %%0.%df", digits, digits)
+    confidence_string <- sprintf("%%0.%df to %%0.%df", digits, digits)
     if (length(my_coefficients) > 1){
       my_coefficients <- tapply(my_coefficients, 1:length(my_coefficients), FUN = add_zero_to_var)
+      
+      # Set upper bound for nicer output
+      if (is.infinite(max) == FALSE){
+        if (floor(max) == max)
+          ci[ci[,2] > max, 2] <- sprintf("> %d", max)
+        else
+          ci[ci[,2] > max, 2] <- sprintf("> %f", max)
+      }
+    
       ci <- sprintf(confidence_string, ci[,1], ci[,2])
     }else{
       my_coefficients <- add_zero_to_var(my_coefficients)
+      
+      if (is.infinite(max) == FALSE &&  
+          ci[2] > max){
+        if (floor(max) == max)
+          ci[2] <- sprintf("> %d", max)
+        else
+          ci[2] <- sprintf("> %f", max)
+      }
+      
       ci <- sprintf(confidence_string, ci[1], ci[2])
     }
     
     ret_val <- cbind(my_coefficients, ci)
-    colnames(ret_val) <- c("", "2.5% - 97.5%")
+    colnames(ret_val) <- c("", "2.5% to 97.5%")
     rownames(ret_val) <- coef_names
     return(ret_val)
   }
@@ -79,8 +100,34 @@ getCrudeAndAdjustedModelData <- function(fit, digits=2){
   
   # Skip variables consisting of
   # functions such as spline, strata variables
-  regex_for_unwanted_vars <- "^(strat[a]{0,1}|ns|rcs|bs|pspline)[(]"
+  regex_for_unwanted_vars <- "^(ns|rcs|bs|pspline)[(]"
   skip_variables <- grep(regex_for_unwanted_vars, var_names)
+  skip_variables_names <- c()
+  if (length(skip_variables) > 0){
+    for (vn in skip_variables){
+      match <- gregexpr("\\w+\\((?<var_name>\\w+)", var_names[vn], perl = TRUE)[[1]]
+      if (match[1] >= 0){
+        st <- attr(match, "capture.start")[1, ]
+        skip_variables_names <- append(skip_variables_names, substring(var_names[vn], st, st + attr(match, "capture.length")[1, ] - 1))
+      }
+    }
+  }
+  
+  # Skips the interaction terms since they should
+  # be displayed in a different fashion
+  raw_int_terms <- grep("[[:alnum:]]+:[[:alnum:]]+", var_names)
+  if (length(raw_int_terms) > 0){
+    require("stringr")
+    for (i in raw_int_terms){
+      for (name in str_split(var_names[i], ":")[[1]]){
+        skip_variables_names <- append(skip_variables_names, name)
+        skip_variables <- union(skip_variables, grep(name, var_names))
+      }
+    }
+
+  }
+  
+  skip_variables <- union(skip_variables, grep("^strat[a]{0,1}\\(", var_names))
   
   # Get the adjusted variables
   adjusted <- get_coef_and_ci(fit)
@@ -89,12 +136,11 @@ getCrudeAndAdjustedModelData <- function(fit, digits=2){
   # Remove all the splines, rcs etc
   rn <- rownames(adjusted)
   remove <- grep("(\'{1,}|[[][0-9]+[]]|[)][0-9]+)$", rn)
-  # Add the intercept if this is a model with an intercept
-  if(length(grep("intercept", names(coef(fit))[1], ignore.case=TRUE)) > 0)
-    remove <- union(remove, skip_variables+1)
-  else
-    remove <- union(remove, skip_variables)
-  
+  for (name in skip_variables_names){
+    m <- grep(name, rn)
+    if (length(m) > 0)
+      remove <- union(remove, m)
+  }
   
   # Remove the unwanted rows if any found
   if (length(remove) > 0){
@@ -144,7 +190,12 @@ getCrudeAndAdjustedModelData <- function(fit, digits=2){
     rownames(unadjusted)[1] <- "Intercept"
   }
   
-  both <- cbind(unadjusted, adjusted)
-  colnames(both) <- c("Crude", "95% CI", "Adjusted", "95% CI")
+  # If just one variable it's not a proper matrix
+  if (is.null(dim(adjusted))){
+    both <- matrix(c(unadjusted, adjusted), nrow=1)
+  }else{
+    both <- cbind(unadjusted, adjusted)
+  }
+  colnames(both) <- c("Crude", "95% CI", "Adjusted", "95% CI") 
   return(both)
 }

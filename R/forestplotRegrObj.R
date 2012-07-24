@@ -387,7 +387,7 @@ forestplotRegrObj <- function(
     zero=col.zero)
   
   # Get the right ticks
-  xticks <- getXTicks(low = t.low, 
+  xticks <- getTicks(low = t.low, 
     high = t.high, 
     clip = clip, 
     exp = exp)

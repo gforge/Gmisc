@@ -1,6 +1,6 @@
 Package: Gmisc
-Version: 0.2
-Date: 2012-05-13
+Version: 0.3
+Date: 2012-07-24
 Title: A collection of different functions that I've found useful when plotting
     complex data, creating tables etc. The
 Authors: c(person("Max Gordon",
@@ -21,17 +21,21 @@ Collate:
     'getCrudeAndAdjustedModelData.R'
     'isFitCoxPH.R'
     'isFitLogit.R'
-    'latexCrudeAndAdjustedModel.R'
+    'printCrudeAndAdjustedModel.R'
     'printSimpleFit.R'
     'private_functions.R'
-    'getXTicks.R'
+    'getTicks.R'
     'getDescriptionStatsBy.R'
     'simpleRmsAnovaLatex.R'
+    'getModelData4Forestplot.R'
+    'htmlTable.R'
 Depends:
     grid,
-    testthat,
+    stringr,
     miscTools,
     rms,
-    Hmisc,
-    survival,
-    cmprsk
+    Hmisc
+Suggests:
+    testthat,
+    cmprsk,
+    survival

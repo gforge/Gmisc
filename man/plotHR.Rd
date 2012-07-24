@@ -9,7 +9,8 @@
     col.term = "#08519C", col.se = "#DEEBF7",
     col.dens = grey(0.9), lwd.term = 3, lty.term = 1,
     lwd.se = 2, x.ticks = NULL, y.ticks = NULL,
-    ylog = TRUE, cex = 1, bty = "n", axes = TRUE, ...)
+    ylog = TRUE, cex = 1, y_axis_side = 2, plot.bty = "n",
+    axes = TRUE, ...)
 }
 \arguments{
   \item{models}{A single model or a list() with several
@@ -88,11 +89,14 @@
   \item{cex}{Increase if you want larger font size in the
   graph.}
 
-  \item{bty}{Type of box that you want. See the bty
+  \item{plot.bty}{Type of box that you want. See the bty
   description in graphical parameters (par) If bty is one
   of "o" (the default), "l", "7", "c", "u", or "]" the
   resulting box resembles the corresponding upper case
   letter. A value of "n" suppresses the box.}
+
+  \item{y_axis_side}{The side that the y axis is to be
+  plotted, see axis() for details}
 
   \item{axes}{A boolean that is used to identify if axes
   are to be plotted}

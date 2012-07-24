@@ -3,9 +3,11 @@
 \title{A function that returns a description statistic that can be used
 for creating a publication "table 1" when you want it by groups.
 The function identifies if the variable is a continuous, binary
-or a factored variable.}
+or a factored variable. The format is inspired by NEJM, Lancet &
+BMJ.}
 \usage{
-  getDescriptionStatsBy(x, by, vars = FALSE, digits = 1)
+  getDescriptionStatsBy(x, by, vars = FALSE, digits = 1,
+    html = FALSE, NEJMstyle = FALSE)
 }
 \arguments{
   \item{x}{The variable that you want the statistics for}
@@ -18,6 +20,12 @@ or a factored variable.}
   statistic to the previous}
 
   \item{digits}{The number of decimals used}
+
+  \item{html}{If HTML compatible output shoudl be used
+  instead of default LaTeX}
+
+  \item{NEJMstyle}{Adds - no (\%) at the end to
+  proportions}
 }
 \value{
   Returns a vector if vars wasn't specified and it's a
@@ -31,6 +39,7 @@ or a factored variable.}
   be used for creating a publication "table 1" when you
   want it by groups. The function identifies if the
   variable is a continuous, binary or a factored variable.
+  The format is inspired by NEJM, Lancet & BMJ.
 }
 \examples{
 data(mtcars)

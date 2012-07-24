@@ -33,3 +33,4 @@ fit <- crr(ftime,fstatus,cov)
 
 if (isFitCoxPH(fit))
   print("Correct, the competing risk regression is considered a type of cox regression since it has a Hazard Ratio")
+

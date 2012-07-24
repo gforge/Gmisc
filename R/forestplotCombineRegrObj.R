@@ -21,6 +21,13 @@
 #'   1 while in most other cases it's 0.
 #' @param exp Report in exponential form. Default true since the function was built for 
 #'   use with survival models.
+#' @param add_first_as_ref If you want that the first variable should be reference for 
+#'   that group of variables. The ref is a variable with the estimate 1 or 0 depending
+#'   if exp() and the confidence interval 0.
+#' @param ref_labels If add_first_as_ref is TRUE then this vector is used for the model
+#'   fits. 
+#' @param ref_txt Text instead of estimate number
+#' @param digits Number of digits to use for the estimate output
 #' @param ... Passed to forestplot2 
 #' @return void 
 #' 
@@ -42,6 +49,10 @@ forestplotCombineRegrObj <- function(
   estimate.txt     = NULL,
   zero             = NULL,
   exp              = TRUE,
+  add_first_as_ref = FALSE,
+  ref_txt          = "ref.",
+  ref_labels       = c(),
+  digits           = 1,
   ...)
 {   
   if (length(regr.obj) < 2)
@@ -77,25 +88,11 @@ forestplotCombineRegrObj <- function(
       zero = 0
   }
   
-  models_fit_fp_data = list()
-  for(i in 1:length(regr.obj)){
-    bound <- prGetFpDataFromFit(regr.obj[[i]],
-      conf.int = 0.95,
-      exp = exp)
-    models_fit_fp_data <- append(models_fit_fp_data, list(bound))
-  }
-  
-  # Find the variables that belong to the score
-  # the other variables should not be sorted
-  # and a blank space is to appear between to separate them
-  for(i in 1:length(models_fit_fp_data)){
-    frame_names <- rownames(models_fit_fp_data[[i]])
-    score_variables <- frame_names %in% 
-      grep(variablesOfInterest.regexp, 
-        frame_names, 
-        value=TRUE)
-    models_fit_fp_data[[i]] <- models_fit_fp_data[[i]][score_variables, ,drop=FALSE]
-  }
+  models_fit_fp_data = getModelData4Forestplot(regr.obj = regr.obj,
+                                               exp = exp,
+                                               variablesOfInterest.regexp = variablesOfInterest.regexp,
+                                               ref_labels = ref_labels,
+                                               add_first_as_ref = add_first_as_ref)
   
   t.clr <- meta.colors(box="royalblue",
     lines="darkblue", 
@@ -106,13 +103,14 @@ forestplotCombineRegrObj <- function(
   t.coef <- c(NA)
   t.low <- c(NA)
   t.high <- c(NA)
-  
+  t.is_ref <- c(NA)
   for(i in 1:length(models_fit_fp_data)){
     if (length(rn) > 0){
       rn <- append(rn, NA)
       t.coef <- append(t.coef, NA)
       t.low <- append(t.low, NA)
       t.high <- append(t.high, NA)
+      t.is_ref <- append(t.is_ref, FALSE)
     }
     if (length(reference.names) > 1 || is.null(reference.names) == FALSE){
       rn <- append(rn, reference.names[i])
@@ -129,9 +127,10 @@ forestplotCombineRegrObj <- function(
     t.coef <- append(t.coef, models_fit_fp_data[[i]][, "beta"])
     t.low <- append(t.low, models_fit_fp_data[[i]][, "low"])
     t.high <- append(t.high, models_fit_fp_data[[i]][, "high"])
+    t.is_ref <- append(t.is_ref, is.na(models_fit_fp_data[[i]][, "p_val"]))
   }
   
-  xticks <- getXTicks(low = t.low, 
+  xticks <- getTicks(low = t.low, 
     high = t.high, 
     clip = clip, 
     exp = exp)
@@ -143,7 +142,10 @@ forestplotCombineRegrObj <- function(
   # it defaults to 7 why this might be more annoying
   # than helpful
   for (i in 2:length(t.coef))
-    col2 <- append(col2, ifelse(is.na(t.coef[i]), "", sprintf(" %.2f ", t.coef[i])))
+    col2 <- append(col2, ifelse(is.na(t.coef[i]), "", sprintf(sprintf(" %%.%df ", digits), t.coef[i])))
+    
+  if (add_first_as_ref)
+    col2[t.is_ref] <- ref_txt
   
   rn <- list(
     rn,
