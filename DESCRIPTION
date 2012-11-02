@@ -1,5 +1,5 @@
 Package: Gmisc
-Version: 0.3
+Version: 0.3.5
 Date: 2012-07-24
 Title: A collection of different functions that I've found useful when plotting
     complex data, creating tables etc. The
@@ -29,6 +29,8 @@ Collate:
     'simpleRmsAnovaLatex.R'
     'getModelData4Forestplot.R'
     'htmlTable.R'
+    'descriptionStats.R'
+    'outputInt.R'
 Depends:
     grid,
     stringr,

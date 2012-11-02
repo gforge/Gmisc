@@ -7,7 +7,7 @@ or a factored variable. The format is inspired by NEJM, Lancet &
 BMJ.}
 \usage{
   getDescriptionStatsBy(x, by, vars = FALSE, digits = 1,
-    html = FALSE, NEJMstyle = FALSE)
+    html = FALSE, NEJMstyle = FALSE, numbers_first = TRUE)
 }
 \arguments{
   \item{x}{The variable that you want the statistics for}

@@ -14,6 +14,10 @@
 #' @param html If HTML compatible output shoudl be used instead
 #'  of default LaTeX
 #' @param NEJMstyle Adds - no (\%) at the end to proportions
+#' @param number_first If the number should be given or if the percentage
+#'  should be presented first. The second is encapsulated in parentheses ().
+#' @param statistics Add statistics, fisher test for proportions and Wilcoxon
+#'  for continuous variables
 #' @return Returns a vector if vars wasn't specified and it's a
 #'  continuous or binary statistic. If vars was a matrix then it
 #'  appends the result to the end of that matrix. If the x variable
@@ -23,48 +27,18 @@
 #' 
 #' @author max
 #' @export
-getDescriptionStatsBy <- function(x, by, vars=FALSE, digits=1, html = FALSE, NEJMstyle = FALSE){
-  describe_mean <- function(x){
-    if (html)
-      ret <- sprintf(sprintf("%%.%df &plusmn;(%%3.%df)", digits, digits), 
-          mean(x, na.rm=T), sd(x, na.rm=T))
-    else
-      ret <- sprintf(sprintf("$%%.%df \\pm(%%3.%df)$", digits, digits), 
-        mean(x, na.rm=T), sd(x, na.rm=T))
-    
-    return (ret)
-  }
+getDescriptionStatsBy <- function(x, by, vars=FALSE, digits=1, html = FALSE, 
+  NEJMstyle = FALSE, numbers_first = TRUE, statistics=FALSE){
   
-  describe_prop <- function(x) {
-    no <- sum(x == levels(x)[1], na.rm=T)
-    percent <- 100*no/length(x[is.na(x)==F])
-    no <- ifelse(no >= 10^4, format(no, big.mark=" "), format(no))
-    if (html)
-      ret <- sprintf(sprintf("%%s (%%.%df %%%%)", digits), no, percent)
-    else
-      ret <- sprintf(sprintf("%%s (%%.%df \\%%%%)", digits), no, percent)
-    return (ret)
+  getFormattedPval <- function(p_val){
+    if (p_val < 10^-4)
+      return("< 0.0001")
+    return(format(p_val, digits=-floor(log10(p_val))+1))
   }
-  
-  describe_factors <- function(x) {
-    values <- ifelse(table(x) >= 10^4, format(table(x), big.mark=" "), format(table(x)))
-    if (html)
-      ret <- matrix(
-        sprintf(sprintf("%%s (%%.%df %%%%)", digits), 
-          values, 
-          table(x)/sum(table(x))*100), ncol=1)
-    else
-      ret <- matrix(
-        sprintf(sprintf("%%s (%%.%df \\%%%%)", digits), 
-          values,
-          table(x)/sum(table(x))*100), ncol=1)
-    return(ret)
-  }
-  
   if (is.numeric(x) ||
     (is.factor(x) && length(levels(x)) == 2)){
     if (is.factor(x)){
-      t <- by(x, by, FUN=describe_prop)
+      t <- by(x, by, FUN=describe_prop, html=html, digits=digits, number_first=numbers_first)
       name <- sprintf("%s %s", capitalize(levels(x)[1]), tolower(label(x)))
       if (NEJMstyle) {
       	if (html) {
@@ -73,17 +47,23 @@ getDescriptionStatsBy <- function(x, by, vars=FALSE, digits=1, html = FALSE, NEJ
           name <- sprintf("%s - no (\\%%)", name)
       	}
       }
+      pval <- getFormattedPval(fisher.test(x, by)$p.value)
     }else{
-      t <- by(x, by, FUN=describe_mean)
+      t <- by(x, by, FUN=describe_mean, html=html, digits=digits)
       name <- label(x)
+      pval <- getFormattedPval(wilcox.test(x ~ by)$p.value)
     }
     if (is.matrix(vars)){
       rn <- rownames(vars)
       rn <- c(rn, name)
       results <- unlist(t)
-      if (NCOL(vars) == length(unique(by)) + 1){
+      if (NCOL(vars) == length(unique(by)) + 1 + statistics*1){
         if (units(x) != "") results <- append(results, sprintf("$%s$",units(x)))
         else results <- append(results, "-")
+      }
+      
+      if (statistics){
+        results <- append(results, pval)
       }
       vars <- rbind(vars, results)
       rownames(vars) <- rn
@@ -92,6 +72,9 @@ getDescriptionStatsBy <- function(x, by, vars=FALSE, digits=1, html = FALSE, NEJ
       if (units(x) != ""){
         results <- append(results, sprintf("$%s$",units(x)))
       }
+      if (statistics){
+        results <- append(results, pval)
+      }
       vars <- matrix(results, ncol=length(results))
       rownames(vars) <- name
     }
@@ -99,10 +82,18 @@ getDescriptionStatsBy <- function(x, by, vars=FALSE, digits=1, html = FALSE, NEJ
     if (is.matrix(vars))
       warning("The function cannot add a factor variable to a previous matrix")
     
-    t <- by(x, by, FUN=describe_factors)
+    t <- by(x, by, FUN=describe_factors, html=html, digits=digits, number_first=numbers_first)
     vars <- matrix(unlist(t), ncol=length(unique(by)))
     label(vars) <- label(x)
     rownames(vars) <- names(table(x))
+    if (statistics){
+      # This is a quick fix in case of large dataset
+      workspace = 10^5
+      if (length(x)*length(levels(x)) > 10^4)
+        workspace = 10^7
+      pval <- getFormattedPval(fisher.test(x, by, workspace=workspace)$p.value)
+      vars <- cbind(vars, c(pval, rep("", nrow(vars)-1)))
+    }
   }
   
   return (vars)

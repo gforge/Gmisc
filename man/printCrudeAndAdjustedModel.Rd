@@ -13,7 +13,7 @@ word processors.}
   getCrudeAndAdjustedModelData() function or a regression
   model}
 
-  \item{order}{A vector with regular expresions for each
+  \item{order}{A vector with regular expressions for each
   group.}
 
   \item{digits}{The number of digits to round to}

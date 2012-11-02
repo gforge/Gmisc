@@ -42,7 +42,7 @@
 #' changes back to the basic
 #' 
 #' @param models A single model or a list() with several models
-#' @param terms The terms of interest. Can be either the name or the number of the
+#' @param term The term of interest. Can be either the name or the number of the
 #'   covariate in the model.
 #' @param se Boolean if you want the confidence intervals or not
 #' @param polygon_ci If you want a polygon as indicator for your confidence interval.
@@ -93,7 +93,7 @@
 #' @author Reinhard Seifert, Max Gordon
 #' @export
 plotHR <- function (models, 
-  terms      = 1, 
+  term      = 1, 
   se         = TRUE , 
   polygon_ci = TRUE, 
   rug        = "density", 
@@ -116,7 +116,102 @@ plotHR <- function (models,
   plot.bty   = "n", 
   axes       = TRUE, 
   ...){
+
+  getCleanLabels <- function(m){
+    ## extract the names of all model covariates
+    all.labels <- attr(m$term , "term.labels")
+    
+    # remove 'strata()' / 'factor()' / 'pspline()' / 'rcs()' / 'as.integer()'
+    all.labels <- sub ( "[a-zA-Z\\._]+[0-9a-zA-Z\\._][(]([a-zA-Z._0-9]*)[, .a-zA-Z_0-9=]*[)]" , "\\1" , all.labels) 
+    
+    # Remove interaction terms since the data can't be found, ex. male_gender:prosthesis
+    terms_with_interaction <- grep("[_.a-zA-Z0-9]+:[_.a-zA-Z0-9]+", all.labels)
+    if(length(terms_with_interaction)>0){
+      all.labels <- all.labels[-terms_with_interaction]
+    }
+    
+    return(all.labels)    
+  }
   
+  ## extract data from model;
+  # only the covariates really used in the model
+  # only complete covariate records (only used in the model anyway)
+  # 'as.data.frame()' and 'names()' have to be explicitly specified in case of a univariate model
+  getDataFromModel <- function(m){
+    data <- eval(m$call$data)
+    labels <- getCleanLabels(m)
+    data <- as.data.frame(na.exclude(data[ , labels]))
+    names(data) <- labels
+    return(data)
+  }
+  
+  ### _______________ the smooth term prediction ____________
+  ## calculate the HR for all the covariate values found in the dataset
+  getFitAndConfidenceInterval <- function(model){
+    # Get new data to use as basis for the prediction
+    new_data <- getDataFromModel(model)
+    # Set all other but the variable of interest to the
+    # mode or the median
+    for (variable in colnames(new_data)){
+      if (variable != term.label){
+        if (is.numeric(new_data[,variable])){
+          new_data[, variable] <- median(new_data[, variable])
+        }else{
+          new_data[, variable] <- names(which.max(table(new_data[, variable])))
+		  new_data[, variable] <- factor(new_data[, variable])
+        }
+      }
+    }
+    new_data <- new_data[!duplicated(new_data[, term.label]), ]
+    if (length(xlim) == 2){
+      if (NCOL(new_data) == 1)
+        new_data <- as.data.frame(
+          matrix(
+            new_data[new_data >= min(xlim) & 
+                new_data <= max(xlim)], 
+            ncol=1, 
+            dimnames=list(NULL, c(term.label))))
+      else
+        new_data <- new_data[new_data[, term.label] >= min(xlim) &
+            new_data[, term.label] <= max(xlim), ]
+    }
+    if(length(grep("cph", class(model))) > 0){
+      # If this is a cph model then don't exclude the na values
+      term <- predict (model, newdata=new_data, type="terms" , se.fit = TRUE , expand.na=FALSE, na.action=na.pass)
+      
+      # The cph model fails to pick the term of interest
+      if (NCOL(term$fit) > 1){
+        col_2_pick = which(colnames(term$fit) == term.label)
+        term$fit <- term$fit[,col_2_pick]
+        term$se.fit <- term$se.fit[,col_2_pick]
+      } 
+    }else{
+      term <- predict (model, newdata=new_data, type="terms" , se.fit = TRUE , terms = term)
+    }
+    
+    # attach the smooth fit for the HR ('fit') and the CI's to the dataset
+    # The as.double is a fix since the data.frame otherwise changes name if pspline in coxph
+    df <- data.frame(xvalues= new_data[,term.label],
+      fit = as.double(term$fit), 
+      ucl = as.double(term$fit + 1.96 * term$se.fit),
+      lcl = as.double(term$fit - 1.96 * term$se.fit))
+    
+    # Change to exponential form
+    if (ylog == FALSE){
+      df$fit <- exp(df$fit)
+      df$ucl <- exp(df$ucl)
+      df$lcl <- exp(df$lcl)
+    }
+    
+    # The line doesn't get any better if the value is a duplicate 
+    # but the PDF gets very large if the dataset is large. By removing
+    # duplicates this is avoided
+    dups <- duplicated(df$xvalues)
+    df <- df[dups == FALSE, ]
+    
+    return(df)    
+  }
+
   # If the user wants to compare different models the same graph
   # the first dataset is then choosen as the default dataset
   # for getting the rug data.  
@@ -140,86 +235,21 @@ plotHR <- function (models,
     ylim <- log(ylim)
   }
   
-  getCleanLabels <- function(){
-    ## extract the names of all model covariates
-    all.labels <- attr(models[[1]]$terms , "term.labels")
-    
-    # remove 'strata()' / 'factor()' / 'pspline()' / 'rcs()' / 'as.integer()'
-    all.labels <- sub ( "[a-zA-Z\\._]+[0-9a-zA-Z\\._][(]([a-zA-Z._0-9]*)[, .a-zA-Z_0-9=]*[)]" , "\\1" , all.labels) 
-    
-    return(all.labels)    
-  }
-  all.labels <- getCleanLabels()
+  # Get the term number and it's label
+  all.labels <- getCleanLabels(models[[1]])
   
   # Allow the term searched for be a string
-  if (is.character(terms)){
-    terms <- grep(terms, all.labels)
-    if(length(terms) == 0){
-      stop(paste("Could not find term:", terms))
+  if (is.character(term)){
+    term <- grep(term, all.labels)
+    if(length(term) == 0){
+      stop(paste("Could not find term:", term))
     }
   }
   
   # pick the name of the main term which is goint to be plotted
-  term.label <- all.labels[terms]
+  term.label <- all.labels[term]
   if (is.na(term.label)){
-    stop(paste("Term", terms, "not found"))
-  }
-  
-  # Remove interaction terms since the data can't be found, ex. male_gender:prosthesis
-  terms_with_interaction <- grep("[_.a-zA-Z0-9]+:[_.a-zA-Z0-9]+", all.labels)
-  if(length(terms_with_interaction)>0){
-    all.labels <- all.labels[-terms_with_interaction]
-  }
-  
-  ## extract data from model;
-  # only the covariates really used in the model
-  # only complete covariate records (only used in the model anyway)
-  # 'as.data.frame()' and 'names()' have to be explicitly specified in case of a univariate model
-  getDataFromModel <- function(m){
-    data <- eval(m$call$data)
-    data <- as.data.frame(na.exclude(data[ , all.labels]))
-    names(data) <- all.labels
-    return(data)
-  }
-  
-  ### _______________ the smooth term prediction ____________
-  ## calculate the HR for all the covariate values found in the dataset
-  getFitAndConfidenceInterval <- function(model){
-    if(length(grep("cph", class(model))) > 0){
-      # If this is a cph model then don't exclude the na values
-      term <- predict (model , type="terms" , se.fit = TRUE , expand.na=FALSE, na.action=na.pass)
-      
-      # The cph model fails to pick the terms of interest
-      if (NCOL(term$fit) > 1){
-        col_2_pick = which(colnames(term$fit) == term.label)
-        term$fit <- term$fit[,col_2_pick]
-        term$se.fit <- term$se.fit[,col_2_pick]
-      } 
-    }else{
-      term <- predict (model , type="terms" , se.fit = TRUE , terms = terms)
-    }
-    
-    # attach the smooth fit for the HR ('fit') and the CI's to the dataset
-    # The as.double is a fix since the data.frame otherwise changes name if pspline in coxph
-    df <- data.frame(xvalues= getDataFromModel(model)[,term.label],
-      fit = as.double(term$fit), 
-      ucl = as.double(term$fit + 1.96 * term$se.fit),
-      lcl = as.double(term$fit - 1.96 * term$se.fit))
-    
-    # Change to exponential form
-    if (ylog == FALSE){
-      df$fit <- exp(df$fit)
-      df$ucl <- exp(df$ucl)
-      df$lcl <- exp(df$lcl)
-    }
-    
-    # The line doesn't get any better if the value is a duplicate 
-    # but the PDF gets very large if the dataset is large. By removing
-    # duplicates this is avoided
-    dups <- duplicated(df$xvalues)
-    df <- df[dups == FALSE, ]
-    
-    return(df)    
+    stop(paste("Term", term, "not found"))
   }
   
   if (length(ylim) > 0){
@@ -240,14 +270,13 @@ plotHR <- function (models,
     line_data <- getFitAndConfidenceInterval(m)
     multi_data <- append(multi_data, list(line_data))
     plot_boundaries.y <- getYBoundaries(plot_boundaries.y, line_data$fit)
+	if (rug  == "ticks"){
+		plot_boundaries.y[1] <- min(plot_boundaries.y) - (max(plot_boundaries.y)-min(plot_boundaries.y))*.1
+	}
     if (NROW(line_data) > length(xvalues)){
       xvalues <- line_data$xvalues
     }
   }
-  
-  
-  ### _______________ this is the main extraction __________
-  
   
   
   ### _______________ what now follows is the graphical manipulation of the plots ______
@@ -361,12 +390,12 @@ plotHR <- function (models,
     
     
     if (ylog == TRUE){
-      y.ticks <- ifelse(exp(y.ticks) >= 1, 
+      y.ticks_labels <- ifelse(exp(y.ticks) >= 1, 
         sprintf("%0.1f", exp(y.ticks)),
         sprintf("%0.2f", exp(y.ticks)))
       # Get familiar y-axis instead of the log
-      axis(side = y_axis_side, at = log(as.double(y.ticks)), 
-           labels = y.ticks)
+      axis(side = y_axis_side, at = y.ticks, 
+           labels = y.ticks_labels)
     }else{
       axis(side = y_axis_side , at = y.ticks)
     }
