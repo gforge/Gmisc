@@ -4,7 +4,7 @@
 the number and the percentage}
 \usage{
   describe_factors(x, html = FALSE, digits = 1,
-    number_first = TRUE)
+    number_first = TRUE, show_missing = FALSE)
 }
 \arguments{
   \item{x}{The variable that you want the statistics for}
@@ -18,6 +18,9 @@ the number and the percentage}
   \item{number_first}{If the number should be given or if
   the percentage should be presented first. The second is
   encapsulated in parentheses ().}
+
+  \item{show_missing}{This indicates if missing should be
+  added as a separate row below all other.}
 }
 \value{
   A string formatted for printing either latex by HTML
@@ -27,7 +30,8 @@ the number and the percentage}
   contains the number and the percentage
 }
 \examples{
-describe_prop(sample(50, x=c("A","B", "C"), replace=TRUE))
+describe_factors(sample(50, x=c("A","B", "C"), replace=TRUE))
+describe_factors(sample(50, x=c("A","B", "C", NA), replace=TRUE), show_missing=TRUE)
 }
 \author{
   max

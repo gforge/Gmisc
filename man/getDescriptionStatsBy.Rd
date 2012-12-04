@@ -7,7 +7,12 @@ or a factored variable. The format is inspired by NEJM, Lancet &
 BMJ.}
 \usage{
   getDescriptionStatsBy(x, by, vars = FALSE, digits = 1,
-    html = FALSE, NEJMstyle = FALSE, numbers_first = TRUE)
+    html = FALSE, NEJMstyle = FALSE, numbers_first = TRUE,
+    statistics = FALSE, min_pval = 10^-4,
+    show_missing = FALSE,
+    continuous_function = describe_mean,
+    prop_function = describe_prop,
+    factor_function = describe_factors)
 }
 \arguments{
   \item{x}{The variable that you want the statistics for}
@@ -26,6 +31,28 @@ BMJ.}
 
   \item{NEJMstyle}{Adds - no (\%) at the end to
   proportions}
+
+  \item{numbers_first}{If the number should be given or if
+  the percentage should be presented first. The second is
+  encapsulated in parentheses ().}
+
+  \item{show_missing}{Show the missing values. This adds
+  another row if there are any missing values.}
+
+  \item{continuous_function}{The method to describe
+  continuous variables. The default is}
+
+  \item{prop_function}{The method used to describe
+  proportions.}
+
+  \item{factor_function}{The method used to describe
+  factors}
+
+  \item{statistics}{Add statistics, fisher test for
+  proportions and Wilcoxon for continuous variables}
+
+  \item{min_pval}{The minimum p-value before doing a "<
+  0.0001"}
 }
 \value{
   Returns a vector if vars wasn't specified and it's a
@@ -87,8 +114,16 @@ latex(
   n.rgroup = c(NROW(cyl_data),
                NROW(col_data)),
   ctable   = TRUE)
+
+# A little more advanced
+mtcars$mpg[sample(1:NROW(mtcars), size=4)] <- NA
+getDescriptionStatsBy(mtcars$mpg, mtcars$am, statistics=TRUE, show_missing=TRUE)
+
 }
 \author{
   max
+}
+\seealso{
+  describe_mean.
 }
 

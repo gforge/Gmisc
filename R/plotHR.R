@@ -138,11 +138,11 @@ plotHR <- function (models,
   # only complete covariate records (only used in the model anyway)
   # 'as.data.frame()' and 'names()' have to be explicitly specified in case of a univariate model
   getDataFromModel <- function(m){
-    data <- eval(m$call$data)
+    org_ds <- eval(m$call$data)
     labels <- getCleanLabels(m)
-    data <- as.data.frame(na.exclude(data[ , labels]))
-    names(data) <- labels
-    return(data)
+    org_ds <- as.data.frame(na.exclude(org_ds[ , labels]))
+    names(org_ds) <- labels
+    return(org_ds)
   }
   
   ### _______________ the smooth term prediction ____________

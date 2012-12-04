@@ -29,10 +29,10 @@
 #' @export
 getCrudeAndAdjustedModelData <- function(fit, digits=2, max=Inf){
   # Just a prettifier for the output an alternative could be:
-  # paste(round(x[,1],1), " (95% CI ", min(round(x[,2:3])), "-", max(round(x[,2:3])), ")", sep="")  
+  # paste(round(x[,1],1), " (95% CI ", min(round(x[,2:3])), "-", max(round(x[,2:3])), ")", sep="") 
   get_coef_and_ci <- function(fit, skip_intercept=FALSE){
-    # Just to make sure that it gives 1.0 and 
-    # not 1 if digits = 1, in cases where a 
+    # Just to make sure that it gives 1.0 and
+    # not 1 if digits = 1, in cases where a
     # adding another decimal that is used
     # since everyone is so hyped about p-val < 0.05
     add_zero_to_var <- function(x){
@@ -62,30 +62,39 @@ getCrudeAndAdjustedModelData <- function(fit, digits=2, max=Inf){
     }
     
     confidence_string <- sprintf("%%0.%df to %%0.%df", digits, digits)
+    char_confidence_string <- "%s to %s"
     if (length(my_coefficients) > 1){
       my_coefficients <- tapply(my_coefficients, 1:length(my_coefficients), FUN = add_zero_to_var)
       
       # Set upper bound for nicer output
-      if (is.infinite(max) == FALSE){
+      if (is.infinite(max) == FALSE && any(ci > max)){
+        ci <- round(ci, digits=digits)
         if (floor(max) == max)
           ci[ci[,2] > max, 2] <- sprintf("> %d", max)
         else
           ci[ci[,2] > max, 2] <- sprintf("> %f", max)
       }
-    
-      ci <- sprintf(confidence_string, ci[,1], ci[,2])
+      
+      if (class(ci[1]) == "character")
+        ci <- sprintf(char_confidence_string, ci[,1], ci[,2])
+      else
+        ci <- sprintf(confidence_string, ci[,1], ci[,2])
     }else{
       my_coefficients <- add_zero_to_var(my_coefficients)
       
-      if (is.infinite(max) == FALSE &&  
-          ci[2] > max){
+      if (is.infinite(max) == FALSE && 
+        ci[2] > max){
+        ci <- round(ci, digits=digits)
         if (floor(max) == max)
           ci[2] <- sprintf("> %d", max)
         else
           ci[2] <- sprintf("> %f", max)
       }
       
-      ci <- sprintf(confidence_string, ci[1], ci[2])
+      if (class(ci[1]) == "character")
+        ci <- sprintf(char_confidence_string, ci[1], ci[2])
+      else
+        ci <- sprintf(confidence_string, ci[1], ci[2])
     }
     
     ret_val <- cbind(my_coefficients, ci)
@@ -95,7 +104,7 @@ getCrudeAndAdjustedModelData <- function(fit, digits=2, max=Inf){
   }
   
   # Extract all the term names
-  all.terms <- terms(fit)	
+  all.terms <- terms(fit) 
   var_names <- attr(all.terms, 'term.labels')
   
   # Skip variables consisting of
@@ -124,7 +133,7 @@ getCrudeAndAdjustedModelData <- function(fit, digits=2, max=Inf){
         skip_variables <- union(skip_variables, grep(name, var_names))
       }
     }
-
+    
   }
   
   skip_variables <- union(skip_variables, grep("^strat[a]{0,1}\\(", var_names))
@@ -157,19 +166,24 @@ getCrudeAndAdjustedModelData <- function(fit, digits=2, max=Inf){
     interaction_variable <- length(grep(":", variable)) > 0
     
     # If it's an interaction variable the
-    # interacting parts have to be included  
+    # interacting parts have to be included 
     if (interaction_variable){
       variable <- paste(paste(unlist(strsplit(variable, ":")), sep="", collapse=" + "), variable, sep=" + ")
     }
     
     # Run the same fit but with only one variable
     fit_only1 <- update(fit, paste(".~", variable))
+    if ("boot.coef" %in% names(fit)){
+      # Redo bootstrap if this was a bootstrapped
+      # rms model by rerunning the bootcov part
+      fit_only1 <- bootcov(fit_only1, B=fit$B, coef.reps="boot.Coef" %in% names(fit))
+    }
     
-    # Get the coefficients processed with some advanced 
+    # Get the coefficients processed with some advanced
     # round part()
     new_vars <- get_coef_and_ci(fit_only1, skip_intercept = TRUE)
     
-    # If interaction then we should only keep the 
+    # If interaction then we should only keep the
     # interaction part - the other variables are
     # always included by default and need therefore
     # to be removed
@@ -181,9 +195,9 @@ getCrudeAndAdjustedModelData <- function(fit, digits=2, max=Inf){
     unadjusted <- rbind(unadjusted, new_vars)
   }
   
-  # If regression contains Intercept 
+  # If regression contains Intercept
   # this is meaningless for the comparison
-  # of adjusted and unadjusted values 
+  # of adjusted and unadjusted values
   if (length(grep("Intercept", rownames(adjusted))) > 0)
   {
     unadjusted <- rbind(c("-", "-"), unadjusted)
@@ -196,6 +210,6 @@ getCrudeAndAdjustedModelData <- function(fit, digits=2, max=Inf){
   }else{
     both <- cbind(unadjusted, adjusted)
   }
-  colnames(both) <- c("Crude", "95% CI", "Adjusted", "95% CI") 
+  colnames(both) <- c("Crude", "95% CI", "Adjusted", "95% CI")
   return(both)
 }

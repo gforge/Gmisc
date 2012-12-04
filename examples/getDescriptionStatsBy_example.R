@@ -43,3 +43,8 @@ latex(
   n.rgroup = c(NROW(cyl_data),
                NROW(col_data)),
   ctable   = TRUE)
+
+# A little more advanced
+mtcars$mpg[sample(1:NROW(mtcars), size=4)] <- NA
+getDescriptionStatsBy(mtcars$mpg, mtcars$am, statistics=TRUE, show_missing=TRUE)
+

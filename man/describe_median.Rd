@@ -1,13 +1,15 @@
-\name{describe_mean}
-\alias{describe_mean}
-\title{A function that returns a description mean that contains
-the standard deviation}
+\name{describe_median}
+\alias{describe_median}
+\title{A function that returns a description median that contains
+the interquartile range or the full range}
 \usage{
-  describe_mean(x, html = FALSE, digits = 1,
+  describe_median(x, iqr = TRUE, html = FALSE, digits = 1,
     number_first = TRUE, show_missing = FALSE)
 }
 \arguments{
   \item{x}{The variable that you want the statistics for}
+
+  \item{iqr}{If interquartile range should be used}
 
   \item{digits}{The number of decimals used}
 
@@ -26,12 +28,12 @@ the standard deviation}
   A string formatted for printing either latex by HTML
 }
 \description{
-  A function that returns a description mean that contains
-  the standard deviation
+  A function that returns a description median that
+  contains the interquartile range or the full range
 }
 \examples{
-describe_mean(1:10)
-describe_mean(c(1:10, NA), show_missing=TRUE)
+describe_median(1:10)
+describe_median(c(1:10, NA), show_missing=TRUE)
 }
 \author{
   max

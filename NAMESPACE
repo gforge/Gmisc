@@ -1,5 +1,7 @@
+export(bootcov_alt)
 export(describe_factors)
 export(describe_mean)
+export(describe_median)
 export(describe_prop)
 export(forestplot2)
 export(forestplotCombineRegrObj)

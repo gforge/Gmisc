@@ -1,8 +1,12 @@
 \name{htmlTable}
 \alias{htmlTable}
-\title{This is a simple funciton for outputting a more advanced
+\title{This is a simple function for outputting a more advanced
 table than xtable allows. It's aim is to provide the Hmisc
-latex() colgroup and rowgroup funcitons.}
+latex() colgroup and rowgroup functions in HTML. The
+code outputted is perhaps a little raw compared to fully
+CSS formatted HTML. The reason for this is that I've chosen
+maximum compatibility with OpenOffice that lacks any more
+sofisticated understanding of HTML & CSS.}
 \usage{
   htmlTable(x, title = first.word(deparse(substitute(x))),
     headings = colnames(x),
@@ -114,9 +118,13 @@ latex() colgroup and rowgroup funcitons.}
   set
 }
 \description{
-  This is a simple funciton for outputting a more advanced
+  This is a simple function for outputting a more advanced
   table than xtable allows. It's aim is to provide the
-  Hmisc latex() colgroup and rowgroup funcitons.
+  Hmisc latex() colgroup and rowgroup functions in HTML.
+  The code outputted is perhaps a little raw compared to
+  fully CSS formatted HTML. The reason for this is that
+  I've chosen maximum compatibility with OpenOffice that
+  lacks any more sofisticated understanding of HTML & CSS.
 }
 \examples{
 mx <- matrix(1:6, ncol=3) 
