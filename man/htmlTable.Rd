@@ -1,15 +1,9 @@
 \name{htmlTable}
 \alias{htmlTable}
-\title{This is a simple function for outputting a more advanced
-table than xtable allows. It's aim is to provide the Hmisc
-latex() colgroup and rowgroup functions in HTML. The
-code outputted is perhaps a little raw compared to fully
-CSS formatted HTML. The reason for this is that I've chosen
-maximum compatibility with OpenOffice that lacks any more
-sofisticated understanding of HTML & CSS.}
+\title{Outputting HTML tables}
 \usage{
   htmlTable(x, title = first.word(deparse(substitute(x))),
-    headings = colnames(x),
+    headings = NA,
     align = paste(rep("c", ncol(x)), collapse = ""),
     halign = paste(rep("c", ncol(x)), collapse = ""),
     cgroup = NULL, n.cgroup = NULL,
@@ -17,14 +11,14 @@ sofisticated understanding of HTML & CSS.}
     rgroup = NULL, n.rgroup = NULL,
     rgroupCSSstyle = "font-weight: 900;",
     rgroupCSSseparator = "border-top: 1px solid grey;",
-    rowlabel = title, ctable = FALSE,
-    rowname = rownames(x), caption = NULL,
-    caption.loc = "top", label = title, output = TRUE, ...)
+    rowlabel = title, ctable = FALSE, rowname = NA,
+    caption = NULL, caption.loc = "top", label = title,
+    output = TRUE, ...)
 }
 \arguments{
   \item{x}{The matrix/data.frame with the data}
 
-  \item{title}{The title of the table. Used for labelling
+  \item{title}{The title of the table. Used for labeling
   etc.}
 
   \item{headings}{a vector of character strings specifying
@@ -90,8 +84,7 @@ sofisticated understanding of HTML & CSS.}
   x.}
 
   \item{rowname}{Default is rownames of matrix or
-  data.frame.  Specify \code{rowname=NULL} to suppress the
-  use of row names.}
+  data.frame.}
 
   \item{caption}{a text string to use as a caption to print
   at the top of the first page of the table. Default is no
@@ -118,22 +111,64 @@ sofisticated understanding of HTML & CSS.}
   set
 }
 \description{
-  This is a simple function for outputting a more advanced
-  table than xtable allows. It's aim is to provide the
-  Hmisc latex() colgroup and rowgroup functions in HTML.
-  The code outputted is perhaps a little raw compared to
-  fully CSS formatted HTML. The reason for this is that
-  I've chosen maximum compatibility with OpenOffice that
-  lacks any more sofisticated understanding of HTML & CSS.
+  This is a function for outputting a more advanced table
+  than xtable allows. It's aim is to provide the Hmisc
+  latex() colgroup and rowgroup functions in HTML. The code
+  outputted is perhaps a little raw compared to fully CSS
+  formatted HTML. The reason for this is that I've chosen
+  maximum compatibility with OpenOffice that lacks any more
+  sofisticated understanding of HTML & CSS.
 }
 \examples{
+# A simple example
 mx <- matrix(1:6, ncol=3) 
 rownames(mx) <- LETTERS[1:NROW(mx)] 
 colnames(mx) <- sprintf("Col \%s", LETTERS[1:NCOL(mx)])
 htmlTable(mx, n.rgroup=c(2), rgroup=c("Nice!"),
   n.cgroup=c(2,1), cgroup=c("First", "Second"))
+
+# A slightly more advanced example
+data(mtcars)
+
+label(mtcars$mpg) <- "Gas"
+units(mtcars$mpg) <- "Miles/(US) gallon"
+
+label(mtcars$wt) <- "Weight"
+units(mtcars$wt) <- "10^3 kg" # not sure the unit is correct 
+
+mtcars$am <- factor(mtcars$am, levels=0:1, labels=c("Automatic", "Manual"))
+label(mtcars$am) <- "Transmission"
+
+mtcars$gear <- factor(mtcars$gear)
+label(mtcars$gear) <- "Gears"
+
+# Make up some data for making it slightly more interesting
+mtcars$col <- factor(sample(c("red", "black", "silver"), size=NROW(mtcars), replace=TRUE))
+label(mtcars$col) <- "Car color"
+
+mpg_data_mean <- getDescriptionStatsBy(mtcars$mpg, mtcars$am, use_units = TRUE, html=TRUE)
+mpg_data_median <- getDescriptionStatsBy(mtcars$mpg, mtcars$am, use_units = TRUE, html=TRUE, continuous_function=describe_median)
+wt_data <- getDescriptionStatsBy(mtcars$wt, mtcars$am, use_units = TRUE, html=TRUE)
+
+vars <- rbind(mpg_data_mean, mpg_data_median, wt_data)
+rownames(vars) <- c("Mean (SD)", "Median (IQR)", "Mean (SD)")
+htmlTable(
+  vars,
+  caption  = "Continuous & binary variables", 
+  n.rgroup=c(2,1), rgroup=c("Gas", "Weight"),
+  n.cgroup=c(2,1), 
+  cgroup=c(splitLines4Table("results", sprintf("n=\%d", NROW(mtcars)), html=TRUE),
+           ""),
+  colheads = c(sprintf("\%s (SD)", levels(mtcars$am)), "units"),
+  rowlabel = "Variable",
+  ctable   = TRUE)
+
 }
 \author{
   max
+}
+\seealso{
+  \code{\link{latex}}, \code{\link{getDescriptionStatsBy}},
+  \code{\link{splitLines4Table}}
 }
 

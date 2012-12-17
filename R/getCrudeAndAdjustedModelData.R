@@ -162,6 +162,9 @@ getCrudeAndAdjustedModelData <- function(fit, digits=2, max=Inf){
   }else{
     variables_to_check <- var_names
   }
+  if (length(variables_to_check) == 0)
+    stop("You have no variables that can be displayed as adjusted/unadjusted since they all are part of an interaction, spline or strata")
+  
   for(variable in variables_to_check){
     interaction_variable <- length(grep(":", variable)) > 0
     

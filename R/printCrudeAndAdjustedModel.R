@@ -1,3 +1,5 @@
+#' Output crude and adjusted model data
+#' 
 #' Prints table for a fitted object. It prints by default a latex table but can 
 #' also be converted into a HTML table that should be more compatible with common
 #' word processors.

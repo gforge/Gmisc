@@ -1,8 +1,6 @@
 \name{printCrudeAndAdjustedModel}
 \alias{printCrudeAndAdjustedModel}
-\title{Prints table for a fitted object. It prints by default a latex table but can
-also be converted into a HTML table that should be more compatible with common
-word processors.}
+\title{Output crude and adjusted model data}
 \usage{
   printCrudeAndAdjustedModel(x, order, digits = 2,
     add_references = NULL, zero_effect = 1, groups = NULL,
@@ -68,7 +66,7 @@ options(datadist="dd")
 s <- Surv(ds$ftime, ds$fstatus == 1)
 fit <- cph(s ~ x1 + x2 + x3, data=ds)
 
-printCrudeAndAdjustedModel(fit, c("x[12]", "x3"))
+printCrudeAndAdjustedModel(fit, c("x[12]", "x3"), file="")
 }
 \author{
   max

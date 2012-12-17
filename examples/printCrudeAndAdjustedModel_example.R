@@ -14,4 +14,4 @@ options(datadist="dd")
 s <- Surv(ds$ftime, ds$fstatus == 1)
 fit <- cph(s ~ x1 + x2 + x3, data=ds)
 
-printCrudeAndAdjustedModel(fit, c("x[12]", "x3"))
+printCrudeAndAdjustedModel(fit, c("x[12]", "x3"), file="")

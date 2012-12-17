@@ -10,6 +10,9 @@ cov <- data.frame(
   x3 = runif(200))
 
 library(rms)
+ddist <- datadist(cov)
+options(datadist = "ddist")
+
 fit1 <- cph(Surv(ftime, fstatus) ~ x1 + x2, data=cov)
 fit2 <- cph(Surv(ftime, fstatus) ~ x1 + x3, data=cov)
 

@@ -43,7 +43,7 @@
 #' y <- exp(x1 + (x2=="B")*2 + rnorm(n)/4)
 #' dd <- datadist(x1, x2); options(datadist='dd')
 #' fq <- Rq(y ~ pol(x1,2) + x2, x=TRUE, y=TRUE)
-#' bootcov_alt(fq, B=500, pr=T)
+#' bootcov_alt(fq, B=500, pr=TRUE)
 #' 
 #' @author max
 #' @export

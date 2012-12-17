@@ -1,5 +1,9 @@
 #' Compares different scores in different regression objects.
 #' 
+#' Creates a composite from different regression objects into
+#' one forestplot where you can choose the variables of interest
+#' to get an overview and easier comparison.
+#' 
 #' @param regr.obj A list with all the fits that have variables that are to 
 #'   be identified through the regular expression 
 #' @param variablesOfInterest.regexp A regular expression identifying the variables

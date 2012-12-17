@@ -1,9 +1,6 @@
 \name{getTicks}
 \alias{getTicks}
-\title{Gets the ticks in a formatted version. This is since I'm not always
-that fond of just pretty(1:10/5). In exponential form the ticks are
-determined from the 2-base, meaning that you get an intuitive feeling
-for when the value is doubled.}
+\title{Ticks for plot axis}
 \usage{
   getTicks(low, high = low, clip = c(-Inf, Inf),
     exp = FALSE, digits = 0)

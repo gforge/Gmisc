@@ -1,7 +1,6 @@
-#' Gets the x-ticks in a formatted version. This is since I'm not always
-#' that fond of just pretty(1:10/5). In exponential form the ticks are
-#' determined from the 2-base, meaning that you get an intuitive feeling
-#' for when the value is doubled.
+#' Get model data
+#' 
+#' A helper function for \code{\link{forestplotCombineRegrObj}}
 #' 
 #' @param regr.obj A list with all the fits that have variables that are to 
 #'   be identified through the regular expression 
@@ -16,8 +15,7 @@
 #' @param ref_labels If add_first_as_ref is TRUE then this vector is used for the model
 #'   fits. 
 #' 
-#' @example examples/getTicks_example.R
-#' @export 
+#' @example examples/forestplotCombineRegrObj_example.R
 #' 
 #' @author max
 getModelData4Forestplot<- function(regr.obj, 

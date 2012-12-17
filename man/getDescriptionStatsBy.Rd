@@ -1,28 +1,24 @@
 \name{getDescriptionStatsBy}
 \alias{getDescriptionStatsBy}
-\title{A function that returns a description statistic that can be used
-for creating a publication "table 1" when you want it by groups.
-The function identifies if the variable is a continuous, binary
-or a factored variable. The format is inspired by NEJM, Lancet &
-BMJ.}
+\title{Creating of description statistics}
 \usage{
-  getDescriptionStatsBy(x, by, vars = FALSE, digits = 1,
-    html = FALSE, NEJMstyle = FALSE, numbers_first = TRUE,
+  getDescriptionStatsBy(x, by, digits = 1, html = FALSE,
+    NEJMstyle = FALSE, numbers_first = TRUE,
     statistics = FALSE, min_pval = 10^-4,
     show_missing = FALSE,
     continuous_function = describe_mean,
     prop_function = describe_prop,
-    factor_function = describe_factors)
+    factor_function = describe_factors,
+    show_all_values = FALSE,
+    horizontal_proportions = FALSE,
+    horizontal_proportions_show_percentages = TRUE,
+    use_units = FALSE)
 }
 \arguments{
   \item{x}{The variable that you want the statistics for}
 
   \item{by}{The variable that you want to split into
   different columns}
-
-  \item{vars}{If this statistic is for a continuous or a
-  binary statistic it's easy to append the current
-  statistic to the previous}
 
   \item{digits}{The number of decimals used}
 
@@ -40,19 +36,47 @@ BMJ.}
   another row if there are any missing values.}
 
   \item{continuous_function}{The method to describe
-  continuous variables. The default is}
+  continuous variables. The default is
+  \code{\link{describe_mean}}.}
 
   \item{prop_function}{The method used to describe
-  proportions.}
+  proportions, see \code{\link{describe_prop}}.}
 
   \item{factor_function}{The method used to describe
-  factors}
+  factors, see \code{\link{describe_factors}}.}
 
   \item{statistics}{Add statistics, fisher test for
   proportions and Wilcoxon for continuous variables}
 
   \item{min_pval}{The minimum p-value before doing a "<
   0.0001"}
+
+  \item{horizontal_proportions}{This is default FALSE and
+  indicates that the proportions are to be interpreted in a
+  vertical manner.  If we want the data to be horizontal,
+  i.e. the total should be shown and then how these differ
+  in the different groups then set this to TRUE.  If you
+  want a total column then set the value to "first" or
+  "last" to indicate in what order this total column should
+  appear, default is first.}
+
+  \item{use_units}{If the Hmisc package's units() function
+  has been employed it may be interesting to have a column
+  at the far right that indicates the unit measurement. If
+  this column is specified then the total column will
+  appear before the units (if specified as last).}
+
+  \item{show_all_values}{This is by default false as for
+  instance if there is no missing and there is only one
+  variable then it is most sane to only show one option as
+  the other one will just be a complement to the first. For
+  instance sex - if you know gender then automatically you
+  know the distribution of the other sex as it's 100 \% -
+  other \%.}
+
+  \item{horizontal_proportions_show_percentages}{This is by
+  default true but if requested the percentages are
+  surpressed as this sometimes may be confusing.}
 }
 \value{
   Returns a vector if vars wasn't specified and it's a
@@ -81,37 +105,37 @@ mtcars$am <- factor(mtcars$am, levels=0:1, labels=c("Automatic", "Manual"))
 label(mtcars$am) <- "Transmission"
 
 mtcars$gear <- factor(mtcars$gear)
-label(mtcars$cyl) <- "Gears"
+label(mtcars$gear) <- "Gears"
 
 # Make up some data for making it slightly more interesting
 mtcars$col <- factor(sample(c("red", "black", "silver"), size=NROW(mtcars), replace=TRUE))
 label(mtcars$col) <- "Car color"
 
-vars <- getDescriptionStatsBy(mtcars$mpg, mtcars$am)
-vars <- getDescriptionStatsBy(mtcars$wt, mtcars$am, vars = vars)
-print(vars)
+mpg_data <- getDescriptionStatsBy(mtcars$mpg, mtcars$am, use_units = TRUE)
+wt_data <- getDescriptionStatsBy(mtcars$wt, mtcars$am, use_units = TRUE)
+print(rbind(mpg_data, wt_data))
 
 latex(
-  object   = vars,
+  object   = rbind(mpg_data, wt_data),
   file     = "", # skip this if you want the latex to render
   caption  = "Continuous \\\\& binary variables", 
   colheads = c(sprintf("\%s (SD)", levels(mtcars$am)), "units"),
   rowlabel = "Variable",
   ctable   = TRUE)
 
-cyl_data <- getDescriptionStatsBy(mtcars$gear, mtcars$am)
+gear_data <- getDescriptionStatsBy(mtcars$gear, mtcars$am)
 col_data <- getDescriptionStatsBy(mtcars$col, mtcars$am)
 
 # I use these together with latex to get a nice table
 latex(
-  object   = rbind(cyl_data, col_data),
+  object   = rbind(gear_data, col_data),
   file     = "", # skip this if you want the latex to render
   caption  = "Factored variables",
   colheads = sprintf("\%s (\%\%)", levels(mtcars$am)),
   rowlabel = "Variable",
-  rgroup   = c(label(cyl_data),
+  rgroup   = c(label(gear_data),
                label(col_data)),
-  n.rgroup = c(NROW(cyl_data),
+  n.rgroup = c(NROW(gear_data),
                NROW(col_data)),
   ctable   = TRUE)
 
@@ -119,11 +143,25 @@ latex(
 mtcars$mpg[sample(1:NROW(mtcars), size=4)] <- NA
 getDescriptionStatsBy(mtcars$mpg, mtcars$am, statistics=TRUE, show_missing=TRUE)
 
+# Do the horizontal version
+getDescriptionStatsBy(mtcars$col, mtcars$am, statistics=TRUE, show_missing=TRUE, horizontal_proportions = TRUE)
+
+
+mtcars$wt_with_missing <- mtcars$wt
+mtcars$wt_with_missing[sample(1:NROW(mtcars), size=8)] <- NA
+getDescriptionStatsBy(mtcars$wt_with_missing, mtcars$am, statistics=TRUE, show_missing=TRUE, horizontal_proportions = TRUE, horizontal_proportions_show_percentages = FALSE)
+
+
+mtcars$col_with_missing <- mtcars$col
+mtcars$col_with_missing[sample(1:NROW(mtcars), size=5)] <- NA
+getDescriptionStatsBy(mtcars$col_with_missing, mtcars$am, statistics=TRUE, show_missing=TRUE, horizontal_proportions = TRUE, horizontal_proportions_show_percentages = FALSE)
+
 }
 \author{
   max
 }
 \seealso{
-  describe_mean.
+  \code{\link{describe_mean}}, \code{\link{describe_prop}},
+  \code{\link{describe_factors}}, \code{\link{htmlTable}}
 }
 

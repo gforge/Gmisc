@@ -1,9 +1,6 @@
 \name{forestplotRegrObj}
 \alias{forestplotRegrObj}
-\title{Plot survival objects with different lines for each survival object.
-This gives a very nice overview of how different outcomes compare
-but can also be used for comparing different methods as long as they
-have the same variable names.}
+\title{Foresplot for multiple models}
 \usage{
   forestplotRegrObj(regr.obj, title = NULL,
     clip = c(-Inf, Inf), col.zero = "lightgray",
@@ -107,6 +104,9 @@ cov <- data.frame(
 		x3 = runif(200))
 
 library(rms)
+dd <- datadist(cov)
+options(datadist="dd")
+
 fit1 <- cph(Surv(ftime, fstatus == 1) ~ x1 + x2 + x3, data=cov)
 fit2 <- cph(Surv(ftime, fstatus == 2) ~ x1 + x2 + x3, data=cov)
 

@@ -158,3 +158,25 @@ prGetFpDataFromFit <- function(model_fit,
   
   return(sd)
 }
+
+#' A functuon for converting a show_missing variable
+#' 
+#' The variable is suppose to be directly compatible with
+#' table(..., useNA=show_missing). It throughs an error
+#' if not compatible
+#' 
+#' @param show_missing Boolean or "no", "ifany", "always" 
+#' @return string 
+#' 
+#' @author max
+prConvertShowMissing <- function(show_missing){
+  if (show_missing == FALSE || show_missing == "no")
+    show_missing <- "no"
+  else if (show_missing == TRUE)
+    show_missing <- "ifany"
+  
+  if (show_missing %nin% c("no", "ifany", "always"))
+    stop(sprintf("You have set an invalid option for show_missing variable, '%s' ,it should be boolean or one of the options: no, ifany or always.", show_missing))
+  
+  return(show_missing)
+}

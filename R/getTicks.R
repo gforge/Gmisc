@@ -1,3 +1,5 @@
+#' Ticks for plot axis
+#' 
 #' Gets the ticks in a formatted version. This is since I'm not always
 #' that fond of just pretty(1:10/5). In exponential form the ticks are
 #' determined from the 2-base, meaning that you get an intuitive feeling
@@ -11,6 +13,7 @@
 #' @return Returns a vector with the ticks apropriate
 #' 
 #' @example examples/getTicks_example.R
+#' 
 #' @export 
 #' 
 #' @author max

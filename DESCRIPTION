@@ -1,8 +1,8 @@
 Package: Gmisc
-Version: 0.4.2
+Version: 0.4.6
 Date: 2012-11-17
 Title: A collection of different functions that I've found useful when plotting
-    complex data, creating tables etc. The
+    complex data, creating tables etc.
 Authors: c(person("Max Gordon",
     "Developer",
     email = "max@gforge.se"))
@@ -37,6 +37,7 @@ Collate:
     'descriptionStats.R'
     'outputInt.R'
     'bootcov_alt.R'
+    'Gmisc.R'
 Depends:
     grid,
     stringr,

@@ -1,3 +1,5 @@
+#' Creating of description statistics
+#' 
 #' A function that returns a description statistic that can be used
 #' for creating a publication "table 1" when you want it by groups.
 #' The function identifies if the variable is a continuous, binary 
@@ -7,9 +9,6 @@
 #' @param x The variable that you want the statistics for
 #' @param by The variable that you want to split into different 
 #'  columns
-#' @param vars If this statistic is for a continuous or a binary 
-#'  statistic it's easy to append the current statistic to the
-#'  previous
 #' @param digits The number of decimals used 
 #' @param html If HTML compatible output shoudl be used instead
 #'  of default LaTeX
@@ -19,12 +18,29 @@
 #' @param show_missing Show the missing values. This adds another row if 
 #'  there are any missing values.
 #' @param continuous_function The method to describe continuous variables. The
-#'  default is @seealso describe_mean.
-#' @param prop_function The method used to describe proportions. 
-#' @param factor_function The method used to describe factors
+#'  default is \code{\link{describe_mean}}.
+#' @param prop_function The method used to describe proportions, see \code{\link{describe_prop}}.
+#' @param factor_function The method used to describe factors, see \code{\link{describe_factors}}.
 #' @param statistics Add statistics, fisher test for proportions and Wilcoxon
 #'  for continuous variables
 #' @param min_pval The minimum p-value before doing a "< 0.0001"
+#' @param horizontal_proportions This is default FALSE and indicates
+#'  that the proportions are to be interpreted in a vertical manner.
+#'  If we want the data to be horizontal, i.e. the total should be shown
+#'  and then how these differ in the different groups then set this to TRUE.
+#'  If you want a total column then set the value to "first" or "last"
+#'  to indicate in what order this total column should appear, default is first.  
+#' @param use_units If the Hmisc package's units() function has been employed
+#'  it may be interesting to have a column at the far right that indicates the
+#'  unit measurement. If this column is specified then the total column will
+#'  appear before the units (if specified as last). 
+#' @param show_all_values This is by default false as for instance if there is
+#'  no missing and there is only one variable then it is most sane to only show 
+#'  one option as the other one will just be a complement to the first. For instance
+#'  sex - if you know gender then automatically you know the distribution of the 
+#'  other sex as it's 100 \% - other \%. 
+#' @param horizontal_proportions_show_percentages This is by default true but if
+#'  requested the percentages are surpressed as this sometimes may be confusing.
 #' @return Returns a vector if vars wasn't specified and it's a
 #'  continuous or binary statistic. If vars was a matrix then it
 #'  appends the result to the end of that matrix. If the x variable
@@ -32,143 +48,238 @@
 #' 
 #' @example examples/getDescriptionStatsBy_example.R
 #' 
+#' @seealso \code{\link{describe_mean}}, \code{\link{describe_prop}}, \code{\link{describe_factors}}, \code{\link{htmlTable}}
+#' 
 #' @author max
 #' @export
 getDescriptionStatsBy <- 
-   function(x, by,
-     vars=FALSE, digits=1, 
-     html = FALSE, NEJMstyle = FALSE, 
-     numbers_first = TRUE, 
-     statistics=FALSE, min_pval = 10^-4,
-     show_missing = FALSE,
-     continuous_function = describe_mean,
-     prop_function = describe_prop,
-     factor_function = describe_factors){
-     
-     getFormattedPval <- function(p_val){
-       if (p_val < min_pval)
-         return(sprintf("< %s", format(min_pval, scientific=FALSE)))
-       return(format(p_val, digits=2, scientific=FALSE))
-     }
-     
-     addEmptyValuesToMakeListCompatibleWithMatrix <- function(t){
-       # The list doesn't have to be equally long
-       # and we need to add empty values to the end
-       # or the matrix won't work. This happens when
-       # we calculate missing and one side lacks missing
-       elements <- length(unlist(t))
-       rows <- ceiling(elements/length(t))
-       columns <- length(t)
-       if (rows * columns != elements){
-         max_length <- 0
-         for (i in 1:length(t)){
-           if (max_length < length(t[[i]]))
-             max_length <- length(t[[i]])
-         }
-         
-         for (i in 1:length(t)){
-           if (max_length > length(t[[i]]))
-             t[[i]] <- c(t[[i]], rep("", times=max_length - length(t[[i]])))
-         }
-       }
-       return(t)
-     }
-     
-     if (is.numeric(x) ||
-       (is.factor(x) && length(levels(x)) == 2)){
-       if (is.factor(x)){
-         t <- by(x, by, FUN=prop_function, html=html, digits=digits,
-           number_first=numbers_first, show_missing = show_missing)
-         name <- sprintf("%s %s", capitalize(levels(x)[1]), tolower(label(x)))
-         if (NEJMstyle) {
-           if (html) {
-             name <- sprintf("%s - no (%%)", name)
-           } else {
-             name <- sprintf("%s - no (\\%%)", name)
-           }
-         }
-         if (statistics){
-           if (length(unique(x))*length(unique(by)) < 3*3)
-             pval <- fisher.test(x, by, workspace=20)$p.value
-           else
-             pval <- fisher.test(x, by, workspace=20, simulate.p.value=TRUE)$p.value
-           
-           pval <- getFormattedPval(pval)
-           
-         }
-       }else{
-         t <- by(x, by, FUN=continuous_function, html=html, digits=digits,
-           number_first=numbers_first, show_missing = show_missing)
-         name <- label(x)
-         if (statistics)
-           pval <- getFormattedPval(wilcox.test(x ~ by)$p.value)
-       }
-       t <- addEmptyValuesToMakeListCompatibleWithMatrix(t)
-       results <- matrix(unlist(t), ncol=length(t))
-       if (class(t[[1]]) == "matrix")
-         rownames(results) <- rownames(t[[1]])
-       else
-         rownames(results) <- names(t[[1]])
-       
-       if (is.matrix(vars)){
-         rn <- rownames(vars)
-         rn <- c(rn, rownames(name))
-         if (NCOL(vars) == length(unique(by)) + 1 + statistics*1){
-           if (units(x) != "") unitcol <- rep(sprintf("%s",units(x)), times=NROW(results))
-           else unitcol <- rep("-", times=NROW(results))
-           unitcol[rownames(results) == "Missing"] <- ""
-           results <- cbind(results, unitcol)
-         }
-         
-         if (statistics){
-           results <- cbind(results,
-             c(sprintf("%s", pval), rep("", times=NROW(results)-1)))
-         }
-         vars <- rbind(vars, results)
-         rownames(vars) <- rn
-       }else{
-         if (units(x) != ""){
-           unitcol <- rep(sprintf("%s",units(x)), times=NROW(results))
-           unitcol[rownames(results) == "Missing"] <- ""
-           results <- cbind(results, unitcol)
-         }
-         
-         if (statistics){
-           results <- cbind(results,
-             c(sprintf("%s", pval), rep("", times=NROW(results)-1)))
-         }
-         vars <- results
-       }
-     }else{
-       if (is.matrix(vars))
-         warning("The function cannot add a factor variable to a previous matrix")
-       
-       t <- by(x, by, FUN=factor_function, html=html, digits=digits,
-         number_first=numbers_first, show_missing = show_missing)
-       
-       t <- addEmptyValuesToMakeListCompatibleWithMatrix(t)
-       vars <- matrix(unlist(t), ncol=length(unique(by)))
-       label(vars) <- label(x)
-       if (class(t[[1]]) == "matrix")
-         rownames(vars) <- rownames(t[[1]])
-       else
-         rownames(vars) <- names(t[[1]])
-       if (statistics){
-         # This is a quick fix in case of large dataset
-         workspace = 10^5
-         if (length(x)*length(levels(x)) > 10^4)
-           workspace = 10^7
-         # Large statistics tend to be very heavy and therefore
-         # i need to catch errors in fisher and redo by simulation
-         pval <- tryCatch({fisher.test(x, by, workspace=workspace)$p.value},
-           error = function(err){
-             warning("Simulating p-value for fisher due to high computational demands on the current varible")
-             fisher.test(x, by, simulate.p.value=TRUE, B=10^5)$p.value
-           })
-         pval <- getFormattedPval(pval)
-         vars <- cbind(vars, c(pval, rep("", nrow(vars)-1)))
-       }
-     }
-     
-     return (vars)
-   }
+  function(x, by, digits=1, 
+    html = FALSE, NEJMstyle = FALSE, 
+    numbers_first = TRUE, 
+    statistics=FALSE, min_pval = 10^-4,
+    show_missing = FALSE,
+    continuous_function = describe_mean,
+    prop_function = describe_prop,
+    factor_function = describe_factors,
+    show_all_values = FALSE,
+    horizontal_proportions = FALSE,
+    horizontal_proportions_show_percentages = TRUE,
+    use_units = FALSE){
+  
+  show_missing <- prConvertShowMissing(show_missing)
+  
+  # If all values are to be shown then simply use
+  # the factors function
+  if (show_all_values)
+    prop_function <- describe_factors
+  
+  getFormattedPval <- function(p_val){
+    if (p_val < min_pval)
+      return(sprintf(ifelse(html, "&lt; %s", "$< %s$"),
+          format(min_pval, scientific=FALSE)))
+    return(format(p_val, digits=2, scientific=FALSE))
+  }
+  
+  addEmptyValuesToMakeListCompatibleWithMatrix <- function(t){
+    # TODO: This function does not respect the order in
+    # the factored variable. This could potentially be
+    # a problem although probably more theoretical
+    all_column_names <- c()
+    for (n in names(t)){
+      all_column_names <- union(all_column_names, names(t[[n]]))
+    }
+    
+    # No rownames exist and it's basically empty
+    if (is.null(all_column_names))
+      return(t)
+    
+    # The missing NA element should always be last
+    if (any(is.na(all_column_names)))
+      all_column_names <- append(all_column_names[is.na(all_column_names) == FALSE], NA)
+    
+    ret <- list()
+    for (n in names(t)){
+      # Create an empty array
+      ret[[n]] <- rep(0, times=length(all_column_names))
+      names(ret[[n]]) <- all_column_names
+      # Loop and add all the values
+      for (nn in all_column_names){
+        if (nn %in% names(t[[n]])){
+          if (is.na(nn)){
+            ret[[n]][is.na(names(ret[[n]]))] <- t[[n]][is.na(names(t[[n]]))] 
+          }else{
+            ret[[n]][n] <- t[[n]][n]
+          }
+        }
+      }
+    }
+
+    return(ret)
+  }
+  
+  
+  # If there is a label for the variable
+  # that one should be used otherwise go
+  # with the name of the variable
+  if (label(x) == "")
+    name <- deparse(substitute(x))
+  else
+    name <- label(x)
+  
+  if (is.numeric(x)){
+    # If the numeric has horizontal_proportions then it's only so in the 
+    # missing category
+    if (horizontal_proportions)
+      t <- by(x, by, FUN=continuous_function, html=html, digits=digits,
+        number_first=numbers_first, show_missing = show_missing, 
+        horizontal_proportions = table(is.na(x), useNA=show_missing))
+    else
+      t <- by(x, by, FUN=continuous_function, html=html, digits=digits,
+        number_first=numbers_first, show_missing = show_missing)
+    
+    
+    if (length(t[[1]]) != 1){
+      if (deparse(substitute(continuous_function)) == "describe_mean")
+        names(t[[1]][1]) = "Mean"
+      else if (deparse(substitute(continuous_function)) == "describe_median")
+        names(t[[1]][1]) = "Median"
+      else
+        names(t[[1]][1]) = deparse(substitute(continuous_function))
+    }
+    
+    if (statistics)
+      pval <- getFormattedPval(wilcox.test(x ~ by)$p.value)
+    
+  }else if(is.factor(x) && 
+    length(levels(x)) == 2 && 
+    horizontal_proportions == FALSE){
+    
+    t <- by(x, by, FUN=prop_function, html=html, digits=digits,
+      number_first=numbers_first, show_missing = show_missing)
+    
+    # Set the rowname to a special format
+    # if there was missing and this is an matrix
+    # then we should avoid using this format
+    name <- sprintf("%s %s", capitalize(levels(x)[1]), tolower(label(x)))
+    if (NEJMstyle) {
+      # LaTeX needs and escape before %
+      # or it marks the rest of the line as
+      # a comment. This is not an issue with
+      # html
+      percent_sign <- ifelse(html, "%", "\\%")
+      
+      if (numbers_first)
+        name <- sprintf("%s - no (%s)", name, percent_sign)
+      else
+        name <- sprintf("%s - %s (no)", name, percent_sign)
+    }
+    
+    # If this is the only row then set that row to the current name
+    if (length(t[[1]]) == 1){
+      names(t[[1]][1]) = name
+    }
+    
+    if (statistics){
+      if (length(unique(x))*length(unique(by)) < 3*3)
+        pval <- fisher.test(x, by, workspace=20)$p.value
+      else
+        pval <- fisher.test(x, by, workspace=20, simulate.p.value=TRUE)$p.value
+      
+      pval <- getFormattedPval(pval)
+    }
+
+  }else{
+    if (horizontal_proportions)
+      t <- by(x, by, FUN=factor_function, html=html, digits=digits,
+        number_first=numbers_first, show_missing = show_missing, 
+        horizontal_proportions = table(x, useNA=show_missing))
+    else
+      t <- by(x, by, FUN=factor_function, html=html, digits=digits,
+        number_first=numbers_first, show_missing = show_missing)
+    
+    if (statistics){
+      # This is a quick fix in case of large dataset
+      workspace = 10^5
+      if (length(x)*length(levels(x)) > 10^4)
+        workspace = 10^7
+      # Large statistics tend to be very heavy and therefore
+      # i need to catch errors in fisher and redo by simulation
+      pval <- tryCatch({fisher.test(x, by, workspace=workspace)$p.value},
+        error = function(err){
+          warning("Simulating p-value for fisher due to high computational demands on the current varible")
+          fisher.test(x, by, simulate.p.value=TRUE, B=10^5)$p.value
+        })
+    }
+  }
+  
+  # Convert the list into a matrix compatible format
+  t <- addEmptyValuesToMakeListCompatibleWithMatrix(t)
+  # Convert into a matrix
+  results <- matrix(unlist(t), ncol=length(t))
+  
+  cn <- dimnames(t)[[1]]
+  
+  # Add the proper rownames
+  if (class(t[[1]]) == "matrix")
+    rownames(results) <- rownames(t[[1]])
+  else
+    rownames(results) <- names(t[[1]])
+  
+  # This is an effect from the numeric variable not having
+  # a naming function
+  if (is.null(rownames(results)) && nrow(results) == 1)
+    rownames(results) <- name
+  
+  if (horizontal_proportions){
+    if (is.factor(x)){
+      if (horizontal_proportions_show_percentages)
+        total_table <- factor_function(x, html=html, digits=digits,
+          number_first=numbers_first, show_missing = show_missing)
+      else{
+        total_table <- table(x, useNA=show_missing)
+        names(total_table)[is.na(names(total_table))] <- "Missing"
+      }
+      
+    }else{
+      total_table <- continuous_function(x, html=html, digits=digits, number_first=numbers_first, show_missing = show_missing)
+      # If a continuous variable has two rows then it's assumed that the second is the missing
+      if (length(total_table) == 2 &&
+        horizontal_proportions_show_percentages == FALSE)
+        total_table[2] <- sum(is.na(x))
+    }
+    
+    if (horizontal_proportions != "last"){
+      results <- cbind(total_table, results)
+      cn <- c("Total", cn)
+    }else{
+      results <- cbind(results, total_table)
+      cn <- c(cn, "Total")
+    }
+  }
+  
+  if (use_units){
+    if (units(x) != ""){
+      unitcol <- rep(sprintf("%s",units(x)), times=NROW(results))
+      unitcol[rownames(results) == "Missing"] <- ""
+    }else{
+      unitcol <- rep("", times=NROW(results))
+    }
+    results <- cbind(results, unitcol)
+    cn <- c(cn, "units")
+  }
+  
+  if (statistics){
+    pval <- getFormattedPval(pval)
+    results <- cbind(results, c(pval, rep("", nrow(results)-1)))
+    cn <- c(cn, "p-value")
+  }
+  
+  colnames(results) <- cn
+  
+  # Even if one row has the same name this doesn't matter
+  # at this stage as it is information that may or may 
+  # not be used later on
+  label(results) <- name 
+  
+  return (results)
+}

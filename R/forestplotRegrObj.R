@@ -1,3 +1,5 @@
+#' Foresplot for multiple models
+#' 
 #' Plot survival objects with different lines for each survival object.
 #' This gives a very nice overview of how different outcomes compare
 #' but can also be used for comparing different methods as long as they

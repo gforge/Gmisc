@@ -74,8 +74,9 @@
   void
 }
 \description{
-  Compares different scores in different regression
-  objects.
+  Creates a composite from different regression objects
+  into one forestplot where you can choose the variables of
+  interest to get an overview and easier comparison.
 }
 \examples{
 org.par <- par("ask" = TRUE)
@@ -90,6 +91,9 @@ cov <- data.frame(
   x3 = runif(200))
 
 library(rms)
+ddist <- datadist(cov)
+options(datadist = "ddist")
+
 fit1 <- cph(Surv(ftime, fstatus) ~ x1 + x2, data=cov)
 fit2 <- cph(Surv(ftime, fstatus) ~ x1 + x3, data=cov)
 

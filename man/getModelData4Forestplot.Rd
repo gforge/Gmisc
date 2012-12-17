@@ -1,9 +1,6 @@
 \name{getModelData4Forestplot}
 \alias{getModelData4Forestplot}
-\title{Gets the x-ticks in a formatted version. This is since I'm not always
-that fond of just pretty(1:10/5). In exponential form the ticks are
-determined from the 2-base, meaning that you get an intuitive feeling
-for when the value is doubled.}
+\title{Get model data}
 \usage{
   getModelData4Forestplot(regr.obj, exp,
     variablesOfInterest.regexp, ref_labels,
@@ -32,39 +29,50 @@ for when the value is doubled.}
   vector is used for the model fits.}
 }
 \description{
-  Gets the x-ticks in a formatted version. This is since
-  I'm not always that fond of just pretty(1:10/5). In
-  exponential form the ticks are determined from the
-  2-base, meaning that you get an intuitive feeling for
-  when the value is doubled.
+  A helper function for
+  \code{\link{forestplotCombineRegrObj}}
 }
 \examples{
-test_data <- data.frame(coef=c(2, 0.5),
-  low=c(1.5, 0.05),
-  high=c(3, 0.75),
-  boxsize=c(0.5, 0.5))
+org.par <- par("ask" = TRUE)
 
-# Exponential form where the exponent base i 2 for easier understanding
-getTicks(low = test_data$low, 
-  high = test_data$high, 
-  clip=c(-Inf, Inf), 
-  exp=TRUE)
+# simulated data to test 
+set.seed(10)
+ftime <- rexp(200)
+fstatus <- sample(0:1,200,replace=TRUE)
+cov <- data.frame(
+  x1 = runif(200),
+  x2 = runif(200),
+  x3 = runif(200))
 
-# Non exponential form with using pretty
-getTicks(low = test_data$low, 
-  high = test_data$high, 
-  clip=c(-Inf, Inf), 
-  exp=FALSE)
+library(rms)
+ddist <- datadist(cov)
+options(datadist = "ddist")
 
+fit1 <- cph(Surv(ftime, fstatus) ~ x1 + x2, data=cov)
+fit2 <- cph(Surv(ftime, fstatus) ~ x1 + x3, data=cov)
 
-# A very simple example
-getTicks(1:5*2.33, 
-  exp=FALSE)
+forestplotCombineRegrObj (
+  regr.obj = list(fit1, fit2),
+  variablesOfInterest.regexp = "(x2|x3)",
+  reference.names = c("First model", "Second model"))
 
-# A slightly more advanced exponential version
-getTicks(1:10*.33, 
-  digits=2,
-  exp=TRUE)
+modifyNameFunction <- function(x){
+  if (x == "x1")
+    return ("Covariate A")
+  
+  if (x == "x2")
+    return (expression(paste("My ", beta[2])))
+  
+  return (x)
+}
+
+forestplotCombineRegrObj (
+  regr.obj = list(fit1, fit2),
+  variablesOfInterest.regexp = "(x2|x3)",
+  reference.names = c("First model", "Second model"),
+  rowname.fn = modifyNameFunction)
+
+par(org.par)
 }
 \author{
   max
