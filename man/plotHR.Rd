@@ -109,8 +109,8 @@
 }
 \description{
   This function is a more specialized version of the
-  termplot() function. It creates a simple plot with the
-  spline against hazard ratio.
+  \code{\link{termplot}()} function. It creates a simple
+  plot with the spline against hazard ratio.
 }
 \details{
   The function allows for plotting multiple splines in one

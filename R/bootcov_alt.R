@@ -45,6 +45,7 @@
 #' fq <- Rq(y ~ pol(x1,2) + x2, x=TRUE, y=TRUE)
 #' bootcov_alt(fq, B=500, pr=TRUE)
 #' 
+#' @seealso \code{\link{bootcov}}
 #' @author max
 #' @export
 bootcov_alt <- function (fit, cluster, B = 200, fitter, coef.reps = FALSE, loglik = coef.reps, 

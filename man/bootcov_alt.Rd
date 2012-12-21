@@ -82,4 +82,7 @@ bootcov_alt(fq, B=500, pr=TRUE)
 \author{
   max
 }
+\seealso{
+  \code{\link{bootcov}}
+}
 

@@ -34,9 +34,9 @@
   indicates the row number where the empty row should be
   added, the format is: c(3, 5).  If you give a list you
   have the option of specifying the name of the row, the
-  format is: list(list(3, "my rowname"), list(5, "my other
-  rowname")).  The rows will be added at the 3rd row and
-  5th row from the original position. Ie you don't have
+  format is: \code{list(list(3, "my rowname"), list(5, "my
+  other rowname"))}.  The rows will be added at the 3rd row
+  and 5th row from the original position. Ie you don't have
   take into account that the 5:th row will be at the 6:th
   position after adding the 3rd row.}
 
@@ -79,7 +79,7 @@
   \item{exp}{Report in exponential form. Default true since
   the function was built for use with survival models.}
 
-  \item{...}{Passed to forestplot2()}
+  \item{...}{Passed to \code{\link{forestplot2}}()}
 }
 \value{
   Does not return anything
@@ -137,5 +137,8 @@ par(org.par)
 }
 \author{
   max
+}
+\seealso{
+  \code{\link{forestplot2}}
 }
 

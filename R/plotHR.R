@@ -23,7 +23,7 @@
 
 #' Plot a spline in a Cox regression model
 #' 
-#' This function is a more specialized version of the termplot() function. It
+#' This function is a more specialized version of the \code{\link{termplot}()} function. It
 #' creates a simple plot with the spline against hazard ratio. 
 #' 
 #' The function allows for plotting multiple splines in one graph. Sometimes you 

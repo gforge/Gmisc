@@ -20,7 +20,7 @@
   \item{digits}{Number of digits - used in exp mode}
 }
 \value{
-  Returns a vector with the ticks apropriate
+  Returns a vector with the ticks appropriate
 }
 \description{
   Gets the ticks in a formatted version. This is since I'm

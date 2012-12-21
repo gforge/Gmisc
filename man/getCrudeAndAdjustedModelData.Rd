@@ -2,31 +2,25 @@
 \alias{getCrudeAndAdjustedModelData}
 \title{This function helps with printing regression models}
 \usage{
-  getCrudeAndAdjustedModelData(fit, digits = 2, max = Inf)
+  getCrudeAndAdjustedModelData(fit)
 }
 \arguments{
   \item{fit}{The regression model}
-
-  \item{digits}{Number of digits you want in your
-  estimates}
-
-  \item{max}{A number that specifies if any values should
-  be abbreviated above this value, for instance a value of
-  1000 would give a value of > 1000 for a value of 1001.
-  This gives a prettier table when you have very wide
-  confidence intervals.}
 }
 \value{
-  Returns a matrix with the columns c("Crude", "95% CI",
-  "Adjusted", "95% CI").  The rows are not changed from the
-  original fit.
+  Returns a matrix with the columns c("Crude", "95\% CI",
+  "Adjusted", "95\% CI").  The rows are not changed from
+  the original fit.
 }
 \description{
-  This function is used for printing the adjusted and
+  This function is used for getting the adjusted and
   unadjusted values for a regression model. It takes a full
   model and walks through each variable, removes in the
   regression all variables except one then reruns that
-  variable to get the unadjusted value.
+  variable to get the unadjusted value. This functions not
+  intended for direct use, it's better to use
+  \code{\link{printCrudeAndAdjustedModel}} that utilizes
+  this function.
 }
 \details{
   This function saves a lot of time creating tables since
@@ -75,5 +69,8 @@ print(data_matrix)
 }
 \author{
   max
+}
+\seealso{
+  \code{\link{printCrudeAndAdjustedModel}}
 }
 

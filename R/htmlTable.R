@@ -2,11 +2,14 @@
 #' 
 #' This is a function for outputting a more advanced
 #' table than xtable allows. It's aim is to provide the Hmisc
-#' latex() colgroup and rowgroup functions in HTML. The
+#' \code{\link{latex}()} colgroup and rowgroup functions in HTML. The
 #' code outputted is perhaps a little raw compared to fully
 #' CSS formatted HTML. The reason for this is that I've chosen
 #' maximum compatibility with OpenOffice that lacks any more 
-#' sofisticated understanding of HTML & CSS. 
+#' advanced understanding of HTML & CSS. 
+#' 
+#' If you set the option table_counter you will get a Table 1,2,3
+#' etc before each table, just set \code{options("table_counter"=TRUE)}.
 #' 
 #' @param x The matrix/data.frame with the data
 #' @param title The title of the table. Used for labeling etc.
@@ -50,7 +53,8 @@
 #' @param caption.loc set to \code{"bottom"} to position a caption below the table 
 #'    instead of the default of \code{"top"}.
 #' @param label a text string representing a symbolic label for the 
-#'    table for referencing as an anchor
+#'    table for referencing as an anchor. All you need to do is to reference the
+#'    table, for instance \code{<a href="#anchor_name">see table 2</a>}
 #' @param ctable If the table should have a double top border or a single a' la LaTeX ctable style
 #' @param ... Currently not used, here for compatibility reasons
 #' @param output Set to false if you don't want an immediate print
@@ -168,9 +172,7 @@ htmlTable <- function(x,
     bottom_row_style = "border-bottom: 1px solid grey;"
   }
   
-  if (length(label) > 0){
-    table_str <- sprintf("%s\n\t<a name='%s'></a>", table_str, label) 
-  }
+  
   
   # Not quite as intended but close enough
   if(length(list(...))) x <- format.df(x, numeric.dollar=FALSE, ...)
@@ -179,12 +181,36 @@ htmlTable <- function(x,
     x <- matrix(str_replace(x, "\\\\%", "%"), ncol=ncol(x))
   
   if (length(caption) > 0){
+    tc <- getOption("table_counter")
+    if (is.null(tc)){
+      tc_string <- ""
+    }else{
+      # Count which table it currently is
+      if (is.numeric(tc))
+        tc <- tc + 1
+      else
+        tc <- 1
+      options("table_counter" = tc)
+      
+      tc_string <- sprintf("Table %d: ", tc)
+    }
+    
     if (caption.loc == "bottom"){
       table_str <- sprintf("%s\n\t<caption align=bottom>", table_str)
     }else{
       table_str <- sprintf("%s\n\t<caption align=top>", table_str)
     }
+    
+    caption <- sprintf("%s%s", tc_string, caption)
+    if (length(label) > 0){
+      caption <- sprintf("\n\t<a name='%s'>%s</a>", label, caption) 
+    }else if(is.numeric(tc)){
+      caption <- sprintf("\n\t<a name='table_%d'>%s</a>", tc, caption)
+    }
+    
     table_str <- sprintf("%s%s</caption>", table_str, caption)
+  }else if (length(label) > 0){
+    table_str <- sprintf("%s\n\t<a name='%s'></a>", table_str, label) 
   }
   
   if (length(rowname) > 0)

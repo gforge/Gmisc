@@ -14,14 +14,14 @@
 \arguments{
   \item{labeltext}{A list, matrix, vector or expression
   with the names of each row. The list should be wrapped in
-  m x n number to resemble a matrix: list(list("rowname 1
-  col 1", "rowname 2 col 1"), list("r1c2",
-  expression(beta)) You can also provide a matrix although
-  this cannot have expressions by design: matrix(c("rowname
-  1 col 1", "rowname 2 col 1", "r1c2", "beta"), ncol=2) Use
-  NA:s for blank spaces and if you provide a full column
-  with NA then that column is a empty column that adds some
-  space.}
+  m x n number to resemble a matrix:
+  \code{list(list("rowname 1 col 1", "rowname 2 col 1"),
+  list("r1c2", expression(beta))} You can also provide a
+  matrix although this cannot have expressions by design:
+  \code{matrix(c("rowname 1 col 1", "rowname 2 col 1",
+  "r1c2", "beta"), ncol=2)} Use NA:s for blank spaces and
+  if you provide a full column with NA then that column is
+  a empty column that adds some space.}
 
   \item{mean}{A vector with te averages}
 
@@ -83,10 +83,10 @@
 \description{
   forestplot2 is based on the rmeta 2.16 forestplot
   function. The original rmeta package is requiered for the
-  meta.colors() function. This function resolves some
-  limitations of the original functions such as adding
-  expressions and using multiple confidence bands for the
-  same label.
+  \code{\link{meta.colors}()} function. This function
+  resolves some limitations of the original functions such
+  as adding expressions and using multiple confidence bands
+  for the same label.
 }
 \details{
   Using multiple bands for the same label is judged to be

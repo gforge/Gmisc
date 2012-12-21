@@ -1,8 +1,8 @@
-#' A more advanced version of the original R builtin termplot function.
+#' A more advanced version of the original R builtin \code{\link{termplot}} function.
 #'
 #' This function can plot polygons instead of lines for confidence intervals,
 #' density curve at the x-axis instead of just a jitter rug,  
-#' identifies and warns for interaction terms. It also allows for rescaling
+#' identifies and warns for interaction terms. It also allows for re-scaling
 #' to an exponential y-axis.
 #'  
 #' @param model fitted model object
@@ -38,7 +38,7 @@
 #' @param col.dens the color of the density. Only used when rug.type = "density"
 #' @param se.type if the confidence interval should be two lines or a polygon 
 #' @param density.proportion the height of the density plot
-#' @param ... passed on to plot() function 
+#' @param ... passed on to \code{\link{plot}()} function 
 #' @return number of plotted terms
 #' 
 #' @example examples/termplot2_example.R

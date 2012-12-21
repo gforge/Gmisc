@@ -23,6 +23,8 @@
 #'  interpreted as a whole.
 #' @return A string formatted for printing either latex by  HTML
 #' 
+#' @seealso \code{\link{getDescriptionStatsBy}}
+#' 
 #' @examples
 #' describe_mean(1:10)
 #' describe_mean(c(1:10, NA), show_missing=TRUE)
@@ -86,6 +88,8 @@ describe_mean <- function(x, html=FALSE, digits=1, number_first = TRUE, show_mis
 #'  vertical information in the second category and is thus better 
 #'  interpreted as a whole.
 #' @return A string formatted for printing either latex by  HTML
+#' 
+#' @seealso \code{\link{getDescriptionStatsBy}}
 #' 
 #' @examples
 #' describe_median(1:10)

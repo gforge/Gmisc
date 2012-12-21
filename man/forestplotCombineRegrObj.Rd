@@ -123,4 +123,7 @@ par(org.par)
 \author{
   max
 }
+\seealso{
+  \code{\link{forestplot2}}
+}
 

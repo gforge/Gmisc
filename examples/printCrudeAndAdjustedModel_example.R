@@ -5,7 +5,8 @@ ds <- data.frame(
   fstatus = sample(0:1,200,replace=TRUE),
 	x1 = runif(200),
 	x2 = runif(200),
-	x3 = runif(200))
+	x3 = runif(200),
+  x4 = factor(sample(LETTERS[1:4], size=200, replace=TRUE)))
 
 library(rms)
 dd <- datadist(ds)
@@ -15,3 +16,38 @@ s <- Surv(ds$ftime, ds$fstatus == 1)
 fit <- cph(s ~ x1 + x2 + x3, data=ds)
 
 printCrudeAndAdjustedModel(fit, c("x[12]", "x3"), file="")
+
+fit <- cph(s ~ x1 + x2 + x3 + x4, data=ds)
+printCrudeAndAdjustedModel(fit, file="")
+
+# Use some labels to prettify the output
+# fro the mtcars dataset
+data(mtcars)
+
+label(mtcars$mpg) <- "Gas"
+units(mtcars$mpg) <- "Miles/(US) gallon"
+
+label(mtcars$wt) <- "Weight"
+units(mtcars$wt) <- "10^3 kg" # not sure the unit is correct 
+
+mtcars$am <- factor(mtcars$am, levels=0:1, labels=c("Automatic", "Manual"))
+label(mtcars$am) <- "Transmission"
+
+mtcars$gear <- factor(mtcars$gear)
+label(mtcars$gear) <- "Gears"
+
+# Make up some data for making it slightly more interesting
+mtcars$col <- factor(sample(c("red", "black", "silver"), size=NROW(mtcars), replace=TRUE))
+label(mtcars$col) <- "Car color"
+
+require(splines)
+fit <- lm(mpg ~ bs(wt, 3) + gear + col, data=mtcars)
+printCrudeAndAdjustedModel(fit, file="", add_references=TRUE, ctable=TRUE)
+
+# Alterntive print - just an example, doesn't make sense to skip reference
+printCrudeAndAdjustedModel(fit, 
+                           file="", 
+                           order=c("col", "gear"), 
+                           groups=c("Color", "Gears"),
+                           add_references=c("Black", NA),
+                           ctable=TRUE)

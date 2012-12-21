@@ -1,9 +1,11 @@
 #' This function helps with printing regression models
 #' 
-#' This function is used for printing the adjusted and unadjusted values
+#' This function is used for getting the adjusted and unadjusted values
 #' for a regression model. It takes a full model and walks through each
 #' variable, removes in the regression all variables except one then
-#' reruns that variable to get the unadjusted value.
+#' reruns that variable to get the unadjusted value. This functions not
+#' intended for direct use, it's better to use \code{\link{printCrudeAndAdjustedModel}}
+#' that utilizes this function.
 #' 
 #' This function saves a lot of time creating tables since it compiles a fully
 #' unadjusted list of all your used covariates.
@@ -16,29 +18,19 @@
 #' any interaction variables since it's probably better to display these as a contrast table. 
 #' 
 #' @param fit The regression model
-#' @param digits Number of digits you want in your estimates
-#' @param max A number that specifies if any values should be abbreviated above this value,
-#'   for instance a value of 1000 would give a value of > 1000 for a value of 1001. This gives
-#'   a prettier table when you have very wide confidence intervals.
-#' @return Returns a matrix with the columns c("Crude", "95% CI", "Adjusted", "95% CI").
+#' @return Returns a matrix with the columns c("Crude", "95\% CI", "Adjusted", "95\% CI").
 #'   The rows are not changed from the original fit.
+#'
+#' @seealso \code{\link{printCrudeAndAdjustedModel}}
 #' 
 #' @example examples/getCrudeAndAdjustedModelData_example.R
 #' 
 #' @author max
 #' @export
-getCrudeAndAdjustedModelData <- function(fit, digits=2, max=Inf){
+getCrudeAndAdjustedModelData <- function(fit){
   # Just a prettifier for the output an alternative could be:
   # paste(round(x[,1],1), " (95% CI ", min(round(x[,2:3])), "-", max(round(x[,2:3])), ")", sep="") 
   get_coef_and_ci <- function(fit, skip_intercept=FALSE){
-    # Just to make sure that it gives 1.0 and
-    # not 1 if digits = 1, in cases where a
-    # adding another decimal that is used
-    # since everyone is so hyped about p-val < 0.05
-    add_zero_to_var <- function(x){
-      return(sprintf(sprintf("%%0.%df", digits), x))
-    }
-    
     # Get coefficients and conf. interval
     my_coefficients <- coef(fit)
     ci <- confint(fit)
@@ -61,44 +53,12 @@ getCrudeAndAdjustedModelData <- function(fit, digits=2, max=Inf){
       ci <- exp(ci)
     }
     
-    confidence_string <- sprintf("%%0.%df to %%0.%df", digits, digits)
-    char_confidence_string <- "%s to %s"
-    if (length(my_coefficients) > 1){
-      my_coefficients <- tapply(my_coefficients, 1:length(my_coefficients), FUN = add_zero_to_var)
-      
-      # Set upper bound for nicer output
-      if (is.infinite(max) == FALSE && any(ci > max)){
-        ci <- round(ci, digits=digits)
-        if (floor(max) == max)
-          ci[ci[,2] > max, 2] <- sprintf("> %d", max)
-        else
-          ci[ci[,2] > max, 2] <- sprintf("> %f", max)
-      }
-      
-      if (class(ci[1]) == "character")
-        ci <- sprintf(char_confidence_string, ci[,1], ci[,2])
-      else
-        ci <- sprintf(confidence_string, ci[,1], ci[,2])
-    }else{
-      my_coefficients <- add_zero_to_var(my_coefficients)
-      
-      if (is.infinite(max) == FALSE && 
-        ci[2] > max){
-        ci <- round(ci, digits=digits)
-        if (floor(max) == max)
-          ci[2] <- sprintf("> %d", max)
-        else
-          ci[2] <- sprintf("> %f", max)
-      }
-      
-      if (class(ci[1]) == "character")
-        ci <- sprintf(char_confidence_string, ci[1], ci[2])
-      else
-        ci <- sprintf(confidence_string, ci[1], ci[2])
-    }
+    if (length(my_coefficients) > 1)
+      ret_val <- cbind(my_coefficients, ci)
+    else
+      ret_val <- matrix(c(my_coefficients, ci), nrow=1)
     
-    ret_val <- cbind(my_coefficients, ci)
-    colnames(ret_val) <- c("", "2.5% to 97.5%")
+    colnames(ret_val) <- c("", "2.5%", "97.5%")
     rownames(ret_val) <- coef_names
     return(ret_val)
   }
@@ -133,7 +93,6 @@ getCrudeAndAdjustedModelData <- function(fit, digits=2, max=Inf){
         skip_variables <- union(skip_variables, grep(name, var_names))
       }
     }
-    
   }
   
   skip_variables <- union(skip_variables, grep("^strat[a]{0,1}\\(", var_names))
@@ -203,7 +162,19 @@ getCrudeAndAdjustedModelData <- function(fit, digits=2, max=Inf){
   # of adjusted and unadjusted values
   if (length(grep("Intercept", rownames(adjusted))) > 0)
   {
-    unadjusted <- rbind(c("-", "-"), unadjusted)
+    # Run the same fit but with only one variable
+    fit_only1 <- update(fit, ".~ 1")
+    if ("boot.coef" %in% names(fit)){
+      # Redo bootstrap if this was a bootstrapped
+      # rms model by rerunning the bootcov part
+      fit_only1 <- bootcov(fit_only1, B=fit$B, coef.reps="boot.Coef" %in% names(fit))
+    }
+    
+    # Get the coefficients processed with some advanced
+    # round part()
+    new_vars <- get_coef_and_ci(fit_only1, skip_intercept = FALSE)
+    
+    unadjusted <- rbind(new_vars, unadjusted)
     rownames(unadjusted)[1] <- "Intercept"
   }
   
@@ -213,6 +184,7 @@ getCrudeAndAdjustedModelData <- function(fit, digits=2, max=Inf){
   }else{
     both <- cbind(unadjusted, adjusted)
   }
-  colnames(both) <- c("Crude", "95% CI", "Adjusted", "95% CI")
+  colnames(both) <- c("Crude", "2.5 %", "97.5 %", "Adjusted", "2.5 %", "97.5 %")
+  class(both) <- "CrudeAndAdjusted"
   return(both)
 }

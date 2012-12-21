@@ -1,6 +1,6 @@
 \name{termplot2}
 \alias{termplot2}
-\title{A more advanced version of the original R builtin termplot function.}
+\title{A more advanced version of the original R builtin \code{\link{termplot}} function.}
 \usage{
   termplot2(model, data = NULL,
     envir = environment(formula(model)),
@@ -102,7 +102,7 @@
 
   \item{density.proportion}{the height of the density plot}
 
-  \item{...}{passed on to plot() function}
+  \item{...}{passed on to \code{\link{plot}()} function}
 }
 \value{
   number of plotted terms
@@ -111,7 +111,7 @@
   This function can plot polygons instead of lines for
   confidence intervals, density curve at the x-axis instead
   of just a jitter rug, identifies and warns for
-  interaction terms. It also allows for rescaling to an
+  interaction terms. It also allows for re-scaling to an
   exponential y-axis.
 }
 \examples{

@@ -95,7 +95,9 @@
   \code{"top"}.}
 
   \item{label}{a text string representing a symbolic label
-  for the table for referencing as an anchor}
+  for the table for referencing as an anchor. All you need
+  to do is to reference the table, for instance \code{<a
+  href="#anchor_name">see table 2</a>}}
 
   \item{ctable}{If the table should have a double top
   border or a single a' la LaTeX ctable style}
@@ -113,11 +115,16 @@
 \description{
   This is a function for outputting a more advanced table
   than xtable allows. It's aim is to provide the Hmisc
-  latex() colgroup and rowgroup functions in HTML. The code
-  outputted is perhaps a little raw compared to fully CSS
-  formatted HTML. The reason for this is that I've chosen
-  maximum compatibility with OpenOffice that lacks any more
-  sofisticated understanding of HTML & CSS.
+  \code{\link{latex}()} colgroup and rowgroup functions in
+  HTML. The code outputted is perhaps a little raw compared
+  to fully CSS formatted HTML. The reason for this is that
+  I've chosen maximum compatibility with OpenOffice that
+  lacks any more advanced understanding of HTML & CSS.
+}
+\details{
+  If you set the option table_counter you will get a Table
+  1,2,3 etc before each table, just set
+  \code{options("table_counter"=TRUE)}.
 }
 \examples{
 # A simple example

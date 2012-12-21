@@ -1,4 +1,5 @@
 #' Tests if function is of a cox regression type.
+#' 
 #' Counts competing risk regression as a coxph
 #' 
 #' @param fit Regression object

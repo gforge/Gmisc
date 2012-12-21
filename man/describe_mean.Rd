@@ -52,4 +52,7 @@ describe_mean(c(1:10, NA), show_missing=TRUE)
 \author{
   max
 }
+\seealso{
+  \code{\link{getDescriptionStatsBy}}
+}
 

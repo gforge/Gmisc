@@ -35,6 +35,8 @@
 #' @param ... Passed to forestplot2 
 #' @return void 
 #' 
+#' @seealso \code{\link{forestplot2}}
+#' 
 #' @example examples/forestplotCombineRegrObj_example.R
 #' 
 #' @author max
