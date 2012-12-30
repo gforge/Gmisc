@@ -1,7 +1,6 @@
 \name{isFitCoxPH}
 \alias{isFitCoxPH}
-\title{Tests if function is of a cox regression type.
-Counts competing risk regression as a coxph}
+\title{Tests if function is of a cox regression type.}
 \usage{
   isFitCoxPH(fit)
 }
@@ -12,8 +11,7 @@ Counts competing risk regression as a coxph}
   boolean
 }
 \description{
-  Tests if function is of a cox regression type. Counts
-  competing risk regression as a coxph
+  Counts competing risk regression as a coxph
 }
 \examples{
 # simulated data to use 

@@ -15,6 +15,7 @@
 #'   instead of traditional latex() function
 #' @param digits Number of digits in using the round
 #' @param rowlabel The label of the rows
+#' @param pval_threshold The threshold before setting "<", default is < 0.0001 
 #' @param ... Passed on to latex() or htmlTable
 #' @return void See the latex() function 
 #' 
@@ -22,7 +23,7 @@
 #' 
 #' @author max
 #' @export
-simpleRmsAnovaLatex <- function(anova_output, subregexps = NA, html=FALSE, digits=4, rowlabel="Variable", ...){
+simpleRmsAnovaLatex <- function(anova_output, subregexps = NA, html=FALSE, digits=4, pval_threshold = 10^-4, rowlabel="Variable", ...){
   rownames <- names(attr(anova_output, "which"))
   if (is.matrix(subregexps) && NCOL(subregexps) == 2){
     for (i in 1:NROW(subregexps))
@@ -34,12 +35,38 @@ simpleRmsAnovaLatex <- function(anova_output, subregexps = NA, html=FALSE, digit
   rownames <- sub("\\(Factor\\+Higher Order Factors\\)", "", rownames)
   
   mtrx <- as.matrix(anova_output)
-  mtrx <- round(mtrx, digits=digits)
+  pvals <- mtrx[,ncol(mtrx)]
+  # The digits differ per column and we need
+  # to handle NA:s
+  mtrx <- apply(mtrx, MARGIN=2, 
+    FUN=function(x, digits) {
+      ret <- c()
+      for(val in x){
+        if (is.numeric(val) == FALSE){
+          ret <- append(ret, val)
+        }else if (is.na(val)){
+          ret <- append(ret, "")
+        }else if (round(val, digits) == 0){
+          ret <- append(ret, sprintf(sprintf("%%.%df", digits), 0))
+        }else{
+          ret <- append(ret, format(val, digits=digits))
+        }
+      }
+      return(ret)
+    },
+    digits=digits)
+  pvals <- ifelse(pvals < pval_threshold,  
+    sprintf(ifelse(html, "&lt; %s", "< %s"), format(pval_threshold, scientific=FALSE)),
+    format(pvals, digits=2))
+  mtrx <- cbind(mtrx, pvals)
+  number_of_total_rows <- length(grep("TOTAL", names(attr(anova_output, "which")))) 
   if (html){
     rownames <- sub("^ ", "&nbsp;&nbsp;", rownames)
-    htmlTable(mtrx, rowname=rownames, n.rgroup=c(NROW(mtrx)-4, 4), rgroup=c("Variables", "Total"), ...)
+    htmlTable(mtrx, title=rownames, n.rgroup=c(NROW(mtrx)-number_of_total_rows, number_of_total_rows), 
+      rgroup=c("Variables", "Total"), rowlabel=rowlabel,...)
   }else{
     rownames <- sub("^ ", "\\\\hspace{3 mm}", latexTranslate(rownames))
-    latex(mtrx, rowname=rownames, n.rgroup=c(NROW(mtrx)-4, 4), rgroup=c("Variables", "Total"), ...)
+    latex(mtrx, rowname=rownames, n.rgroup=c(NROW(mtrx)-number_of_total_rows, number_of_total_rows), 
+      rgroup=c("Variables", "Total"), rowlabel=rowlabel, ...)
   }
 }

@@ -1,0 +1,16 @@
+NEWS for the Gmisc package
+
+Changes for 0.4.8.2
+-------------------
+* The simpleRmsAnovaLatex now has a better handling of the low p-values
+* Fixed a minor but with printCrudeAndAdjusted with the automated reference
+
+Changes for 0.4.8.2
+-------------------
+* Added the option of hadding a total column even in "vertical" mode
+* Changed parameter names hrzl_prop.show_perc to total_col_show_perc
+* Bugfix: The total column causes errors if the by contains missing values
+
+Changes for 0.4.8.1
+-------------------
+* Fixed a few bugs to the forestplot2

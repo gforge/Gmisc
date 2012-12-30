@@ -17,6 +17,8 @@
 #' 
 #' @example examples/forestplotCombineRegrObj_example.R
 #' 
+#' @export 
+#' 
 #' @author max
 getModelData4Forestplot<- function(regr.obj, 
   exp, 

@@ -49,15 +49,14 @@ mtcars$mpg[sample(1:NROW(mtcars), size=4)] <- NA
 getDescriptionStatsBy(mtcars$mpg, mtcars$am, statistics=TRUE, show_missing=TRUE)
 
 # Do the horizontal version
-getDescriptionStatsBy(mtcars$col, mtcars$am, statistics=TRUE, show_missing=TRUE, horizontal_proportions = TRUE)
-
+getDescriptionStatsBy(mtcars$col, mtcars$am, statistics=TRUE, show_missing=TRUE, hrzl_prop = TRUE)
 
 mtcars$wt_with_missing <- mtcars$wt
 mtcars$wt_with_missing[sample(1:NROW(mtcars), size=8)] <- NA
-getDescriptionStatsBy(mtcars$wt_with_missing, mtcars$am, statistics=TRUE, show_missing=TRUE, horizontal_proportions = TRUE, horizontal_proportions_show_percentages = FALSE)
+getDescriptionStatsBy(mtcars$wt_with_missing, mtcars$am, statistics=TRUE, show_missing=TRUE, hrzl_prop = TRUE, total_col_show_perc = FALSE)
 
 
 mtcars$col_with_missing <- mtcars$col
 mtcars$col_with_missing[sample(1:NROW(mtcars), size=5)] <- NA
-getDescriptionStatsBy(mtcars$col_with_missing, mtcars$am, statistics=TRUE, show_missing=TRUE, horizontal_proportions = TRUE, horizontal_proportions_show_percentages = FALSE)
+getDescriptionStatsBy(mtcars$col_with_missing, mtcars$am, statistics=TRUE, show_missing=TRUE, hrzl_prop = TRUE, total_col_show_perc = FALSE)
 

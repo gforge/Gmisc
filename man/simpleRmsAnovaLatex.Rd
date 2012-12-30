@@ -3,7 +3,8 @@
 \title{A simpler latex output of the latex.anova.rms}
 \usage{
   simpleRmsAnovaLatex(anova_output, subregexps = NA,
-    html = FALSE, digits = 4, rowlabel = "Variable", ...)
+    html = FALSE, digits = 4, pval_threshold = 10^-4,
+    rowlabel = "Variable", ...)
 }
 \arguments{
   \item{anova_output}{An object from the
@@ -20,6 +21,9 @@
   \item{digits}{Number of digits in using the round}
 
   \item{rowlabel}{The label of the rows}
+
+  \item{pval_threshold}{The threshold before setting "<",
+  default is < 0.0001}
 
   \item{...}{Passed on to latex() or htmlTable}
 }
@@ -75,7 +79,7 @@ a_out <- anova(fit_lrm,
                dec.F = 1,
                ss    = FALSE)
              
-simpleRmsAnovaLatex(a_out,
+simpleRmsAnovaLatex(a_out, 
                      subregexps = rbind(c("age", "Age"),
                                         c("cholesterol", "Cholesterol"),
                                         c("sex", "Sex")),

@@ -5,11 +5,11 @@
   forestplot2(labeltext, mean, lower, upper, align = NULL,
     is.summary = FALSE, fontfamily.summary = NULL,
     fontfamily.labelrow = NULL, clip = c(-Inf, Inf),
-    xlab = "", zero = 0, graphwidth = unit(51, "mm"),
+    xlab = "", zero = 0, graphwidth = unit(0.3, "npc"),
     col = meta.colors(), xlog = FALSE, xticks = NULL,
-    lineHeight.inc = 1.2, lwd.xaxis = NULL,
-    lwd.zero = NULL, lwd.ci = NULL, cex = 1,
-    boxsize = NULL, ...)
+    xticks.digits = 2, lineHeight.inc = 1.2,
+    lwd.xaxis = NULL, lwd.zero = NULL, lwd.ci = NULL,
+    cex = 1, boxsize = NULL, ...)
 }
 \arguments{
   \item{labeltext}{A list, matrix, vector or expression
@@ -23,13 +23,15 @@
   if you provide a full column with NA then that column is
   a empty column that adds some space.}
 
-  \item{mean}{A vector with te averages}
+  \item{mean}{A vector or a matrix with the averages}
 
   \item{lower}{The lower bound of the confidence interval
-  for the forestplot}
+  for the forestplot, needs to be the same format as the
+  mean, i.e. matrix/vector of equal columns & length}
 
   \item{upper}{The upper bound of the confidence interval
-  for the forestplot}
+  for the forestplot, needs to be the same format as the
+  mean, i.e. matrix/vector of equal columns & length}
 
   \item{align}{Vector giving alignment (l,r,c) for columns
   of table}
@@ -50,15 +52,19 @@
 
   \item{zero}{x-axis coordinate for zero line}
 
-  \item{graphwidth}{Width of confidence interval graph}
+  \item{graphwidth}{Width of confidence interval graph, see
+  \code{\link{unit}} for details on how to utilize mm etc.}
 
-  \item{col}{See meta.colors}
+  \item{col}{See \code{\link{meta.colors}}}
 
   \item{xlog}{If TRUE, x-axis tick marks are exponentiated}
 
   \item{xticks}{Optional user-specified x-axis tick marks.
-  Specify NULL to use the defaults,numeric(0) to omit the
+  Specify NULL to use the defaults, numeric(0) to omit the
   x-axis.}
+
+  \item{xticks.digits}{The number of digits to allow in the
+  x-axis if this is created by default.}
 
   \item{lineHeight.inc}{If you plot multiple bars for each
   line you often want to increase the line height.}
@@ -109,23 +115,27 @@ forestplot2(row_names, test_data$coef, test_data$low, test_data$high, zero = 1)
 
 
 # An advanced test
-row_names <- list(
-  list("variable = 0", "variable = 1", expression(variable >= 2)),
-  list(expression(bar(x)==1.8), expression(bar(x) == 1.4), "some cell data"))
+test_data <- data.frame(coef1=c(1, 1.59, 1.3, 1.24),
+  coef2=c(1, 1.7, 1.4, 1.04),
+  low1=c(1, 1.3, 1.1, 0.99),
+  low2=c(1, 1.6, 1.2, 0.7),
+  high1=c(1, 1.94, 1.6, 1.55),
+  high2=c(1, 1.8, 1.55, 1.33))
 
-test_data <- data.frame(coef1=c(1.59, 1.3, 1.24),
-  coef2=c(1.7, 1.4, 1.04),
-  low1=c(1.3, 1.1, 0.99),
-  low2=c(1.6, 1.2, 0.7),
-  high1=c(1.94, 1.6, 1.55),
-  high2=c(1.8, 1.55, 1.33))
+row_names <- list(
+  list("Category 1", "Category 2", "Category 3", expression(Category >= 4)),
+  list("ref", 
+    substitute(expression(bar(x) == val), list(val = round(rowMeans(test_data[2, grep("coef", colnames(test_data))]), 2))), 
+    substitute(expression(bar(x) == val), list(val = round(rowMeans(test_data[3, grep("coef", colnames(test_data))]), 2))), 
+    substitute(expression(bar(x) == val), list(val = round(rowMeans(test_data[4, grep("coef", colnames(test_data))]), 2))))
+)
 
 attach(test_data)
 
 coef <- cbind(coef1, coef2)
 low <- cbind(low1, low2)
 high <- cbind(high1, high2)
-forestplot2(row_names, coef, low, high, zero = 1, 
+forestplot2(row_names, coef, low, high, zero = 1, boxsize=0.5,
   col=meta.colors(box=c("royalblue", "gold"),
     line=c("darkblue", "orange")))
 
@@ -145,21 +155,6 @@ forestplot2(labeltext = row_names,
   boxsize   = test_data$boxsize,
   zero      = 1,
   xlog      = TRUE,
-  col = meta.colors(lines="red", box="darkred"))
-
-my_ticks <- getTicks(low = test_data$low, 
-  high      = test_data$high, 
-  clip      = c(-Inf, Inf), 
-  exp       = TRUE)
-forestplot2(labeltext = row_names, 
-  mean      = test_data$coef, 
-  lower     = test_data$low, 
-  upper     = test_data$high, 
-  boxsize   = test_data$boxsize,
-  zero      = 1,
-  xlog      = TRUE,
-  xticks    = my_ticks,
-  graphwidth= unit(100, "mm"),
   col = meta.colors(lines="red", box="darkred"))
 
 par(ask=ask)

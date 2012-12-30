@@ -25,16 +25,46 @@
 #' 
 #' @example examples/getCrudeAndAdjustedModelData_example.R
 #' 
+#' @import boot
+#' 
 #' @author max
 #' @export
 getCrudeAndAdjustedModelData <- function(fit){
   # Just a prettifier for the output an alternative could be:
   # paste(round(x[,1],1), " (95% CI ", min(round(x[,2:3])), "-", max(round(x[,2:3])), ")", sep="") 
   get_coef_and_ci <- function(fit, skip_intercept=FALSE){
-    # Get coefficients and conf. interval
+    # Get the coefficients
     my_coefficients <- coef(fit)
-    ci <- confint(fit)
     coef_names <- names(my_coefficients)
+    
+    # Confint isn't implemented for the rms package
+    # we therefore need to do a work-around
+    if ("rms" %in% class(fit) && "ols" %nin% class(fit)){
+      # The summary function has to be invoked to get this to work
+      # in the confint version and the summary.rms doesn't return
+      # a profile.glm() compatible list, it returns a matrix
+      # It works though OK for regular ordinary least square regression
+      if ("lrm" %in% class(fit)){
+        warning("Using the confint.default, i.e. Wald statistics, and it may not be optimal but profile CI is not implemented for the lrm, an option could be to change to the Glm with the family=binomial")
+        ci <- confint.default(fit)
+      }else if ("Glm" %in% class(fit)){
+        # The summary.rms is causing issues when profiling,
+        # it works fine when summary.glm is issued, we need to
+        # change class for that
+        class(fit) <- class(fit)["rms" != class(fit)]
+        ci <- confint(fit)
+      }else if ("cph" %in% class(fit)){
+        # I haven't found any large issues with this call
+        ci <- confint(fit)
+      }else{
+        # Untested option
+        # try confint for better or worse
+        warning("The function has not been tested with this type of regression object, may not work properly.")
+        ci <- confint(fit)
+      }
+    }else{
+      ci <- confint(fit)
+    }
     
     if (skip_intercept){
       intercept <- grep("Intercept", coef_names)
@@ -63,7 +93,6 @@ getCrudeAndAdjustedModelData <- function(fit){
     return(ret_val)
   }
   
-  # Extract all the term names
   all.terms <- terms(fit) 
   var_names <- attr(all.terms, 'term.labels')
   
@@ -162,17 +191,37 @@ getCrudeAndAdjustedModelData <- function(fit){
   # of adjusted and unadjusted values
   if (length(grep("Intercept", rownames(adjusted))) > 0)
   {
-    # Run the same fit but with only one variable
-    fit_only1 <- update(fit, ".~ 1")
-    if ("boot.coef" %in% names(fit)){
-      # Redo bootstrap if this was a bootstrapped
-      # rms model by rerunning the bootcov part
-      fit_only1 <- bootcov(fit_only1, B=fit$B, coef.reps="boot.Coef" %in% names(fit))
+    if ("ols" %in% class(fit)){
+      # The simple .~1 doesn't work for me with the ols and I've
+      # therefore created this workaround
+      if ("boot.coef" %in% names(fit)){
+        if ("y" %nin% names(fit)){
+          warning("If you want the intercept on a bootstrapped ols() model then you need to specify y=TRUE or else you get NA in the unadjusted estimates")
+          new_vars <- rep(NA, times=3)          
+        }else{
+          require("boot") || stop("`boot' package not found - it's needed for the unadjusted estimate of the intercept")
+          ci <- boot.ci(boot(fit$y, function(x, i) mean(x[i], na.rm=TRUE), R=fit$B, stype="i"), 
+            type=ifelse("boot.Coef" %in% names(fit), "perc", "norm"))
+          new_vars <- c(mean(fit$y, na.rm=TRUE), ci$percent[4:5])
+        }
+      }else{
+        new_vars <- c(mean(fit$y, na.rm=TRUE),
+          mean(fit$y) + c(-1, 1)*sd(fit$y)/sqrt(sum(is.na(fit$y)==FALSE))*qnorm(.05/2))
+      }
+
+    }else{
+      # Run the same fit but with only one variable
+      fit_only1 <- update(fit, ".~ 1")
+      if ("boot.coef" %in% names(fit)){
+        # Redo bootstrap if this was a bootstrapped
+        # rms model by rerunning the bootcov part
+        fit_only1 <- bootcov(fit_only1, B=fit$B, coef.reps="boot.Coef" %in% names(fit))
+      }
+      
+      # Get the coefficients processed with some advanced
+      # round part()
+      new_vars <- get_coef_and_ci(fit_only1, skip_intercept = FALSE)
     }
-    
-    # Get the coefficients processed with some advanced
-    # round part()
-    new_vars <- get_coef_and_ci(fit_only1, skip_intercept = FALSE)
     
     unadjusted <- rbind(new_vars, unadjusted)
     rownames(unadjusted)[1] <- "Intercept"
@@ -185,6 +234,5 @@ getCrudeAndAdjustedModelData <- function(fit){
     both <- cbind(unadjusted, adjusted)
   }
   colnames(both) <- c("Crude", "2.5 %", "97.5 %", "Adjusted", "2.5 %", "97.5 %")
-  class(both) <- "CrudeAndAdjusted"
   return(both)
 }

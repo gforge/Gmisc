@@ -9,9 +9,8 @@
     continuous_function = describe_mean,
     prop_function = describe_prop,
     factor_function = describe_factors,
-    show_all_values = FALSE,
-    horizontal_proportions = FALSE,
-    horizontal_proportions_show_percentages = TRUE,
+    show_all_values = FALSE, hrzl_prop = FALSE,
+    add_total_col = hrzl_prop, total_col_show_perc = TRUE,
     use_units = FALSE)
 }
 \arguments{
@@ -51,14 +50,11 @@
   \item{min_pval}{The minimum p-value before doing a "<
   0.0001"}
 
-  \item{horizontal_proportions}{This is default FALSE and
-  indicates that the proportions are to be interpreted in a
-  vertical manner.  If we want the data to be horizontal,
-  i.e. the total should be shown and then how these differ
-  in the different groups then set this to TRUE.  If you
-  want a total column then set the value to "first" or
-  "last" to indicate in what order this total column should
-  appear, default is first.}
+  \item{hrzl_prop}{This is default FALSE and indicates that
+  the proportions are to be interpreted in a vertical
+  manner.  If we want the data to be horizontal, i.e. the
+  total should be shown and then how these differ in the
+  different groups then set this to TRUE.}
 
   \item{use_units}{If the Hmisc package's units() function
   has been employed it may be interesting to have a column
@@ -74,9 +70,13 @@
   know the distribution of the other sex as it's 100 \% -
   other \%.}
 
-  \item{horizontal_proportions_show_percentages}{This is by
-  default true but if requested the percentages are
-  surpressed as this sometimes may be confusing.}
+  \item{total_col_show_perc}{This is by default true but if
+  requested the percentages are surpressed as this
+  sometimes may be confusing.}
+
+  \item{add_total_col}{This adds a total column to the
+  resulting table.  You can also specify if you want the
+  total column "first" or "last" in the column order.}
 }
 \value{
   Returns a vector if vars wasn't specified and it's a
@@ -144,17 +144,16 @@ mtcars$mpg[sample(1:NROW(mtcars), size=4)] <- NA
 getDescriptionStatsBy(mtcars$mpg, mtcars$am, statistics=TRUE, show_missing=TRUE)
 
 # Do the horizontal version
-getDescriptionStatsBy(mtcars$col, mtcars$am, statistics=TRUE, show_missing=TRUE, horizontal_proportions = TRUE)
-
+getDescriptionStatsBy(mtcars$col, mtcars$am, statistics=TRUE, show_missing=TRUE, hrzl_prop = TRUE)
 
 mtcars$wt_with_missing <- mtcars$wt
 mtcars$wt_with_missing[sample(1:NROW(mtcars), size=8)] <- NA
-getDescriptionStatsBy(mtcars$wt_with_missing, mtcars$am, statistics=TRUE, show_missing=TRUE, horizontal_proportions = TRUE, horizontal_proportions_show_percentages = FALSE)
+getDescriptionStatsBy(mtcars$wt_with_missing, mtcars$am, statistics=TRUE, show_missing=TRUE, hrzl_prop = TRUE, total_col_show_perc = FALSE)
 
 
 mtcars$col_with_missing <- mtcars$col
 mtcars$col_with_missing[sample(1:NROW(mtcars), size=5)] <- NA
-getDescriptionStatsBy(mtcars$col_with_missing, mtcars$am, statistics=TRUE, show_missing=TRUE, horizontal_proportions = TRUE, horizontal_proportions_show_percentages = FALSE)
+getDescriptionStatsBy(mtcars$col_with_missing, mtcars$am, statistics=TRUE, show_missing=TRUE, hrzl_prop = TRUE, total_col_show_perc = FALSE)
 
 }
 \author{

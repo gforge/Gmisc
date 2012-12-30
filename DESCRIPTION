@@ -1,8 +1,7 @@
 Package: Gmisc
-Version: 0.4.6
-Date: 2012-11-17
-Title: A collection of different functions that I've found useful when plotting
-    complex data, creating tables etc.
+Version: 0.4.8.3
+Date: 2013-02-10
+Title: A few handy functions of mine
 Authors: c(person("Max Gordon",
     "Developer",
     email = "max@gforge.se"))
@@ -36,15 +35,15 @@ Collate:
     'htmlTable.R'
     'descriptionStats.R'
     'outputInt.R'
-    'bootcov_alt.R'
     'Gmisc.R'
 Depends:
     grid,
     stringr,
     miscTools,
     rms,
+    boot,
+    testthat,
     Hmisc
 Suggests:
-    testthat,
     cmprsk,
     survival

@@ -24,12 +24,10 @@
 #' @param statistics Add statistics, fisher test for proportions and Wilcoxon
 #'  for continuous variables
 #' @param min_pval The minimum p-value before doing a "< 0.0001"
-#' @param horizontal_proportions This is default FALSE and indicates
+#' @param hrzl_prop This is default FALSE and indicates
 #'  that the proportions are to be interpreted in a vertical manner.
 #'  If we want the data to be horizontal, i.e. the total should be shown
 #'  and then how these differ in the different groups then set this to TRUE.
-#'  If you want a total column then set the value to "first" or "last"
-#'  to indicate in what order this total column should appear, default is first.  
 #' @param use_units If the Hmisc package's units() function has been employed
 #'  it may be interesting to have a column at the far right that indicates the
 #'  unit measurement. If this column is specified then the total column will
@@ -39,8 +37,11 @@
 #'  one option as the other one will just be a complement to the first. For instance
 #'  sex - if you know gender then automatically you know the distribution of the 
 #'  other sex as it's 100 \% - other \%. 
-#' @param horizontal_proportions_show_percentages This is by default true but if
+#' @param total_col_show_perc This is by default true but if
 #'  requested the percentages are surpressed as this sometimes may be confusing.
+#' @param add_total_col This adds a total column to the resulting table.  
+#'  You can also specify if you want the total column "first" or "last"
+#'  in the column order.  
 #' @return Returns a vector if vars wasn't specified and it's a
 #'  continuous or binary statistic. If vars was a matrix then it
 #'  appends the result to the end of that matrix. If the x variable
@@ -62,9 +63,15 @@ getDescriptionStatsBy <-
     prop_function = describe_prop,
     factor_function = describe_factors,
     show_all_values = FALSE,
-    horizontal_proportions = FALSE,
-    horizontal_proportions_show_percentages = TRUE,
+    hrzl_prop = FALSE,
+    add_total_col = hrzl_prop,
+    total_col_show_perc = TRUE,
     use_units = FALSE){
+  # Just send a warning, since the user might be unaware of this
+  # potentially disturbing fact. The dataset should perhaps by 
+  # subsetted by is.na(by) == FALSE
+  if (any(is.na(by)))
+    warning(sprintf("Your 'by' variable has %d missing values", sum(is.na(by))))
   
   show_missing <- prConvertShowMissing(show_missing)
   
@@ -140,7 +147,7 @@ getDescriptionStatsBy <-
   if (is.numeric(x)){
     # If the numeric has horizontal_proportions then it's only so in the 
     # missing category
-    if (horizontal_proportions)
+    if (hrzl_prop)
       t <- by(x, by, FUN=continuous_function, html=html, digits=digits,
         number_first=numbers_first, show_missing = show_missing, 
         horizontal_proportions = table(is.na(x), useNA=show_missing))
@@ -163,7 +170,7 @@ getDescriptionStatsBy <-
     
   }else if(is.factor(x) && 
     length(levels(x)) == 2 && 
-    horizontal_proportions == FALSE){
+    hrzl_prop == FALSE){
     
     t <- by(x, by, FUN=prop_function, html=html, digits=digits,
       number_first=numbers_first, show_missing = show_missing)
@@ -200,7 +207,7 @@ getDescriptionStatsBy <-
     }
 
   }else{
-    if (horizontal_proportions)
+    if (hrzl_prop)
       t <- by(x, by, FUN=factor_function, html=html, digits=digits,
         number_first=numbers_first, show_missing = show_missing, 
         horizontal_proportions = table(x, useNA=show_missing))
@@ -241,25 +248,25 @@ getDescriptionStatsBy <-
   if (is.null(rownames(results)) && nrow(results) == 1)
     rownames(results) <- name
   
-  if (horizontal_proportions){
+  if (add_total_col){
     if (is.factor(x)){
-      if (horizontal_proportions_show_percentages)
-        total_table <- factor_function(x, html=html, digits=digits,
+      if (total_col_show_perc)
+        total_table <- factor_function(x[is.na(by) == FALSE], html=html, digits=digits,
           number_first=numbers_first, show_missing = show_missing)
       else{
-        total_table <- table(x, useNA=show_missing)
+        total_table <- table(x[is.na(by) == FALSE], useNA=show_missing)
         names(total_table)[is.na(names(total_table))] <- "Missing"
       }
       
     }else{
-      total_table <- continuous_function(x, html=html, digits=digits, number_first=numbers_first, show_missing = show_missing)
+      total_table <- continuous_function(x[is.na(by) == FALSE], html=html, digits=digits, number_first=numbers_first, show_missing = show_missing)
       # If a continuous variable has two rows then it's assumed that the second is the missing
       if (length(total_table) == 2 &&
-        horizontal_proportions_show_percentages == FALSE)
+        total_col_show_perc == FALSE)
         total_table[2] <- sum(is.na(x))
     }
     
-    if (horizontal_proportions != "last"){
+    if (add_total_col != "last"){
       results <- cbind(total_table, results)
       cn <- c("Total", cn)
     }else{

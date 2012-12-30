@@ -39,7 +39,7 @@ describe_mean <- function(x, html=FALSE, digits=1, number_first = TRUE, show_mis
   else
     plusmin_str <- "\\pm"
   
-  ret <- c(sprintf(sprintf("%%.%df %s(%%3.%df)", digits, plusmin_str, digits), 
+  ret <- c(sprintf(sprintf("%%.%df (%s %%3.%df)", digits, plusmin_str, digits), 
     mean(x, na.rm=T), sd(x, na.rm=T)))
   
   # LaTeX complains if any formula isn't encapsulated within $ signs

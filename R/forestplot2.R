@@ -16,9 +16,11 @@
 #'   \code{matrix(c("rowname 1 col 1", "rowname 2 col 1", "r1c2", "beta"), ncol=2)}
 #'   Use NA:s for blank spaces and if you provide a full column with NA then
 #'   that column is a empty column that adds some space.
-#' @param mean A vector with te averages
-#' @param lower The lower bound of the confidence interval for the forestplot
-#' @param upper The upper bound of the confidence interval for the forestplot
+#' @param mean A vector or a matrix with the averages
+#' @param lower The lower bound of the confidence interval for the forestplot, needs 
+#'   to be the same format as the mean, i.e. matrix/vector of equal columns & length
+#' @param upper The upper bound of the confidence interval for the forestplot, needs 
+#'   to be the same format as the mean, i.e. matrix/vector of equal columns & length
 #' @param align Vector giving alignment (l,r,c) for columns of table
 #' @param is.summary A vector indicating by TRUE/FALSE if the value is a summary
 #'   value which means that it will have a different font-style.
@@ -27,11 +29,14 @@
 #' @param clip Lower and upper limits for clipping confidence intervals to arrows
 #' @param xlab x-axis label
 #' @param zero x-axis coordinate for zero line
-#' @param graphwidth Width of confidence interval graph
-#' @param col See meta.colors
+#' @param graphwidth Width of confidence interval graph, see \code{\link{unit}} for
+#'   details on how to utilize mm etc.
+#' @param col See \code{\link{meta.colors}}
 #' @param xlog If TRUE, x-axis tick marks are exponentiated
 #' @param xticks Optional user-specified x-axis tick marks. Specify NULL to use 
-#'   the defaults,numeric(0) to omit the x-axis.
+#'   the defaults, numeric(0) to omit the x-axis.
+#' @param xticks.digits The number of digits to allow in the x-axis if this
+#'   is created by default.
 #' @param lineHeight.inc If you plot multiple bars for each line you
 #'   often want to increase the line height.
 #' @param lwd.xaxis lwd for the xaxis
@@ -57,10 +62,11 @@ forestplot2 <- function (labeltext,
   clip                 = c(-Inf, Inf), 
   xlab                 = "", 
   zero                 = 0, 
-  graphwidth           = unit(51, "mm"), 
+  graphwidth           = unit(.3, "npc"), 
   col                  = meta.colors(), 
   xlog                 = FALSE, 
   xticks               = NULL,
+  xticks.digits        = 2,
   lineHeight.inc       = 1.2,
   lwd.xaxis            = NULL,
   lwd.zero             = NULL,
@@ -71,24 +77,33 @@ forestplot2 <- function (labeltext,
 {
   require("grid") || stop("`grid' package not found")
   
-  # Addon: if two-dimentional mean, lower & upper 
-  # the two are printed next to eachother
-  if (NCOL(mean) == NCOL(lower) && NCOL(lower) == NCOL(upper) && NCOL(mean) > 0){
+  if (NCOL(mean) != NCOL(lower) ||
+      NCOL(lower) != NCOL(upper) ||
+      NCOL(mean) == 0)
+      stop('Mean, lower and upper contain invalid number of columns')
+    
+  # Save the original values since the function due to it's inheritance
+  # from the original forestplot needs some changing to the parameters
+  if (xlog){
+    # Change all the values along the log scale
+    org_mean <- log(mean)
+    org_lower <- log(lower)
+    org_upper <- log(upper)
+  }else{
     org_mean <- mean
     org_lower <- lower
     org_upper <- upper
-    
-    # For border calculations etc it's
-    # convenient to have the matrix as a
-    # vector
-    if (NCOL(mean) > 1){
-      mean <- as.vector(mean)
-      lower <- as.vector(lower)
-      upper <- as.vector(upper)
-    }   
-  }else{
-    stop('Mean, lower and upper contain invalid number of columns')
   }
+  
+  
+  # For border calculations etc it's
+  # convenient to have the matrix as a
+  # vector
+  if (NCOL(mean) > 1){
+    mean <- as.vector(mean)
+    lower <- as.vector(lower)
+    upper <- as.vector(upper)
+  }   
   
   # A function that is used to draw the different confidence intervals
   drawNormalCI <- function(LL, OR, UL, size, y.offset = 0.5, clr.line, clr.box) {
@@ -100,7 +115,7 @@ forestplot2 <- function (labeltext,
     cliplower <- convertX(unit(LL, "native"), "npc", valueOnly = TRUE) < 
       0
     box <- convertX(unit(OR, "native"), "npc", valueOnly = TRUE)
-    clipbox <- box < 0 || box > 1
+    skipbox <- box < 0 || box > 1
     
     # A version where arrows are added to the part outside 
     # the limits of the graph
@@ -117,22 +132,18 @@ forestplot2 <- function (labeltext,
       }
       grid.lines(x = lims, y = y.offset, arrow = arrow(ends = ends, 
           length = unit(0.05, "inches")), gp = gpar(col = clr.line, lwd=lwd.ci))
-      if (!clipbox) 
+      if (!skipbox) 
         grid.rect(x = unit(OR, "native"), y=y.offset, width = unit(size, 
             "snpc"), height = unit(size, "snpc"), gp = gpar(fill = clr.box, 
             col = clr.box))
     } else {
-      grid.lines(x = unit(c(LL, UL), "native"), y = y.offset, 
-        gp = gpar(col = clr.line, lwd=lwd.ci))
+      # Don't draw the line if it's no line to draw
+      if (LL != UL)
+        grid.lines(x = unit(c(LL, UL), "native"), y = y.offset, 
+          gp = gpar(col = clr.line, lwd=lwd.ci))
       grid.rect(x = unit(OR, "native"), y=y.offset, width = unit(size, 
           "snpc"), height = unit(size, "snpc"), gp = gpar(fill = clr.box, 
           col = clr.box))
-      if ((convertX(unit(OR, "native") + unit(0.5 * size, 
-              "lines"), "native", valueOnly = TRUE) > UL) && 
-        (convertX(unit(OR, "native") - unit(0.5 * size, 
-              "lines"), "native", valueOnly = TRUE) < LL)) 
-        grid.lines(x = unit(c(LL, UL), "native"), y = 0.5, 
-          gp = gpar(col = clr.line, lwd=lwd.ci))
     }
   }
   drawSummaryCI <- function(LL, OR, UL, size) {
@@ -263,6 +274,11 @@ forestplot2 <- function (labeltext,
       # The row part
       for (i in 1:nr) {
         txt_out <- fetchRowLabel(label_type, labeltext, i, j)
+        # If it's a call created by bquote or similar it
+        # needs evaluating
+        if (is.call(txt_out))
+          txt_out <- eval(txt_out)
+        
         if (is.expression(txt_out) || is.character(txt_out) || is.numeric(txt_out)){
           x <- switch(align[j], l = 0, r = 1, c = 0.5)
           
@@ -327,39 +343,71 @@ forestplot2 <- function (labeltext,
   
   # The base viewport, set the increase.line_height paremeter if it seems a little
   # crowded between the lines that might happen when having multiple comparisons
-  pushViewport(viewport(layout = grid.layout(nr + 1, length(colwidths), 
-        widths = colwidths,
-        heights = unit(c(rep(1, nr), 0.5)*lineHeight.inc, "lines"))))
-  
-  # Get width of the lines
-  cwidth <- (upper - lower)
+  main_grid_layout <- grid.layout(nrow   = nr + 1, 
+                                  ncol   = length(colwidths),
+                                  widths = colwidths,
+                                  heights = unit(c(rep(1, nr), 0.5)*lineHeight.inc, "lines"))
+  pushViewport(viewport(layout = main_grid_layout,
+                        name="Base"))
   
   # If the borders are smaller than the upper/lower limits 
   # then clip the graph. The line will have arrows indicating
   # that it continues beyond the graph
   # The zero bar has to be on the chart though!
-  xrange <- c(
-    min(zero, 
-      max(
-        min(lower, na.rm = TRUE), 
-        clip[1])
-    ), 
-    max(
-      zero,
-      min(
-        max(upper, na.rm = TRUE), 
-        clip[2])
-    )
-  )
+  xrange <- function(){
+    top <- max(upper, na.rm = TRUE)
+    bottom <- min(lower, na.rm = TRUE)
+    # Although perhops not entirely intuitive 
+    # I've decided that the function should
+    # extend the range to include the clip
+    # endpoints unless there are prespecified 
+    # ticks indicating that the end-points aren't
+    # included in the x-axis
+    if (is.null(xticks)){
+      ret <- c(
+        min(
+          zero, 
+          ifelse(is.infinite(clip[1]),
+            bottom,
+            clip[1])
+        ), 
+        max(
+          zero,
+          ifelse(is.infinite(clip[2]),
+            top,
+            clip[2])
+        )
+      )
+      
+    }else{
+      ret <- c(
+        min(
+          c(zero, bottom, xticks)
+        ), 
+        max(
+          c(zero, top, xticks)
+        )
+      )
+    }
+    
+    if (xlog){
+      return(log(ret))
+    }else{
+      return(ret)
+    }
+  } 
   
   # Create the fourth argument 4 the drawNormalCI() function 
-  
-  # If boxsize was provided override the info
   if (!is.null(boxsize)){
     # If matrix is provided this will convert it
     # to a vector but it doesn't matter in this case
-    info <- rep(boxsize, length = length(cwidth))
+    info <- rep(boxsize, length = length(mean))
   }else{
+    # Get width of the lines
+    cwidth <- (upper - lower)
+    # Set cwidth to min value if the value is invalid
+    # this can be the case for reference points
+    cwidth[cwidth <= 0 | is.na(cwidth)] <- min(cwidth[cwidth > 0])
     info <- 1/cwidth
     info <- info/max(info[!is.summary], na.rm = TRUE)
     info[is.summary] <- 1
@@ -373,84 +421,121 @@ forestplot2 <- function (labeltext,
       for (i in 1:nr) {
         if (!is.null(labels[[j]][[i]])) {
           # The column position is 2 * j - 1 due to the column gap
-          pushViewport(viewport(layout.pos.row = i, 
-              layout.pos.col = 2 * j - 1))
+          vp <- viewport(layout.pos.row = i, 
+                         layout.pos.col = 2 * j - 1,
+                         name           = sprintf("Label_vp_%d_%d", i, 2*j-1))
+          pushViewport(vp)
           grid.draw(labels[[j]][[i]])
-          popViewport()
+          upViewport()
         }
       }
     }
   }
   printLabels()
-  
-  # Print x-axis and change everything to log scale if needed
-  if (xlog) {
-    xrange <- log(xrange)
-    clip[clip < 0] <- 0
-    clip <- log(clip)
-    zero <- log(zero)
-    
-    # Change all the values along the log scale
-    org_lower <- log(org_lower)
-    org_upper <- log(org_upper)
-    org_mean <- log(org_mean)
-    
-    pushViewport(viewport(layout.pos.col = 2 * nc + 1, xscale = xrange))
-    
-    # Print y-axis - the vertical "zero" axis
-    grid.lines(x = unit(zero, "native"), 
-      y = 0:1, 
-      gp = gpar(col = col$zero, lwd=lwd.zero))
-    
-    if (is.null(xticks)) {
-      ticks <- pretty(exp(xrange))
-      ticks <- ticks[ticks > 0]
-    } else {
-      ticks <- xticks
-    }
-    
-    # Draw the x-axis if there are any ticks
-    if (length(ticks)) {
-      # Add the endpoint ticks to the tick list if 
-      # it's not already there
-      if (min(lower, na.rm = TRUE) < clip[1]) 
-        ticks <- unique(c(exp(clip[1]), ticks))
-      if (max(upper, na.rm = TRUE) > clip[2]) 
-        ticks <- unique(c(ticks, exp(clip[2])))
-      
-      xax <- xaxisGrob(gp = gpar(cex = cex*0.6, col = col$axes, lwd=lwd.xaxis), 
-        at = log(ticks), name = "xax")
-      ticklabels <- ifelse(ticks < 1 | abs(floor(ticks*10)-ticks*10) > 0, 
-        format(ticks, digits = 2), format(ticks, digits = 1))
-      xax1 <- editGrob(xax, gPath("labels"), 
-        label = ticklabels)
-      grid.draw(xax1)
-    }
-    
-  } else {
-    pushViewport(viewport(layout.pos.col = 2 * nc + 1, xscale = xrange))
-    
-    # Print y-axis - the vertical "zero" axis
-    grid.lines(x = unit(zero, "native"), y = 0:1, gp = gpar(col = col$zero, lwd=lwd.zero))
-    
-    if (is.null(xticks)) {
-      grid.xaxis(gp = gpar(cex = cex*0.6, col = col$axes, lwd=lwd.xaxis))
-    } else if (length(xticks)) {
-      grid.xaxis(at = xticks, gp = gpar(cex = cex*0.6, col = col$axes, lwd=lwd.xaxis))
+  getXTicks <- function(){
+    if (is.null(xticks) && xlog){
+      xticks <- getTicks(exp(xrange()), exp=TRUE)
     }
   }
-  
-  # Write the label for the x-axis
-  grid.text(xlab, y = unit(-2, "lines"), gp = gpar(col = col$axes, cex=cex))
-  popViewport()
+  printXaxis <- function(){
+    # Print x-axis and change everything to log scale if needed
+    if (xlog) {
+      clip[clip < 0] <- 0
+      clip <- log(clip)
+      zero <- log(zero)
+      
+      axis_vp <- viewport(layout.pos.col = 2 * nc + 1, 
+                          xscale         = xrange(),
+                          name           = "axis")
+      # Print y-axis - the vertical "zero" axis
+      grid.lines(x = unit(zero, "native"), 
+        y = 0:1, 
+        gp = gpar(col = col$zero, lwd=lwd.zero))
+      
+      if (is.null(xticks)) {
+        # ticks <- pretty(exp(xrange()))
+        # ticks <- ticks[ticks > 0]
+        ticks <- getTicks(exp(xrange()), clip=clip, exp=TRUE, digits=xticks.digits)
+        
+        # Add the endpoint ticks to the tick list if 
+        # it's not already there
+        if (is.infinite(clip[1]) == FALSE &&
+          min(ticks, na.rm = TRUE) < clip[1]) 
+          ticks <- unique(c(exp(clip[1]), ticks))
+        
+        if (is.infinite(clip[2]) == FALSE &&
+          max(ticks, na.rm = TRUE) > clip[2]) 
+          ticks <- unique(c(ticks, exp(clip[2])))
+      } else {
+        ticks <- xticks
+      }
+      
+      # Draw the x-axis if there are any ticks
+      if (length(ticks)) {
+        
+        # Decide on the number of digits, if below zero then there should
+        # be by default one more digit
+        ticklabels <- ifelse(ticks < 1 | abs(floor(ticks*10)-ticks*10) > 0, 
+          formatC(ticks, digits = 2, format="f", drop0trailing=FALSE), format(ticks, digits = 1))
+        xticks <- log(ticks)
+      }else{
+        xticks <- NULL
+        ticklabels <- FALSE
+      }
+
+      
+    } else {
+      axis_vp <- viewport(layout.pos.col = 2 * nc + 1, 
+                          xscale         = xrange(),
+                          name           = "axis")
+      
+      if (is.null(xticks)){
+        ticks <- getTicks(exp(xrange()), clip=clip, digits=xticks.digits)
+        
+        # Add the endpoint ticks to the tick list if 
+        # it's not already there
+        if (is.infinite(clip[1]) == FALSE &&
+          min(ticks, na.rm = TRUE) < clip[1]) 
+          ticks <- unique(c(exp(clip[1]), ticks))
+        
+        if (is.infinite(clip[2]) == FALSE &&
+          max(ticks, na.rm = TRUE) > clip[2]) 
+          ticks <- unique(c(ticks, exp(clip[2])))
+        
+        ticklabels <- TRUE
+        
+      } else{
+        ticklabels <- TRUE
+      }
+      
+    }
+
+    # Now plot the axis inkluding the horizontal bar
+    pushViewport(axis_vp)
+    
+    # Plot the vertical "zero" axis
+    grid.lines(x  = unit(zero, "native"), 
+               y  = 0:1, 
+               gp = gpar(col = col$zero, lwd=lwd.zero))
+
+    # Omit the axis if specified as 0
+    if(length(xticks) != 1 || xticks == 0){
+      # Plot the actual x-axis
+      grid.xaxis(at    = xticks, 
+        label = ticklabels,
+        gp    = gpar(cex = cex*0.6, col = col$axes, lwd=lwd.xaxis))
+    }
+    
+    # Write the label for the x-axis
+    grid.text(xlab, y = unit(-2, "lines"), gp = gpar(col = col$axes, cex=cex))
+    upViewport()
+  }
+  printXaxis()
   
   # Output the different confidence intervals
   for (i in 1:nr) {
     if (is.na(mean[i])) 
       next
-    pushViewport(viewport(layout.pos.row = i, 
-        layout.pos.col = 2 * nc + 1, 
-        xscale = xrange))
     
     if (is.matrix(org_mean)){
       low_values <- org_lower[i,] 
@@ -467,9 +552,17 @@ forestplot2 <- function (labeltext,
     # The line and box colors may vary
     clr.line <- rep(col$line, length=length(low_values))
     clr.box <- rep(col$box, length=length(low_values))
-    if (is.summary[i]) 
+
+    line_vp <- viewport(layout.pos.row = i,
+                        layout.pos.col = 2 * nc + 1, 
+                        xscale = xrange(),
+                        name = sprintf("Line_%d_%d", i, 2 * nc + 1))
+    pushViewport(line_vp)
+    
+    if (is.summary[i]){
       drawSummaryCI(low_values, mean_values, up_values, info_values)
-    else{
+    }else{
+      # Draw multiple confidence intervals
       if (length(low_values) > 1){
         y.offset_base <- 0.2
         y.offset_increase <- (1-y.offset_base*2)/length(low_values)
@@ -490,9 +583,9 @@ forestplot2 <- function (labeltext,
     }
     
     
-    popViewport()
+    upViewport()
   }
-  popViewport()
+  upViewport()
 }
 
 #' A copy of rmeta meta.colors. If you have several values per row in a

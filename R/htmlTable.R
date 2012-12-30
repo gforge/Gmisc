@@ -5,7 +5,7 @@
 #' \code{\link{latex}()} colgroup and rowgroup functions in HTML. The
 #' code outputted is perhaps a little raw compared to fully
 #' CSS formatted HTML. The reason for this is that I've chosen
-#' maximum compatibility with OpenOffice that lacks any more 
+#' maximum compatibility with LibreOffice/OpenOffice that lacks any more 
 #' advanced understanding of HTML & CSS. 
 #' 
 #' If you set the option table_counter you will get a Table 1,2,3
@@ -180,7 +180,7 @@ htmlTable <- function(x,
   if (is.character(x))
     x <- matrix(str_replace(x, "\\\\%", "%"), ncol=ncol(x))
   
-  if (length(caption) > 0){
+  if (length(caption) == 1){
     tc <- getOption("table_counter")
     if (is.null(tc)){
       tc_string <- ""
@@ -202,14 +202,14 @@ htmlTable <- function(x,
     }
     
     caption <- sprintf("%s%s", tc_string, caption)
-    if (length(label) > 0){
+    if (length(label) == 1){
       caption <- sprintf("\n\t<a name='%s'>%s</a>", label, caption) 
     }else if(is.numeric(tc)){
       caption <- sprintf("\n\t<a name='table_%d'>%s</a>", tc, caption)
     }
     
     table_str <- sprintf("%s%s</caption>", table_str, caption)
-  }else if (length(label) > 0){
+  }else if (length(label) == 1){
     table_str <- sprintf("%s\n\t<a name='%s'></a>", table_str, label) 
   }
   

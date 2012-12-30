@@ -38,7 +38,7 @@ a_out <- anova(fit_lrm,
                dec.F = 1,
                ss    = FALSE)
              
-simpleRmsAnovaLatex(a_out,
+simpleRmsAnovaLatex(a_out, 
                      subregexps = rbind(c("age", "Age"),
                                         c("cholesterol", "Cholesterol"),
                                         c("sex", "Sex")),

@@ -60,7 +60,7 @@ printCrudeAndAdjustedModel <- function(model,
   require("miscTools") || stop("`miscTools' package not found")
   
   # Just to simplify the checks below
-  if (length(add_references) && add_references == FALSE)
+  if (length(add_references) == 1 && add_references == FALSE)
     add_references <- NULL
   
   # Convert the x that should be a model into a matrix that
@@ -102,6 +102,12 @@ printCrudeAndAdjustedModel <- function(model,
     # round to appropriate number of digits and 
     # format into a string as specified in the sprintf string
     format_ci <- function(ci){
+      # If there is an NA then we don't know
+      # much about the data
+      if (any(is.na(ci))){
+        return("-")
+      }
+      
       upper <- max(ci)
       if (upper > max)
         upper <- sprintf(ifelse(html, "&gt; %s", "$> %s$"), format_number(max))
@@ -123,9 +129,10 @@ printCrudeAndAdjustedModel <- function(model,
       tapply(x[,4], 1:NROW(x), FUN = format_number),
       apply(x[,5:6], MARGIN=1, FUN=format_ci))
     
-    colnames(ret) <- c(colnames(x)[1], 
+    colnames(ret) <- c(
+      colnames(x)[1], 
       sprintf("%s to %s", colnames(x)[2], colnames(x)[3]),
-      colnames(x)[3], 
+      colnames(x)[4], 
       sprintf("%s to %s", colnames(x)[5], colnames(x)[6]))
     
     rownames(ret) <- rownames(x)
@@ -150,6 +157,9 @@ printCrudeAndAdjustedModel <- function(model,
   # Add reference according to the model
   # this is of course for factored variables
   addReferenceFromModelData <- function(values){
+    if (is.null(model[["variance.inflation.impute"]]) == FALSE)
+      stop("The model seems to have been created using fit.mult.impute and unfortunately that doesn't work with the current version of this function.")
+    
     if ("rms" %nin% class(model) &&
       all(class(model) == c("glm", "lm")) == FALSE &&
       length(class(model)) == 1 && class(model) %nin% c("lm", "glm"))
@@ -162,57 +172,95 @@ printCrudeAndAdjustedModel <- function(model,
 
     vars <- getModelVariables(model)
     
-    n.rgroup <- c()
-    rgroup <- c()
+    n.rgroup <- c(NROW(values))
+    rgroup <- c("")
     for(vn in vars)
     {
-      matches <- grep(sprintf("^%s[=]{0,1}(%s)$", vn, paste(levels(ds[, vn]), collapse="|")), rownames(values))
-      if (length(matches) > 0 && is.factor(ds[,vn])){
-        # TODO: Could probably be extended to other regression models but needs testing
-        used_factors <- gsub(sprintf("^%s[=]{0,1}", vn), "", rownames(values)[matches])
-        
-        # Fetch the reference level, would probably work just as well with a levels()[1]
-        reference <- levels(ds[,vn])[levels(ds[,vn]) %nin% used_factors]
-        if (length(reference) > 1)
-          stop(sprintf("Error occurred in looking for reference, found %d reference categories instead of expected 1", length(reference)))
-        
-        # Remove the main label as that goes into the rgroup
-        rownames(values)[matches] <- used_factors
-        
-        # Add rgroup information
-        lab <- ifelse (label(ds[,vn]) != "", label(ds[,vn]), vn)
-        if (length(n.rgroup) > 0 && any(cumsum(n.rgroup) > matches[1])){
-          rgroup <- c(rgroup[cumsum(n.rgroup) < matches[1]], lab, rgroup[cumsum(n.rgroup) >= matches[1]])
+      if (is.factor(ds[,vn])){
+        # Sometimes there is a subset argument or something leading to 
+        # that one of the factors isn't included and therefore I use
+        # this perhaps slightly trickier identification of all the factors
+        available_factors <- as.character(unique(ds[, vn][is.na(ds[, vn]) == FALSE]))
+        # We need to clean from characters that might cause issues with the 
+        # regular expression
+        regex_clean_levels <- gsub("([()\\[\\]{}\\.])", "\\\\\\1", available_factors, perl=TRUE)
+        matches <- grep(
+          sprintf("^%s[=]{0,1}(%s)$", vn, 
+            paste(regex_clean_levels,
+              collapse="|")), 
+          rownames(values))
+        if (length(matches) > 0){
+          # TODO: Could probably be extended to other regression models but needs testing
+          used_factors <- gsub(sprintf("^%s[=]{0,1}", vn), "", rownames(values)[matches])
           
-          # Remove the rows from the next group to remain constant number of groups
-          more <- cumsum(n.rgroup) >= matches[1]
-          less <- cumsum(n.rgroup) < matches[1]
-          n.rgroup[more][1] <- n.rgroup[more][1] - length(used_factors)  
-          n.rgroup <- c(n.rgroup[less], length(used_factors) + 1, n.rgroup[more])
+          # Fetch the reference level, would probably work just as well with a levels()[1]
+          reference <- available_factors[available_factors %nin% used_factors]
+          if (length(reference) > 1)
+            stop(sprintf("Error occurred in looking for reference, found %d reference categories instead of expected 1, %s", 
+                length(reference), 
+                paste(reference, collapse=", ")))
+          
+          # Remove the main label as that goes into the rgroup
+          rownames(values)[matches] <- used_factors
+          
+          # Add rgroup information
+          # ... yes this got way more complicated than desired but it seems to work :-)
+          lab <- ifelse (label(ds[,vn]) != "", label(ds[,vn]), vn)
+          
+          group_2_split <- which(cumsum(n.rgroup) >= matches[1])
+          if (length(group_2_split) == 0)
+            stop(sprintf("Could not find the group at match %d within %d rows", matches[1], sum(n.rgroup)))
+          else
+            group_2_split <- group_2_split[1]
+          
+          if (rgroup[group_2_split] != "")
+            stop(sprintf("An error occurred when adding the group labels, the software tried to overwrite an already existing group: %s", rgroup[group_2_split]))
+          
+          row_prior_match <- matches[1]-1
+          
+          rgroup_b4 <- rgroup[1:(group_2_split-1)]
+          n.rgroup_b4 <- n.rgroup[1:(group_2_split-1)]
+          rgroup_after <- rgroup[(group_2_split + 1):length(rgroup)]
+          n.rgroup_after <- n.rgroup[(group_2_split + 1):length(n.rgroup)]
+          
+          if (group_2_split == 1){
+            rgroup_b4 <- NULL
+            n.rgroup_b4 <- NULL
+          }
+          # It can be both the first and the last group
+          # avoid therefore an else here
+          if (group_2_split == length(rgroup)){
+            rgroup_after <- NULL
+            n.rgroup_after <- NULL
+          }
+          
+          rgroup <- c(rgroup_b4, 
+            "", lab, "",
+            rgroup_after)
+          n.rgroup <- c(n.rgroup_b4,
+            row_prior_match-sum(n.rgroup_b4), # The number of rows prior to our variable
+            length(used_factors) + 1, # The number of factors + the one were adding
+            n.rgroup[group_2_split] - 
+              (row_prior_match-sum(n.rgroup_b4)) - 
+              length(used_factors),  # The remaining rows from that group, if 0 then removed below
+            n.rgroup_after)
+          
           
           # Remove empty group
           if (any(n.rgroup == 0)){
             rgroup <- rgroup[-which(n.rgroup == 0)]
             n.rgroup <- n.rgroup[-which(n.rgroup == 0)]
           }
-        }else{
-          if (matches[1] == 1){
-            rgroup <- c(lab, "")
-            n.rgroup <- c(length(used_factors) + 1, NROW(values) - length(used_factors))
-          }else{
-            rgroup <- c("", lab)
-            n.rgroup <- c(matches[1] - 1, length(used_factors) + 1)
-            if (NROW(values) - sum(n.rgroup) + 1 > 0){
-              rgroup <- append(rgroup, "")
-              n.rgroup <- append(n.rgroup, NROW(values) - sum(n.rgroup) + 1)
-            }
-          }
-        }
-        
-        values <- insertRow(values, 
+          
+          if (any(n.rgroup < 0))
+            stop(sprintf("Sorry, the software created an invalid group length of less than 0, this occurred when adding the variable: %s (%s)", vn, lab))
+          
+          values <- insertRow(values, 
             matches[1], 
             rep(c(reference_zero_effect, "ref"), times=2),  
             rName=reference)
+        }
+               
       }
     }
     
@@ -234,10 +282,14 @@ printCrudeAndAdjustedModel <- function(model,
     }
     
     reorderd_groups <- x[unlist(greps), ]
-    if (length(reorderd_groups) > length(x)){
-      stop(sprintf("An error occurred when reordering, there are now more variables than initially found, %d > %d", length(reorderd_groups), length(x)))
-    }else if (length(reorderd_groups) < length(x)){
-      warning(sprintf("Not all variables selected from the model when re-ordering, %d < %d", length(reorderd_groups), length(x)))
+    if (any(rownames(reorderd_groups) %nin% rownames(x))){
+      stop(
+        sprintf("An error occurred when reordering, there are now more variables than initially found, the following new vars exist: %s",
+          paste(rownames(reorderd_groups)[rownames(reorderd_groups) %nin% rownames(x)], collapse=", ")))
+    }else if (any(rownames(x) %nin% rownames(reorderd_groups))){
+      warning(
+        sprintf("Not all variables selected from the model when re-ordering, these were not included: %s",
+          paste(rownames(x)[rownames(x) %nin% rownames(reorderd_groups)], collapse=", ")))
     }
     
     if (length(add_references) == 1 && 
@@ -316,9 +368,16 @@ printCrudeAndAdjustedModel <- function(model,
     
   }
   
+  coef_name <- ifelse("coxph" %in% class(model), 
+    "HR", 
+    ifelse("lrm" %in% class(model) |
+          ("glm" %in% class(model) &&
+          model$family$family == "binomial"),
+      "OR",
+      "Coef"))
   if (html){
     return(htmlTable(reorderd_groups, 
-        headings      = sub("(Crude|Adjusted)", "Coef", colnames(reorderd_groups)), 
+        headings      = sub("(Crude|Adjusted)", coef_name, colnames(reorderd_groups)), 
         rowlabel.just = "l", 
         rowlabel      = "Variable",
         rowname       = unlist(rn),
@@ -329,7 +388,7 @@ printCrudeAndAdjustedModel <- function(model,
         ...))
   }else{
     return(latex(reorderd_groups, 
-        colheads      = latexTranslate(sub("(Crude|Adjusted)", "Coef", colnames(reorderd_groups))), 
+        colheads      = latexTranslate(sub("(Crude|Adjusted)", coef_name, colnames(reorderd_groups))), 
         rowlabel.just = "l", 
         rowlabel      = "Variable",
         rowname       = latexTranslate(unlist(rn)),
