@@ -50,4 +50,5 @@ printCrudeAndAdjustedModel(fit,
                            order=c("col", "gear"), 
                            groups=c("Color", "Gears"),
                            add_references=c("Black", NA),
-                           ctable=TRUE)
+                           ctable=TRUE,
+                           output = "html")

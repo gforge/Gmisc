@@ -385,7 +385,7 @@ forestplotRegrObj <- function(
   }
   
   # TODO: maybe change to a different meta structure
-  t.clr <- meta.colors(
+  t.clr <- fpColors(
     box=box_clr, 
     lines=line_clr, 
     zero=col.zero)

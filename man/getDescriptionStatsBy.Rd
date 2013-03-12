@@ -6,9 +6,9 @@
     NEJMstyle = FALSE, numbers_first = TRUE,
     statistics = FALSE, min_pval = 10^-4,
     show_missing = FALSE,
-    continuous_function = describe_mean,
-    prop_function = describe_prop,
-    factor_function = describe_factors,
+    continuous_function = describeMean,
+    prop_function = describeProp,
+    factor_function = describeFactors,
     show_all_values = FALSE, hrzl_prop = FALSE,
     add_total_col = hrzl_prop, total_col_show_perc = TRUE,
     use_units = FALSE)
@@ -36,13 +36,13 @@
 
   \item{continuous_function}{The method to describe
   continuous variables. The default is
-  \code{\link{describe_mean}}.}
+  \code{\link{describeMean}}.}
 
   \item{prop_function}{The method used to describe
-  proportions, see \code{\link{describe_prop}}.}
+  proportions, see \code{\link{describeProp}}.}
 
   \item{factor_function}{The method used to describe
-  factors, see \code{\link{describe_factors}}.}
+  factors, see \code{\link{describeFactors}}.}
 
   \item{statistics}{Add statistics, fisher test for
   proportions and Wilcoxon for continuous variables}
@@ -160,7 +160,7 @@ getDescriptionStatsBy(mtcars$col_with_missing, mtcars$am, statistics=TRUE, show_
   max
 }
 \seealso{
-  \code{\link{describe_mean}}, \code{\link{describe_prop}},
-  \code{\link{describe_factors}}, \code{\link{htmlTable}}
+  \code{\link{describeMean}}, \code{\link{describeProp}},
+  \code{\link{describeFactors}}, \code{\link{htmlTable}}
 }
 

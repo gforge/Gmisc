@@ -1,5 +1,16 @@
 NEWS for the Gmisc package
 
+Changes for 0.4.9.1
+-------------------
+* Change the option for printCrudeAndAdjustedModel from just html to
+  output alternatives html, latex or raw
+* Altered the name of the describe_ functions to follow the camelCase
+  style, i.e. describe_mean is now describeMean
+   
+Changes for 0.4.9.0
+-------------------
+* Added the getSvdMostInfluential function
+
 Changes for 0.4.8.2
 -------------------
 * The simpleRmsAnovaLatex now has a better handling of the low p-values

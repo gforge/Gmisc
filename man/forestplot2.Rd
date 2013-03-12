@@ -6,7 +6,7 @@
     is.summary = FALSE, fontfamily.summary = NULL,
     fontfamily.labelrow = NULL, clip = c(-Inf, Inf),
     xlab = "", zero = 0, graphwidth = unit(0.3, "npc"),
-    col = meta.colors(), xlog = FALSE, xticks = NULL,
+    col = fpColors(), xlog = FALSE, xticks = NULL,
     xticks.digits = 2, lineHeight.inc = 1.2,
     lwd.xaxis = NULL, lwd.zero = NULL, lwd.ci = NULL,
     cex = 1, boxsize = NULL, ...)
@@ -55,7 +55,7 @@
   \item{graphwidth}{Width of confidence interval graph, see
   \code{\link{unit}} for details on how to utilize mm etc.}
 
-  \item{col}{See \code{\link{meta.colors}}}
+  \item{col}{See \code{\link{fpColors}}}
 
   \item{xlog}{If TRUE, x-axis tick marks are exponentiated}
 
@@ -89,7 +89,7 @@
 \description{
   forestplot2 is based on the rmeta 2.16 forestplot
   function. The original rmeta package is requiered for the
-  \code{\link{meta.colors}()} function. This function
+  \code{\link{fpColors}()} function. This function
   resolves some limitations of the original functions such
   as adding expressions and using multiple confidence bands
   for the same label.
@@ -136,7 +136,7 @@ coef <- cbind(coef1, coef2)
 low <- cbind(low1, low2)
 high <- cbind(high1, high2)
 forestplot2(row_names, coef, low, high, zero = 1, boxsize=0.5,
-  col=meta.colors(box=c("royalblue", "gold"),
+  col=fpColors(box=c("royalblue", "gold"),
     line=c("darkblue", "orange")))
 
 detach(test_data)
@@ -155,7 +155,7 @@ forestplot2(labeltext = row_names,
   boxsize   = test_data$boxsize,
   zero      = 1,
   xlog      = TRUE,
-  col = meta.colors(lines="red", box="darkred"))
+  col = fpColors(lines="red", box="darkred"))
 
 par(ask=ask)
 }

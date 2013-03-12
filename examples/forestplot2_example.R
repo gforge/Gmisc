@@ -35,7 +35,7 @@ coef <- cbind(coef1, coef2)
 low <- cbind(low1, low2)
 high <- cbind(high1, high2)
 forestplot2(row_names, coef, low, high, zero = 1, boxsize=0.5,
-  col=meta.colors(box=c("royalblue", "gold"),
+  col=fpColors(box=c("royalblue", "gold"),
     line=c("darkblue", "orange")))
 
 detach(test_data)
@@ -54,6 +54,6 @@ forestplot2(labeltext = row_names,
   boxsize   = test_data$boxsize,
   zero      = 1,
   xlog      = TRUE,
-  col = meta.colors(lines="red", box="darkred"))
+  col = fpColors(lines="red", box="darkred"))
 
 par(ask=ask)

@@ -100,7 +100,7 @@ forestplotCombineRegrObj <- function(
                                                ref_labels = ref_labels,
                                                add_first_as_ref = add_first_as_ref)
   
-  t.clr <- meta.colors(box="royalblue",
+  t.clr <- fpColors(box="royalblue",
     lines="darkblue", 
     summary="royalblue", 
     zero=col.zero)

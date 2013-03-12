@@ -18,9 +18,9 @@
 #' @param show_missing Show the missing values. This adds another row if 
 #'  there are any missing values.
 #' @param continuous_function The method to describe continuous variables. The
-#'  default is \code{\link{describe_mean}}.
-#' @param prop_function The method used to describe proportions, see \code{\link{describe_prop}}.
-#' @param factor_function The method used to describe factors, see \code{\link{describe_factors}}.
+#'  default is \code{\link{describeMean}}.
+#' @param prop_function The method used to describe proportions, see \code{\link{describeProp}}.
+#' @param factor_function The method used to describe factors, see \code{\link{describeFactors}}.
 #' @param statistics Add statistics, fisher test for proportions and Wilcoxon
 #'  for continuous variables
 #' @param min_pval The minimum p-value before doing a "< 0.0001"
@@ -49,7 +49,7 @@
 #' 
 #' @example examples/getDescriptionStatsBy_example.R
 #' 
-#' @seealso \code{\link{describe_mean}}, \code{\link{describe_prop}}, \code{\link{describe_factors}}, \code{\link{htmlTable}}
+#' @seealso \code{\link{describeMean}}, \code{\link{describeProp}}, \code{\link{describeFactors}}, \code{\link{htmlTable}}
 #' 
 #' @author max
 #' @export
@@ -59,9 +59,9 @@ getDescriptionStatsBy <-
     numbers_first = TRUE, 
     statistics=FALSE, min_pval = 10^-4,
     show_missing = FALSE,
-    continuous_function = describe_mean,
-    prop_function = describe_prop,
-    factor_function = describe_factors,
+    continuous_function = describeMean,
+    prop_function = describeProp,
+    factor_function = describeFactors,
     show_all_values = FALSE,
     hrzl_prop = FALSE,
     add_total_col = hrzl_prop,
@@ -78,7 +78,7 @@ getDescriptionStatsBy <-
   # If all values are to be shown then simply use
   # the factors function
   if (show_all_values)
-    prop_function <- describe_factors
+    prop_function <- describeFactors
   
   getFormattedPval <- function(p_val){
     if (p_val < min_pval)
@@ -157,9 +157,9 @@ getDescriptionStatsBy <-
     
     
     if (length(t[[1]]) != 1){
-      if (deparse(substitute(continuous_function)) == "describe_mean")
+      if (deparse(substitute(continuous_function)) == "describeMean")
         names(t[[1]][1]) = "Mean"
-      else if (deparse(substitute(continuous_function)) == "describe_median")
+      else if (deparse(substitute(continuous_function)) == "describeMedian")
         names(t[[1]][1]) = "Median"
       else
         names(t[[1]][1]) = deparse(substitute(continuous_function))
@@ -249,22 +249,14 @@ getDescriptionStatsBy <-
     rownames(results) <- name
   
   if (add_total_col){
-    if (is.factor(x)){
-      if (total_col_show_perc)
-        total_table <- factor_function(x[is.na(by) == FALSE], html=html, digits=digits,
-          number_first=numbers_first, show_missing = show_missing)
-      else{
-        total_table <- table(x[is.na(by) == FALSE], useNA=show_missing)
-        names(total_table)[is.na(names(total_table))] <- "Missing"
-      }
-      
-    }else{
-      total_table <- continuous_function(x[is.na(by) == FALSE], html=html, digits=digits, number_first=numbers_first, show_missing = show_missing)
-      # If a continuous variable has two rows then it's assumed that the second is the missing
-      if (length(total_table) == 2 &&
-        total_col_show_perc == FALSE)
-        total_table[2] <- sum(is.na(x))
-    }
+    total_table <- prGetStatistics(x[is.na(by) == FALSE], 
+      show_perc=total_col_show_perc, 
+      html=html, 
+      digits=digits, 
+      numbers_first=numbers_first, 
+      show_missing=show_missing, 
+      continuous_function = continuous_function, 
+      factor_function = factor_function)
     
     if (add_total_col != "last"){
       results <- cbind(total_table, results)

@@ -6,8 +6,8 @@
     digits = 2, max = Inf, min = -Inf,
     sprintf_ci_str = "\%s to \%s", add_references = FALSE,
     reference_zero_effect = 1, groups = NULL,
-    rowname.fn = NULL, use_labels = TRUE, html = FALSE,
-    ...)
+    rowname.fn = NULL, use_labels = TRUE,
+    output = c("html", "latex", "raw"), ...)
 }
 \arguments{
   \item{model}{A regression model}
@@ -63,8 +63,11 @@
   the name, that is if there is a label and it isn't a
   factor.}
 
-  \item{html}{If HTML output through the htmlTable should
-  be used instead of traditional latex() function}
+  \item{output}{Choose the type of output that you want
+  returned, html, latex or raw.  The raw alternative is a
+  list with the arguments that would be sent to the
+  latex/htmlTable functions, where x is the main content of
+  the table.}
 
   \item{...}{Passed onto the Hmisc::\code{\link{latex}}
   function, \code{\link{htmlTable}}}
@@ -131,7 +134,8 @@ printCrudeAndAdjustedModel(fit,
                            order=c("col", "gear"), 
                            groups=c("Color", "Gears"),
                            add_references=c("Black", NA),
-                           ctable=TRUE)
+                           ctable=TRUE,
+                           output = "html")
 }
 \author{
   max

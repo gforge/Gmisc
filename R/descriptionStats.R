@@ -18,7 +18,7 @@
 #'  function with the total number in each group, i.e. if done in a by
 #'  manner as in \code{\link{getDescriptionStatsBy}} it needs to provide
 #'  the number before the by() command. Note! This calls the  
-#'  \code{\link{describe_factors}} since the horizontal interpretation looses the 
+#'  \code{\link{describeFactors}} since the horizontal interpretation looses the 
 #'  vertical information in the second category and is thus better 
 #'  interpreted as a whole.
 #' @return A string formatted for printing either latex by  HTML
@@ -26,12 +26,12 @@
 #' @seealso \code{\link{getDescriptionStatsBy}}
 #' 
 #' @examples
-#' describe_mean(1:10)
-#' describe_mean(c(1:10, NA), show_missing=TRUE)
+#' describeMean(1:10)
+#' describeMean(c(1:10, NA), show_missing=TRUE)
 #' 
 #' @author max
 #' @export
-describe_mean <- function(x, html=FALSE, digits=1, number_first = TRUE, show_missing = FALSE, horizontal_proportions=NULL){
+describeMean <- function(x, html=FALSE, digits=1, number_first = TRUE, show_missing = FALSE, horizontal_proportions=NULL){
   show_missing <- prConvertShowMissing(show_missing)
 
   if (html)
@@ -47,7 +47,7 @@ describe_mean <- function(x, html=FALSE, digits=1, number_first = TRUE, show_mis
     ret <- sprintf("$%s$", ret)
   
   if (show_missing %in% c("ifany", "always") & sum(is.na(x))>0){
-    missing <- describe_factors(is.na(x), number_first = number_first, digits = digits, html = html,
+    missing <- describeFactors(is.na(x), number_first = number_first, digits = digits, html = html,
       horizontal_proportions = horizontal_proportions)
     ret <- rbind(ret, missing["TRUE", ])
     rownames(ret) <- c("Mean (SD)", "Missing")
@@ -84,7 +84,7 @@ describe_mean <- function(x, html=FALSE, digits=1, number_first = TRUE, show_mis
 #'  function with the total number in each group, i.e. if done in a by
 #'  manner as in \code{\link{getDescriptionStatsBy}} it needs to provide
 #'  the number before the by() command. Note! This calls the  
-#'  \code{\link{describe_factors}} since the horizontal interpretation looses the 
+#'  \code{\link{describeFactors}} since the horizontal interpretation looses the 
 #'  vertical information in the second category and is thus better 
 #'  interpreted as a whole.
 #' @return A string formatted for printing either latex by  HTML
@@ -92,12 +92,12 @@ describe_mean <- function(x, html=FALSE, digits=1, number_first = TRUE, show_mis
 #' @seealso \code{\link{getDescriptionStatsBy}}
 #' 
 #' @examples
-#' describe_median(1:10)
-#' describe_median(c(1:10, NA), show_missing=TRUE)
+#' describeMedian(1:10)
+#' describeMedian(c(1:10, NA), show_missing=TRUE)
 #' 
 #' @author max
 #' @export
-describe_median <- function(x, iqr=TRUE, html=FALSE, digits=1, number_first = TRUE, show_missing = FALSE, horizontal_proportions=NULL){
+describeMedian <- function(x, iqr=TRUE, html=FALSE, digits=1, number_first = TRUE, show_missing = FALSE, horizontal_proportions=NULL){
   show_missing <- prConvertShowMissing(show_missing)
   
   if (iqr)
@@ -111,7 +111,7 @@ describe_median <- function(x, iqr=TRUE, html=FALSE, digits=1, number_first = TR
     quantile(x, probs=range_quantiles[2], na.rm=T)))
   
   if (show_missing %in% c("ifany", "always") & sum(is.na(x))>0){
-    missing <- describe_factors(is.na(x), number_first = number_first, digits = digits, html = html, 
+    missing <- describeFactors(is.na(x), number_first = number_first, digits = digits, html = html, 
       horizontal_proportions = horizontal_proportions)
     ret <- rbind(ret, missing["TRUE", ])
     rownames(ret) <- c(
@@ -141,7 +141,7 @@ describe_median <- function(x, iqr=TRUE, html=FALSE, digits=1, number_first = TR
 #' @param number_first If the number should be given or if the percentage
 #'  should be presented first. The second is encapsulated in parentheses ().
 #' @param show_missing This indicates if missing should be added as a separate
-#'  row below all other. This will always be converted into the describe_factor
+#'  row below all other. This will always be converted into the describeFactor
 #'  function if there is a missing row.
 #' @param horizontal_proportions This is default NULL and indicates
 #'  that the proportions are to be interpreted in a vertical manner.
@@ -150,19 +150,19 @@ describe_median <- function(x, iqr=TRUE, html=FALSE, digits=1, number_first = TR
 #'  function with the total number in each group, i.e. if done in a by
 #'  manner as in \code{\link{getDescriptionStatsBy}} it needs to provide
 #'  the number before the by() command. Note! This calls the  
-#'  \code{\link{describe_factors}} since the horizontal interpretation looses the 
+#'  \code{\link{describeFactors}} since the horizontal interpretation looses the 
 #'  vertical information in the second category and is thus better 
 #'  interpreted as a whole.
 #' @return A string formatted for printing either latex by  HTML
 #' 
-#' @seealso \code{\link{getDescriptionStatsBy}}, \code{\link{describe_factors}} 
+#' @seealso \code{\link{getDescriptionStatsBy}}, \code{\link{describeFactors}} 
 #' @examples
-#' describe_prop(factor(sample(50, x=c("A","B"), replace=TRUE)))
-#' describe_prop(factor(sample(50, x=c("A","B", NA), replace=TRUE)), show_missing=TRUE)
+#' describeProp(factor(sample(50, x=c("A","B"), replace=TRUE)))
+#' describeProp(factor(sample(50, x=c("A","B", NA), replace=TRUE)), show_missing=TRUE)
 #'  
 #' @author max
 #' @export
-describe_prop <- function(x, 
+describeProp <- function(x, 
   html=FALSE, 
   digits=1, 
   number_first = TRUE, 
@@ -176,7 +176,7 @@ describe_prop <- function(x,
   if(is.null(horizontal_proportions) == FALSE | 
     show_missing == "ifany" & any(is.na(x)) |
     show_missing == "always")
-    return(describe_factors(x=x, html=html, number_first = number_first, 
+    return(describeFactors(x=x, html=html, number_first = number_first, 
       show_missing = show_missing, horizontal_proportions = horizontal_proportions))
   
   if (is.factor(x) == FALSE)
@@ -224,8 +224,8 @@ describe_prop <- function(x,
 #' 
 #' @examples
 #' set.seed(1)
-#' describe_factors(sample(50, x=c("A","B", "C"), replace=TRUE))
-#' describe_factors(sample(50, x=c("A","B", "C", NA), replace=TRUE), show_missing=TRUE)
+#' describeFactors(sample(50, x=c("A","B", "C"), replace=TRUE))
+#' describeFactors(sample(50, x=c("A","B", "C", NA), replace=TRUE), show_missing=TRUE)
 #' 
 #' n <- 500
 #' my_var <- factor(sample(size=n, x=c("A","B", "C", NA), replace=TRUE))
@@ -233,13 +233,13 @@ describe_prop <- function(x,
 #' total <- table(my_var, useNA="ifany")
 #' by(my_var,
 #'    INDICES=my_exp,
-#'    FUN=describe_factors,
+#'    FUN=describeFactors,
 #'    show_missing="ifany",
 #'    horizontal_proportions = total)
 #' 
 #' @author max
 #' @export
-describe_factors <- function(x, html=FALSE, 
+describeFactors <- function(x, html=FALSE, 
   digits=1, number_first = TRUE, 
   show_missing = FALSE, horizontal_proportions = NULL) {
   

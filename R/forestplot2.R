@@ -1,7 +1,7 @@
 #' Create a forestplot
 #' 
 #' forestplot2 is based on the rmeta 2.16 forestplot function. 
-#' The original rmeta package is requiered for the \code{\link{meta.colors}()} 
+#' The original rmeta package is requiered for the \code{\link{fpColors}()} 
 #' function. This function resolves some limitations of the original
 #' functions such as adding expressions and using multiple confidence
 #' bands for the same label.
@@ -31,7 +31,7 @@
 #' @param zero x-axis coordinate for zero line
 #' @param graphwidth Width of confidence interval graph, see \code{\link{unit}} for
 #'   details on how to utilize mm etc.
-#' @param col See \code{\link{meta.colors}}
+#' @param col See \code{\link{fpColors}}
 #' @param xlog If TRUE, x-axis tick marks are exponentiated
 #' @param xticks Optional user-specified x-axis tick marks. Specify NULL to use 
 #'   the defaults, numeric(0) to omit the x-axis.
@@ -63,7 +63,7 @@ forestplot2 <- function (labeltext,
   xlab                 = "", 
   zero                 = 0, 
   graphwidth           = unit(.3, "npc"), 
-  col                  = meta.colors(), 
+  col                  = fpColors(), 
   xlog                 = FALSE, 
   xticks               = NULL,
   xticks.digits        = 2,
@@ -588,10 +588,13 @@ forestplot2 <- function (labeltext,
   upViewport()
 }
 
-#' A copy of rmeta meta.colors. If you have several values per row in a
+#' A copy of rmeta fpColors. If you have several values per row in a
 #' plot then you can set the values to a vector where the first value 
 #' represents the first line/box, second the second line/box etc. The 
 #' vectors are only valid for the box & lines. 
+#' 
+#' This function is a copy of the \code{\link{meta.colors}} function in the
+#' rmeta package.
 #' 
 #' @param all.elements A color for all the elements. If set to NULL then
 #'  it's set to the par("fg") color
@@ -612,7 +615,7 @@ forestplot2 <- function (labeltext,
 #' @author Max Gordon, Thomas Lumley
 #' 
 #' @export
-meta.colors <- function (all.elements, 
+fpColors <- function (all.elements, 
   box        = "black", 
   lines      = "gray", 
   summary    = "black", 

@@ -1,16 +1,14 @@
-\name{describe_median}
-\alias{describe_median}
-\title{A function that returns a description median that contains
-the interquartile range or the full range}
+\name{describeMean}
+\alias{describeMean}
+\title{A function that returns a description mean that contains
+the standard deviation}
 \usage{
-  describe_median(x, iqr = TRUE, html = FALSE, digits = 1,
+  describeMean(x, html = FALSE, digits = 1,
     number_first = TRUE, show_missing = FALSE,
     horizontal_proportions = NULL)
 }
 \arguments{
   \item{x}{The variable that you want the statistics for}
-
-  \item{iqr}{If interquartile range should be used}
 
   \item{digits}{The number of decimals used}
 
@@ -35,7 +33,7 @@ the interquartile range or the full range}
   total number in each group, i.e. if done in a by manner
   as in \code{\link{getDescriptionStatsBy}} it needs to
   provide the number before the by() command. Note! This
-  calls the \code{\link{describe_factors}} since the
+  calls the \code{\link{describeFactors}} since the
   horizontal interpretation looses the vertical information
   in the second category and is thus better interpreted as
   a whole.}
@@ -44,12 +42,12 @@ the interquartile range or the full range}
   A string formatted for printing either latex by HTML
 }
 \description{
-  A function that returns a description median that
-  contains the interquartile range or the full range
+  A function that returns a description mean that contains
+  the standard deviation
 }
 \examples{
-describe_median(1:10)
-describe_median(c(1:10, NA), show_missing=TRUE)
+describeMean(1:10)
+describeMean(c(1:10, NA), show_missing=TRUE)
 }
 \author{
   max

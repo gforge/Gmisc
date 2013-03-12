@@ -1,6 +1,6 @@
 Package: Gmisc
-Version: 0.4.8.3
-Date: 2013-02-10
+Version: 0.4.9.1
+Date: 2013-02-28
 Title: A few handy functions of mine
 Authors: c(person("Max Gordon",
     "Developer",
@@ -36,6 +36,7 @@ Collate:
     'descriptionStats.R'
     'outputInt.R'
     'Gmisc.R'
+    'getSvdMaxContrib.R'
 Depends:
     grid,
     stringr,
@@ -43,7 +44,8 @@ Depends:
     rms,
     boot,
     testthat,
-    Hmisc
+    Hmisc,
+    lattice
 Suggests:
     cmprsk,
     survival

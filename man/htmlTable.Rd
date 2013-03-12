@@ -118,8 +118,9 @@
   \code{\link{latex}()} colgroup and rowgroup functions in
   HTML. The code outputted is perhaps a little raw compared
   to fully CSS formatted HTML. The reason for this is that
-  I've chosen maximum compatibility with OpenOffice that
-  lacks any more advanced understanding of HTML & CSS.
+  I've chosen maximum compatibility with
+  LibreOffice/OpenOffice that lacks any more advanced
+  understanding of HTML & CSS.
 }
 \details{
   If you set the option table_counter you will get a Table
@@ -154,7 +155,7 @@ mtcars$col <- factor(sample(c("red", "black", "silver"), size=NROW(mtcars), repl
 label(mtcars$col) <- "Car color"
 
 mpg_data_mean <- getDescriptionStatsBy(mtcars$mpg, mtcars$am, use_units = TRUE, html=TRUE)
-mpg_data_median <- getDescriptionStatsBy(mtcars$mpg, mtcars$am, use_units = TRUE, html=TRUE, continuous_function=describe_median)
+mpg_data_median <- getDescriptionStatsBy(mtcars$mpg, mtcars$am, use_units = TRUE, html=TRUE, continuous_function=describeMedian)
 wt_data <- getDescriptionStatsBy(mtcars$wt, mtcars$am, use_units = TRUE, html=TRUE)
 
 vars <- rbind(mpg_data_mean, mpg_data_median, wt_data)

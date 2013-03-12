@@ -32,8 +32,9 @@
 #' @param use_labels If the rowname.fn function doesn't change the name then 
 #'   the label should be used instead of the name, that is if there is a
 #'   label and it isn't a factor. 
-#' @param html If HTML output through the htmlTable should be used 
-#'   instead of traditional latex() function
+#' @param output Choose the type of output that you want returned, html, latex or raw.
+#'   The raw alternative is a list with the arguments that would be sent to the latex/htmlTable
+#'   functions, where x is the main content of the table.
 #' @param ... Passed onto the Hmisc::\code{\link{latex}} function, \code{\link{htmlTable}}
 #' @return Returns a latex formatted table
 #' 
@@ -54,10 +55,12 @@ printCrudeAndAdjustedModel <- function(model,
   groups                = NULL,
   rowname.fn            = NULL,
   use_labels            = TRUE,
-  html                  = FALSE,
+  output                = c("html", "latex", "raw"),
   ...)
 {
   require("miscTools") || stop("`miscTools' package not found")
+  
+  output <- match.arg(output)
   
   # Just to simplify the checks below
   if (length(add_references) == 1 && add_references == FALSE)
@@ -110,13 +113,13 @@ printCrudeAndAdjustedModel <- function(model,
       
       upper <- max(ci)
       if (upper > max)
-        upper <- sprintf(ifelse(html, "&gt; %s", "$> %s$"), format_number(max))
+        upper <- sprintf(ifelse(output, "&gt; %s", "$> %s$"), format_number(max))
       else
         upper <- format_number(upper)
       
       lower <- min(ci)
       if (lower < min)
-        lower <- sprintf(ifelse(html, "&gt; %s", "$ %s$"), format_number(min))
+        lower <- sprintf(ifelse(output, "&gt; %s", "$ %s$"), format_number(min))
       else
         lower <- format_number(lower)
       
@@ -375,7 +378,7 @@ printCrudeAndAdjustedModel <- function(model,
           model$family$family == "binomial"),
       "OR",
       "Coef"))
-  if (html){
+  if (output == "html"){
     return(htmlTable(reorderd_groups, 
         headings      = sub("(Crude|Adjusted)", coef_name, colnames(reorderd_groups)), 
         rowlabel.just = "l", 
@@ -386,7 +389,7 @@ printCrudeAndAdjustedModel <- function(model,
         rgroup        = rgroup, 
         n.rgroup      = n.rgroup, 
         ...))
-  }else{
+  }else if (output == "latex"){
     return(latex(reorderd_groups, 
         colheads      = latexTranslate(sub("(Crude|Adjusted)", coef_name, colnames(reorderd_groups))), 
         rowlabel.just = "l", 
@@ -397,5 +400,15 @@ printCrudeAndAdjustedModel <- function(model,
         rgroup        = rgroup, 
         n.rgroup      = n.rgroup, 
         ...))
+  } else {
+    return(list(x     = reorderd_groups, 
+        headings      = sub("(Crude|Adjusted)", coef_name, colnames(reorderd_groups)),
+        rowlabel.just = "l", 
+        rowlabel      = "Variable",
+        rowname       = unlist(rn),
+        n.cgroup      = c(2, 2), cgroup = c("Crude", "Adjusted"), 
+        col.just      = strsplit("rcrc", "")[[1]],
+        rgroup        = rgroup, 
+        n.rgroup      = n.rgroup))
   }
 }
