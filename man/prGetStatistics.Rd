@@ -4,9 +4,8 @@
 \usage{
   prGetStatistics(x, show_perc = FALSE, html = TRUE,
     digits = 1, numbers_first = TRUE, show_missing = TRUE,
-    continuous_function = describeMean,
-    factor_function = describeFactors,
-    prop_function = factor_function)
+    continuous_fn = describeMean,
+    factor_fn = describeFactors, prop_fn = factor_fn)
 }
 \arguments{
   \item{x}{The variable that we want the statistics for}
@@ -24,15 +23,14 @@
 
   \item{show_missing}{If missing should be included}
 
-  \item{continuous_function}{A function for describing
-  continuous variables defaults to
-  \code{\link{describeMean}}}
+  \item{continuous_fn}{A function for describing continuous
+  variables defaults to \code{\link{describeMean}}}
 
-  \item{prop_function}{A function for describing
-  proportions, defaults to the factor function}
+  \item{prop_fn}{A function for describing proportions,
+  defaults to the factor function}
 
-  \item{factor_function}{A function for describing factors,
-  defaults to \code{\link{describeFactor}}}
+  \item{factor_fn}{A function for describing factors,
+  defaults to \code{\link{describeFactors}}}
 }
 \value{
   A matrix or a vector depending on the settings
@@ -41,7 +39,7 @@
   A simple function applied by the
   \code{\link{getDescriptionStatsBy}} for the total column.
   This function is also used by
-  \code{\link{orintCrudeAndAdjustedModel}} in case of a
+  \code{\link{printCrudeAndAdjustedModel}} in case of a
   basic linear regression is asked for a raw stat column
 }
 \author{

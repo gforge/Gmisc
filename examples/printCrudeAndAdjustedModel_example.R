@@ -17,8 +17,8 @@ fit <- cph(s ~ x1 + x2 + x3, data=ds)
 
 printCrudeAndAdjustedModel(fit, c("x[12]", "x3"), file="")
 
-fit <- cph(s ~ x1 + x2 + x3 + x4, data=ds)
-printCrudeAndAdjustedModel(fit, file="")
+fit <- cph(s ~ x1 + x2 + x3 + x4, data=ds, x=TRUE, y=TRUE)
+printCrudeAndAdjustedModel(fit, file="", add_references = TRUE, desc_column=TRUE, order=c("x3", "x4"))
 
 # Use some labels to prettify the output
 # fro the mtcars dataset
@@ -41,11 +41,11 @@ mtcars$col <- factor(sample(c("red", "black", "silver"), size=NROW(mtcars), repl
 label(mtcars$col) <- "Car color"
 
 require(splines)
-fit <- lm(mpg ~ bs(wt, 3) + gear + col, data=mtcars)
-printCrudeAndAdjustedModel(fit, file="", add_references=TRUE, ctable=TRUE)
+fit_mtcar <- lm(mpg ~ wt + gear + col, data=mtcars)
+printCrudeAndAdjustedModel(fit_mtcar, file="", add_references=TRUE, ctable=TRUE, desc_column = TRUE)
 
 # Alterntive print - just an example, doesn't make sense to skip reference
-printCrudeAndAdjustedModel(fit, 
+printCrudeAndAdjustedModel(fit_mtcar, 
                            file="", 
                            order=c("col", "gear"), 
                            groups=c("Color", "Gears"),

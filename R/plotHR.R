@@ -138,7 +138,7 @@ plotHR <- function (models,
   # only complete covariate records (only used in the model anyway)
   # 'as.data.frame()' and 'names()' have to be explicitly specified in case of a univariate model
   getDataFromModel <- function(m){
-    org_ds <- eval(m$call$data)
+    org_ds <- prExtractPredictorsFromModel(m)
     labels <- getCleanLabels(m)
     org_ds <- as.data.frame(na.exclude(org_ds[ , labels]))
     names(org_ds) <- labels

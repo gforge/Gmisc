@@ -1,4 +1,3 @@
-
 #' Gets the maximum contributor variables from svd()
 #' 
 #' This function is inspired by Jeff Leeks Data Analysis course where

@@ -5,10 +5,8 @@
   getDescriptionStatsBy(x, by, digits = 1, html = FALSE,
     NEJMstyle = FALSE, numbers_first = TRUE,
     statistics = FALSE, min_pval = 10^-4,
-    show_missing = FALSE,
-    continuous_function = describeMean,
-    prop_function = describeProp,
-    factor_function = describeFactors,
+    show_missing = FALSE, continuous_fn = describeMean,
+    prop_fn = describeProp, factor_fn = describeFactors,
     show_all_values = FALSE, hrzl_prop = FALSE,
     add_total_col = hrzl_prop, total_col_show_perc = TRUE,
     use_units = FALSE)
@@ -34,15 +32,14 @@
   \item{show_missing}{Show the missing values. This adds
   another row if there are any missing values.}
 
-  \item{continuous_function}{The method to describe
-  continuous variables. The default is
-  \code{\link{describeMean}}.}
+  \item{continuous_fn}{The method to describe continuous
+  variables. The default is \code{\link{describeMean}}.}
 
-  \item{prop_function}{The method used to describe
-  proportions, see \code{\link{describeProp}}.}
+  \item{prop_fn}{The method used to describe proportions,
+  see \code{\link{describeProp}}.}
 
-  \item{factor_function}{The method used to describe
-  factors, see \code{\link{describeFactors}}.}
+  \item{factor_fn}{The method used to describe factors, see
+  \code{\link{describeFactors}}.}
 
   \item{statistics}{Add statistics, fisher test for
   proportions and Wilcoxon for continuous variables}

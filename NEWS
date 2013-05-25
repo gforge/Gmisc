@@ -1,5 +1,44 @@
 NEWS for the Gmisc package
 
+Changes for 0.5.3.0
+-------------------
+* Added trasitionplot ability to indicate proportions in the rectangles
+
+Changes for 0.5.3.0
+-------------------
+* Added the bezier arrows to the transition plot
+* Added a bridge option for the transition plot arrows
+* Bugfix for the bezierSmplGradient
+
+Changes for 0.5.2.0
+-------------------
+* Added the bezier arrows. 
+
+Changes for 0.5.1.1
+-------------------
+* Added lwd parameters to the transitionPlot lines
+* Changed the transition matrix - the sums were not necessary as they easily can be calculated 
+  from the rowSums/colSums.
+  
+Changes for 0.5.1.0
+-------------------
+* Added the transitionPlot
+
+Changes for 0.5.0.2
+-------------------
+* Bugfix for htmlTable - throws error if a one dimensional x is provided
+
+Changes for 0.5.0.1
+-------------------
+* Bugfix for plotHR - there were issues with getting the model data
+* Added option for having specific digits in printCrudeAndAdjustedModel 
+  in the model and the descriptive part
+
+Changes for 0.5.0.0
+-------------------
+* Added the option of having descriptive data to the printCrudeAndAdjustedModel
+* A completely new way to extract the model dataset
+
 Changes for 0.4.9.1
 -------------------
 * Change the option for printCrudeAndAdjustedModel from just html to

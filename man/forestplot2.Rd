@@ -89,10 +89,10 @@
 \description{
   forestplot2 is based on the rmeta 2.16 forestplot
   function. The original rmeta package is requiered for the
-  \code{\link{fpColors}()} function. This function
-  resolves some limitations of the original functions such
-  as adding expressions and using multiple confidence bands
-  for the same label.
+  \code{\link{fpColors}()} function. This function resolves
+  some limitations of the original functions such as adding
+  expressions and using multiple confidence bands for the
+  same label.
 }
 \details{
   Using multiple bands for the same label is judged to be

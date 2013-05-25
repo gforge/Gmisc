@@ -4,6 +4,10 @@
 #' also be converted into a HTML table that should be more compatible with common
 #' word processors.
 #' 
+#' A word of warning: if you call this function and you've changed any of the variables
+#' used in the original call, i.e. the premises are changed, this function will not
+#' remember the original values and the statistics will be faulty! 
+#' 
 #' @param model A regression model
 #' @param order A vector with regular expressions for each group.
 #' @param digits The number of digits to round to
@@ -36,6 +40,18 @@
 #'   The raw alternative is a list with the arguments that would be sent to the latex/htmlTable
 #'   functions, where x is the main content of the table.
 #' @param ... Passed onto the Hmisc::\code{\link{latex}} function, \code{\link{htmlTable}}
+#' @param desc_column Add descriptive column to the crude and adjusted table
+#' @param desc_show_tot_perc Show percentages for the total column
+#' @param desc_numb_first Whether to show the number before the percentages
+#' @param desc_continuous_fn Stat function used for the descriptive statistics, defaults
+#'   to \code{\link{describeMean}}
+#' @param desc_prop_fn Stat function used for the descriptive statistics, defaults
+#'   to \code{\link{describeProp}}
+#' @param desc_factor_fn Stat function used for the descriptive statistics, defaults
+#'   to \code{\link{describeFactors}}
+#' @param desc_show_missing Show missing variables in the descriptive columns
+#' @param desc_digits Number of digits to use in the descriptive columns. Defaults
+#'  to the general digits if not specified.
 #' @return Returns a latex formatted table
 #' 
 #' @import miscTools
@@ -55,6 +71,14 @@ printCrudeAndAdjustedModel <- function(model,
   groups                = NULL,
   rowname.fn            = NULL,
   use_labels            = TRUE,
+  desc_column           = FALSE,
+  desc_show_tot_perc    = FALSE,
+  desc_numb_first       = TRUE,
+  desc_continuous_fn    = describeMean,
+  desc_prop_fn          = describeProp,
+  desc_factor_fn        = describeFactors,
+  desc_show_missing     = FALSE,
+  desc_digits           = digits,
   output                = c("html", "latex", "raw"),
   ...)
 {
@@ -66,11 +90,38 @@ printCrudeAndAdjustedModel <- function(model,
   if (length(add_references) == 1 && add_references == FALSE)
     add_references <- NULL
   
+  getOrderVariables <- function(names){
+    greps <- c()
+    for (r_expr in order) {
+      # Find the names that matches
+      matches <- grep(r_expr, names)
+      if (length(matches) == 0)
+        stop("You have a strange selection order,",
+          "this could be due to that you try to select a factor subvariable and not the full variable.",
+          "Re-arranging factors should be done in the factor() function and not here.",
+          sprintf("Anyway the expression '%s' was not found in these variable names:", r_expr),
+          paste(names, collapse=", "))
+      
+      # Avoid reselecting
+      new_vars <- setdiff(matches, unlist(greps))
+      if (length(new_vars) > 0){
+        greps <- append(greps, list(new_vars))
+      }
+    }
+    return(greps)
+  }
+  
   # Convert the x that should be a model into a matrix that
   # originally was expected
   x <- getCrudeAndAdjustedModelData(fit = model)
   
-  ds <- eval(model$call$data)
+  ds <- prExtractPredictorsFromModel(model)
+  
+  getRowname <- function(vn){
+    ifelse (vn %in% colnames(ds) &&
+        use_labels && 
+        label(ds[,vn]) != "", label(ds[,vn]), vn)
+  }
   
   # Set the number of digits,
   # format the confidence interval
@@ -113,13 +164,13 @@ printCrudeAndAdjustedModel <- function(model,
       
       upper <- max(ci)
       if (upper > max)
-        upper <- sprintf(ifelse(output, "&gt; %s", "$> %s$"), format_number(max))
+        upper <- sprintf(ifelse(output == "html", "&gt; %s", "$> %s$"), format_number(max))
       else
         upper <- format_number(upper)
       
       lower <- min(ci)
       if (lower < min)
-        lower <- sprintf(ifelse(output, "&gt; %s", "$ %s$"), format_number(min))
+        lower <- sprintf(ifelse(output == "html", "&gt; %s", "$ %s$"), format_number(min))
       else
         lower <- format_number(lower)
       
@@ -145,21 +196,9 @@ printCrudeAndAdjustedModel <- function(model,
   
   x <- prepareCrudeAndAdjusted(x)
   
-  # Get the models variables
-  getModelVariables <- function(model){
-    vars <- attr(model$terms, "term.labels")
-    # Remove splines, and other functions
-    # TODO: investigate the side effect of also removing I()
-    unwanted_vars <- grep("[a-zA-Z]+[^( ]\\(", vars)
-    if (length(unwanted_vars) > 0)
-      vars <- vars[-unwanted_vars]
-    
-    return(vars)
-  }
-  
   # Add reference according to the model
   # this is of course for factored variables
-  addReferenceFromModelData <- function(values){
+  addReferenceAndStatsFromModelData <- function(values){
     if (is.null(model[["variance.inflation.impute"]]) == FALSE)
       stop("The model seems to have been created using fit.mult.impute and unfortunately that doesn't work with the current version of this function.")
     
@@ -173,12 +212,149 @@ printCrudeAndAdjustedModel <- function(model,
     if (is.matrix(values))
       class(values) <- "matrix"
 
-    vars <- getModelVariables(model)
+    vars <- prGetModelVariables(model)
+    if (length(order) > 1 || is.character(order)){
+      greps <- getOrderVariables(vars)
+      vars <- vars[unlist(greps)]
+    }
     
-    n.rgroup <- c(NROW(values))
-    rgroup <- c("")
+    ret <- list("values" = values, "rgroup" = c(""), "n.rgroup" = c(NROW(values)))
+    
+    if (desc_column){
+      stats <- list()
+      
+      # Get the original data
+      outcome <- prExtractOutcomeFromModel(model)
+      if ("coxph" %in% class(model)){
+        # Get the left part of the formula
+        outcome <- outcome[,"status"]
+      }
+    }
+    
+    stats <- list()
+    
+    addReference <- function(vn, matches, available_factors, ret){
+      ref_value <- rep(c(reference_zero_effect, "ref"), times=2)
+      
+      # TODO: Could probably be extended to other regression models but needs testing
+      used_factors <- gsub(sprintf("^%s[=]{0,1}", vn), "", rownames(ret$values)[matches])
+      
+      # Fetch the reference level, would probably work just as well with a levels()[1]
+      reference <- available_factors[available_factors %nin% used_factors]
+      if (length(reference) > 1)
+        stop(sprintf("Error occurred in looking for reference, found %d reference categories instead of expected 1, %s", 
+            length(reference), 
+            paste(reference, collapse=", ")))
+      
+      # Remove the main label as that goes into the ret$rgroup
+      rownames(ret$values)[matches] <- used_factors
+      
+      # Add ret$rgroup information
+      # ... yes this got way more complicated than desired but it seems to work :-)
+      lab <- getRowname(vn)
+      
+      group_2_split <- which(cumsum(ret$n.rgroup) >= matches[1])
+      if (length(group_2_split) == 0)
+        stop(sprintf("Could not find the group at match %d within %d rows", matches[1], sum(ret$n.rgroup)))
+      else
+        group_2_split <- group_2_split[1]
+      
+      if (ret$rgroup[group_2_split] != "")
+        stop(sprintf("An error occurred when adding the group labels, the software tried to overwrite an already existing group: %s", ret$rgroup[group_2_split]))
+      
+      row_prior_match <- matches[1]-1
+      
+      rgroup_b4 <- ret$rgroup[1:(group_2_split-1)]
+      n.rgroup_b4 <- ret$n.rgroup[1:(group_2_split-1)]
+      rgroup_after <- ret$rgroup[(group_2_split + 1):length(ret$rgroup)]
+      n.rgroup_after <- ret$n.rgroup[(group_2_split + 1):length(ret$n.rgroup)]
+      
+      if (group_2_split == 1){
+        rgroup_b4 <- NULL
+        n.rgroup_b4 <- NULL
+      }
+      # It can be both the first and the last group
+      # avoid therefore an else here
+      if (group_2_split == length(ret$rgroup)){
+        rgroup_after <- NULL
+        n.rgroup_after <- NULL
+      }
+      
+      ret$rgroup <- c(rgroup_b4, 
+        "", lab, "",
+        rgroup_after)
+      ret$n.rgroup <- c(n.rgroup_b4,
+        row_prior_match-sum(n.rgroup_b4), # The number of rows prior to our variable
+        length(used_factors) + 1, # The number of factors + the one were adding
+        ret$n.rgroup[group_2_split] - 
+          (row_prior_match-sum(n.rgroup_b4)) - 
+          length(used_factors),  # The remaining rows from that group, if 0 then removed below
+        n.rgroup_after)
+      
+      
+      # Remove empty group
+      if (any(ret$n.rgroup == 0)){
+        ret$rgroup <- ret$rgroup[-which(ret$n.rgroup == 0)]
+        ret$n.rgroup <- ret$n.rgroup[-which(ret$n.rgroup == 0)]
+      }
+      
+      if (any(ret$n.rgroup < 0))
+        stop(sprintf("Sorry, the software created an invalid group length of less than 0, this occurred when adding the variable: %s (%s)", vn, lab))
+      
+      ret$values <- insertRow(ret$values, 
+        matches[1], 
+        ref_value,  
+        rName=reference)
+      
+      return(ret)
+    }
+    
+    getVnStats <- function(vn){
+      # TODO: add some option of handling missing from the model, a second/third column
+  
+      # If there is a binomial outcome variable then 
+      # it makes sense to have two columns, the overall
+      # and the event data.
+      if (any(class(model) %in% c("lrm", "coxph")) ||
+          ("glm" %in% class(model) &&
+            model$family$family == "binomial")){
+          ret <- getDescriptionStatsBy(x=ds[is.na(outcome) == FALSE,vn], 
+            by=outcome[is.na(outcome) == FALSE],
+            hrzl_prop = TRUE,
+            digits = desc_digits,
+            continuous_fn = desc_continuous_fn,
+            prop_fn = desc_prop_fn,
+            factor_fn = desc_factor_fn,
+            show_all_values = add_references,
+            show_missing = desc_show_missing,
+            add_total_col = TRUE,
+            total_col_show_perc = desc_show_tot_perc, 
+            html = output == "html")
+          
+          # Don't select the no-event alternative as this is usually
+          # not interesting since we have the total column
+          ret <- ret[,c(1,3),drop=FALSE]
+          colnames(ret) <- c("Total", "Event")
+      }else{
+        ret <- prGetStatistics(x=ds[is.na(outcome) == FALSE,vn],  
+          show_perc = desc_show_tot_perc, 
+          html = output == "html",
+          digits = desc_digits,
+          continuous_fn = desc_continuous_fn,
+          prop_fn = desc_prop_fn,
+          factor_fn = desc_factor_fn,
+          show_missing = desc_show_missing)
+        
+      }
+      return(ret)
+    }
+    
     for(vn in vars)
     {
+      if (desc_column){
+        stats[[vn]] <- getVnStats(vn)
+      }
+      
       if (is.factor(ds[,vn])){
         # Sometimes there is a subset argument or something leading to 
         # that one of the factors isn't included and therefore I use
@@ -191,98 +367,129 @@ printCrudeAndAdjustedModel <- function(model,
           sprintf("^%s[=]{0,1}(%s)$", vn, 
             paste(regex_clean_levels,
               collapse="|")), 
-          rownames(values))
+          rownames(ret$values))
         if (length(matches) > 0){
-          # TODO: Could probably be extended to other regression models but needs testing
-          used_factors <- gsub(sprintf("^%s[=]{0,1}", vn), "", rownames(values)[matches])
-          
-          # Fetch the reference level, would probably work just as well with a levels()[1]
-          reference <- available_factors[available_factors %nin% used_factors]
-          if (length(reference) > 1)
-            stop(sprintf("Error occurred in looking for reference, found %d reference categories instead of expected 1, %s", 
-                length(reference), 
-                paste(reference, collapse=", ")))
-          
-          # Remove the main label as that goes into the rgroup
-          rownames(values)[matches] <- used_factors
-          
-          # Add rgroup information
-          # ... yes this got way more complicated than desired but it seems to work :-)
-          lab <- ifelse (label(ds[,vn]) != "", label(ds[,vn]), vn)
-          
-          group_2_split <- which(cumsum(n.rgroup) >= matches[1])
-          if (length(group_2_split) == 0)
-            stop(sprintf("Could not find the group at match %d within %d rows", matches[1], sum(n.rgroup)))
-          else
-            group_2_split <- group_2_split[1]
-          
-          if (rgroup[group_2_split] != "")
-            stop(sprintf("An error occurred when adding the group labels, the software tried to overwrite an already existing group: %s", rgroup[group_2_split]))
-          
-          row_prior_match <- matches[1]-1
-          
-          rgroup_b4 <- rgroup[1:(group_2_split-1)]
-          n.rgroup_b4 <- n.rgroup[1:(group_2_split-1)]
-          rgroup_after <- rgroup[(group_2_split + 1):length(rgroup)]
-          n.rgroup_after <- n.rgroup[(group_2_split + 1):length(n.rgroup)]
-          
-          if (group_2_split == 1){
-            rgroup_b4 <- NULL
-            n.rgroup_b4 <- NULL
-          }
-          # It can be both the first and the last group
-          # avoid therefore an else here
-          if (group_2_split == length(rgroup)){
-            rgroup_after <- NULL
-            n.rgroup_after <- NULL
-          }
-          
-          rgroup <- c(rgroup_b4, 
-            "", lab, "",
-            rgroup_after)
-          n.rgroup <- c(n.rgroup_b4,
-            row_prior_match-sum(n.rgroup_b4), # The number of rows prior to our variable
-            length(used_factors) + 1, # The number of factors + the one were adding
-            n.rgroup[group_2_split] - 
-              (row_prior_match-sum(n.rgroup_b4)) - 
-              length(used_factors),  # The remaining rows from that group, if 0 then removed below
-            n.rgroup_after)
-          
-          
-          # Remove empty group
-          if (any(n.rgroup == 0)){
-            rgroup <- rgroup[-which(n.rgroup == 0)]
-            n.rgroup <- n.rgroup[-which(n.rgroup == 0)]
-          }
-          
-          if (any(n.rgroup < 0))
-            stop(sprintf("Sorry, the software created an invalid group length of less than 0, this occurred when adding the variable: %s (%s)", vn, lab))
-          
-          values <- insertRow(values, 
-            matches[1], 
-            rep(c(reference_zero_effect, "ref"), times=2),  
-            rName=reference)
+          ret <- addReference(vn = vn, matches = matches, available_factors=available_factors, ret = ret)
         }
-               
       }
     }
     
-    return(list("values" = values, "rgroup" = rgroup, "n.rgroup" = n.rgroup))
+    if (desc_column){
+      # Intiate empty matrix
+      if (is.matrix(stats[[1]])){
+        cols <- ncol(stats[[1]])
+      }else{
+        cols <- 1
+      }
+      desc_mtrx <- matrix("-", ncol=cols, nrow=nrow(ret$values))
+      rownames(desc_mtrx) <- rownames(ret$values)
+
+      # Should probably make sure we're always dealing
+      # with a matrix but this is a quick fix for now
+      # TODO: fix consistent matrix handling
+      getRows <- function(x){
+        ifelse(is.matrix(x), nrow(x), length(x))
+      }
+      getRownames <- function(x){
+        if(is.matrix(x))
+          rownames(x)
+        else
+          names(x)
+      }
+      getValue <- function(x, rn){
+        if(is.matrix(x))
+          x[rn,] 
+        else
+          x[rn]
+      }
+      for(vn in vars){
+        rowname <- getRowname(vn)
+        if (is.factor(ds[,vn])){
+          # Get the row number of the first element in that group of factors
+          group_nr <- which(rowname == ret$rgroup)
+          if (length(group_nr) == 0)
+            stop(sprintf("Couldn't find the row '%s' (org. name %s) in the value matrix: '%s'", 
+                rowname, vn, paste(ret$rgroup, collapse="', '")))
+          if (length(group_nr) > 1)
+            stop(sprintf(paste("Too many rows matched the row '%s' (org. name %s)\n",
+                  "this is probably due to the fact that the name occurs twice",
+                  "in the value matrix: '%s'\n",
+                  "The most probably cause is that you have the same label() for two variables."), 
+                rowname, vn, paste(ret$rgroup, collapse="', '")))
+          
+          if (group_nr == 1){
+            row <- 1
+          }else{
+            row <- sum(ret$n.rgroup[1:(group_nr-1)]) + 1
+          }
+
+          last_row <- row+ret$n.rgroup[group_nr]-1
+          existing_labels <- rownames(ret$values)[row:last_row]
+          # TODO: check how this works when no labels are checked while there are labels set for the variables
+          if (any(existing_labels %nin% rownames(stats[[vn]])))
+            stop(paste("A few labels from factor", vn, "weren't found in the stats:",
+                paste(existing_labels[existing_labels %nin% rownames(stats[[vn]])], 
+                  collapse=", ")))
+          
+          # Add the stats to the desc 
+          for(rn in existing_labels){
+            # Find that row within the group
+            group_rownames <- rownames(desc_mtrx[row:last_row, ,drop=FALSE])
+            row_within_group <- which(rn == group_rownames)
+            if (length(row_within_group) > 1)
+              stop("There are more than one occurrence within group ", vn,
+                "that have the value: '", rn, "'\n",
+                "The rownames in that group are: '", paste(group_rownames, "', '"), "'")
+            else if (length(row_within_group) == 0)
+              stop("There was no match within group ", vn,
+                "for the value: '", rn, "'\n",
+                "The rownames in that group are: '", paste(group_rownames, "', '"), "'")
+            
+            # Set the value of that row
+            desc_mtrx[row + row_within_group - 1, ] <- getValue(stats[[vn]], rn)
+          }
+            
+          # There are more values in the stats than in the 
+          # regression, this is probably due to missing values,
+          # these will be added to the current group last
+          if (getRows(stats[[vn]]) > ret$n.rgroup[group_nr]){
+            rows_2_add <- getRownames(stats[[vn]])[getRownames(stats[[vn]]) %nin% existing_labels]
+            for (i in 1:length(rows_2_add)){
+              rn <- rows_2_add[i]
+              ret$values <- insertRow(ret$values, row + ret$n.rgroup[group_nr], rep("-", length.out=cols), rn)
+              desc_mtrx <- insertRow(desc_mtrx, row + ret$n.rgroup[group_nr], getValue(stats[[vn]], rn), rn)
+            }
+            ret$n.rgroup[group_nr] <- getRows(stats[[vn]])
+          }
+        }else{
+          # This is fairly straight forward as there is only one row per
+          # value and we can find that row by just looking at the row name
+          row <- grep(rowname, rownames(ret$values))
+          if (length(row) == 0){
+            row <- grep(vn, rownames(ret$values))
+            if (length(row) == 0)
+              stop(sprintf("Couldn't find the row '%s' (org. name %s) in the value matrix", rowname, vn))
+          }
+          
+          desc_mtrx[row, ] <- stats[[vn]]
+        }
+      }
+      
+      ret$values <- cbind(desc_mtrx, ret$values)
+      if (ncol(desc_mtrx) == 1 && colnames(ret$values)[1] == "")
+        colnames(ret$values)[1] <- "Total"
+      else if(all(colnames(ret$values)[1:2] == ""))
+        colnames(ret$values)[1:2] <- c("Total", "Event")
+      
+    }
+    
+    return(ret)
   }
   
   rgroup <- NULL
   n.rgroup <- NULL
-  if (length(order) > 1){
-    greps <- c()
-    for (r_expr in order) {
-      # Find the names that matches
-      matches <- grep(r_expr, rownames(x))
-      # Avoid reselecting
-      new_vars <- setdiff(matches, unlist(greps))
-      if (length(new_vars) > 0){
-        greps <- append(greps, list(new_vars))
-      }
-    }
+  if (length(order) > 1 || is.character(order)){
+    greps <- getOrderVariables(rownames(x))
     
     reorderd_groups <- x[unlist(greps), ]
     if (any(rownames(reorderd_groups) %nin% rownames(x))){
@@ -297,11 +504,14 @@ printCrudeAndAdjustedModel <- function(model,
     
     if (length(add_references) == 1 && 
       add_references == TRUE){
-      ret <- addReferenceFromModelData(reorderd_groups)
+      ret <- addReferenceAndStatsFromModelData(reorderd_groups)
       reorderd_groups <- ret$values
       n.rgroup <- ret$n.rgroup
       rgroup <- ret$rgroup
     }else if (length(add_references) == length(greps)){
+      if (desc_column)
+        warning("The descriptive column works so far only when used with automated references")
+      
       line_row <- 1
       for(i in 1:length(greps)){
         # Add reference if it's not empty
@@ -338,7 +548,7 @@ printCrudeAndAdjustedModel <- function(model,
     reorderd_groups <- x
     if (length(add_references) == 1 && 
       add_references == TRUE){
-      ret <- addReferenceFromModelData(reorderd_groups)
+      ret <- addReferenceAndStatsFromModelData(reorderd_groups)
       reorderd_groups <- ret$values
       n.rgroup <- ret$n.rgroup
       rgroup <- ret$rgroup
@@ -351,24 +561,15 @@ printCrudeAndAdjustedModel <- function(model,
     rn <- list()
     for (name in rownames(reorderd_groups)){
       new_name <- rowname.fn(name)
-      if (use_labels && new_name == name && 
-        name %in% colnames(ds) &&
-        label(ds[,name]) != "")
-        new_name <- label(ds[,name])
+      if (new_name == name)
+        new_name <- getRowname(name)
       rn <- append(rn, new_name)
-      
     }
   }else{
     rn <- c()
     for (name in rownames(reorderd_groups)){
-      if (use_labels &&  
-        name %in% colnames(ds) &&
-        label(ds[,name]) != "")
-        rn <- c(rn, label(ds[,name]))
-      else
-        rn <- append(rn, name)
-     }
-    
+      rn <- append(rn, getRowname(name))
+    }
   }
   
   coef_name <- ifelse("coxph" %in% class(model), 
@@ -378,14 +579,25 @@ printCrudeAndAdjustedModel <- function(model,
           model$family$family == "binomial"),
       "OR",
       "Coef"))
+  if(desc_column){
+    extra_cols <- ncol(reorderd_groups)-4
+    just <- c(rep("r", times=extra_cols), rep(c("r", "c"), times=2))
+    n.cgroup <- c(extra_cols, 2, 2)
+    cgroup = c("", "Crude", "Adjusted")
+  }else{
+    just <- rep(c("r", "c"), times=2)
+    n.cgroup <- c(2, 2)
+    cgroup <- c("Crude", "Adjusted")
+  }
+  
   if (output == "html"){
     return(htmlTable(reorderd_groups, 
         headings      = sub("(Crude|Adjusted)", coef_name, colnames(reorderd_groups)), 
         rowlabel.just = "l", 
         rowlabel      = "Variable",
         rowname       = unlist(rn),
-        n.cgroup      = c(2, 2), cgroup = c("Crude", "Adjusted"), 
-        col.just      = strsplit("rcrc", "")[[1]],
+        n.cgroup      = n.cgroup, cgroup = cgroup, 
+        col.just      = just,
         rgroup        = rgroup, 
         n.rgroup      = n.rgroup, 
         ...))
@@ -395,8 +607,8 @@ printCrudeAndAdjustedModel <- function(model,
         rowlabel.just = "l", 
         rowlabel      = "Variable",
         rowname       = latexTranslate(unlist(rn)),
-        n.cgroup      = c(2, 2), cgroup = c("Crude", "Adjusted"), 
-        col.just      = strsplit("rcrc", "")[[1]],
+        n.cgroup      = n.cgroup, cgroup = cgroup, 
+        col.just      = just,
         rgroup        = rgroup, 
         n.rgroup      = n.rgroup, 
         ...))
@@ -406,8 +618,8 @@ printCrudeAndAdjustedModel <- function(model,
         rowlabel.just = "l", 
         rowlabel      = "Variable",
         rowname       = unlist(rn),
-        n.cgroup      = c(2, 2), cgroup = c("Crude", "Adjusted"), 
-        col.just      = strsplit("rcrc", "")[[1]],
+        n.cgroup      = n.cgroup, cgroup = cgroup, 
+        col.just      = just,
         rgroup        = rgroup, 
         n.rgroup      = n.rgroup))
   }

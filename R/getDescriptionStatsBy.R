@@ -17,10 +17,10 @@
 #'  should be presented first. The second is encapsulated in parentheses ().
 #' @param show_missing Show the missing values. This adds another row if 
 #'  there are any missing values.
-#' @param continuous_function The method to describe continuous variables. The
+#' @param continuous_fn The method to describe continuous variables. The
 #'  default is \code{\link{describeMean}}.
-#' @param prop_function The method used to describe proportions, see \code{\link{describeProp}}.
-#' @param factor_function The method used to describe factors, see \code{\link{describeFactors}}.
+#' @param prop_fn The method used to describe proportions, see \code{\link{describeProp}}.
+#' @param factor_fn The method used to describe factors, see \code{\link{describeFactors}}.
 #' @param statistics Add statistics, fisher test for proportions and Wilcoxon
 #'  for continuous variables
 #' @param min_pval The minimum p-value before doing a "< 0.0001"
@@ -59,9 +59,9 @@ getDescriptionStatsBy <-
     numbers_first = TRUE, 
     statistics=FALSE, min_pval = 10^-4,
     show_missing = FALSE,
-    continuous_function = describeMean,
-    prop_function = describeProp,
-    factor_function = describeFactors,
+    continuous_fn = describeMean,
+    prop_fn = describeProp,
+    factor_fn = describeFactors,
     show_all_values = FALSE,
     hrzl_prop = FALSE,
     add_total_col = hrzl_prop,
@@ -78,7 +78,7 @@ getDescriptionStatsBy <-
   # If all values are to be shown then simply use
   # the factors function
   if (show_all_values)
-    prop_function <- describeFactors
+    prop_fn <- describeFactors
   
   getFormattedPval <- function(p_val){
     if (p_val < min_pval)
@@ -148,21 +148,21 @@ getDescriptionStatsBy <-
     # If the numeric has horizontal_proportions then it's only so in the 
     # missing category
     if (hrzl_prop)
-      t <- by(x, by, FUN=continuous_function, html=html, digits=digits,
+      t <- by(x, by, FUN=continuous_fn, html=html, digits=digits,
         number_first=numbers_first, show_missing = show_missing, 
         horizontal_proportions = table(is.na(x), useNA=show_missing))
     else
-      t <- by(x, by, FUN=continuous_function, html=html, digits=digits,
+      t <- by(x, by, FUN=continuous_fn, html=html, digits=digits,
         number_first=numbers_first, show_missing = show_missing)
     
     
     if (length(t[[1]]) != 1){
-      if (deparse(substitute(continuous_function)) == "describeMean")
+      if (deparse(substitute(continuous_fn)) == "describeMean")
         names(t[[1]][1]) = "Mean"
-      else if (deparse(substitute(continuous_function)) == "describeMedian")
+      else if (deparse(substitute(continuous_fn)) == "describeMedian")
         names(t[[1]][1]) = "Median"
       else
-        names(t[[1]][1]) = deparse(substitute(continuous_function))
+        names(t[[1]][1]) = deparse(substitute(continuous_fn))
     }
     
     if (statistics)
@@ -172,7 +172,7 @@ getDescriptionStatsBy <-
     length(levels(x)) == 2 && 
     hrzl_prop == FALSE){
     
-    t <- by(x, by, FUN=prop_function, html=html, digits=digits,
+    t <- by(x, by, FUN=prop_fn, html=html, digits=digits,
       number_first=numbers_first, show_missing = show_missing)
     
     # Set the rowname to a special format
@@ -208,11 +208,11 @@ getDescriptionStatsBy <-
 
   }else{
     if (hrzl_prop)
-      t <- by(x, by, FUN=factor_function, html=html, digits=digits,
+      t <- by(x, by, FUN=factor_fn, html=html, digits=digits,
         number_first=numbers_first, show_missing = show_missing, 
         horizontal_proportions = table(x, useNA=show_missing))
     else
-      t <- by(x, by, FUN=factor_function, html=html, digits=digits,
+      t <- by(x, by, FUN=factor_fn, html=html, digits=digits,
         number_first=numbers_first, show_missing = show_missing)
     
     if (statistics){
@@ -250,13 +250,13 @@ getDescriptionStatsBy <-
   
   if (add_total_col){
     total_table <- prGetStatistics(x[is.na(by) == FALSE], 
+      numbers_first=numbers_first, 
       show_perc=total_col_show_perc, 
+      show_missing=show_missing, 
       html=html, 
       digits=digits, 
-      numbers_first=numbers_first, 
-      show_missing=show_missing, 
-      continuous_function = continuous_function, 
-      factor_function = factor_function)
+      continuous_fn = continuous_fn, 
+      factor_fn = factor_fn)
     
     if (add_total_col != "last"){
       results <- cbind(total_table, results)

@@ -593,7 +593,7 @@ forestplot2 <- function (labeltext,
 #' represents the first line/box, second the second line/box etc. The 
 #' vectors are only valid for the box & lines. 
 #' 
-#' This function is a copy of the \code{\link{meta.colors}} function in the
+#' This function is a copy of the meta.colors function in the
 #' rmeta package.
 #' 
 #' @param all.elements A color for all the elements. If set to NULL then

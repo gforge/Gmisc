@@ -93,6 +93,9 @@ htmlTable <- function(x,
   if (length(headings) == 1 && is.na(headings))
     headings=colnames(x)
   
+  if (length(dim(x)) != 2)
+    stop("Your table variable seems to have the wrong dimension, length(dim(x)) = ", length(dim(x)) , " != 2")
+  
   require("stringr")
   
   # The CSS expects a semicolon at the end of each argument

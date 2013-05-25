@@ -1,20 +1,19 @@
 Package: Gmisc
-Version: 0.4.9.1
-Date: 2013-02-28
+Version: 0.5.3.1
+Date: 2013-05-19
 Title: A few handy functions of mine
-Authors: c(person("Max Gordon",
-    "Developer",
-    email = "max@gforge.se"))
-Author: Max Gordon
+Author: Max Gordon <max@gforge.se>
 Maintainer: Max Gordon <max@gforge.se>
 Description: This is a collection of functions that I've found useful in my
-    research. The package is inspired and uses many of Frank Harrel's Hmisc
-    package. The functions that I often find crude or lacking are mostly
+    research. The package is inspired by Frank Harrel's Hmisc package. 
+    The functions that I often find crude or lacking are mostly
     related to conveying data to the common reader. As I work in orthopaedics I
     can't submit LaTeX files and the conversion between LaTeX and
-    Word/OpenOffice is far from smooth.
-License: GPL (>= 2)
+    Word/OpenOffice is far from smooth. It also contains visualisation tools
+    that I've found useful when trying to convey my research.
+License: GPL (>= 3)
 URL: http://gforge.se
+Biarch: yes
 Collate:
     'forestplot2.R'
     'plotHR.R'
@@ -36,7 +35,11 @@ Collate:
     'descriptionStats.R'
     'outputInt.R'
     'Gmisc.R'
-    'getSvdMaxContrib.R'
+    'getSvdMostInfluential.R'
+    'transitionPlot.R'
+    'bezier_private_functions.R'
+    'bezierArrowSmpl.R'
+    'bezierArrowSmplGradient.R'
 Depends:
     grid,
     stringr,

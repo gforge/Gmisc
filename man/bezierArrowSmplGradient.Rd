@@ -1,0 +1,71 @@
+\name{bezierArrowSmplGradient}
+\alias{bezierArrowSmplGradient}
+\title{A bezier arrow with gradient}
+\usage{
+  bezierArrowSmplGradient(width = 0.05, clr = "#000000",
+    default.units = "npc", align_2_axis = TRUE,
+    grdt_type = c("triangle"), grdt_decrease_prop = 0.4,
+    grdt_start_prop = 0.4, grdt_clr_prop = 0.7,
+    grdt_line_width = NA, grdt_clr = "#2F4F2F", vp = NULL,
+    gp = gpar(), ...)
+}
+\arguments{
+  \item{width}{The width of the arrow, either a numeric
+  single number or a unit. \strong{Note:} The arrow does
+  not rely on lwd but on actual width. Same as in the
+  \code{\link{bezierArrowSmpl}}}
+
+  \item{default.units}{A string indicating the default
+  units to use width is given as numeric vectors.}
+
+  \item{clr}{The color of the arrow. This is the main color
+  of the arrow and not the gradient color.}
+
+  \item{align_2_axis}{Indicates if the arrow should be
+  vertically/horizontally aligned. This is useful for
+  instance if the arrow attaches to a box.}
+
+  \item{grdt_type}{The type of growth and gradient that is
+  to be used, currently it only supports triangle (I'm
+  considering adding bezier curves but currently I'm a
+  little tired of coding)}
+
+  \item{grdt_decrease_prop}{The proportion of the full
+  length that should be decreasing.}
+
+  \item{grdt_start_prop}{The proportion of the full length
+  that should be a constant color before decreasing.}
+
+  \item{grdt_clr_prop}{The proportion of the gradient that
+  should be decreasing. This is a proportion of the
+  grdt_decrease_prop and the grdt_start_prop combined.}
+
+  \item{grdt_line_width}{The width of the border line. If
+  not specified it defaults to 5 \% of the original width,
+  note the gradient's width is thus 90 \%.}
+
+  \item{grdt_clr}{The color of the gradient. It is the
+  color that transits into the clr of the arrow.}
+
+  \item{...}{Passed on to \code{\link{bezierArrowSmpl}}}
+
+  \item{gp}{An object of class gpar, typically the output
+  from a call to the function gpar.  This is basically a
+  list of graphical parameter settings.}
+
+  \item{vp}{A Grid viewport object (or NULL).}
+}
+\value{
+  A grob of gList() type
+}
+\description{
+  This is an experimental addition to the original
+  \code{\link{bezierArrowSmpl}} with the addition of a
+  gradient in the center of the arrow that fades.
+  \strong{Note:} the arrow section is not currently
+  included in the gradient.
+}
+\author{
+  max
+}
+

@@ -7,6 +7,12 @@
     sprintf_ci_str = "\%s to \%s", add_references = FALSE,
     reference_zero_effect = 1, groups = NULL,
     rowname.fn = NULL, use_labels = TRUE,
+    desc_column = FALSE, desc_show_tot_perc = FALSE,
+    desc_numb_first = TRUE,
+    desc_continuous_fn = describeMean,
+    desc_prop_fn = describeProp,
+    desc_factor_fn = describeFactors,
+    desc_show_missing = FALSE, desc_digits = digits,
     output = c("html", "latex", "raw"), ...)
 }
 \arguments{
@@ -71,6 +77,34 @@
 
   \item{...}{Passed onto the Hmisc::\code{\link{latex}}
   function, \code{\link{htmlTable}}}
+
+  \item{desc_column}{Add descriptive column to the crude
+  and adjusted table}
+
+  \item{desc_show_tot_perc}{Show percentages for the total
+  column}
+
+  \item{desc_numb_first}{Whether to show the number before
+  the percentages}
+
+  \item{desc_continuous_fn}{Stat function used for the
+  descriptive statistics, defaults to
+  \code{\link{describeMean}}}
+
+  \item{desc_prop_fn}{Stat function used for the
+  descriptive statistics, defaults to
+  \code{\link{describeProp}}}
+
+  \item{desc_factor_fn}{Stat function used for the
+  descriptive statistics, defaults to
+  \code{\link{describeFactors}}}
+
+  \item{desc_show_missing}{Show missing variables in the
+  descriptive columns}
+
+  \item{desc_digits}{Number of digits to use in the
+  descriptive columns. Defaults to the general digits if
+  not specified.}
 }
 \value{
   Returns a latex formatted table
@@ -80,6 +114,13 @@
   latex table but can also be converted into a HTML table
   that should be more compatible with common word
   processors.
+}
+\details{
+  A word of warning: if you call this function and you've
+  changed any of the variables used in the original call,
+  i.e. the premises are changed, this function will not
+  remember the original values and the statistics will be
+  faulty!
 }
 \examples{
 # simulated data to use 
@@ -101,8 +142,8 @@ fit <- cph(s ~ x1 + x2 + x3, data=ds)
 
 printCrudeAndAdjustedModel(fit, c("x[12]", "x3"), file="")
 
-fit <- cph(s ~ x1 + x2 + x3 + x4, data=ds)
-printCrudeAndAdjustedModel(fit, file="")
+fit <- cph(s ~ x1 + x2 + x3 + x4, data=ds, x=TRUE, y=TRUE)
+printCrudeAndAdjustedModel(fit, file="", add_references = TRUE, desc_column=TRUE, order=c("x3", "x4"))
 
 # Use some labels to prettify the output
 # fro the mtcars dataset
@@ -125,11 +166,11 @@ mtcars$col <- factor(sample(c("red", "black", "silver"), size=NROW(mtcars), repl
 label(mtcars$col) <- "Car color"
 
 require(splines)
-fit <- lm(mpg ~ bs(wt, 3) + gear + col, data=mtcars)
-printCrudeAndAdjustedModel(fit, file="", add_references=TRUE, ctable=TRUE)
+fit_mtcar <- lm(mpg ~ wt + gear + col, data=mtcars)
+printCrudeAndAdjustedModel(fit_mtcar, file="", add_references=TRUE, ctable=TRUE, desc_column = TRUE)
 
 # Alterntive print - just an example, doesn't make sense to skip reference
-printCrudeAndAdjustedModel(fit, 
+printCrudeAndAdjustedModel(fit_mtcar, 
                            file="", 
                            order=c("col", "gear"), 
                            groups=c("Color", "Gears"),

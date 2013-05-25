@@ -30,6 +30,10 @@
 #' @author max
 #' @export
 getCrudeAndAdjustedModelData <- function(fit){
+  
+  if ("Glm" %in% class(fit))
+    stop("The rms::Glm does not work properly with this function, please use regular glm instead")
+  
   # Just a prettifier for the output an alternative could be:
   # paste(round(x[,1],1), " (95% CI ", min(round(x[,2:3])), "-", max(round(x[,2:3])), ")", sep="") 
   get_coef_and_ci <- function(fit, skip_intercept=FALSE){

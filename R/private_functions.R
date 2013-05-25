@@ -5,11 +5,142 @@
 # Author: max
 ###############################################################################
 
+#' Get model outcome
+#' 
+#' Uses the model to extract the outcome variable. Throws
+#' error if unable to find the outcome.
+#' 
+#' @param model The fitted model.1
+#' @param check_subset Check if the model has been subsetted and 
+#'  if so subset the outcome variable too.
+#' @return vector
+#' 
+#' @author max
+prExtractOutcomeFromModel <- function(model, check_subset = TRUE){
+  outcome_formula <- formula(model)[[2]]
+  if (length(all.vars(outcome_formula)) != 1)
+    stop(paste("You seem to have some kind of complex outcome:", 
+        as.character(outcome_formula),
+        "\n In order for this function to work in a predictive way",
+        "you can only have one outcome - sorry"))
+  
+  outcome_var_name <- all.vars(outcome_formula)[1]
+  if (is.null(model$call$data)){
+    outcome <- get(outcome_var_name)
+  }else{
+    ds <- eval(model$call$data)
+    if (outcome_var_name %in% colnames(ds))
+      outcome <- ds[,outcome_var_name]
+    else
+      outcome <- get(outcome_var_name)
+  }
+
+  if  (check_subset && is.null(model$call$subset) == FALSE){
+    ds <- prExtractPredictorsFromModel(model, check_subset = FALSE)
+    outcome <- outcome[with(ds, eval(model$call$subset))]
+  }
+  
+  # I was thinking of using the following
+  #     outcome <- model$y
+  # but it causes issues if there are missing
+  # as the predictors with missing will be included
+  # while the outcome with missing are unfortunately not
+  # inlcuded - hence we don't know how to match them
+  
+  if (is.null(outcome))
+    stop(paste("Could not find outcome variable:", outcome_var_name))
+  
+  return(outcome)
+}
+
+#' Get model predictors
+#' 
+#' Uses the model to extract the dataset. Throws
+#' error if unable to find the data
+#' 
+#' @param model The fitted model.  
+#' @param check_subset Check if the model has been subsetted and 
+#'  if so subset the outcome variable too.
+#' @return data.frame 
+#' 
+#' @author max
+prExtractPredictorsFromModel <- function(model, check_subset = TRUE){
+  vars <- prGetModelVariables(model, remove_splines=FALSE)
+  if (is.null(model$call$data)){
+    # Try to create the data frame from the environment
+    ds <- data.frame(get(vars[1]))
+    colnames(ds) <- c(vars[1])
+    if (length(vars) > 1){
+      for (i in 2:length(vars)){
+        ds[vars[i]] <- get(vars[i])
+      }
+    }
+  }else{
+    ds <- eval(model$call$data)
+    if (any(vars %nin% colnames(ds)))
+      stop(paste("Could not find all the variables in the model in the dataset specified,",
+          "these were missing:",
+          paste(vars[vars %nin% colnames(ds)]), collapse=", "))
+    
+    # The drop is needed in case we only have one variable
+    ds <- ds[,vars, drop=FALSE]
+  }
+
+  # Also tried using the rms package x=TRUE functionality but it unfortunately
+  # converts everything to dummy variables making it difficult for regenerating
+  # the original dataset
+  
+  if (is.matrix(ds) & is.data.frame(ds))
+    ds <- as.data.frame(ds)
+  
+  if (is.data.frame(ds) == FALSE)
+    stop(paste("Failed to get the original data that was used for generating the model."))
+  
+  if (check_subset && is.null(model$call$subset) == FALSE)
+    ds <- ds[with(ds, eval(model$call$subset)),]
+  
+  return(ds)
+}
+
+#' Get the models variables
+#'  
+#' @param model A model fit
+#' @param remove_splines If splines, etc. should be cleaned 
+#'  from the variables as these no longer are "pure" variables
+#' @return vector with names 
+#' 
+#' @author max
+prGetModelVariables <- function(model, remove_splines = TRUE){
+  vars <- attr(model$terms, "term.labels")
+  
+  # Remove I() as these are not true variables
+  # and their names can probably have lots of variants
+  unwanted_vars <- grep("^I\\(.*$", vars)
+  if (length(unwanted_vars) > 0)
+    vars <- vars[-unwanted_vars]
+  
+  pat <- "^[[:alpha:]\\.]+[^(]+\\(.*$"
+  fn_vars <- grep(pat, vars)
+  if(length(fn_vars) > 0){
+    if (remove_splines){
+      # Remove splines and other functions
+      vars <- vars[-fn_vars]
+    }else{
+      # Cleane the variable names into proper names
+      # the assumption here is that the real variable
+      # name is the first one in the parameters
+      pat <- "^[[:alpha:]\\.]+.*\\(([^,]+).*$" 
+      vars[fn_vars] <- sub(pat, "\\1", vars[fn_vars])
+    }
+  }
+
+  return(unique(vars))
+}
 
 #' Get statistics according to the type
 #' 
 #' A simple function applied by the \code{\link{getDescriptionStatsBy}}
-#' for the total column. This function is also used by \code{\link{orintCrudeAndAdjustedModel}}
+#' for the total column. This function is also used by \code{\link{printCrudeAndAdjustedModel}}
 #' in case of a basic linear regression is asked for a raw stat column
 #'  
 #' @param x The variable that we want the statistics for 
@@ -19,46 +150,47 @@
 #' @param digits Number of decimal digits
 #' @param numbers_first If number is to be prior to the percentage
 #' @param show_missing If missing should be included 
-#' @param continuous_function A function for describing continuous variables
+#' @param continuous_fn A function for describing continuous variables
 #'  defaults to \code{\link{describeMean}} 
-#' @param prop_function A function for describing proportions, defaults to
+#' @param prop_fn A function for describing proportions, defaults to
 #'  the factor function
-#' @param factor_function A function for describing factors, defaults to
-#'  \code{\link{describeFactor}}
+#' @param factor_fn A function for describing factors, defaults to
+#'  \code{\link{describeFactors}}
 #' @return A matrix or a vector depending on the settings
 #' 
 #' @author max
-#' @export
 prGetStatistics <- function(x, 
   show_perc = FALSE, 
   html = TRUE, 
   digits = 1, 
   numbers_first = TRUE, 
   show_missing = TRUE, 
-  continuous_function = describeMean, 
-  factor_function = describeFactors,
-  prop_function = factor_function){
+  continuous_fn = describeMean, 
+  factor_fn = describeFactors,
+  prop_fn = factor_fn)
+{
+  show_missing <- prConvertShowMissing(show_missing)
   if (is.factor(x)){
-    if (total_col_show_perc)
-      total_table <- factor_function(x, 
+    if (show_perc)
+      total_table <- factor_fn(x, 
         html=html, 
         digits=digits,
         number_first=numbers_first, 
         show_missing = show_missing)
     else{
-      total_table <- table(x[is.na(by) == FALSE], useNA=show_missing)
+      total_table <- table(x, useNA=show_missing)
       names(total_table)[is.na(names(total_table))] <- "Missing"
     }
     
   }else{
-    total_table <- continuous_function(x[is.na(by) == FALSE], 
+    total_table <- continuous_fn(x, 
       html=html, digits=digits, 
       number_first=numbers_first, 
       show_missing = show_missing)
     
     # If a continuous variable has two rows then it's assumed that the second is the missing
     if (length(total_table) == 2 &&
-      total_col_show_perc == FALSE)
+      show_perc == FALSE)
       total_table[2] <- sum(is.na(x))
   }
   return(total_table)

@@ -155,7 +155,7 @@ mtcars$col <- factor(sample(c("red", "black", "silver"), size=NROW(mtcars), repl
 label(mtcars$col) <- "Car color"
 
 mpg_data_mean <- getDescriptionStatsBy(mtcars$mpg, mtcars$am, use_units = TRUE, html=TRUE)
-mpg_data_median <- getDescriptionStatsBy(mtcars$mpg, mtcars$am, use_units = TRUE, html=TRUE, continuous_function=describeMedian)
+mpg_data_median <- getDescriptionStatsBy(mtcars$mpg, mtcars$am, use_units = TRUE, html=TRUE, continuous_fn=describeMedian)
 wt_data <- getDescriptionStatsBy(mtcars$wt, mtcars$am, use_units = TRUE, html=TRUE)
 
 vars <- rbind(mpg_data_mean, mpg_data_median, wt_data)
