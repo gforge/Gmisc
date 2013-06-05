@@ -1,6 +1,12 @@
 NEWS for the Gmisc package
 
-Changes for 0.5.3.0
+Changes for 0.5.3.2
+-------------------
+* Thank you Adam Van Iwaarden for fixing the htmlTable alignment and a few bugs!
+* Bug fix for prGetModelVariables affecting model with functions as parameters
+* Added poisson (link=log) to the getCrudeAndAdjusted function to ret exp() values
+
+Changes for 0.5.3.1
 -------------------
 * Added trasitionplot ability to indicate proportions in the rectangles
 

@@ -10,7 +10,7 @@
 #' This function saves a lot of time creating tables since it compiles a fully
 #' unadjusted list of all your used covariates.
 #' 
-#' If the model is an exponential logit/cox regression model then it automatically
+#' If the model is an exponential poisson/logit/cox regression model then it automatically
 #' reports the exp() values instead of the original values
 #' 
 #' The function skips by default all spline variables since this becomes very complicated
@@ -82,7 +82,7 @@ getCrudeAndAdjustedModelData <- function(fit){
     # Use the exp() if logit or cox regression
     if ("coxph" %in% class(fit) ||
       ("glm" %in% class(fit) &&
-        fit$family$link == "logit")){
+        fit$family$link %in% c("logit", "log"))){
       my_coefficients <- exp(my_coefficients)
       ci <- exp(ci)
     }

@@ -104,6 +104,10 @@ prExtractPredictorsFromModel <- function(model, check_subset = TRUE){
 
 #' Get the models variables
 #'  
+#' This function extract the modelled variables. Any interaction
+#' terms are removed as those should already be represented by
+#' the individual terms.
+#'  
 #' @param model A model fit
 #' @param remove_splines If splines, etc. should be cleaned 
 #'  from the variables as these no longer are "pure" variables
@@ -129,11 +133,17 @@ prGetModelVariables <- function(model, remove_splines = TRUE){
       # Cleane the variable names into proper names
       # the assumption here is that the real variable
       # name is the first one in the parameters
-      pat <- "^[[:alpha:]\\.]+.*\\(([^,]+).*$" 
+      pat <- "^[[:alpha:]\\.]+.*\\(([^,)]+).*$" 
       vars[fn_vars] <- sub(pat, "\\1", vars[fn_vars])
     }
   }
 
+  # Remove interaction terms as these are not variables
+  int_term <- "^.+:.+$"
+  in_vars <- grep(int_term, vars)
+  if (length(in_vars) > 0)
+    vars <- vars[-in_vars]
+  
   return(unique(vars))
 }
 

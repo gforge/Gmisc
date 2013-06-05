@@ -94,7 +94,8 @@ htmlTable <- function(x,
     headings=colnames(x)
   
   if (length(dim(x)) != 2)
-    stop("Your table variable seems to have the wrong dimension, length(dim(x)) = ", length(dim(x)) , " != 2")
+    stop("Your table variable seems to have the wrong dimension, length(dim(x)) = ", 
+      length(dim(x)) , " != 2")
   
   require("stringr")
   
@@ -115,7 +116,8 @@ htmlTable <- function(x,
       if (length(cgroup) > 0){
         if (cgroup_iterator > 0){
           if (sum(n.cgroup[1:cgroup_iterator]) < nr ){
-            table_str <- sprintf("%s\n\t\t<%s style='%s'>&nbsp;</%s>", table_str, cellcode, style, cellcode)
+            table_str <- sprintf("%s\n\t\t<%s style='%s'>&nbsp;</%s>", 
+              table_str, cellcode, style, cellcode)
             cgroup_iterator = cgroup_iterator + 1
           }
         }else{
@@ -123,15 +125,26 @@ htmlTable <- function(x,
         }
       }
       
-      table_str <- sprintf("%s\n\t\t<%s align='%s' style='%s'>%s</%s>", table_str, cellcode, align, style, rowcells[nr], cellcode)
+      table_str <- sprintf("%s\n\t\t<%s align='%s' style='%s'>%s</%s>", 
+        table_str, cellcode, align[nr], style, rowcells[nr], cellcode)
     }
     return (table_str)
+  }
+  
+  # AVI added utility function to incorporate custom (LaTeX) column alignment
+  getAlign <- function(align_req) {
+    tmp_align_req <- strsplit(align_req, "")[[1]]
+    if (length(grep('[|]', tmp_align_req)) >0 ) { # Remove pipe(s) if they exist
+      tmp_align_req <- tmp_align_req[-grep('[|]', tmp_align_req)]
+    }
+    sapply(tmp_align_req, function(f) c("center", "right", "left")[grep(f, c("c", "r", "l"))], USE.NAMES=FALSE)
   }
   
   # Sanity checks rgroupCSSstyle and prepares the style
   if (length(rgroupCSSstyle) > 1 &&
     length(rgroupCSSstyle) != length(rgroup))
-    stop(sprintf("You must provide the same number of styles as the rgroups, %d != %d",length(rgroupCSSstyle), length(rgroup)))
+    stop(sprintf("You must provide the same number of styles as the rgroups, %d != %d",
+        length(rgroupCSSstyle), length(rgroup)))
   else if(length(rgroupCSSstyle) == 1){
     rgroupCSSstyle <- addSemicolon2StrEnd(rgroupCSSstyle)
     
@@ -145,7 +158,8 @@ htmlTable <- function(x,
   # Sanity checks rgroupCSSseparator and prepares the style
   if (length(rgroupCSSseparator) > 1 &&
     length(rgroupCSSseparator) != length(rgroup)-1)
-    stop(sprintf("You must provide the same number of separators as the rgroups - 1, %d != %d",length(rgroupCSSseparator), length(rgroup)-1))
+    stop(sprintf("You must provide the same number of separators as the rgroups - 1, %d != %d",
+        length(rgroupCSSseparator), length(rgroup)-1))
   else if(length(rgroupCSSseparator) == 1){
     rgroupCSSseparator <- addSemicolon2StrEnd(rgroupCSSseparator)
     
@@ -159,7 +173,8 @@ htmlTable <- function(x,
   # Sanity check for rgroup
   if (length(rgroup) > 0 &&
     sum(n.rgroup) !=  nrow(x))
-    stop(sprintf("Your rows don't match in the n.rgroup, i.e. %d != %d", sum(n.rgroup), nrow(x)))
+    stop(sprintf("Your rows don't match in the n.rgroup, i.e. %d != %d", 
+        sum(n.rgroup), nrow(x)))
   
   
   table_str <- "<table class='gmisc_table' style='border-collapse: collapse;'>"
@@ -199,9 +214,9 @@ htmlTable <- function(x,
     }
     
     if (caption.loc == "bottom"){
-      table_str <- sprintf("%s\n\t<caption align=bottom>", table_str)
+      table_str <- sprintf("%s\n\t<caption align='bottom'>", table_str)
     }else{
-      table_str <- sprintf("%s\n\t<caption align=top>", table_str)
+      table_str <- sprintf("%s\n\t<caption align='top'>", table_str)
     }
     
     caption <- sprintf("%s%s", tc_string, caption)
@@ -229,7 +244,8 @@ htmlTable <- function(x,
     if (length(n.cgroup) == 0 && ncol(x) %% length(cgroup) == 0){
       n.cgroup <- rep(ncol(x)/length(cgroup), times=length(cgroup))
     }else if(sum(n.cgroup) != ncol(x)){
-      stop(sprintf("Your columns don't match in the n.cgroup, i.e. %d != %d", sum(n.cgroup), ncol(x)))
+      stop(sprintf("Your columns don't match in the n.cgroup, i.e. %d != %d", 
+          sum(n.cgroup), ncol(x)))
     }
     
     table_str <- sprintf("%s\n\t<tr>", table_str)
@@ -240,13 +256,14 @@ htmlTable <- function(x,
     
     for (i in 1:length(cgroup)){
       if (cgroup[i] == "")
-        table_str <- sprintf("%s\n\t\t<th colspan=%d style='font-weight: 900; %s'>&nbsp;</th>", 
-          table_str, n.cgroup[i], top_row_style)
+        table_str <- sprintf("%s\n\t\t<th colspan='%d' align='%s' style='font-weight: 900; %s'>&nbsp;</th>", 
+          table_str, n.cgroup[i], getAlign(strsplit(cgroup.just, '')[[1]][i]), top_row_style)
       else
-        table_str <- sprintf("%s\n\t\t<th colspan=%d style='font-weight: 900; border-bottom: 1px solid grey; %s'>%s</th>", 
+        table_str <- sprintf("%s\n\t\t<th colspan='%d' style='font-weight: 900; border-bottom: 1px solid grey; %s'>%s</th>", 
           table_str, n.cgroup[i], top_row_style, cgroup[i])
       if (i != length(cgroup))
-        table_str <- sprintf("%s<th style='%s'>&nbsp;</th>", table_str, top_row_style)
+        table_str <- sprintf("%s<th style='%s'>&nbsp;</th>", 
+          table_str, top_row_style)
     }
     first_row = FALSE
     table_str <- sprintf("%s\n\t</tr>", table_str)
@@ -269,8 +286,8 @@ htmlTable <- function(x,
     if (first_row){
       cell_style=sprintf("%s %s", cell_style, top_row_style)
     }
-    table_str <- addCells(table_str = table_str, rowcells = headings, cellcode = "th", 
-      align="center", style=cell_style)
+    table_str <- addCells(table_str = table_str, rowcells = headings, 
+      cellcode = "th", align = getAlign(halign), style=cell_style)
     
     table_str <- sprintf("%s\n\t</tr>", table_str)
     first_row = FALSE
@@ -308,7 +325,7 @@ htmlTable <- function(x,
         if(length(cgroup) > 1)
           total_columns <- total_columns + length(cgroup) - 1
         
-        table_str <- sprintf("%s\n\t<tr><td colspan=%d style='%s'>%s</tr>", table_str, 
+        table_str <- sprintf("%s\n\t<tr><td colspan='%d' style='%s'>%s</td></tr>", table_str, 
           total_columns, 
           rs,
           rgroup[rgroup_iterator])
@@ -338,7 +355,7 @@ htmlTable <- function(x,
     }
     
     table_str <- addCells(table_str = table_str, rowcells = x[row_nr,], 
-      cellcode = "td", align="right", style = cell_style)
+      cellcode = "td", align=getAlign(align), style = cell_style)
     table_str <- sprintf("%s\n\t</tr>", table_str)
   }
   

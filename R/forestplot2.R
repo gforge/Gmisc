@@ -355,8 +355,8 @@ forestplot2 <- function (labeltext,
   # that it continues beyond the graph
   # The zero bar has to be on the chart though!
   xrange <- function(){
-    top <- max(upper, na.rm = TRUE)
-    bottom <- min(lower, na.rm = TRUE)
+    top <- min(max(upper, na.rm = TRUE), clip[2])
+    bottom <- max(min(lower, na.rm = TRUE), clip[1])
     # Although perhops not entirely intuitive 
     # I've decided that the function should
     # extend the range to include the clip
@@ -367,15 +367,11 @@ forestplot2 <- function (labeltext,
       ret <- c(
         min(
           zero, 
-          ifelse(is.infinite(clip[1]),
-            bottom,
-            clip[1])
+          bottom
         ), 
         max(
           zero,
-          ifelse(is.infinite(clip[2]),
-            top,
-            clip[2])
+          top
         )
       )
       
@@ -588,7 +584,9 @@ forestplot2 <- function (labeltext,
   upViewport()
 }
 
-#' A copy of rmeta fpColors. If you have several values per row in a
+#' A copy of rmeta meta.colors. 
+#' 
+#' If you have several values per row in a
 #' plot then you can set the values to a vector where the first value 
 #' represents the first line/box, second the second line/box etc. The 
 #' vectors are only valid for the box & lines. 

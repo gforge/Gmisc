@@ -125,6 +125,7 @@ plotHR <- function (models,
     all.labels <- sub ( "[a-zA-Z\\._]+[0-9a-zA-Z\\._][(]([a-zA-Z._0-9]*)[, .a-zA-Z_0-9=]*[)]" , "\\1" , all.labels) 
     
     # Remove interaction terms since the data can't be found, ex. male_gender:prosthesis
+    # TODO: Remove and recheck since this is now in prGetModelVariables()
     terms_with_interaction <- grep("[_.a-zA-Z0-9]+:[_.a-zA-Z0-9]+", all.labels)
     if(length(terms_with_interaction)>0){
       all.labels <- all.labels[-terms_with_interaction]
