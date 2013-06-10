@@ -12,9 +12,10 @@
 #'  represent the starting positions, while the columns the end positions. I.e. the first
 #'  rows third column is the number of observations that go from the first class to the 
 #'  third class.
-#' @param type_of_arrow The types of arrow may be several. Simple grid arrows are the \code{\link[grid]{bezierGrob}}
-#'  arrows (not that pretty), simple is the \code{\link{bezierArrowSmpl}} that I've created to get
-#'  a more exact control of the arrow position and width, while gradient corresponds to \code{\link{bezierArrowSmplGradient}}
+#' @param type_of_arrow The types of arrow may be grid, simple, or gradient. Simple grid 
+#'  arrows are the \code{\link[grid]{bezierGrob}} arrows (not that pretty), 
+#'  simple is the \code{\link{bezierArrowSmpl}} that I've created to get a more exact 
+#'  control of the arrow position and width, while gradient corresponds to \code{\link{bezierArrowSmplGradient}}
 #'  allowing the arrow to have a fill color that slowly turns into the color of the arrow.
 #' @param box_txt The text to appear inside of the boxes. If you need line breaks
 #'  then you need to manually add a \\n inside the string. 
@@ -45,7 +46,9 @@
 #' @param arrow_clr The color of the arrows. Usually black, can be a vector indicating each arrow
 #'  from first to last arrow (counting from the top). If the vector is of the same length as the 
 #'  boxes then all box arrows will have the same color (that is all the arrows stemming from the
-#'  left boxes) 
+#'  left boxes)
+#' @param abs_arrow_width The width can either be absolute, i.e. each arrow headed for a box
+#'  has the exact same width. The alternative is that the width is related to the line width.
 #' @param overlap_bg_clr In order to enhance the 3D perspective and to make it easier
 #'  to follow arrows the arrows have a background color to separate them from those underneath.
 #' @param overlap_order The order from first->last for the lines. This means that the last
@@ -76,6 +79,7 @@ transitionPlot <- function (transition_flow,
                             max_lwd = 6,
                             lwd_prop_total = TRUE,
                             arrow_clr = "#000000",
+                            abs_arrow_width = FALSE, 
                             overlap_bg_clr = "#FFFFFF",
                             overlap_order = 1:nrow(transition_flow),
                             overlap_add_width = 1.5,
@@ -254,17 +258,15 @@ transitionPlot <- function (transition_flow,
     for (flow in order(transition_flow[box_row,])){
       if (transition_flow[box_row,flow] > 0){
         bx_right <- getBoxPositions(flow, "right")
-        
-        if (lwd_prop_total)
-          lwd <- min_lwd + (max_lwd-min_lwd)*transition_flow[box_row,flow]/max_flow
-        else
-          lwd <- min_lwd + (max_lwd-min_lwd)*transition_flow[box_row,flow]/max_flow
-        
+
+        # Calculate line width
+        lwd <- min_lwd + (max_lwd-min_lwd)*transition_flow[box_row,flow]/max_flow
+        adjusted_lwd <- lwd
         if (is.na(add_width) == FALSE){
           if ("unit" %in% class(add_width)){
-            lwd <- convertUnit(unit(lwd, "npc") + add_width, unitTo="npc", valueOnly=TRUE)
+            adjusted_lwd <- convertUnit(unit(lwd, "npc") + add_width, unitTo="npc", valueOnly=TRUE)
           }else if (add_width > 1){
-            lwd <- lwd*add_width
+            adjusted_lwd <- lwd*add_width
           }else{
             # Quit if the width isn't bigger as it won't show
             return()
@@ -276,38 +278,61 @@ transitionPlot <- function (transition_flow,
           bx_right$y_entry[box_row], bx_right$y_entry[box_row])
         current_arrow_clr <- clr[(flow+(box_row-1)*no_boxes)]
         if (type=="grid"){
-          a_angle <- atan(bx_right$y_entry_height/(no_boxes+.5)/2/a_l)*180/pi
+          if (abs_arrow_width){
+            a_width <- bx_right$y_entry_height/no_boxes
+          }else{
+            # Not really sure but points seem to be a reasonable
+            # unit for the lwd as a basis for this part
+            a_width <- getGridVal(unit(lwd, "pt"), "npc")+
+              bx_right$y_entry_height/(no_boxes+1)
+          }
+          a_angle <- atan(a_width/2/a_l)*180/pi
           # Need to adjust the end of the arrow as it otherwise overwrites part of the box
           # if it is thick
-          x_ctrl_points[4] <- x_ctrl_points[4]-.00075*lwd
+          x_ctrl_points[4] <- x_ctrl_points[4]-.00075*adjusted_lwd
           grid.bezier(x=x_ctrl_points, 
             y=y_ctrl_points, 
-            gp=gpar(lwd=lwd, fill=current_arrow_clr),
+            gp=gpar(lwd=adjusted_lwd, fill=current_arrow_clr),
             arrow=arrow(type="closed", angle=a_angle, length=unit(a_l, "npc")))
           
-        }else if (type=="simple"){
-          bz <- bezierArrowSmpl(x=x_ctrl_points, 
-            y=y_ctrl_points, 
-            width=lwd,
-            arrow=list(length=a_l, base=bx_right$y_entry_height/(no_boxes+.5)),
-            clr=current_arrow_clr)
-          grid.draw(bz)
-        }else if (type=="gradient"){
-          bz <- bezierArrowSmplGradient(x=x_ctrl_points, 
-            y=y_ctrl_points, 
-            width=lwd,
-            arrow=list(length=a_l, base=bx_right$y_entry_height/(no_boxes+.5)),
-            clr=current_arrow_clr,
-            grdt_type = "triangle",
-            grdt_clr_prop = 0.5,
-            grdt_start_prop = .3,
-            grdt_decrease_prop = .3,
-            grdt_clr = box_clr)
-          grid.draw(bz)
-          
         }else{
-          stop("The arrow type ", type, " is not yet implemented, sorry.")
-        }
+          # The width can be wider using the special bezier arrows
+          if (abs_arrow_width){
+            a_width <- bx_right$y_entry_height*1.5/no_boxes
+          }else{
+            a_width <- getGridVal(lwd, "npc") + 
+              bx_right$y_entry_height/(no_boxes+1)
+          }
+          
+          if (a_width < adjusted_lwd)
+            warning("The arrow width is smaller than the width of the line,",
+                "thus not appearing as a regular arrow: ", 
+                a_width, " < ", adjusted_lwd)
+          
+          if (type=="simple"){
+            bz <- bezierArrowSmpl(x=x_ctrl_points, 
+                y=y_ctrl_points, 
+                width=adjusted_lwd,
+                arrow=list(length=a_l, base=a_width),
+                clr=current_arrow_clr)
+            grid.draw(bz)
+          }else if (type=="gradient"){
+            bz <- bezierArrowSmplGradient(x=x_ctrl_points, 
+                y=y_ctrl_points, 
+                width=adjusted_lwd,
+                arrow=list(length=a_l, base=a_width),
+                clr=current_arrow_clr,
+                grdt_type = "triangle",
+                grdt_clr_prop = 0.5,
+                grdt_start_prop = .3,
+                grdt_decrease_prop = .3,
+                grdt_clr = box_clr)
+            grid.draw(bz)
+            
+          }else{
+            stop("The arrow type ", type, " is not yet implemented, sorry.")
+          }
+        } 
       }
     }
   }
@@ -377,8 +402,8 @@ transitionPlot <- function (transition_flow,
           plotArrows(type = ifelse(type_of_arrow == "grid", "grid", "simple"),
             box_row = i,
             max_flow = max_flow,
-            min_lwd = min_lwd*1.2,
-            max_lwd = max_lwd*1.2,
+            min_lwd = min_lwd,
+            max_lwd = max_lwd,
             clr = rep(overlap_bg_clr, no_boxes*ncol(transition_flow)),
             box_clr = overlap_bg_clr,
             add_width = overlap_add_width)

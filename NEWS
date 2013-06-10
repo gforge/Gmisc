@@ -1,5 +1,10 @@
 NEWS for the Gmisc package
 
+Changes for 0.5.3.3
+-------------------
+* Minor fixes to the bezier arrows
+* Update for transitionPlot to avoid overlapping background arrows
+ 
 Changes for 0.5.3.2
 -------------------
 * Thank you Adam Van Iwaarden for fixing the htmlTable alignment and a few bugs!
@@ -8,7 +13,7 @@ Changes for 0.5.3.2
 
 Changes for 0.5.3.1
 -------------------
-* Added trasitionplot ability to indicate proportions in the rectangles
+* Added transitionPlot ability to indicate proportions in the rectangles
 
 Changes for 0.5.3.0
 -------------------

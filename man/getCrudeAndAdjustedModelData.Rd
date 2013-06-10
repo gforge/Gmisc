@@ -27,9 +27,9 @@
   it compiles a fully unadjusted list of all your used
   covariates.
 
-  If the model is an exponential logit/cox regression model
-  then it automatically reports the exp() values instead of
-  the original values
+  If the model is an exponential poisson/logit/cox
+  regression model then it automatically reports the exp()
+  values instead of the original values
 
   The function skips by default all spline variables since
   this becomes very complicated and there is no simple

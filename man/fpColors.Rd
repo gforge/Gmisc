@@ -1,9 +1,6 @@
 \name{fpColors}
 \alias{fpColors}
-\title{A copy of rmeta fpColors. If you have several values per row in a
-plot then you can set the values to a vector where the first value
-represents the first line/box, second the second line/box etc. The
-vectors are only valid for the box & lines.}
+\title{A copy of rmeta meta.colors.}
 \usage{
   fpColors(all.elements, box = "black", lines = "gray",
     summary = "black", zero = "lightgray", text = "black",
@@ -33,6 +30,12 @@ vectors are only valid for the box & lines.}
   the text} \item{axes}{the color of the axes}
 }
 \description{
+  If you have several values per row in a plot then you can
+  set the values to a vector where the first value
+  represents the first line/box, second the second line/box
+  etc. The vectors are only valid for the box & lines.
+}
+\details{
   This function is a copy of the meta.colors function in
   the rmeta package.
 }

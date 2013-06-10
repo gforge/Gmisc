@@ -9,7 +9,8 @@
     txt_start_clr = "white", fill_end_box = "steelblue",
     txt_end_clr = "white", cex = 2, min_lwd = 1,
     max_lwd = 6, lwd_prop_total = TRUE,
-    arrow_clr = "#000000", overlap_bg_clr = "#FFFFFF",
+    arrow_clr = "#000000", abs_arrow_width = FALSE,
+    overlap_bg_clr = "#FFFFFF",
     overlap_order = 1:nrow(transition_flow),
     overlap_add_width = 1.5, box_prop = NULL)
 }
@@ -25,12 +26,12 @@
   number of observations that go from the first class to
   the third class.}
 
-  \item{type_of_arrow}{The types of arrow may be several.
-  Simple grid arrows are the \code{\link[grid]{bezierGrob}}
-  arrows (not that pretty), simple is the
-  \code{\link{bezierArrowSmpl}} that I've created to get a
-  more exact control of the arrow position and width, while
-  gradient corresponds to
+  \item{type_of_arrow}{The types of arrow may be grid,
+  simple, or gradient. Simple grid arrows are the
+  \code{\link[grid]{bezierGrob}} arrows (not that pretty),
+  simple is the \code{\link{bezierArrowSmpl}} that I've
+  created to get a more exact control of the arrow position
+  and width, while gradient corresponds to
   \code{\link{bezierArrowSmplGradient}} allowing the arrow
   to have a fill color that slowly turns into the color of
   the arrow.}
@@ -86,6 +87,11 @@
   same length as the boxes then all box arrows will have
   the same color (that is all the arrows stemming from the
   left boxes)}
+
+  \item{abs_arrow_width}{The width can either be absolute,
+  i.e. each arrow headed for a box has the exact same
+  width. The alternative is that the width is related to
+  the line width.}
 
   \item{overlap_bg_clr}{In order to enhance the 3D
   perspective and to make it easier to follow arrows the

@@ -462,7 +462,6 @@ getLines <- function(bp, end_point, width, default.units, align_2_axis = TRUE){
 #' @return A list with left and right elements indicating the two lines 
 #' 
 #' @author max
-#' @export
 getLinesWithArrow <- function(bp, arrow, end_points, width, default.units, align_2_axis){
   lines <- getLines(bp = bp,
     end_point=end_points$end, 
@@ -476,20 +475,41 @@ getLinesWithArrow <- function(bp, arrow, end_points, width, default.units, align
   arrow$left <- tmp$left
   arrow$right <- tmp$right
   lines$left$x <- unit.c(lines$left$x,
-    lines$left$x[length(lines$left$x)] + 
-      arrow$left[1],
-    unit(end_points$end$x, "npc"))
+#    lines$left$x[length(lines$left$x)] + 
+      unit(bp$x[length(bp$x)], "npc") + 
+        arrow$left[1],
+      unit(end_points$end$x, "npc"))
   lines$left$y <- unit.c(lines$left$y,
-    lines$left$y[length(lines$left$y)] + 
-      arrow$left[2],
-    unit(end_points$end$y, "npc"))
+#    lines$left$y[length(lines$left$y)] + 
+      unit(bp$y[length(bp$y)], "npc") + 
+          arrow$left[2],
+      unit(end_points$end$y, "npc"))
   lines$right$x <- unit.c(lines$right$x,
-    lines$right$x[length(lines$right$x)] + 
-      arrow$right[1])
+#    lines$right$x[length(lines$right$x)] + 
+      unit(bp$x[length(bp$x)], "npc") + 
+          arrow$right[1]
+  )
   lines$right$y <- unit.c(lines$right$y,
-    lines$right$y[length(lines$right$y)] + 
-      arrow$right[2])
+#    lines$right$y[length(lines$right$y)] + 
+      unit(bp$y[length(bp$y)], "npc") + 
+          arrow$right[2])
   
   return (lines)
 }
 
+#' Gets grid value
+#' 
+#' Returns the raw value in units if the provided is of type unit else
+#' it returns the default unit.
+#'  
+#' @param x Value 
+#' @param default.units The unit type 
+#' @return float 
+#' 
+#' @author Max
+getGridVal <- function(x, default.units){
+  if("unit" %in% class(x))
+    return(convertUnit(x, unitTo=default.units, valueOnly=TRUE))
+  else
+    return(x)
+}
