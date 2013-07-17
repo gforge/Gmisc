@@ -71,6 +71,8 @@
 #'   for each model.
 #' @param lwd.se The line width of your confidence interval. This is ignored if you're using
 #'   polygons for all the confidence intervals.
+#' @param lty.se The line type of your confidence interval.  This is ignored if you're using
+#'   polygons for all the confidence intervals.
 #' @param x.ticks The ticks for the x-axis if you desire other than the default.
 #' @param y.ticks The ticks for the y-axis if you desire other than the default.
 #' @param ylog Show a logarithmic y-axis. Not having a logarithmic axis might seem easier 
@@ -107,7 +109,8 @@ plotHR <- function (models,
   col.dens   = grey(.9),
   lwd.term   = 3, 
   lty.term   = 1, 
-  lwd.se     = 2,
+  lwd.se     = lwd.term,
+  lty.se     = lty.term,
   x.ticks    = NULL, 
   y.ticks    = NULL, 
   ylog       = TRUE,
@@ -227,6 +230,8 @@ plotHR <- function (models,
   polygon_ci <- rep(polygon_ci, length.out=length(models))
   lty.term <- rep(lty.term, length.out=length(models))
   lwd.term <- rep(lwd.term, length.out=length(models))
+  lty.se   <- rep(lty.se, length.out=length(models))
+  lwd.se <- rep(lwd.se, length.out=length(models))
   
   # set plotting parameters
   par(las = 1 , cex = cex)
@@ -289,7 +294,7 @@ plotHR <- function (models,
   
   # plot CI as polygon shade - if 'se = TRUE' (default)
   if (se) {
-    plot_conf_interval <- function(model_data, line_or_polygon_color, polygon_ci){
+    plot_conf_interval <- function(model_data, line_or_polygon_color, polygon_ci, lwd, lty){
       current_i.backw <- order(model_data$xvalues , decreasing = TRUE)
       current_i.forw <- order(model_data$xvalues)
       
@@ -300,14 +305,19 @@ plotHR <- function (models,
         y.poly <- c(model_data$ucl[current_i.forw] , model_data$lcl[current_i.backw])
         polygon(x.poly , y.poly , col = line_or_polygon_color, border = NA)
       }else{
-        lines(model_data$xvalues[current_i.forw] , model_data$ucl[current_i.forw], col = line_or_polygon_color, lwd = lwd.se, lty=2)
-        lines(model_data$xvalues[current_i.forw] , model_data$lcl[current_i.forw], col = line_or_polygon_color, lwd = lwd.se, lty=2)
+        lines(model_data$xvalues[current_i.forw] , model_data$ucl[current_i.forw], 
+          col = line_or_polygon_color, 
+          lwd = lwd, lty= lty)
+        lines(model_data$xvalues[current_i.forw], 
+          model_data$lcl[current_i.forw], 
+          col = line_or_polygon_color, 
+          lwd = lwd, lty= lty)
       }
     }
     
     # Plot the last on top
     for (i in rev(1:length(models))) {
-      plot_conf_interval(multi_data[[i]], col.se[[i]], polygon_ci[[i]])
+      plot_conf_interval(multi_data[[i]], col.se[[i]], polygon_ci[[i]], lwd = lwd.se[i], lty=lty.se[i])
     }
   }
   

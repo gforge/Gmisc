@@ -1,5 +1,9 @@
 NEWS for the Gmisc package
 
+Changes for 0.5.3.4
+-------------------
+* New options for plotHR
+
 Changes for 0.5.3.3
 -------------------
 * Minor fixes to the bezier arrows
