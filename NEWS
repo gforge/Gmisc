@@ -1,5 +1,9 @@
 NEWS for the Gmisc package
 
+Changes for 0.5.3.5
+-------------------
+* Added mergeLists() function for merging multiple lists
+
 Changes for 0.5.3.4
 -------------------
 * New options for plotHR

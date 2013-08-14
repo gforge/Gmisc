@@ -8,9 +8,9 @@
     main = NULL, xlim = NULL, ylim = NULL,
     col.term = "#08519C", col.se = "#DEEBF7",
     col.dens = grey(0.9), lwd.term = 3, lty.term = 1,
-    lwd.se = 2, x.ticks = NULL, y.ticks = NULL,
-    ylog = TRUE, cex = 1, y_axis_side = 2, plot.bty = "n",
-    axes = TRUE, ...)
+    lwd.se = lwd.term, lty.se = lty.term, x.ticks = NULL,
+    y.ticks = NULL, ylog = TRUE, cex = 1, y_axis_side = 2,
+    plot.bty = "n", axes = TRUE, ...)
 }
 \arguments{
   \item{models}{A single model or a list() with several
@@ -70,6 +70,10 @@
   for for each model.}
 
   \item{lwd.se}{The line width of your confidence interval.
+  This is ignored if you're using polygons for all the
+  confidence intervals.}
+
+  \item{lty.se}{The line type of your confidence interval.
   This is ignored if you're using polygons for all the
   confidence intervals.}
 
