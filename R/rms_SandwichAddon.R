@@ -1,13 +1,13 @@
 #' Robust covariance matrix based upon the sandwich-package
 #' 
 #' This is an alternative to the rms-package robust covariance
-#' matrix that uses the sandwich package \code{\link{sandwich:::vcovHC}} function
+#' matrix that uses the sandwich package \code{\link[sandwich]{vcovHC}} function
 #' instead of the rms-built-in estimator. The advantage being that 
 #' many more estimation types are available.
 #'  
 #' @param fit 
 #' @param ... You should specify type= followed by some of the alternative available
-#'  for the \code{\link{sandwich:::vcovHC}} function.
+#'  for the \code{\link[sandwich]{vcovHC}} function.
 #' @return model The fitted model with adjusted variance and df.residual set to NULL
 #' 
 #' @example examples/rms_SandwichAddon_example.R
@@ -30,13 +30,62 @@ robcov_alt <- function (fit, ...)
   fit
 }
 
+#' A confint function for the ols
+#' 
+#' This function checks that there is a df.residual
+#' before running the qt(). If not found it then
+#' defaults to the qnorm() function. Otherwise it is
+#' a copy of the \code{\link[stats]{confint}} function.
+#' 
+#' @param object 	a fitted ols-model object.
+#' @param parm a specification of which parameters 
+#'  are to be given confidence intervals, either a vector 
+#'  of numbers or a vector of names. If missing, all 
+#'  parameters are considered.
+#' @param level the confidence level required.
+#' @param ... additional argument(s) for methods.
+#' @return A matrix (or vector) with columns giving lower 
+#'  and upper confidence limits for each parameter. These 
+#'  will be labelled as (1-level)/2 and 1 - (1-level)/2 
+#'  in % (by default 2.5% and 97.5%).
+#' 
+#' @example examples/rms_SandwichAddon_example.R
+#' @author max
+#' @export
+confint.ols <- function(object, parm, level = 0.95, ...) {
+  cf <- coef(object)
+  pnames <- names(cf)
+  if (missing(parm)) 
+    parm <- pnames
+  else if (is.numeric(parm)) 
+    parm <- pnames[parm]
+  else if (any(!parm %in% pnames))
+    stop("Could not find the parameters that you requested, could not find: ", 
+      paste(pnames[!parm %in% pnames], collapse=", "),
+      "in the parameter name vector:", 
+      paste(pnames, collapse=", "))
+  a <- (1 - level)/2
+  a <- c(a, 1 - a)
+  if (is.null(object$df.residual))
+    zcrit <- qnorm(a)
+  else
+    zcrit <- qt(a, object$df.residual)
+  
+  pct <- stats:::format.perc(a, 3)
+  ci <- array(NA, dim = c(length(parm), 2L), dimnames = list(parm, 
+      pct))
+  ses <- sqrt(diag(vcov(object)))[parm]
+  ci[] <- cf[parm] + ses %o% zcrit
+  ci
+}
+
 #' Get the hat matrix for the OLS
 #' 
 #' The hat matrix comes from the residual definition: 
 #' \deqn{\hat{\epsilon}=y-X\hat{\beta}=\{I_n-X(X'X)X'\}y=(I_n-H)y}{epsilon = y - Xbeta_hat=(I_n - X(X'X)X')y = (I_n - H)y}
 #' where the H is called the hat matrix since \deqn{Hy = \hat{y}}{Hy = y_hat}. The hat
 #' values are actually the diagonal elements of the matrix that sum up
-#' to p (the rank of X, i.e. the number of parameters + 1). See \code{\link{rms:::ols.influence}}.
+#' to p (the rank of X, i.e. the number of parameters + 1). See \code{\link[rms]{ols.influence}}.
 #' 
 #' @param x The ols model fit
 #' @param ... arguments passed to methods.
