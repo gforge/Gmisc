@@ -28,7 +28,8 @@
   \item{align}{a character strings specifying column
   alignments, defaulting to
   \code{paste(rep('c',ncol(x)),collapse='')} to center.
-  You may specify \code{align='c|c'} and other LaTeX
+  Valid alignments are l = left, c = center and r = right.
+  You can also specify \code{align='c|c'} and other LaTeX
   tabular formatting.}
 
   \item{halign}{a character strings specifying alignment
@@ -36,7 +37,8 @@
 
   \item{cgroup}{a vector of character strings defining
   major column headings. The default is to have none. This
-  is also known as "the column spanner".}
+  is also known as "the column spanner". If you want a
+  column not to have a spanner then put that column as "".}
 
   \item{n.cgroup}{a vector containing the number of columns
   for which each element in cgroup is a heading. For
@@ -56,7 +58,10 @@
   \code{rgroup[1]} is used as a bold heading for them. The
   usual row dimnames (which must be present if
   \code{rgroup} is) are indented. The next
-  \code{n.rgroup[2]} rows are treated likewise, etc.}
+  \code{n.rgroup[2]} rows are treated likewise, etc. If you
+  don't want a row to be part of a row group then you just
+  put "" for that row, remember to add the corresponding
+  number of rows in n.rgroup.}
 
   \item{n.rgroup}{integer vector giving the number of rows
   in each grouping. If \code{rgroup} is not specified,

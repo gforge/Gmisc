@@ -27,6 +27,7 @@
 #' @param vp A Grid viewport object (or NULL).
 #' @return A grob of gList() type
 #' 
+#' @example examples/transitionPlot_example.R
 #' @author max
 #' @export
 bezierArrowSmplGradient <- function(
@@ -151,7 +152,7 @@ bezierArrowSmplGradient <- function(
       x=unit.c(unit(bp$x[end_point], default.units), 
         base$left[1],
         base$right[1]),
-      gp=gpar(fill=g_clrs[1], col=NA),
+      gp=gpar(fill=g_clrs[1], col=g_clrs[1]),
       vp = vp)
     
     inner_gradient <- gList(inner_gradient, gradient_pg)

@@ -1,5 +1,9 @@
 NEWS for the Gmisc package
 
+Changes for 0.5.4.0
+-------------------
+* Added a robust alternative for rms ols regressions that now can use the sandwich package
+
 Changes for 0.5.3.5
 -------------------
 * Added mergeLists() function for merging multiple lists

@@ -15,13 +15,15 @@
 #' @param title The title of the table. Used for labeling etc.
 #' @param headings a vector of character strings specifying column 
 #'    headings, defaulting to \code{x}'s 	\code{colnames}
-#' @param align a character strings specifying column	alignments, defaulting to	
-#'    \code{paste(rep('c',ncol(x)),collapse='')} to center.  
-#'    You may specify \code{align='c|c'} and other LaTeX tabular formatting.
+#' @param align a character strings specifying column alignments, defaulting to	
+#'    \code{paste(rep('c',ncol(x)),collapse='')} to center. Valid alignments are
+#'    l = left, c = center and r = right. You can also specify \code{align='c|c'} and 
+#'    other LaTeX tabular formatting.
 #' @param halign a character strings specifying alignment for column headings, 
 #'    defaulting to centered.
 #' @param cgroup a vector of character strings defining major column headings. The default 
-#'    is to have none. This is also known as "the column spanner".
+#'    is to have none. This is also known as "the column spanner". If you want a column not
+#'    to have a spanner then put that column as "".
 #' @param n.cgroup  a vector containing the number of columns for which each element in
 #'    cgroup is a heading. For example, specify \code{cgroup=c("Major 1","Major 2")}, 
 #'    \code{n.cgroup=c(3,3)} if \code{"Major 1"} is to span columns 1-3 and 
@@ -33,7 +35,9 @@
 #'    \code{n.rgroup} must be present when \code{rgroup} is given. The first 
 #'    \code{n.rgroup[1]}rows are sectioned off and \code{rgroup[1]} is used as a bold 
 #'    heading for them. The usual row dimnames (which must be present if \code{rgroup} is) 
-#'    are indented. The next \code{n.rgroup[2]} rows are treated likewise, etc.
+#'    are indented. The next \code{n.rgroup[2]} rows are treated likewise, etc. If you don't
+#'    want a row to be part of a row group then you just put "" for that row, remember to add
+#'    the corresponding number of rows in n.rgroup.
 #' @param n.rgroup integer vector giving the number of rows in each grouping. If \code{rgroup}
 #'    is not specified, \code{n.rgroup} is just used to divide off blocks of rows by horizontal 
 #'    lines. If \code{rgroup} is given but \code{n.rgroup} is omitted, \code{n.rgroup} will 
