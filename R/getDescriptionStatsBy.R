@@ -252,11 +252,13 @@ getDescriptionStatsBy <-
     total_table <- prGetStatistics(x[is.na(by) == FALSE], 
       numbers_first=numbers_first, 
       show_perc=total_col_show_perc, 
+      show_all_values = show_all_values,
       show_missing=show_missing, 
       html=html, 
       digits=digits, 
       continuous_fn = continuous_fn, 
-      factor_fn = factor_fn)
+      factor_fn = factor_fn,
+      prop_fn = prop_fn)
     
     if (add_total_col != "last"){
       results <- cbind(total_table, results)

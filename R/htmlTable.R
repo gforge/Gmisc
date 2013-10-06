@@ -11,20 +11,28 @@
 #' If you set the option table_counter you will get a Table 1,2,3
 #' etc before each table, just set \code{options("table_counter"=TRUE)}.
 #' 
+#' Note that when using complex cgroup alignments with multiple levels
+#' not every browser is able to handle this. For instance the RStudio
+#' browser seems to have issues with this 
+#' \code{\link{http://support.rstudio.org/help/discussions/problems/8805-built-in-web-browser-fails-to-render-cell-borders-properly}}
+#' 
 #' @param x The matrix/data.frame with the data
 #' @param title The title of the table. Used for labeling etc.
 #' @param headings a vector of character strings specifying column 
 #'    headings, defaulting to \code{x}'s 	\code{colnames}
 #' @param align a character strings specifying column alignments, defaulting to	
-#'    \code{paste(rep('c',ncol(x)),collapse='')} to center. Valid alignments are
+#'    \code{paste(c("l", rep('c',ncol(n_table)-1)),collapse='')} to center. Valid alignments are
 #'    l = left, c = center and r = right. You can also specify \code{align='c|c'} and 
 #'    other LaTeX tabular formatting.
 #' @param halign a character strings specifying alignment for column headings, 
 #'    defaulting to centered.
-#' @param cgroup a vector of character strings defining major column headings. The default 
+#' @param cgroup a vector or a matrix of character strings defining major column headings. The default 
 #'    is to have none. This is also known as "the column spanner". If you want a column not
-#'    to have a spanner then put that column as "".
-#' @param n.cgroup  a vector containing the number of columns for which each element in
+#'    to have a spanner then put that column as "". If you pass cgroup and n.crgroup as
+#'    matrices you can have multiline cgroups. If the different levels have different number
+#'    of elements you need to set the ones that lack elements to NA. For instance 
+#'    \code{cgroup = rbind(c("first", "second", NA), c("a", "b", "c"))}. 
+#' @param n.cgroup  a vector or matrix containing the number of columns for which each element in
 #'    cgroup is a heading. For example, specify \code{cgroup=c("Major 1","Major 2")}, 
 #'    \code{n.cgroup=c(3,3)} if \code{"Major 1"} is to span columns 1-3 and 
 #'    \code{"Major 2"} is to span columns 4-6. 
@@ -51,6 +59,10 @@
 #'    rgroup doesn't have a separator).
 #' @param rowlabel If x has row dimnames, rowlabel is a character string containing the
 #'    column heading for the row dimnames. The default is the name of the argument for x.
+#' @param rowlabel.pos Where the rowlabel should be positioned. This value can be "top",
+#'    "bottom", "header", or a integer between \code{1} and \code{nrow(cgroup) + 1}. The options
+#'    "bottom", "header" are the same, where the row label is presented at the same level as
+#'    the header.
 #' @param rowname Default is rownames of matrix or data.frame. 
 #' @param caption a text string to use as a caption to print at the top of the first 
 #'    page of the table. Default is no caption.
@@ -74,7 +86,7 @@
 htmlTable <- function(x,
   title=first.word(deparse(substitute(x))),
   headings=NA, 
-  align =paste(rep('c',ncol(x)),collapse=''),
+  align =paste(c("l", rep('c',ncol(x)-1)),collapse=''),
   halign=paste(rep('c',ncol(x)),collapse=''),
   cgroup=NULL, n.cgroup=NULL,
   cgroup.just=rep("c",length(n.cgroup)),
@@ -82,6 +94,7 @@ htmlTable <- function(x,
   rgroupCSSstyle="font-weight: 900;",
   rgroupCSSseparator = "border-top: 1px solid grey;",
   rowlabel=title,
+  rowlabel.pos = "top",
   ctable=FALSE,
   rowname=NA,
   caption=NULL,
@@ -92,14 +105,26 @@ htmlTable <- function(x,
 {
   # Unfortunately in knitr there seems to be some issue when the
   # rowname is specified immediately as: rowname=rownames(x) 
-  if (length(rowname) == 1 && is.na(rowname))
+  if (length(rowname) == 1 && is.na(rowname) && 
+      any(is.null(rownames(x)) == FALSE))
     rowname=rownames(x)
+  else if (any(is.null(rownames(x))) && is.null(rgroup) == FALSE)
+    warning("You have not specified rownames but you seem to have rgroups.",
+        "If you have the first column as rowname but you want the rgroups",
+        "to result in subhedings with indentation below then",
+        "you should change the rownames to the first column and then",
+        "remove it from the table matrix (the x argument object).")
+  
   if (length(headings) == 1 && is.na(headings))
     headings=colnames(x)
   
   if (length(dim(x)) != 2)
     stop("Your table variable seems to have the wrong dimension, length(dim(x)) = ", 
       length(dim(x)) , " != 2")
+  
+  # Just in case the user forgot that this is a string and not a vector
+  if (length(align) > 1)
+    align <- paste(align, collapse="")
   
   require("stringr")
   
@@ -114,23 +139,16 @@ htmlTable <- function(x,
   }
   
   addCells <- function(table_str, rowcells, cellcode, align, style=""){
-    cgroup_iterator <- 0
     style = addSemicolon2StrEnd(style)
     for (nr in 1:length(rowcells)){
-      if (length(cgroup) > 0){
-        if (cgroup_iterator > 0){
-          if (sum(n.cgroup[1:cgroup_iterator]) < nr ){
-            table_str <- sprintf("%s\n\t\t<%s style='%s'>&nbsp;</%s>", 
-              table_str, cellcode, style, cellcode)
-            cgroup_iterator = cgroup_iterator + 1
-          }
-        }else{
-          cgroup_iterator = cgroup_iterator + 1
-        }
-      }
-      
       table_str <- sprintf("%s\n\t\t<%s align='%s' style='%s'>%s</%s>", 
         table_str, cellcode, align[nr], style, rowcells[nr], cellcode)
+      
+      # Add empty cell if not last column
+      if (nr != length(rowcells) && cgroup_spacer_cells[nr] > 0){
+        table_str <- sprintf("%s\n\t\t<%s style='%s' colspan='%d'>&nbsp;</%s>", 
+          table_str, cellcode, style, cgroup_spacer_cells[nr], cellcode)
+      }
     }
     return (table_str)
   }
@@ -143,6 +161,62 @@ htmlTable <- function(x,
     }
     sapply(tmp_align_req, function(f) c("center", "right", "left")[grep(f, c("c", "r", "l"))], USE.NAMES=FALSE)
   }
+  
+  getCgroupHeader <- function(cgroup_vec, n.cgroup_vec, top_row = TRUE, row_no){
+    
+    header_str <- "\n\t<tr>"
+    if (top_row)
+      ts <- top_row_style
+    else
+      ts <- ""
+
+    if (set_rownames && 
+      length(rowlabel) > 0){
+      if (row_no == rowlabel.pos)
+        header_str <- sprintf("%s\n\t\t<th style='font-weight: 900; %s'>%s</th>", 
+          header_str, ts, rowlabel)
+      else
+        header_str <- sprintf("%s\n\t\t<th style='font-weight: 900; %s'>&nbsp;</th>", 
+          header_str, ts)
+    }
+    
+    for (i in 1:length(cgroup_vec)){
+      if (!is.na(n.cgroup_vec[i])){
+        start_column <- ifelse(i == 1,
+          1,
+          sum(n.cgroup_vec[1:(i-1)], na.rm=TRUE) + 1)
+        
+        # 10 3-1
+        # 0 0 1
+        colspan <- n.cgroup_vec[i] +
+          ifelse(start_column > length(cgroup_spacer_cells) || 
+              n.cgroup_vec[i] == 1,
+            0, 
+            ifelse(start_column == 1,
+              sum(cgroup_spacer_cells[1:(n.cgroup_vec[i]-1)]),
+              ifelse(sum(n.cgroup_vec[1:i], na.rm=TRUE) == ncol(x),
+                sum(cgroup_spacer_cells[start_column:length(cgroup_spacer_cells)]),
+                sum(cgroup_spacer_cells[start_column:((start_column-1) + (n.cgroup_vec[i]-1))]))))
+        
+        if (nchar(cgroup_vec[i]) == 0 || is.na(cgroup_vec[i]))
+          header_str <- sprintf("%s\n\t\t<th colspan='%d' align='%s' style='font-weight: 900; %s'>&nbsp;</th>", 
+            header_str, colspan, 
+            getAlign(strsplit(cgroup_vec.just, '')[[1]][i]), ts)
+        else
+          header_str <- sprintf("%s\n\t\t<th colspan='%d' style='font-weight: 900; border-bottom: 1px solid grey; %s'>%s</th>", 
+            header_str, colspan, ts, cgroup_vec[i])
+        
+        # If not last then add a filler cell between the row categories
+        # this is also the reason that we need the cgroup_spacer_cells
+        if (i != sum(!is.na(cgroup_vec)))
+          header_str <- sprintf("%s<th style='%s; border-bottom: hidden;'>&nbsp;</th>", 
+            header_str, ts)
+      }
+    }
+    header_str <- sprintf("%s\n\t</tr>", header_str)
+    return(header_str)
+  }
+  
   
   # Sanity checks rgroupCSSstyle and prepares the style
   if (length(rgroupCSSstyle) > 1 &&
@@ -179,6 +253,122 @@ htmlTable <- function(x,
     sum(n.rgroup) !=  nrow(x))
     stop(sprintf("Your rows don't match in the n.rgroup, i.e. %d != %d", 
         sum(n.rgroup), nrow(x)))
+  
+  # With multiple rows in cgroup we need to keep track of
+  # how many spacer cells occur between the groups 
+  cgroup_spacer_cells <- rep(0, times=(ncol(x)-1))
+  
+  # Sanity check for cgroup
+  if (length(cgroup) > 0){
+    
+    # The cgroup is by for compatibility reasons handled as a matrix
+    if (!is.matrix(cgroup)){
+      cgroup <- matrix(cgroup, nrow=1)
+      if (is.null(n.cgroup))
+        n.cgroup <- matrix(NA, nrow=1)
+      else
+        n.cgroup <- matrix(n.cgroup, nrow=1)
+    }
+    
+    # Go bottom up as the n.cgroup can be based on the previous
+    # n.cgroup row.
+    for (i in nrow(cgroup):1){
+      # The row is empty and filled with NA's then we check
+      # that it is possible to evenly split the cgroups among 
+      # the columns of the table
+      if (all(is.na(n.cgroup[i,])) && 
+        ncol(x) %% length(cgroup[i,]) == 0){
+        # This generates the n.cgroup if this is missing
+        n.cgroup[i,] <- rep(ncol(x)/length(cgroup[i,]), times=length(cgroup[i,]))
+      }else if(sum(n.cgroup[i,], na.rm=TRUE) != ncol(x)){
+        ncgroupFixFromBelowGroup <- function(nc, i){
+          if (i+1 > nrow(nc))
+            stop("You have provided an invalid nc where it has fewer rows than the one of interest")
+          
+          # Select those below that are not missing
+          row_below <- nc[i + 1, !is.na(nc[i + 1, ])]
+          # The first position to start
+          start_pos <- 1
+          # This is a slightly complicated run that took a while to figure out
+          # and I'm still afraid of ever having to debug this section.
+          for (ii in 1:ncol(nc)){
+            if (!is.na(nc[i, ii])){
+              # Need to find where to begin tha addition
+              pos <- ifelse(any(start_pos > cumsum(row_below)),
+                  tail(which(start_pos > cumsum(row_below)), 1) + 1,
+                  1)
+              # Change the value to the rows below values that add up to this row
+              # if the nc value is 1 and start position is 1 -> 1:(1+1-1) -> 1:1 -> 1
+              # if the nc value is 2 and start position is 2 -> 2:(2+2-1) -> 2:3
+              # if the nc value is 2 and start position is 1 -> 1:(1+2-1) -> 1:2
+              nc[i, ii] <- sum(row_below[pos:(pos + nc[i, ii] - 1)])
+              # Update the new start position:
+              # if first run and nc is 2 then 1 + 2 -> 3 i.e. 
+              # next run the start_pos is 3 and lets say that nc is 3 then 3 + 3 -> 6
+              start_pos <- start_pos + nc[i, ii]
+            }
+          }
+          
+          # Return the full object
+          return(nc)
+        }
+        
+        # This grouping can be based upon the next row
+        if (i < nrow(cgroup) && 
+            sum(n.cgroup[i, ], na.rm = TRUE) == sum(!is.na(n.cgroup[i + 1, ])))
+        {
+          n.cgroup <- ncgroupFixFromBelowGroup(n.cgroup, i)
+        }else{
+          stop(sprintf("Your columns don't match in the n.cgroup for the %d header row, i.e. %d != %d",
+              i,
+              sum(n.cgroup[i,], na.rm=TRUE), 
+              ncol(x)))
+        }
+      } 
+      
+      if (!all(is.na(n.cgroup[i, ]) == is.na(cgroup[i, ]))){
+        stop("On header row (the cgroup argument) no ", i, 
+          " you fail to get the NA's matching.",
+          "\n  The n.cgroup has elements no:",
+          sprintf(" '%s'", paste(which(is.na(n.cgroup[i, ])), collapse=", ")), 
+          " missing while cgroup has elements no:",
+          sprintf(" '%s'", paste(which(is.na(cgroup[i, ])), collapse=", ")),
+          " missing.",
+          "\n If the NA's don't occur at the same point",
+          " the software can't decide what belongs where.",
+          "\n The full cgroup row: ", paste(cgroup[i, ], collapse=", "),
+          "\n The full n.cgroup row: ", paste(n.cgroup[i, ], collapse=", "))
+      } 
+      
+      # Add a spacer cell for each cgroup. If two cgroups
+      # on different rows have the same separation then it
+      # is enough to have one spacer.
+      for (ii in 1:(length(n.cgroup[i, ])-1)){
+        if (!is.na(n.cgroup[i, ii]) && sum(n.cgroup[i, 1:ii], na.rm=TRUE) <= length(cgroup_spacer_cells))
+          cgroup_spacer_cells[sum(n.cgroup[i, 1:ii], na.rm=TRUE)] <- 1
+      }
+    }
+  }
+    
+  no_cgroup_rows <- ifelse(length(cgroup) > 0,
+    nrow(cgroup),
+    0)
+  if (is.numeric(rowlabel.pos)){
+    if(rowlabel.pos < 1)
+      stop("You have specified a rowlabel.pos that is less than 1: ", rowlabel.pos)
+    else if (rowlabel.pos > no_cgroup_rows + (length(headings) > 0)*1)
+      stop("You have specified a rowlabel.pos that more than the max limit, ",
+        no_cgroup_rows + (length(headings) > 0)*1,
+        ", you have provided: ", rowlabel.pos)
+  }else{
+    rowlabel.pos <- tolower(rowlabel.pos)
+    if (rowlabel.pos %in% c("top"))
+      rowlabel.pos <- 1
+    else if (rowlabel.pos %in% c("bottom", "header"))
+      rowlabel.pos <- no_cgroup_rows + (length(headings) > 0)*1
+    else
+      stop("You have provided an invalid rowlabel.pos text, only 'top', 'bottom' or 'header' are allowed, can't interpret '", rowlabel.pos, "'")
+  }
   
   
   table_str <- "<table class='gmisc_table' style='border-collapse: collapse;'>"
@@ -239,38 +429,23 @@ htmlTable <- function(x,
     set_rownames <- TRUE
   else
     set_rownames <- FALSE
-  
+
+  rowname_align <- getAlign("l")
+  if (set_rownames && nchar(align) - 1 == ncol(x)){
+    rowname_align <- getAlign(substr(align, 1,1))
+    align <- substring(align, 2)
+  }
+    
   # Start the head
   table_str <- sprintf("%s\n\t<thead>", table_str)
   
   # Add the cgroup table header
   if (length(cgroup) > 0){
-    if (length(n.cgroup) == 0 && ncol(x) %% length(cgroup) == 0){
-      n.cgroup <- rep(ncol(x)/length(cgroup), times=length(cgroup))
-    }else if(sum(n.cgroup) != ncol(x)){
-      stop(sprintf("Your columns don't match in the n.cgroup, i.e. %d != %d", 
-          sum(n.cgroup), ncol(x)))
-    }
     
-    table_str <- sprintf("%s\n\t<tr>", table_str)
-    if (set_rownames && length(rowlabel) > 0){
-      table_str <- sprintf("%s\n\t\t<th style='font-weight: 900; %s'>%s</th>", 
-        table_str, top_row_style, rowlabel)
-    }
-    
-    for (i in 1:length(cgroup)){
-      if (cgroup[i] == "")
-        table_str <- sprintf("%s\n\t\t<th colspan='%d' align='%s' style='font-weight: 900; %s'>&nbsp;</th>", 
-          table_str, n.cgroup[i], getAlign(strsplit(cgroup.just, '')[[1]][i]), top_row_style)
-      else
-        table_str <- sprintf("%s\n\t\t<th colspan='%d' style='font-weight: 900; border-bottom: 1px solid grey; %s'>%s</th>", 
-          table_str, n.cgroup[i], top_row_style, cgroup[i])
-      if (i != length(cgroup))
-        table_str <- sprintf("%s<th style='%s'>&nbsp;</th>", 
-          table_str, top_row_style)
+    for (i in 1:nrow(cgroup)){
+      table_str <- sprintf("%s%s", table_str, getCgroupHeader(cgroup[i,], n.cgroup[i,], top_row = (i == 1), row_no = i))
     }
     first_row = FALSE
-    table_str <- sprintf("%s\n\t</tr>", table_str)
   }
   
   
@@ -279,11 +454,13 @@ htmlTable <- function(x,
     # The bottom border was ment to be here but it doesn't
     # work that well in the export
     table_str <- sprintf("%s\n\t<tr>", table_str)
-    if (set_rownames && length(cgroup) == 0  && length(rowlabel) > 0){
+    ts <- ifelse(no_cgroup_rows > 0, "", top_row_style)
+    if (set_rownames && length(rowlabel) > 0 && rowlabel.pos == no_cgroup_rows + 1){
       table_str <- sprintf("%s\n\t\t<th style='font-weight: 900; border-bottom: 1px solid grey; %s'>%s</th>", 
-        table_str, top_row_style, rowlabel)
+        table_str, ts, rowlabel)
     }else if(set_rownames){
-      table_str <- sprintf("%s\n\t\t<th style='border-bottom: 1px solid grey;'>&nbsp;</th>", table_str)
+      table_str <- sprintf("%s\n\t\t<th style='border-bottom: 1px solid grey; %s'>&nbsp;</th>", 
+        table_str, ts)
     }
     
     cell_style= "border-bottom: 1px solid grey;" 
@@ -351,11 +528,11 @@ htmlTable <- function(x,
         
         # The padding doesn't work well with the Word import - well nothing really works well with word...
         # table_str <- sprintf("%s\n\t\t<td style='padding-left: .5em;'>%s</td>", table_str, rowname[row_nr])
-        table_str <- sprintf("%s\n\t\t<td style='%s'>&nbsp;&nbsp;%s</td>", 
-          table_str, cell_style, rowname[row_nr])
+        table_str <- sprintf("%s\n\t\t<td style='%s' align='%s'>&nbsp;&nbsp;%s</td>", 
+          table_str, cell_style, rowname_align, rowname[row_nr])
       }else
-        table_str <- sprintf("%s\n\t\t<td style='%s'>%s</td>", 
-          table_str, cell_style, rowname[row_nr])
+        table_str <- sprintf("%s\n\t\t<td style='%s' align='%s'>%s</td>", 
+          table_str, cell_style, rowname_align, rowname[row_nr])
     }
     
     table_str <- addCells(table_str = table_str, rowcells = x[row_nr,], 

@@ -4,7 +4,7 @@
 \usage{
   prGetStatistics(x, show_perc = FALSE, html = TRUE,
     digits = 1, numbers_first = TRUE, show_missing = TRUE,
-    continuous_fn = describeMean,
+    show_all_values = FALSE, continuous_fn = describeMean,
     factor_fn = describeFactors, prop_fn = factor_fn)
 }
 \arguments{
@@ -22,6 +22,14 @@
   percentage}
 
   \item{show_missing}{If missing should be included}
+
+  \item{show_all_values}{This is by default false as for
+  instance if there is no missing and there is only one
+  variable then it is most sane to only show one option as
+  the other one will just be a complement to the first. For
+  instance sex - if you know gender then automatically you
+  know the distribution of the other sex as it's 100 \% -
+  other \%.}
 
   \item{continuous_fn}{A function for describing continuous
   variables defaults to \code{\link{describeMean}}}

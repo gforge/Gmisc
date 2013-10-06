@@ -4,16 +4,16 @@
 \usage{
   htmlTable(x, title = first.word(deparse(substitute(x))),
     headings = NA,
-    align = paste(rep("c", ncol(x)), collapse = ""),
+    align = paste(c("l", rep("c", ncol(x) - 1)), collapse = ""),
     halign = paste(rep("c", ncol(x)), collapse = ""),
     cgroup = NULL, n.cgroup = NULL,
     cgroup.just = rep("c", length(n.cgroup)),
     rgroup = NULL, n.rgroup = NULL,
     rgroupCSSstyle = "font-weight: 900;",
     rgroupCSSseparator = "border-top: 1px solid grey;",
-    rowlabel = title, ctable = FALSE, rowname = NA,
-    caption = NULL, caption.loc = "top", label = title,
-    output = TRUE, ...)
+    rowlabel = title, rowlabel.pos = "top", ctable = FALSE,
+    rowname = NA, caption = NULL, caption.loc = "top",
+    label = title, output = TRUE, ...)
 }
 \arguments{
   \item{x}{The matrix/data.frame with the data}
@@ -26,28 +26,33 @@
   \code{colnames}}
 
   \item{align}{a character strings specifying column
-  alignments, defaulting to
-  \code{paste(rep('c',ncol(x)),collapse='')} to center.
-  Valid alignments are l = left, c = center and r = right.
-  You can also specify \code{align='c|c'} and other LaTeX
+  alignments, defaulting to \code{paste(c("l",
+  rep('c',ncol(n_table)-1)),collapse='')} to center. Valid
+  alignments are l = left, c = center and r = right. You
+  can also specify \code{align='c|c'} and other LaTeX
   tabular formatting.}
 
   \item{halign}{a character strings specifying alignment
   for column headings, defaulting to centered.}
 
-  \item{cgroup}{a vector of character strings defining
-  major column headings. The default is to have none. This
-  is also known as "the column spanner". If you want a
-  column not to have a spanner then put that column as "".}
+  \item{cgroup}{a vector or a matrix of character strings
+  defining major column headings. The default is to have
+  none. This is also known as "the column spanner". If you
+  want a column not to have a spanner then put that column
+  as "". If you pass cgroup and n.crgroup as matrices you
+  can have multiline cgroups. If the different levels have
+  different number of elements you need to set the ones
+  that lack elements to NA. For instance \code{cgroup =
+  rbind(c("first", "second", NA), c("a", "b", "c"))}.}
 
-  \item{n.cgroup}{a vector containing the number of columns
-  for which each element in cgroup is a heading. For
-  example, specify \code{cgroup=c("Major 1","Major 2")},
-  \code{n.cgroup=c(3,3)} if \code{"Major 1"} is to span
-  columns 1-3 and \code{"Major 2"} is to span columns 4-6.
-  \code{rowlabel} does not count in the column numbers. You
-  can omit \code{n.cgroup} if all groups have the same
-  number of columns.}
+  \item{n.cgroup}{a vector or matrix containing the number
+  of columns for which each element in cgroup is a heading.
+  For example, specify \code{cgroup=c("Major 1","Major
+  2")}, \code{n.cgroup=c(3,3)} if \code{"Major 1"} is to
+  span columns 1-3 and \code{"Major 2"} is to span columns
+  4-6.  \code{rowlabel} does not count in the column
+  numbers. You can omit \code{n.cgroup} if all groups have
+  the same number of columns.}
 
   \item{cgroup.just}{The justification of the c.groups}
 
@@ -87,6 +92,13 @@
   character string containing the column heading for the
   row dimnames. The default is the name of the argument for
   x.}
+
+  \item{rowlabel.pos}{Where the rowlabel should be
+  positioned. This value can be "top", "bottom", "header",
+  or a integer between \code{1} and \code{nrow(cgroup) +
+  1}. The options "bottom", "header" are the same, where
+  the row label is presented at the same level as the
+  header.}
 
   \item{rowname}{Default is rownames of matrix or
   data.frame.}
@@ -131,6 +143,12 @@
   If you set the option table_counter you will get a Table
   1,2,3 etc before each table, just set
   \code{options("table_counter"=TRUE)}.
+
+  Note that when using complex cgroup alignments with
+  multiple levels not every browser is able to handle this.
+  For instance the RStudio browser seems to have issues
+  with this
+  \code{\link{http://support.rstudio.org/help/discussions/problems/8805-built-in-web-browser-fails-to-render-cell-borders-properly}}
 }
 \examples{
 # A simple example

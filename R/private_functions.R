@@ -160,6 +160,11 @@ prGetModelVariables <- function(model, remove_splines = TRUE){
 #' @param digits Number of decimal digits
 #' @param numbers_first If number is to be prior to the percentage
 #' @param show_missing If missing should be included 
+#' @param show_all_values This is by default false as for instance if there is
+#'  no missing and there is only one variable then it is most sane to only show 
+#'  one option as the other one will just be a complement to the first. For instance
+#'  sex - if you know gender then automatically you know the distribution of the 
+#'  other sex as it's 100 \% - other \%. 
 #' @param continuous_fn A function for describing continuous variables
 #'  defaults to \code{\link{describeMean}} 
 #' @param prop_fn A function for describing proportions, defaults to
@@ -175,23 +180,40 @@ prGetStatistics <- function(x,
   digits = 1, 
   numbers_first = TRUE, 
   show_missing = TRUE, 
+  show_all_values = FALSE,
   continuous_fn = describeMean, 
   factor_fn = describeFactors,
   prop_fn = factor_fn)
 {
   show_missing <- prConvertShowMissing(show_missing)
   if (is.factor(x)){
-    if (show_perc)
-      total_table <- factor_fn(x, 
-        html=html, 
-        digits=digits,
-        number_first=numbers_first, 
-        show_missing = show_missing)
-    else{
-      total_table <- table(x, useNA=show_missing)
-      names(total_table)[is.na(names(total_table))] <- "Missing"
+    if (length(levels(x)) == 2){
+      if (show_perc)
+        total_table <- prop_fn(x, 
+            html=html, 
+            digits=digits,
+            number_first=numbers_first, 
+            show_missing = show_missing)
+      else{
+        total_table <- table(x, useNA=show_missing)
+        names(total_table)[is.na(names(total_table))] <- "Missing"
+        # Choose only the reference level
+        if (show_all_values == FALSE)
+          total_table <- total_table[names(total_table) %in% c(levels(x)[1], "Missing")]
+      }
+      
+    }else {
+      if (show_perc)
+        total_table <- factor_fn(x, 
+            html=html, 
+            digits=digits,
+            number_first=numbers_first, 
+            show_missing = show_missing)
+      else{
+        total_table <- table(x, useNA=show_missing)
+        names(total_table)[is.na(names(total_table))] <- "Missing"
+      }
     }
-    
   }else{
     total_table <- continuous_fn(x, 
       html=html, digits=digits, 

@@ -1,5 +1,10 @@
 NEWS for the Gmisc package
 
+Changes for 0.5.4.1
+-------------------
+* Minor improvement to the htmlTable function with align now accepting vectors
+* Added multiline cgroup alternative
+
 Changes for 0.5.4.0
 -------------------
 * Added a robust alternative for rms ols regressions that now can use the sandwich package
