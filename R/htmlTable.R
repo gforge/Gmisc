@@ -191,6 +191,15 @@ htmlTable <- function(x,
     sapply(tmp_align_req, function(f) c("center", "right", "left")[grep(f, c("c", "r", "l"))], USE.NAMES=FALSE)
   }
   
+  setRowLabel <- function(){
+    if (set_rownames && 
+      length(rowlabel) > 0 &&
+      nchar(rowlabel))
+      return(TRUE)
+    else
+      return(FALSE)
+  }
+  
   getCgroupHeader <- function(cgroup_vec, n.cgroup_vec, cgroup_vec.just, top_row = TRUE, row_no){
     
     header_str <- "\n\t<tr>"
@@ -199,8 +208,7 @@ htmlTable <- function(x,
     else
       ts <- ""
 
-    if (set_rownames && 
-      length(rowlabel) > 0){
+    if (setRowLabel()){
       if (row_no == rowlabel.pos)
         header_str <- sprintf("%s\n\t\t<th style='font-weight: 900; %s'>%s</th>", 
           header_str, ts, rowlabel)
@@ -475,7 +483,8 @@ htmlTable <- function(x,
     table_str <- sprintf("%s%s</caption>", table_str, caption)
   }
   
-  if (length(rowname) > 0)
+  if (length(rowname) > 0 && 
+    (length(rowname) == 1 && !is.na(rowname)))
     set_rownames <- TRUE
   else
     set_rownames <- FALSE
@@ -508,7 +517,7 @@ htmlTable <- function(x,
     # work that well in the export
     table_str <- sprintf("%s\n\t<tr>", table_str)
     ts <- ifelse(no_cgroup_rows > 0, "", top_row_style)
-    if (set_rownames && length(rowlabel) > 0 && rowlabel.pos == no_cgroup_rows + 1){
+    if (setRowLabel() && rowlabel.pos == no_cgroup_rows + 1){
       table_str <- sprintf("%s\n\t\t<th style='font-weight: 900; border-bottom: 1px solid grey; %s'>%s</th>", 
         table_str, ts, rowlabel)
     }else if(set_rownames){
