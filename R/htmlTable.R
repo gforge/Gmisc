@@ -462,7 +462,7 @@ htmlTable <- function(x,
   }
   
   
-  if (nchar(caption) > 0){
+  if (!is.null(caption) && nchar(caption) > 0){
     if (caption.loc == "bottom"){
       table_str <- sprintf("%s\n\t<caption align='bottom'>", table_str)
     }else{
@@ -475,7 +475,6 @@ htmlTable <- function(x,
     table_str <- sprintf("%s%s</caption>", table_str, caption)
   }
   
-  browser()
   if (length(rowname) > 0)
     set_rownames <- TRUE
   else

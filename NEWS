@@ -1,5 +1,14 @@
 NEWS for the Gmisc package
 
+Changes for 0.5.4.3
+-------------------
+* Fixed a caption problem for htmlTable
+
+Changes for 0.5.4.2
+-------------------
+* bezierArrowSmpl needed a color for the arrow line as it turned black by default. The line was added to fix the anti-aliasing issue.
+* Changed CSS-defaults for groups when using the function printCrudeAndAdjusted
+
 Changes for 0.5.4.2
 -------------------
 * Minor regular expression fix for printCrudeAndAdjusted for the addref. function

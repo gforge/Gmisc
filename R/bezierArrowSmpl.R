@@ -163,7 +163,7 @@ bezierArrowSmpl <- function(x = c(0.2, .7, .3, .9), y = c(0.2, .2, .9, .9),
                              rev(lines$right$x)),
                     y=unit.c(lines$left$y,
                              rev(lines$right$y)),
-                    gp=gpar(fill=clr), # col=NA, - messes up the anti-aliasing
+                    gp=gpar(fill=clr, col=clr), # col=NA, - messes up the anti-aliasing
                     name = name,
                     vp = vp)
   
