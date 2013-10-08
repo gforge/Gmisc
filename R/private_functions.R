@@ -18,13 +18,30 @@
 #' @author max
 prExtractOutcomeFromModel <- function(model, check_subset = TRUE){
   outcome_formula <- formula(model)[[2]]
-  if (length(all.vars(outcome_formula)) != 1)
-    stop(paste("You seem to have some kind of complex outcome:", 
-        as.character(outcome_formula),
-        "\n In order for this function to work in a predictive way",
-        "you can only have one outcome - sorry"))
   
-  outcome_var_name <- all.vars(outcome_formula)[1]
+  if (length(all.vars(outcome_formula)) != 1){
+    # We can probably figure this one out if we have
+    # the Surv() call to work with
+    if (grepl("^Surv", outcome_formula)[1]){
+      ls <- as.list(outcome_formula)
+      if ("event" %in% names(ls))
+        outcome_var_name <- ls$event
+      else if(sum("" == names(ls)) >= 4)
+        outcome_var_name <- ls[[which("" ==  names(ls))[4]]]
+      else if(sum("" == names(ls)) <= 3)
+        outcome_var_name <- ls[[tail(which("" ==  names(ls)), 1)]]
+      else
+        stop("Could not figure out in your Surv() call what parameter to pick for the descriptive column")
+    }else{
+      stop(paste("You seem to have some kind of complex outcome:", 
+          as.character(outcome_formula),
+          "\n In order for this function to work in a predictive way",
+          "you can only have one outcome - sorry"))
+    }
+  }else{
+    outcome_var_name <- all.vars(outcome_formula)[1]
+  }
+  
   if (is.null(model$call$data)){
     outcome <- get(outcome_var_name)
   }else{

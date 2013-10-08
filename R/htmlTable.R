@@ -13,8 +13,8 @@
 #' 
 #' Note that when using complex cgroup alignments with multiple levels
 #' not every browser is able to handle this. For instance the RStudio
-#' browser seems to have issues with this 
-#' \code{\link{http://support.rstudio.org/help/discussions/problems/8805-built-in-web-browser-fails-to-render-cell-borders-properly}}
+#' webkit browser seems to have issues with this and a bug has been filed:
+#' \code{\link{http://code.google.com/p/chromium/issues/detail?id=305130}}
 #' 
 #' @param x The matrix/data.frame with the data
 #' @param title The title of the table. Used for labeling etc.
@@ -89,7 +89,7 @@ htmlTable <- function(x,
   align =paste(c("l", rep('c',ncol(x)-1)),collapse=''),
   halign=paste(rep('c',ncol(x)),collapse=''),
   cgroup=NULL, n.cgroup=NULL,
-  cgroup.just=rep("c",length(n.cgroup)),
+  cgroup.just= NULL,
   rgroup=NULL, n.rgroup=NULL,
   rgroupCSSstyle="font-weight: 900;",
   rgroupCSSseparator = "border-top: 1px solid grey;",
@@ -99,7 +99,7 @@ htmlTable <- function(x,
   rowname=NA,
   caption=NULL,
   caption.loc='top',
-  label=title,
+  label=NULL,
   output = TRUE,
   ...)
 {
@@ -126,6 +126,22 @@ htmlTable <- function(x,
   if (length(align) > 1)
     align <- paste(align, collapse="")
   
+  
+  # Table counter #
+  tc <- getOption("table_counter")
+  if (is.null(tc)){
+    tc_string <- ""
+  }else{
+    # Count which table it currently is
+    if (is.numeric(tc))
+      tc <- tc + 1
+    else
+      tc <- 1
+    options("table_counter" = tc)
+    
+    tc_string <- sprintf("Table %d: ", tc)
+  }
+  
   require("stringr")
   
   # The CSS expects a semicolon at the end of each argument
@@ -138,11 +154,24 @@ htmlTable <- function(x,
     return (my_str)
   }
   
+  addAlign2Style <- function(style, align){
+    if (grepl("text-align", style)){
+      return(gsub("text-align[ ]*:([^;]+)", 
+          paste0("text-align: ", align),
+          style))
+    }else{
+      if (grepl(";", style))
+        style <- sprintf("%s;", style)
+      return(sprintf("%s text-align: %s;", style, align))
+    }
+  }
+  
   addCells <- function(table_str, rowcells, cellcode, align, style=""){
     style = addSemicolon2StrEnd(style)
+    
     for (nr in 1:length(rowcells)){
-      table_str <- sprintf("%s\n\t\t<%s align='%s' style='%s'>%s</%s>", 
-        table_str, cellcode, align[nr], style, rowcells[nr], cellcode)
+      table_str <- sprintf("%s\n\t\t<%s style='%s'>%s</%s>", 
+        table_str, cellcode, addAlign2Style(style, align[nr]), rowcells[nr], cellcode)
       
       # Add empty cell if not last column
       if (nr != length(rowcells) && cgroup_spacer_cells[nr] > 0){
@@ -162,7 +191,7 @@ htmlTable <- function(x,
     sapply(tmp_align_req, function(f) c("center", "right", "left")[grep(f, c("c", "r", "l"))], USE.NAMES=FALSE)
   }
   
-  getCgroupHeader <- function(cgroup_vec, n.cgroup_vec, top_row = TRUE, row_no){
+  getCgroupHeader <- function(cgroup_vec, n.cgroup_vec, cgroup_vec.just, top_row = TRUE, row_no){
     
     header_str <- "\n\t<tr>"
     if (top_row)
@@ -198,10 +227,10 @@ htmlTable <- function(x,
                 sum(cgroup_spacer_cells[start_column:length(cgroup_spacer_cells)]),
                 sum(cgroup_spacer_cells[start_column:((start_column-1) + (n.cgroup_vec[i]-1))]))))
         
-        if (nchar(cgroup_vec[i]) == 0 || is.na(cgroup_vec[i]))
-          header_str <- sprintf("%s\n\t\t<th colspan='%d' align='%s' style='font-weight: 900; %s'>&nbsp;</th>", 
+        if (nchar(cgroup_vec[i]) == 0)# Removed as this may now be on purpose || is.na(cgroup_vec[i]))
+          header_str <- sprintf("%s\n\t\t<th colspan='%d' style='%s'>&nbsp;</th>", 
             header_str, colspan, 
-            getAlign(strsplit(cgroup_vec.just, '')[[1]][i]), ts)
+            addAlign2Style(sprintf("font-weight: 900; %s", ts), getAlign(strsplit(cgroup_vec.just, '')[[1]][i])))
         else
           header_str <- sprintf("%s\n\t\t<th colspan='%d' style='font-weight: 900; border-bottom: 1px solid grey; %s'>%s</th>", 
             header_str, colspan, ts, cgroup_vec[i])
@@ -266,8 +295,35 @@ htmlTable <- function(x,
       cgroup <- matrix(cgroup, nrow=1)
       if (is.null(n.cgroup))
         n.cgroup <- matrix(NA, nrow=1)
-      else
+      else{
+        if (ncol(cgroup) != length(n.cgroup)){
+          n.cgroup <- n.cgroup[n.cgroup > 0]
+          if (ncol(cgroup) != length(n.cgroup))
+            stop("You have provided invalid n.cgroup,",
+              " it should have the same length as the cgroup (", ncol(cgroup), ")",
+              " but it has the length of ", length(n.cgroup))
+        }
         n.cgroup <- matrix(n.cgroup, nrow=1)
+      }
+    }
+    
+    if (length(cgroup.just) == 0){
+      cgroup.just <- matrix(paste(rep("c", times=length(n.cgroup)), collapse=""), 
+        nrow=nrow(n.cgroup))
+    }else{
+      if (!is.matrix(cgroup.just))
+        cgroup.just <- matrix(cgroup.just, ncol=1)
+      
+      if (nrow(cgroup.just) != nrow(n.cgroup))
+        stop("You have different dimensions for your cgroup.just and your cgroups, ",
+          nchar(sub("\\|", "", cgroup.just[1,1])), "x", ncol(cgroup.just), " for the just while the cgroup has ",
+          nrow(cgroup), "x", ncol(cgroup))
+      
+      discrepancies <- which(apply(cgroup.just, 1, function(x) nchar(sub("|", "", x))) != rowSums(!is.na(cgroup)))
+      if (length(discrepancies) > 0)
+        stop("You seem to have different number of justifications in your cgroup.just as compared to your cgroup variable.",
+          " There is a discrepancy regarding rows: ", paste(discrepancies, collapse=", "))
+    
     }
     
     # Go bottom up as the n.cgroup can be based on the previous
@@ -371,7 +427,24 @@ htmlTable <- function(x,
   }
   
   
-  table_str <- "<table class='gmisc_table' style='border-collapse: collapse;'>"
+  # Not quite as intended but close enough
+  if(length(list(...)) > 0) x <- format.df(x, numeric.dollar=FALSE, ...)
+  # Remove some specifics for LaTeX
+  if (is.character(x)) x <- matrix(str_replace(x, "\\\\%", "%"), ncol=ncol(x))
+  
+  # The id works just as well as any anchor 
+  table_id <- ""
+  if (length(label) == 1){
+    table_id <- sprintf(" id='%s'", label) 
+  }else if(is.numeric(tc)){
+    table_id <- sprintf(" id='table_%d'", tc)
+  }
+  
+  ###############################
+  # Start building table string #
+  ###############################
+  table_str <- sprintf("<table class='gmisc_table' style='border-collapse: collapse;' %s>", table_id)
+  
   # Theoretically this should be added to the table but the
   # import to word processors works then less well and therefore I've
   # constructed this work-around with borders for the top and bottom cells
@@ -385,46 +458,20 @@ htmlTable <- function(x,
   }
   
   
-  
-  # Not quite as intended but close enough
-  if(length(list(...))) x <- format.df(x, numeric.dollar=FALSE, ...)
-  # Remove some specifics for LaTeX
-  if (is.character(x))
-    x <- matrix(str_replace(x, "\\\\%", "%"), ncol=ncol(x))
-  
-  if (length(caption) == 1){
-    tc <- getOption("table_counter")
-    if (is.null(tc)){
-      tc_string <- ""
-    }else{
-      # Count which table it currently is
-      if (is.numeric(tc))
-        tc <- tc + 1
-      else
-        tc <- 1
-      options("table_counter" = tc)
-      
-      tc_string <- sprintf("Table %d: ", tc)
-    }
-    
+  if (nchar(caption) > 0){
     if (caption.loc == "bottom"){
       table_str <- sprintf("%s\n\t<caption align='bottom'>", table_str)
     }else{
       table_str <- sprintf("%s\n\t<caption align='top'>", table_str)
     }
     
-    caption <- sprintf("%s%s", tc_string, caption)
-    if (length(label) == 1){
-      caption <- sprintf("\n\t<a name='%s'>%s</a>", label, caption) 
-    }else if(is.numeric(tc)){
-      caption <- sprintf("\n\t<a name='table_%d'>%s</a>", tc, caption)
-    }
+    # Combine a table counter if provided
+    caption <- sprintf("\n\t%s%s", tc_string, caption)
     
     table_str <- sprintf("%s%s</caption>", table_str, caption)
-  }else if (length(label) == 1){
-    table_str <- sprintf("%s\n\t<a name='%s'></a>", table_str, label) 
   }
   
+  browser()
   if (length(rowname) > 0)
     set_rownames <- TRUE
   else
@@ -443,7 +490,10 @@ htmlTable <- function(x,
   if (length(cgroup) > 0){
     
     for (i in 1:nrow(cgroup)){
-      table_str <- sprintf("%s%s", table_str, getCgroupHeader(cgroup[i,], n.cgroup[i,], top_row = (i == 1), row_no = i))
+      table_str <- sprintf("%s%s", table_str, getCgroupHeader(cgroup_vec = cgroup[i,], 
+          n.cgroup_vec = n.cgroup[i,], 
+          cgroup_vec.just = cgroup.just[i, ], 
+          top_row = (i == 1), row_no = i))
     }
     first_row = FALSE
   }
@@ -528,11 +578,11 @@ htmlTable <- function(x,
         
         # The padding doesn't work well with the Word import - well nothing really works well with word...
         # table_str <- sprintf("%s\n\t\t<td style='padding-left: .5em;'>%s</td>", table_str, rowname[row_nr])
-        table_str <- sprintf("%s\n\t\t<td style='%s' align='%s'>&nbsp;&nbsp;%s</td>", 
-          table_str, cell_style, rowname_align, rowname[row_nr])
+        table_str <- sprintf("%s\n\t\t<td style='%s'>&nbsp;&nbsp;%s</td>", 
+          table_str, addAlign2Style(cell_style, rowname_align), rowname[row_nr])
       }else
-        table_str <- sprintf("%s\n\t\t<td style='%s' align='%s'>%s</td>", 
-          table_str, cell_style, rowname_align, rowname[row_nr])
+        table_str <- sprintf("%s\n\t\t<td style='%s'>%s</td>", 
+          table_str, addAlign2Style(cell_style, rowname_align), rowname[row_nr])
     }
     
     table_str <- addCells(table_str = table_str, rowcells = x[row_nr,], 

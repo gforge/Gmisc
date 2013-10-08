@@ -1,5 +1,12 @@
 NEWS for the Gmisc package
 
+Changes for 0.5.4.2
+-------------------
+* Minor regular expression fix for printCrudeAndAdjusted for the addref. function
+* Minor fix for cgroup.just as this was affected by the previous update
+* Fixed the htmlTable cgroup.just issue
+* The htmlTable is now rendering correct w3c-validated code
+
 Changes for 0.5.4.1
 -------------------
 * Minor improvement to the htmlTable function with align now accepting vectors
