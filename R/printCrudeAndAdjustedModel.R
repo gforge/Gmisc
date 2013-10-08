@@ -67,7 +67,9 @@ printCrudeAndAdjustedModel <- function(model,
   min                   = -Inf,  
   sprintf_ci_str        = "%s to %s",
   add_references        = FALSE, 
-  reference_zero_effect = 1,
+  reference_zero_effect = ifelse(all("lm" %in% class(model)) ||
+      "ols" %in% class(model) ||
+      (inherits(model, "glm") && model$family$link == "identity"), 0, 1),
   groups                = NULL,
   rowname.fn            = NULL,
   use_labels            = TRUE,
@@ -363,6 +365,7 @@ printCrudeAndAdjustedModel <- function(model,
         # We need to clean from characters that might cause issues with the 
         # regular expression
         regex_clean_levels <- gsub("([()\\[\\]{}\\.])", "\\\\\\1", available_factors, perl=TRUE)
+        regex_clean_levels <- gsub("([+*\\.])", "[\\1]", regex_clean_levels, available_factors, perl = TRUE)
         matches <- grep(
           sprintf("^%s[=]{0,1}(%s)$", vn, 
             paste(regex_clean_levels,

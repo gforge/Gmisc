@@ -6,14 +6,13 @@
     headings = NA,
     align = paste(c("l", rep("c", ncol(x) - 1)), collapse = ""),
     halign = paste(rep("c", ncol(x)), collapse = ""),
-    cgroup = NULL, n.cgroup = NULL,
-    cgroup.just = rep("c", length(n.cgroup)),
+    cgroup = NULL, n.cgroup = NULL, cgroup.just = NULL,
     rgroup = NULL, n.rgroup = NULL,
     rgroupCSSstyle = "font-weight: 900;",
     rgroupCSSseparator = "border-top: 1px solid grey;",
     rowlabel = title, rowlabel.pos = "top", ctable = FALSE,
     rowname = NA, caption = NULL, caption.loc = "top",
-    label = title, output = TRUE, ...)
+    label = NULL, output = TRUE, ...)
 }
 \arguments{
   \item{x}{The matrix/data.frame with the data}
@@ -146,9 +145,9 @@
 
   Note that when using complex cgroup alignments with
   multiple levels not every browser is able to handle this.
-  For instance the RStudio browser seems to have issues
-  with this
-  \code{\link{http://support.rstudio.org/help/discussions/problems/8805-built-in-web-browser-fails-to-render-cell-borders-properly}}
+  For instance the RStudio webkit browser seems to have
+  issues with this and a bug has been filed:
+  \code{\link{http://code.google.com/p/chromium/issues/detail?id=305130}}
 }
 \examples{
 # A simple example
