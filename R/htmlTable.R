@@ -94,7 +94,7 @@ htmlTable <- function(x,
   rgroupCSSstyle="font-weight: 900;",
   rgroupCSSseparator = "border-top: 1px solid grey;",
   rowlabel=title,
-  rowlabel.pos = "top",
+  rowlabel.pos = "bottom",
   ctable=FALSE,
   rowname=NA,
   caption=NULL,
@@ -114,6 +114,12 @@ htmlTable <- function(x,
         "to result in subhedings with indentation below then",
         "you should change the rownames to the first column and then",
         "remove it from the table matrix (the x argument object).")
+  
+  # This variable is just an indicator if rownames should be set
+  if (length(rowname) > 0)
+    set_rownames <- TRUE
+  else
+    set_rownames <- FALSE
   
   if (length(headings) == 1 && is.na(headings))
     headings=colnames(x)
@@ -483,12 +489,6 @@ htmlTable <- function(x,
     table_str <- sprintf("%s%s</caption>", table_str, caption)
   }
   
-  if (length(rowname) > 0 && 
-    (length(rowname) == 1 && !is.na(rowname)))
-    set_rownames <- TRUE
-  else
-    set_rownames <- FALSE
-
   rowname_align <- getAlign("l")
   if (set_rownames && nchar(align) - 1 == ncol(x)){
     rowname_align <- getAlign(substr(align, 1,1))

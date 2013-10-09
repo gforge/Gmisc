@@ -13,7 +13,8 @@
     desc_prop_fn = describeProp,
     desc_factor_fn = describeFactors,
     desc_show_missing = FALSE, desc_digits = digits,
-    output = c("html", "latex", "raw"), ...)
+    output = c("html", "latex", "raw"),
+    rgroupCSSstyle = "", rgroupCSSseparator = "", ...)
 }
 \arguments{
   \item{model}{A regression model}
@@ -105,6 +106,20 @@
   \item{desc_digits}{Number of digits to use in the
   descriptive columns. Defaults to the general digits if
   not specified.}
+
+  \item{rgroupCSSstyle}{Css style for the rgorup, if
+  different styles are wanted for each of the rgroups you
+  can just specify a vector with the number of elements.
+  Passed on to \code{\link{htmlTable}}.}
+
+  \item{rgroupCSSseparator}{The line between different
+  rgroups. The line is set to the TR element of the lower
+  rgroup, i.e. you have to set the border-top/padding-top
+  etc to a line with the expected function. This is only
+  used for rgroups that are printed. You can specify
+  different separators if you give a vector of rgroup - 1
+  length (this is since the first rgroup doesn't have a
+  separator). Passed on to \code{\link{htmlTable}}.}
 }
 \value{
   Returns a latex formatted table

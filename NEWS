@@ -1,5 +1,10 @@
 NEWS for the Gmisc package
 
+Changes for 0.5.4.4
+-------------------
+* Fixed a rowname problem for htmlTable
+* Changed the rowlabel.pos to be by default at the bottom, seems more natural with multi-layered tables.
+
 Changes for 0.5.4.3
 -------------------
 * Fixed a caption problem for htmlTable

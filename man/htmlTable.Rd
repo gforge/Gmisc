@@ -10,9 +10,9 @@
     rgroup = NULL, n.rgroup = NULL,
     rgroupCSSstyle = "font-weight: 900;",
     rgroupCSSseparator = "border-top: 1px solid grey;",
-    rowlabel = title, rowlabel.pos = "top", ctable = FALSE,
-    rowname = NA, caption = NULL, caption.loc = "top",
-    label = NULL, output = TRUE, ...)
+    rowlabel = title, rowlabel.pos = "bottom",
+    ctable = FALSE, rowname = NA, caption = NULL,
+    caption.loc = "top", label = NULL, output = TRUE, ...)
 }
 \arguments{
   \item{x}{The matrix/data.frame with the data}
