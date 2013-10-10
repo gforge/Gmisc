@@ -122,12 +122,16 @@ test_data <- data.frame(coef1=c(1, 1.59, 1.3, 1.24),
   high1=c(1, 1.94, 1.6, 1.55),
   high2=c(1, 1.8, 1.55, 1.33))
 
+col_no <- grep("coef", colnames(test_data))
 row_names <- list(
   list("Category 1", "Category 2", "Category 3", expression(Category >= 4)),
   list("ref", 
-    substitute(expression(bar(x) == val), list(val = round(rowMeans(test_data[2, grep("coef", colnames(test_data))]), 2))), 
-    substitute(expression(bar(x) == val), list(val = round(rowMeans(test_data[3, grep("coef", colnames(test_data))]), 2))), 
-    substitute(expression(bar(x) == val), list(val = round(rowMeans(test_data[4, grep("coef", colnames(test_data))]), 2))))
+    substitute(expression(bar(x) == val), 
+               list(val = round(rowMeans(test_data[2, col_no]), 2))), 
+    substitute(expression(bar(x) == val), 
+               list(val = round(rowMeans(test_data[3, col_no]), 2))), 
+    substitute(expression(bar(x) == val), 
+               list(val = round(rowMeans(test_data[4, col_no]), 2))))
 )
 
 attach(test_data)

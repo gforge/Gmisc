@@ -158,7 +158,8 @@ fit <- cph(s ~ x1 + x2 + x3, data=ds)
 printCrudeAndAdjustedModel(fit, c("x[12]", "x3"), file="")
 
 fit <- cph(s ~ x1 + x2 + x3 + x4, data=ds, x=TRUE, y=TRUE)
-printCrudeAndAdjustedModel(fit, file="", add_references = TRUE, desc_column=TRUE, order=c("x3", "x4"))
+printCrudeAndAdjustedModel(fit, file="", add_references = TRUE, 
+                           desc_column=TRUE, order=c("x3", "x4"))
 
 # Use some labels to prettify the output
 # fro the mtcars dataset

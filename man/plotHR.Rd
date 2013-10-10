@@ -10,7 +10,7 @@
     col.dens = grey(0.9), lwd.term = 3, lty.term = 1,
     lwd.se = lwd.term, lty.se = lty.term, x.ticks = NULL,
     y.ticks = NULL, ylog = TRUE, cex = 1, y_axis_side = 2,
-    plot.bty = "n", axes = TRUE, ...)
+    plot.bty = "n", axes = TRUE, alpha = 0.05, ...)
 }
 \arguments{
   \item{models}{A single model or a list() with several
@@ -105,6 +105,9 @@
   \item{axes}{A boolean that is used to identify if axes
   are to be plotted}
 
+  \item{alpha}{The alpha level for the confidence
+  intervals}
+
   \item{...}{Any additional values that are to be sent to
   the plot() function}
 }
@@ -194,7 +197,7 @@ plotHR(list(fit.cph, unadjusted_fit), term="age", xlab="Age",
 		polygon_ci=c(TRUE, FALSE), 
 		col.term = c("#08519C", "#77777799"),
 		col.se = c("#DEEBF7BB", grey(0.6)),
-		lty = c(1, 2),
+		lty.term = c(1, 2),
 		plot.bty="l", xlim=c(30, 70))
 par(org_par)
 }

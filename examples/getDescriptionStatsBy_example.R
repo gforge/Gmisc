@@ -13,7 +13,8 @@ mtcars$gear <- factor(mtcars$gear)
 label(mtcars$gear) <- "Gears"
 
 # Make up some data for making it slightly more interesting
-mtcars$col <- factor(sample(c("red", "black", "silver"), size=NROW(mtcars), replace=TRUE))
+mtcars$col <- factor(sample(c("red", "black", "silver"), 
+                     size=NROW(mtcars), replace=TRUE))
 label(mtcars$col) <- "Car color"
 
 mpg_data <- getDescriptionStatsBy(mtcars$mpg, mtcars$am, use_units = TRUE)
@@ -46,17 +47,21 @@ latex(
 
 # A little more advanced
 mtcars$mpg[sample(1:NROW(mtcars), size=4)] <- NA
-getDescriptionStatsBy(mtcars$mpg, mtcars$am, statistics=TRUE, show_missing=TRUE)
+getDescriptionStatsBy(mtcars$mpg, mtcars$am, statistics=TRUE, 
+                      show_missing=TRUE)
 
 # Do the horizontal version
-getDescriptionStatsBy(mtcars$col, mtcars$am, statistics=TRUE, show_missing=TRUE, hrzl_prop = TRUE)
+getDescriptionStatsBy(mtcars$col, mtcars$am, statistics=TRUE, 
+                      show_missing=TRUE, hrzl_prop = TRUE)
 
 mtcars$wt_with_missing <- mtcars$wt
 mtcars$wt_with_missing[sample(1:NROW(mtcars), size=8)] <- NA
-getDescriptionStatsBy(mtcars$wt_with_missing, mtcars$am, statistics=TRUE, show_missing=TRUE, hrzl_prop = TRUE, total_col_show_perc = FALSE)
+getDescriptionStatsBy(mtcars$wt_with_missing, mtcars$am, statistics=TRUE, 
+                      show_missing=TRUE, hrzl_prop = TRUE, total_col_show_perc = FALSE)
 
 
 mtcars$col_with_missing <- mtcars$col
 mtcars$col_with_missing[sample(1:NROW(mtcars), size=5)] <- NA
-getDescriptionStatsBy(mtcars$col_with_missing, mtcars$am, statistics=TRUE, show_missing=TRUE, hrzl_prop = TRUE, total_col_show_perc = FALSE)
+getDescriptionStatsBy(mtcars$col_with_missing, mtcars$am, statistics=TRUE, 
+                      show_missing=TRUE, hrzl_prop = TRUE, total_col_show_perc = FALSE)
 

@@ -1,5 +1,14 @@
 NEWS for the Gmisc package
 
+Changes for 0.5.4.5
+-------------------
+* Minor fix to rownames in htmlTable... again.
+* Had to remove the "terms" option from the plotHR rms:::cph() alternative as it did caused an error
+** The error seems to stem from predictrms() where the Adjto function deletes the adjto output in:
+** adjto <- if (int.pres) 
+**        model.matrix(Terms.ns, adjto)[, -1, drop = FALSE]
+** I will have to look into it one day...
+
 Changes for 0.5.4.4
 -------------------
 * Fixed a rowname problem for htmlTable

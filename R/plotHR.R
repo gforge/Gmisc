@@ -86,6 +86,7 @@
 #' @param y_axis_side The side that the y axis is to be plotted, see axis() for details
 #' @aliases par 
 #' @param axes A boolean that is used to identify if axes are to be plotted 
+#' @param alpha The alpha level for the confidence intervals
 #' @param ... Any additional values that are to be sent to the plot() function
 #' @return The function does not return anything
 #' @references \url{http://rforge.org/plothr/}
@@ -118,6 +119,7 @@ plotHR <- function (models,
   y_axis_side = 2,
   plot.bty   = "n", 
   axes       = TRUE, 
+  alpha      = .05,
   ...){
 
   getCleanLabels <- function(m){
@@ -181,14 +183,10 @@ plotHR <- function (models,
     }
     if(length(grep("cph", class(model))) > 0){
       # If this is a cph model then don't exclude the na values
-      term <- predict (model, newdata=new_data, type="terms" , se.fit = TRUE , expand.na=FALSE, na.action=na.pass)
+      term <- predict (model, newdata=new_data, se.fit = TRUE , expand.na=FALSE, na.action=na.pass)
       
-      # The cph model fails to pick the term of interest
-      if (NCOL(term$fit) > 1){
-        col_2_pick = which(colnames(term$fit) == term.label)
-        term$fit <- term$fit[,col_2_pick]
-        term$se.fit <- term$se.fit[,col_2_pick]
-      } 
+      term$fit <- term$linear.predictor
+      term$se.fit <- term$se.fit
     }else{
       term <- predict (model, newdata=new_data, type="terms" , se.fit = TRUE , terms = term)
     }
@@ -197,8 +195,8 @@ plotHR <- function (models,
     # The as.double is a fix since the data.frame otherwise changes name if pspline in coxph
     df <- data.frame(xvalues= new_data[,term.label],
       fit = as.double(term$fit), 
-      ucl = as.double(term$fit + 1.96 * term$se.fit),
-      lcl = as.double(term$fit - 1.96 * term$se.fit))
+      ucl = as.double(term$fit + qnorm(1 -alpha/2) * term$se.fit),
+      lcl = as.double(term$fit - qnorm(1 -alpha/2) * term$se.fit))
     
     # Change to exponential form
     if (ylog == FALSE){

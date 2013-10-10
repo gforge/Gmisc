@@ -54,6 +54,6 @@ plotHR(list(fit.cph, unadjusted_fit), term="age", xlab="Age",
 		polygon_ci=c(TRUE, FALSE), 
 		col.term = c("#08519C", "#77777799"),
 		col.se = c("#DEEBF7BB", grey(0.6)),
-		lty = c(1, 2),
+		lty.term = c(1, 2),
 		plot.bty="l", xlim=c(30, 70))
 par(org_par)

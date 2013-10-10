@@ -105,10 +105,12 @@ htmlTable <- function(x,
 {
   # Unfortunately in knitr there seems to be some issue when the
   # rowname is specified immediately as: rowname=rownames(x) 
-  if (length(rowname) == 1 && is.na(rowname) && 
-      any(is.null(rownames(x)) == FALSE))
-    rowname=rownames(x)
-  else if (any(is.null(rownames(x))) && is.null(rgroup) == FALSE)
+  if (length(rowname) == 1 && is.na(rowname)){
+    if (any(is.null(rownames(x)) == FALSE))
+      rowname <- rownames(x)
+    else
+      rowname <- NULL
+  }else if (any(is.null(rownames(x))) && is.null(rgroup) == FALSE)
     warning("You have not specified rownames but you seem to have rgroups.",
         "If you have the first column as rowname but you want the rgroups",
         "to result in subhedings with indentation below then",

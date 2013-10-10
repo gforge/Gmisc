@@ -150,7 +150,8 @@ lung$sex <- with(lung, factor(sex, levels=1:2, labels=c("Male", "Female")))
 surv_model <- coxph(survobj ~ ns(age, 4)+sex, data=lung)
 
 par(mfrow=c(1,2))
-termplot2(surv_model, rug=TRUE, rug.type="density", se=TRUE, se.type="polygon", yscale="exponential")
+termplot2(surv_model, rug=TRUE, rug.type="density", 
+          se=TRUE, se.type="polygon", yscale="exponential")
 
 
 par(par_mfrow)
