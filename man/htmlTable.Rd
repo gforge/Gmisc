@@ -148,6 +148,15 @@
   For instance the RStudio webkit browser seems to have
   issues with this and a bug has been filed:
   \code{\link{http://code.google.com/p/chromium/issues/detail?id=305130}}
+
+  If you in your knitr html-document get a "structure"
+  noted under the rowlabel heading then this is an effect
+  from the automated rowlabel name. It is copied from the
+  title that in turn uses the \code{x} to find an
+  apropriate name:
+  \code{title=first.word(deparse(substitute(x)))}. All you
+  need to do is simply set either the \code{title} or the
+  \code{rowlabel} arguments to get rid of this "bug".
 }
 \examples{
 # A simple example

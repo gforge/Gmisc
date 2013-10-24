@@ -5,11 +5,13 @@
   forestplot2(labeltext, mean, lower, upper, align = NULL,
     is.summary = FALSE, fontfamily.summary = NULL,
     fontfamily.labelrow = NULL, clip = c(-Inf, Inf),
-    xlab = "", zero = 0, graphwidth = unit(0.3, "npc"),
+    xlab = "", zero = 0, graphwidth = "auto",
     col = fpColors(), xlog = FALSE, xticks = NULL,
-    xticks.digits = 2, lineHeight.inc = 1.2,
-    lwd.xaxis = NULL, lwd.zero = NULL, lwd.ci = NULL,
-    cex = 1, boxsize = NULL, ...)
+    xticks.digits = 2, lwd.xaxis = NULL, lwd.zero = NULL,
+    lwd.ci = NULL, cex = 1, boxsize = NULL,
+    mar = unit(rep(0.05, times = 4), "npc"), legend = NULL,
+    legend.pos = c("top", "right"), legend.cex = cex * 0.8,
+    ...)
 }
 \arguments{
   \item{labeltext}{A list, matrix, vector or expression
@@ -66,9 +68,6 @@
   \item{xticks.digits}{The number of digits to allow in the
   x-axis if this is created by default.}
 
-  \item{lineHeight.inc}{If you plot multiple bars for each
-  line you often want to increase the line height.}
-
   \item{lwd.xaxis}{lwd for the xaxis}
 
   \item{lwd.zero}{lwd for the vertical line that gives the
@@ -81,6 +80,9 @@
   \item{boxsize}{Override the default box size based on
   precision}
 
+  \item{mar}{A numerical vector of the form c(bottom, left,
+  top, right) of the type \code{unit()}}
+
   \item{...}{Not used}
 }
 \value{
@@ -88,30 +90,42 @@
 }
 \description{
   forestplot2 is based on the rmeta 2.16 forestplot
-  function. The original rmeta package is requiered for the
-  \code{\link{fpColors}()} function. This function resolves
-  some limitations of the original functions such as adding
-  expressions and using multiple confidence bands for the
-  same label.
+  function. This function resolves some limitations of the
+  original functions such as: \itemize{ \item{Adding
+  expressions: }{Allows use of expressions, e.g.
+  \code{expression(beta)}} \item{Multiple bands: }{Using
+  multiple confidence bands for the same label}
+  \item{Autosize: }{Adapts to windows size} }
 }
 \details{
-  Using multiple bands for the same label is judged to be
-  interesting when one wants to compare different outcomes.
+  Using multiple bands for the same label can be
+  interesting when one wants to compare different outcomer.
+  It can also be an alternative when you want to show both
+  crude and adjusted estimates.
+
+  Known issues: the x-axis does not entirely respect the
+  margin. Autosizing boxes is not always the best option,
+  try to set these manually as much as possible.
 }
 \examples{
-#
-# Simple examples of how to do a forestplot with forestplot2
-#
-###############################################################################
+##############################################################
+# Simple examples of how to do a forestplot with forestplot2 #
+##############################################################
 
 ask <- par(ask=TRUE)
 
 # A basic example, create some fake data
 row_names <- list(list("test = 1", expression(test >= 2)))
 test_data <- data.frame(coef=c(1.59, 1.24),
-  low=c(1.3, 0.99),
+  low=c(1.4, 0.78),
   high=c(1.8, 1.55))
-forestplot2(row_names, test_data$coef, test_data$low, test_data$high, zero = 1)
+forestplot2(row_names, 
+            test_data$coef, 
+            test_data$low, 
+            test_data$high, 
+            zero = 1, 
+            cex  = 2,
+            xlab = "Lab axis txt")
 
 
 # An advanced test
@@ -134,32 +148,32 @@ row_names <- list(
                list(val = round(rowMeans(test_data[4, col_no]), 2))))
 )
 
-attach(test_data)
-
-coef <- cbind(coef1, coef2)
-low <- cbind(low1, low2)
-high <- cbind(high1, high2)
+coef <- with(test_data, cbind(coef1, coef2))
+low <- with(test_data, cbind(low1, low2))
+high <- with(test_data, cbind(high1, high2))
 forestplot2(row_names, coef, low, high, zero = 1, boxsize=0.5,
-  col=fpColors(box=c("royalblue", "gold"),
-    line=c("darkblue", "orange")))
-
-detach(test_data)
+            col=fpColors(box=c("royalblue", "gold"),
+                         line=c("darkblue", "orange")),
+            xlab="The estimates")
 
 # An example of how the exponential works
-row_names <- list(list("Variable A", "Variable B"))
 test_data <- data.frame(coef=c(2.45, 0.43),
   low=c(1.5, 0.25),
   high=c(4, 0.75),
   boxsize=c(0.5, 0.5))
+row_names <- cbind(c("Name", "Variable A", "Variable B"),
+                   c("HR", test_data$coef))
+test_data <- rbind(rep(NA, 3), test_data)
 
 forestplot2(labeltext = row_names, 
-  mean      = test_data$coef, 
-  lower     = test_data$low, 
-  upper     = test_data$high, 
-  boxsize   = test_data$boxsize,
-  zero      = 1,
-  xlog      = TRUE,
-  col = fpColors(lines="red", box="darkred"))
+            is.summary=c(TRUE, FALSE, FALSE),
+            mean      = test_data$coef, 
+            lower     = test_data$low, 
+            upper     = test_data$high, 
+            boxsize   = test_data$boxsize,
+            zero      = 1,
+            xlog      = TRUE,
+            col = fpColors(lines="red", box="darkred"))
 
 par(ask=ask)
 }

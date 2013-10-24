@@ -24,24 +24,31 @@
 #' @param statistics Add statistics, fisher test for proportions and Wilcoxon
 #'  for continuous variables
 #' @param min_pval The minimum p-value before doing a "< 0.0001"
-#' @param hrzl_prop This is default FALSE and indicates
-#'  that the proportions are to be interpreted in a vertical manner.
-#'  If we want the data to be horizontal, i.e. the total should be shown
-#'  and then how these differ in the different groups then set this to TRUE.
-#' @param use_units If the Hmisc package's units() function has been employed
-#'  it may be interesting to have a column at the far right that indicates the
-#'  unit measurement. If this column is specified then the total column will
-#'  appear before the units (if specified as last). 
 #' @param show_all_values This is by default false as for instance if there is
 #'  no missing and there is only one variable then it is most sane to only show 
 #'  one option as the other one will just be a complement to the first. For instance
 #'  sex - if you know gender then automatically you know the distribution of the 
-#'  other sex as it's 100 \% - other \%. 
-#' @param total_col_show_perc This is by default true but if
-#'  requested the percentages are surpressed as this sometimes may be confusing.
+#'  other sex as it's 100 \% - other \%. To choose which one you want to show then
+#'  set the \code{default_ref} parameter. 
+#' @param hrzl_prop This is default FALSE and indicates
+#'  that the proportions are to be interpreted in a vertical manner.
+#'  If we want the data to be horizontal, i.e. the total should be shown
+#'  and then how these differ in the different groups then set this to TRUE.
 #' @param add_total_col This adds a total column to the resulting table.  
 #'  You can also specify if you want the total column "first" or "last"
 #'  in the column order.  
+#' @param total_col_show_perc This is by default true but if
+#'  requested the percentages are surpressed as this sometimes may be confusing.
+#' @param use_units If the Hmisc package's units() function has been employed
+#'  it may be interesting to have a column at the far right that indicates the
+#'  unit measurement. If this column is specified then the total column will
+#'  appear before the units (if specified as last). 
+#' @param default_ref If you use proportions with only one variable, i.e. not show_all_valuse,
+#'  then it can be useful to set the reference level that is of interest to show. This can 
+#'  wither be "First", level name or level number.  
+#' @param percentage_sign If you want to surpress the percentage sign you
+#'  can set this variable to FALSE. You can also choose something else that
+#'  the default % if you so wish by setting this variable.
 #' @return Returns a vector if vars wasn't specified and it's a
 #'  continuous or binary statistic. If vars was a matrix then it
 #'  appends the result to the end of that matrix. If the x variable
@@ -66,7 +73,9 @@ getDescriptionStatsBy <-
     hrzl_prop = FALSE,
     add_total_col = hrzl_prop,
     total_col_show_perc = TRUE,
-    use_units = FALSE){
+    use_units = FALSE,
+    default_ref = "First",
+    percentage_sign = TRUE){
   # Just send a warning, since the user might be unaware of this
   # potentially disturbing fact. The dataset should perhaps by 
   # subsetted by is.na(by) == FALSE
@@ -150,10 +159,12 @@ getDescriptionStatsBy <-
     if (hrzl_prop)
       t <- by(x, by, FUN=continuous_fn, html=html, digits=digits,
         number_first=numbers_first, show_missing = show_missing, 
-        horizontal_proportions = table(is.na(x), useNA=show_missing))
+        horizontal_proportions = table(is.na(x), useNA=show_missing),
+        percentage_sign = percentage_sign)
     else
       t <- by(x, by, FUN=continuous_fn, html=html, digits=digits,
-        number_first=numbers_first, show_missing = show_missing)
+        number_first=numbers_first, show_missing = show_missing,
+        percentage_sign = percentage_sign)
     
     
     if (length(t[[1]]) != 1){
@@ -172,18 +183,21 @@ getDescriptionStatsBy <-
     length(levels(x)) == 2 && 
     hrzl_prop == FALSE){
     
+    default_ref <- prGetAndValidateDefaultRef(x, default_ref)
+    
     t <- by(x, by, FUN=prop_fn, html=html, digits=digits,
-      number_first=numbers_first, show_missing = show_missing)
+      number_first=numbers_first, show_missing = show_missing,
+      default_ref = default_ref, percentage_sign = percentage_sign)
     
     # Set the rowname to a special format
     # if there was missing and this is an matrix
     # then we should avoid using this format
-    name <- sprintf("%s %s", capitalize(levels(x)[1]), tolower(label(x)))
+    name <- sprintf("%s %s", capitalize(levels(x)[default_ref]), tolower(label(x)))
     if (NEJMstyle) {
       # LaTeX needs and escape before %
       # or it marks the rest of the line as
       # a comment. This is not an issue with
-      # html
+      # html (markdown)
       percent_sign <- ifelse(html, "%", "\\%")
       
       if (numbers_first)
@@ -210,10 +224,12 @@ getDescriptionStatsBy <-
     if (hrzl_prop)
       t <- by(x, by, FUN=factor_fn, html=html, digits=digits,
         number_first=numbers_first, show_missing = show_missing, 
-        horizontal_proportions = table(x, useNA=show_missing))
+        horizontal_proportions = table(x, useNA=show_missing),
+        percentage_sign = percentage_sign)
     else
       t <- by(x, by, FUN=factor_fn, html=html, digits=digits,
-        number_first=numbers_first, show_missing = show_missing)
+        number_first=numbers_first, show_missing = show_missing,
+        percentage_sign = percentage_sign)
     
     if (statistics){
       # This is a quick fix in case of large dataset
@@ -258,7 +274,8 @@ getDescriptionStatsBy <-
       digits=digits, 
       continuous_fn = continuous_fn, 
       factor_fn = factor_fn,
-      prop_fn = prop_fn)
+      prop_fn = prop_fn,
+      percentage_sign = percentage_sign)
     
     if (add_total_col != "last"){
       results <- cbind(total_table, results)

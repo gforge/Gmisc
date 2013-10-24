@@ -1,5 +1,13 @@
 NEWS for the Gmisc package
 
+Changes for 0.5.6.0
+-------------------
+* The forestplot2 is updated - the widths are now relative to the window size, there is a margin option, and many of the inside functions have moved to helpers outside. Also fixed the alignment of the summary label to work better.
+* Fixed a minor bug for cgroup without rowlabels
+* Added default_ref for both getDescriptionStatsBy and describeProp function. 
+* The percentage sign in getDescriptionStatsBy, describProp and describeFactors is now optional.
+* A minor bug fix for cgroup.just for the htmlTable function
+ 
 Changes for 0.5.4.5
 -------------------
 * Minor fix to rownames in htmlTable... again.

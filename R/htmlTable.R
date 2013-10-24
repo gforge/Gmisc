@@ -16,6 +16,13 @@
 #' webkit browser seems to have issues with this and a bug has been filed:
 #' \code{\link{http://code.google.com/p/chromium/issues/detail?id=305130}}
 #' 
+#' If you in your knitr html-document get a "structure" noted under
+#' the rowlabel heading then this is an effect from the automated
+#' rowlabel name. It is copied from the title that in turn uses the
+#' \code{x} to find an apropriate name: \code{title=first.word(deparse(substitute(x)))}.
+#' All you need to do is simply set either the \code{title} or the \code{rowlabel}
+#' arguments to get rid of this "bug".
+#' 
 #' @param x The matrix/data.frame with the data
 #' @param title The title of the table. Used for labeling etc.
 #' @param headings a vector of character strings specifying column 
@@ -223,6 +230,9 @@ htmlTable <- function(x,
       else
         header_str <- sprintf("%s\n\t\t<th style='font-weight: 900; %s'>&nbsp;</th>", 
           header_str, ts)
+    }else if (set_rownames){
+      header_str <- sprintf("%s\n\t\t<th style='font-weight: 900; %s'>&nbsp;</th>", 
+        header_str, ts)
     }
     
     for (i in 1:length(cgroup_vec)){
@@ -337,7 +347,7 @@ htmlTable <- function(x,
       
       # An old leftover behaviour from the latex() function
       if (ncol(cgroup.just) > 1)
-        cgroup.just <- apply(cgroup.just, 1, function(x) paste(x, collapse=""))
+        cgroup.just <- as.matrix(apply(cgroup.just, 1, function(x) paste(ifelse(is.na(x), "", x), collapse="")), ncol=1)
       
       discrepancies <- which(apply(cgroup.just, 1, function(x) nchar(sub("|", "", x))) != rowSums(!is.na(cgroup)))
       if (length(discrepancies) > 0)

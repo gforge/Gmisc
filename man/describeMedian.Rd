@@ -5,7 +5,7 @@ the interquartile range or the full range}
 \usage{
   describeMedian(x, iqr = TRUE, html = FALSE, digits = 1,
     number_first = TRUE, show_missing = FALSE,
-    horizontal_proportions = NULL)
+    horizontal_proportions = NULL, percentage_sign = TRUE)
 }
 \arguments{
   \item{x}{The variable that you want the statistics for}
@@ -39,6 +39,12 @@ the interquartile range or the full range}
   horizontal interpretation looses the vertical information
   in the second category and is thus better interpreted as
   a whole.}
+
+  \item{percentage_sign}{If you want to suppress the
+  percentage sign you can set this variable to FALSE. You
+  can also choose something else that the default % if you
+  so wish by setting this variable. Note, this is only used
+  when combined with the missing information.}
 }
 \value{
   A string formatted for printing either latex by HTML

@@ -9,7 +9,8 @@
     prop_fn = describeProp, factor_fn = describeFactors,
     show_all_values = FALSE, hrzl_prop = FALSE,
     add_total_col = hrzl_prop, total_col_show_perc = TRUE,
-    use_units = FALSE)
+    use_units = FALSE, default_ref = "First",
+    percentage_sign = TRUE)
 }
 \arguments{
   \item{x}{The variable that you want the statistics for}
@@ -47,11 +48,28 @@
   \item{min_pval}{The minimum p-value before doing a "<
   0.0001"}
 
+  \item{show_all_values}{This is by default false as for
+  instance if there is no missing and there is only one
+  variable then it is most sane to only show one option as
+  the other one will just be a complement to the first. For
+  instance sex - if you know gender then automatically you
+  know the distribution of the other sex as it's 100 \% -
+  other \%. To choose which one you want to show then set
+  the \code{default_ref} parameter.}
+
   \item{hrzl_prop}{This is default FALSE and indicates that
   the proportions are to be interpreted in a vertical
   manner.  If we want the data to be horizontal, i.e. the
   total should be shown and then how these differ in the
   different groups then set this to TRUE.}
+
+  \item{add_total_col}{This adds a total column to the
+  resulting table.  You can also specify if you want the
+  total column "first" or "last" in the column order.}
+
+  \item{total_col_show_perc}{This is by default true but if
+  requested the percentages are surpressed as this
+  sometimes may be confusing.}
 
   \item{use_units}{If the Hmisc package's units() function
   has been employed it may be interesting to have a column
@@ -59,21 +77,15 @@
   this column is specified then the total column will
   appear before the units (if specified as last).}
 
-  \item{show_all_values}{This is by default false as for
-  instance if there is no missing and there is only one
-  variable then it is most sane to only show one option as
-  the other one will just be a complement to the first. For
-  instance sex - if you know gender then automatically you
-  know the distribution of the other sex as it's 100 \% -
-  other \%.}
+  \item{default_ref}{If you use proportions with only one
+  variable, i.e. not show_all_valuse, then it can be useful
+  to set the reference level that is of interest to show.
+  This can wither be "First", level name or level number.}
 
-  \item{total_col_show_perc}{This is by default true but if
-  requested the percentages are surpressed as this
-  sometimes may be confusing.}
-
-  \item{add_total_col}{This adds a total column to the
-  resulting table.  You can also specify if you want the
-  total column "first" or "last" in the column order.}
+  \item{percentage_sign}{If you want to surpress the
+  percentage sign you can set this variable to FALSE. You
+  can also choose something else that the default % if you
+  so wish by setting this variable.}
 }
 \value{
   Returns a vector if vars wasn't specified and it's a

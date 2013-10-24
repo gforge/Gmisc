@@ -5,7 +5,8 @@ the number and the percentage}
 \usage{
   describeFactors(x, html = FALSE, digits = 1,
     number_first = TRUE, show_missing = FALSE,
-    horizontal_proportions = NULL)
+    horizontal_proportions = NULL, percentage_sign = TRUE,
+    ...)
 }
 \arguments{
   \item{x}{The variable that you want the statistics for}
@@ -31,6 +32,13 @@ the number and the percentage}
   total number in each group, i.e. if done in a by manner
   as in \code{\link{getDescriptionStatsBy}} it needs to
   provide the number before the by() command.}
+
+  \item{percentage_sign}{If you want to suppress the
+  percentage sign you can set this variable to FALSE. You
+  can also choose something else that the default % if you
+  so wish by setting this variable.}
+
+  \item{...}{Discarded}
 }
 \value{
   A string formatted for printing either latex by HTML

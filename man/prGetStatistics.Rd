@@ -5,7 +5,8 @@
   prGetStatistics(x, show_perc = FALSE, html = TRUE,
     digits = 1, numbers_first = TRUE, show_missing = TRUE,
     show_all_values = FALSE, continuous_fn = describeMean,
-    factor_fn = describeFactors, prop_fn = factor_fn)
+    factor_fn = describeFactors, prop_fn = factor_fn,
+    percentage_sign = percentage_sign)
 }
 \arguments{
   \item{x}{The variable that we want the statistics for}
@@ -39,6 +40,11 @@
 
   \item{factor_fn}{A function for describing factors,
   defaults to \code{\link{describeFactors}}}
+
+  \item{percentage_sign}{If you want to suppress the
+  percentage sign you can set this variable to FALSE. You
+  can also choose something else that the default % if you
+  so wish by setting this variable.}
 }
 \value{
   A matrix or a vector depending on the settings

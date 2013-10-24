@@ -119,6 +119,26 @@ prExtractPredictorsFromModel <- function(model, check_subset = TRUE){
   return(ds)
 }
 
+#' Get model data.frame
+#' 
+#' Combines the \code{\link{prExtractPredictorsFromModel}}
+#' with the \code{\link{prExtractOutcomeFromModel}} to generate
+#' a full model dataset
+#' 
+#' @param model The fitted model.  
+#' @param check_subset Check if the model has been subsetted and 
+#'  if so subset the outcome variable too.
+#' @return data.frame 
+#' 
+#' TODO: Check if this cannot be replaced by model.frame()
+#' @author max
+prGetModelData <- function(x, check_subset = TRUE){
+  data <- Gmisc:::prExtractPredictorsFromModel(x, check_subset)
+  data <- cbind(data, Gmisc:::prExtractOutcomeFromModel(x, check_subset))
+  colnames(data)[ncol(data)] = as.character(formula(x)[[2]])
+  return(data)
+}
+
 #' Get the models variables
 #'  
 #' This function extract the modelled variables. Any interaction
@@ -188,6 +208,9 @@ prGetModelVariables <- function(model, remove_splines = TRUE){
 #'  the factor function
 #' @param factor_fn A function for describing factors, defaults to
 #'  \code{\link{describeFactors}}
+#' @param percentage_sign If you want to suppress the percentage sign you
+#'  can set this variable to FALSE. You can also choose something else that
+#'  the default % if you so wish by setting this variable.
 #' @return A matrix or a vector depending on the settings
 #' 
 #' @author max
@@ -200,7 +223,8 @@ prGetStatistics <- function(x,
   show_all_values = FALSE,
   continuous_fn = describeMean, 
   factor_fn = describeFactors,
-  prop_fn = factor_fn)
+  prop_fn = factor_fn,
+  percentage_sign = percentage_sign)
 {
   show_missing <- prConvertShowMissing(show_missing)
   if (is.factor(x)){
@@ -210,7 +234,8 @@ prGetStatistics <- function(x,
             html=html, 
             digits=digits,
             number_first=numbers_first, 
-            show_missing = show_missing)
+            show_missing = show_missing,
+            percentage_sign = percentage_sign)
       else{
         total_table <- table(x, useNA=show_missing)
         names(total_table)[is.na(names(total_table))] <- "Missing"
@@ -225,7 +250,8 @@ prGetStatistics <- function(x,
             html=html, 
             digits=digits,
             number_first=numbers_first, 
-            show_missing = show_missing)
+            show_missing = show_missing,
+            percentage_sign = percentage_sign)
       else{
         total_table <- table(x, useNA=show_missing)
         names(total_table)[is.na(names(total_table))] <- "Missing"
@@ -416,4 +442,29 @@ prConvertShowMissing <- function(show_missing){
     stop(sprintf("You have set an invalid option for show_missing variable, '%s' ,it should be boolean or one of the options: no, ifany or always.", show_missing))
   
   return(show_missing)
+}
+
+#' A helper function for the description stats
+#' 
+#' @param x The variable of interest with the levels
+#' @param default_ref The default reference, either first,
+#'  the level name or a number within the levels
+#' @return integer The level number of interest 
+#' 
+#' @author max
+prGetAndValidateDefaultRef <- function(x, default_ref){
+  if (default_ref == "First"){
+    default_ref <- 1
+  }else if (is.character(default_ref)){
+    if (default_ref %in% levels(x))
+      default_ref <- which(default_ref == levels(x))
+    else
+      stop("You have provided an invalid default reference, '", 
+        default_ref, "' can not be found among: ", paste(levels(x), collapse=", "))
+  }else if (!default_ref %in% 1:length(levels(x)))
+    stop("You have provided an invalid default reference,",
+      " it is ", default_ref, " while it should be between 1 and ", length(levels(x)),
+      " as this is only used for factors.")
+  
+  return(default_ref)
 }

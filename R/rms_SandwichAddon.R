@@ -122,7 +122,36 @@ bread.ols <- function(x, ...)
     stop("You have provided a non-ols object that is not defined for this function, the classes of the object:", paste(class(x), collapse=", "))
   
   X <- model.matrix(x)
+  
   return(solve(crossprod(X))*(x$rank + x$df.residual))
+}
+
+#' A fix for the model.matrix
+#' 
+#' The model.matrix.lm that the ols falls back upon
+#' "forgets" the intercept value and behaves unreliable in
+#' the vcovHC() funcitons. I've therefore created this subfunction
+#' to generate the actual model.matrix() by just accessing the formula.
+#'  
+#' @param x A Model 
+#' @param ... Parameters passed on
+#' @return matrix
+#' 
+#' @author max
+#' @export
+model.matrix.ols <- function(x, ...){
+  # If the ols already has a model.matrix saved
+  # then use that one but add the intercept
+  if (!is.null(x$x))
+    return(cbind(Intercept=rep(1, times=nrow(x$x)),
+                 x$x))
+           
+  warning("You should set the ols(..., x=TRUE) as the fallback may be somewhat unreliable")
+  
+  data <- prGetModelData(x)
+  mtrx <- model.matrix(formula(x), data=data)
+  colnames(mtrx) <- names(coef(x))
+  return(mtrx)
 }
 
 #' Fix for the Extract Empirical Estimating Functions

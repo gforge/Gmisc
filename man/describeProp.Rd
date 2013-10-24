@@ -5,7 +5,8 @@ the number and the percentage}
 \usage{
   describeProp(x, html = FALSE, digits = 1,
     number_first = TRUE, show_missing = FALSE,
-    horizontal_proportions = NULL)
+    horizontal_proportions = NULL, default_ref = "First",
+    percentage_sign = TRUE)
 }
 \arguments{
   \item{x}{The variable that you want the statistics for}
@@ -37,6 +38,16 @@ the number and the percentage}
   horizontal interpretation looses the vertical information
   in the second category and is thus better interpreted as
   a whole.}
+
+  \item{default_ref}{If you use proportions with only one
+  variable it can be useful to set the reference level that
+  is of interest to show. This can wither be "First", level
+  name or level number.}
+
+  \item{percentage_sign}{If you want to suppress the
+  percentage sign you can set this variable to FALSE. You
+  can also choose something else that the default % if you
+  so wish by setting this variable.}
 }
 \value{
   A string formatted for printing either latex by HTML

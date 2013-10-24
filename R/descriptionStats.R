@@ -21,6 +21,10 @@
 #'  \code{\link{describeFactors}} since the horizontal interpretation looses the 
 #'  vertical information in the second category and is thus better 
 #'  interpreted as a whole.
+#' @param percentage_sign If you want to suppress the percentage sign you
+#'  can set this variable to FALSE. You can also choose something else that
+#'  the default % if you so wish by setting this variable. Note, this is 
+#'  only used when combined with the missing information.
 #' @return A string formatted for printing either latex by  HTML
 #' 
 #' @seealso \code{\link{getDescriptionStatsBy}}
@@ -31,7 +35,13 @@
 #' 
 #' @author max
 #' @export
-describeMean <- function(x, html=FALSE, digits=1, number_first = TRUE, show_missing = FALSE, horizontal_proportions=NULL){
+describeMean <- function(x, 
+  html=FALSE, 
+  digits=1, 
+  number_first = TRUE, 
+  show_missing = FALSE, 
+  horizontal_proportions=NULL,
+  percentage_sign = TRUE){
   show_missing <- prConvertShowMissing(show_missing)
 
   if (html)
@@ -52,8 +62,12 @@ describeMean <- function(x, html=FALSE, digits=1, number_first = TRUE, show_miss
     ret <- rbind(ret, missing["TRUE", ])
     rownames(ret) <- c("Mean (SD)", "Missing")
   } else if (show_missing == "always"){
-    percent_sign <- ifelse(html, "%", "\\%")
-    empty <- sprintf(ifelse(number_first, "0 (0 %s)", "0 %s (0)"), percent_sign)
+    if(percentage_sign == TRUE)
+      percentage_sign <- ifelse (html, " %", " \\%")
+    else if(is.character(percentage_sign) == FALSE)
+      percentage_sign = ""
+
+    empty <- sprintf(ifelse(number_first, "0 (0%s)", "0%s (0)"), percentage_sign)
     ret <- rbind(ret, rep(empty, times=ncol(ret)))
     rownames(ret) <- c("Mean (SD)", "Missing")
   } else {
@@ -87,6 +101,10 @@ describeMean <- function(x, html=FALSE, digits=1, number_first = TRUE, show_miss
 #'  \code{\link{describeFactors}} since the horizontal interpretation looses the 
 #'  vertical information in the second category and is thus better 
 #'  interpreted as a whole.
+#' @param percentage_sign If you want to suppress the percentage sign you
+#'  can set this variable to FALSE. You can also choose something else that
+#'  the default % if you so wish by setting this variable. Note, this is 
+#'  only used when combined with the missing information.
 #' @return A string formatted for printing either latex by  HTML
 #' 
 #' @seealso \code{\link{getDescriptionStatsBy}}
@@ -97,7 +115,14 @@ describeMean <- function(x, html=FALSE, digits=1, number_first = TRUE, show_miss
 #' 
 #' @author max
 #' @export
-describeMedian <- function(x, iqr=TRUE, html=FALSE, digits=1, number_first = TRUE, show_missing = FALSE, horizontal_proportions=NULL){
+describeMedian <- function(x, 
+  iqr=TRUE, 
+  html=FALSE, 
+  digits=1, 
+  number_first = TRUE, 
+  show_missing = FALSE, 
+  horizontal_proportions=NULL,
+  percentage_sign = TRUE){
   show_missing <- prConvertShowMissing(show_missing)
   
   if (iqr)
@@ -118,8 +143,12 @@ describeMedian <- function(x, iqr=TRUE, html=FALSE, digits=1, number_first = TRU
       ifelse(iqr, "Median (IQR)", "Median (range)"),
       "Missing")
   } else if (show_missing == "always"){
-    percent_sign <- ifelse(html, "%", "\\%")
-    empty <- sprintf(ifelse(number_first, "0 (0 %s)", "0 %s (0)"), percent_sign)
+    if(percentage_sign == TRUE)
+      percentage_sign <- ifelse (html, " %", " \\%")
+    else if(is.character(percentage_sign) == FALSE)
+      percentage_sign = ""
+    
+    empty <- sprintf(ifelse(number_first, "0 (0%s)", "0%s (0)"), percentage_sign)
     ret <- rbind(ret, rep(empty, times=ncol(ret)))
     rownames(ret) <- c(
       ifelse(iqr, "Median (IQR)", "Median (range)"),
@@ -153,6 +182,12 @@ describeMedian <- function(x, iqr=TRUE, html=FALSE, digits=1, number_first = TRU
 #'  \code{\link{describeFactors}} since the horizontal interpretation looses the 
 #'  vertical information in the second category and is thus better 
 #'  interpreted as a whole.
+#' @param default_ref If you use proportions with only one variable
+#'  it can be useful to set the reference level that is of interest to show. This can 
+#'  wither be "First", level name or level number.  
+#' @param percentage_sign If you want to suppress the percentage sign you
+#'  can set this variable to FALSE. You can also choose something else that
+#'  the default % if you so wish by setting this variable.
 #' @return A string formatted for printing either latex by  HTML
 #' 
 #' @seealso \code{\link{getDescriptionStatsBy}}, \code{\link{describeFactors}} 
@@ -167,8 +202,12 @@ describeProp <- function(x,
   digits=1, 
   number_first = TRUE, 
   show_missing = FALSE,
-  horizontal_proportions = NULL){
+  horizontal_proportions = NULL,
+  default_ref = "First",
+  percentage_sign = TRUE){
   show_missing <- prConvertShowMissing(show_missing)
+  
+  default_ref <- prGetAndValidateDefaultRef(x, default_ref)
   
   # If we're to use the horizontal proportions then
   # it's better to report the variable as a factor
@@ -182,19 +221,22 @@ describeProp <- function(x,
   if (is.factor(x) == FALSE)
     x <- factor(x)
   
-  no <- sum(x == levels(x)[1], na.rm=T)
+  no <- sum(x == levels(x)[default_ref], na.rm=T)
 
   # Don't count missing since those are treated as factors if any
-  percent <- 100*no/length(x[is.na(x)==F])
+  percent <- 100*no/length(x[is.na(x)==FALSE])
   
   no <- ifelse(no >= 10^4, format(no, big.mark=" "), format(no))
   # The LaTeX treats % as comments unless it's properly escaped
-  percent_sign <- ifelse (html, "%", "\\%")
+  if(percentage_sign == TRUE)
+    percentage_sign <- ifelse (html, " %", " \\%")
+  else if(is.character(percentage_sign) == FALSE)
+    percentage_sign = ""
   
   if (number_first)
-    ret <- sprintf(sprintf("%%s (%%.%df %%s)", digits), no, percent, percent_sign)
+    ret <- sprintf(sprintf("%%s (%%.%df%%s)", digits), no, percent, percentage_sign)
   else
-    ret <- sprintf(sprintf("%%.%df %%s (%%s)", digits), percent, percent_sign, no)
+    ret <- sprintf(sprintf("%%.%df%%s (%%s)", digits), percent, percentage_sign, no)
     
   return (ret)
 }
@@ -218,6 +260,10 @@ describeProp <- function(x,
 #'  function with the total number in each group, i.e. if done in a by
 #'  manner as in \code{\link{getDescriptionStatsBy}} it needs to provide
 #'  the number before the by() command.
+#' @param percentage_sign If you want to suppress the percentage sign you
+#'  can set this variable to FALSE. You can also choose something else that
+#'  the default % if you so wish by setting this variable.
+#' @param ... Discarded
 #' @return A string formatted for printing either latex by  HTML
 #' 
 #' @seealso \code{\link{getDescriptionStatsBy}}
@@ -239,9 +285,14 @@ describeProp <- function(x,
 #' 
 #' @author max
 #' @export
-describeFactors <- function(x, html=FALSE, 
-  digits=1, number_first = TRUE, 
-  show_missing = FALSE, horizontal_proportions = NULL) {
+describeFactors <- function(x, 
+  html=FALSE, 
+  digits=1, 
+  number_first = TRUE, 
+  show_missing = FALSE, 
+  horizontal_proportions = NULL,
+  percentage_sign = TRUE,
+  ...) {
   
   show_missing <- prConvertShowMissing(show_missing)
   
@@ -313,19 +364,22 @@ describeFactors <- function(x, html=FALSE,
   }
   
   # The LaTeX treats %% as comments unless it's properly escaped
-  percent_sign <- ifelse (html, "%", "\\%")
-  
+  if(percentage_sign == TRUE)
+    percentage_sign <- ifelse (html, " %", " \\%")
+  else if(is.character(percentage_sign) == FALSE)
+    percentage_sign = ""
+
   if (number_first)
     ret <- matrix(
-      sprintf(sprintf("%%s (%%.%df %%s)", digits), 
+      sprintf(sprintf("%%s (%%.%df%%s)", digits), 
         values, 
         percentages, 
-        percent_sign), ncol=1)
+        percentage_sign), ncol=1)
   else
     ret <- matrix(
-      sprintf(sprintf("%%.%df %%s (%%s)", digits), 
+      sprintf(sprintf("%%.%df%%s (%%s)", digits), 
         percentages, 
-        percent_sign, 
+        percentage_sign, 
         values), ncol=1)
   
   rn <- names(table_results)
