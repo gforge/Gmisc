@@ -2,7 +2,7 @@
 \alias{confint.ols}
 \title{A confint function for the ols}
 \usage{
-  confint.ols(object, parm, level = 0.95, ...)
+  \method{confint}{ols} (object, parm, level = 0.95, ...)
 }
 \arguments{
   \item{object}{a fitted ols-model object.}

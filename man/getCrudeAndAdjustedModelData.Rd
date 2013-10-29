@@ -1,16 +1,30 @@
 \name{getCrudeAndAdjustedModelData}
 \alias{getCrudeAndAdjustedModelData}
+\alias{getCrudeAndAdjustedModelData.default}
+\alias{getCrudeAndAdjustedModelData.rms}
 \title{This function helps with printing regression models}
 \usage{
-  getCrudeAndAdjustedModelData(fit)
+  getCrudeAndAdjustedModelData(...)
+
+  \method{getCrudeAndAdjustedModelData}{default} (fit,
+    level = 0.95, remove_interaction_vars = TRUE)
+
+  \method{getCrudeAndAdjustedModelData}{rms} (fit,
+    level = 0.95, remove_interaction_vars = TRUE)
 }
 \arguments{
   \item{fit}{The regression model}
+
+  \item{level}{The confidence interval level}
+
+  \item{remove_interaction_vars}{Removes the interaction
+  terms as this makes no sense in the output}
 }
 \value{
-  Returns a matrix with the columns c("Crude", "95\% CI",
-  "Adjusted", "95\% CI").  The rows are not changed from
-  the original fit.
+  Returns a matrix with the columns: \code{c("Crude", "2.5
+  \%", "97.5 \%", "Adjusted", "2.5 \%", "97.5 \%")}.  The
+  row order is not changed from the original fit. The
+  percentages can vary depending on the set level.
 }
 \description{
   This function is used for getting the adjusted and
@@ -36,6 +50,10 @@
   \deqn{\beta}{beta} to display. For the same reason it
   skips any interaction variables since it's probably
   better to display these as a contrast table.
+
+  Note that the rms regression has a separate function that
+  uses the rms:::summaryrms function that returns a matrix
+  that is then pruned.
 }
 \examples{
 # simulated data to use 
@@ -68,6 +86,10 @@ data_matrix <- getCrudeAndAdjustedModelData(fit)
 print(data_matrix)
 }
 \author{
+  max
+
+  max
+
   max
 }
 \seealso{

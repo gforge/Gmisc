@@ -76,9 +76,6 @@
   latex/htmlTable functions, where x is the main content of
   the table.}
 
-  \item{...}{Passed onto the Hmisc::\code{\link{latex}}
-  function, \code{\link{htmlTable}}}
-
   \item{desc_column}{Add descriptive column to the crude
   and adjusted table}
 
@@ -120,6 +117,9 @@
   different separators if you give a vector of rgroup - 1
   length (this is since the first rgroup doesn't have a
   separator). Passed on to \code{\link{htmlTable}}.}
+
+  \item{...}{Passed onto the Hmisc::\code{\link{latex}}
+  function, \code{\link{htmlTable}}}
 }
 \value{
   Returns a latex formatted table

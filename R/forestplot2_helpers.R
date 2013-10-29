@@ -25,6 +25,7 @@
 #' \item{axes}{the color of the axes}
 #' 
 #' @author Max Gordon, Thomas Lumley
+#' @importFrom grDevices colorRampPalette
 #' 
 #' @export
 fpColors <- function (all.elements, 
@@ -36,6 +37,20 @@ fpColors <- function (all.elements,
                       axes       = "black") 
 {
   if (missing(all.elements)) {
+    # Make sure the color lengths match
+    # if nott then add a slightly lighter/darker shade
+    if (length(box) > length(lines)){
+      nl <- length(lines)
+      for (n in (nl+1):length(box))
+        lines <- append(lines, 
+                        colorRampPalette(c(box[n], par("bg")))(10)[2])
+    }else if (length(box) < length(lines)){
+      nl <- length(box)
+      for (n in (nl+1):length(lines))
+        box <- append(box, 
+                        colorRampPalette(c(lines[n], par("fg")))(10)[2])
+    }
+      
     return(list(box = box, lines = lines, summary = summary, 
                 zero = zero, text = text, axes = axes))
   }

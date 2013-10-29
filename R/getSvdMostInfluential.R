@@ -34,7 +34,7 @@
 #' 
 #' @example examples/getSvdMostInfluential_example.R
 #' 
-#' @import lattice Hmisc
+#' @import lattice
 #' @author max
 #' @export
 getSvdMostInfluential <- function(mtrx, 
@@ -61,12 +61,11 @@ getSvdMostInfluential <- function(mtrx,
   # Select the variables of interest
   getMostInfluentialVars <- function(){
     vars <- list()
-    require("Hmisc")
     for (i in 1:length(perc_explained)){
       v_abs <- abs(svd_out$v[,i])
       maxContributor <- which.max(v_abs)
       similarSizedContributors <- which(v_abs >= v_abs[maxContributor]*similarity_threshold)
-      if (any(similarSizedContributors %nin% maxContributor)){
+      if (any(!similarSizedContributors %in% maxContributor)){
         maxContributor <- similarSizedContributors[order(v_abs[similarSizedContributors], decreasing=TRUE)]
       }
       vars[[length(vars) + 1]] <- maxContributor

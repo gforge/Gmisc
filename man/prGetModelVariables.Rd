@@ -2,7 +2,8 @@
 \alias{prGetModelVariables}
 \title{Get the models variables}
 \usage{
-  prGetModelVariables(model, remove_splines = TRUE)
+  prGetModelVariables(model, remove_splines = TRUE,
+    remove_interaction_vars = FALSE)
 }
 \arguments{
   \item{model}{A model fit}
@@ -10,6 +11,12 @@
   \item{remove_splines}{If splines, etc. should be cleaned
   from the variables as these no longer are "pure"
   variables}
+
+  \item{remove_interaction_vars}{If interaction variables
+  are not interesting then these should be removed. Often
+  in the case of \code{\link{printCrudeAndAdjusted}} it is
+  impossible to properly show interaction variables and
+  it's better to show these in a separate table}
 }
 \value{
   vector with names

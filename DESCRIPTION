@@ -1,6 +1,6 @@
 Package: Gmisc
-Version: 0.5.6.0
-Date: 2013-10-24
+Version: 0.5.7.0
+Date: 2013-10-29
 Title: A few handy functions of mine
 Author: Max Gordon <max@gforge.se>
 Maintainer: Max Gordon <max@gforge.se>
@@ -44,6 +44,7 @@ Collate:
     'rms_SandwichAddon.R'
     'confint.robust.R'
     'forestplot2_helpers.R'
+    'getCrudeAndAdjustedModelData.rms.R'
 Depends:
     grid,
     stringr,

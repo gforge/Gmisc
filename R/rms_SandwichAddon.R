@@ -5,27 +5,31 @@
 #' instead of the rms-built-in estimator. The advantage being that 
 #' many more estimation types are available.
 #'  
-#' @param fit 
+#' @param fit
+#' @param type a character string specifying the estimation type. See 
+#'  \code{\link[sandwich]{vcovHC}} for options. 
 #' @param ... You should specify type= followed by some of the alternative available
 #'  for the \code{\link[sandwich]{vcovHC}} function.
 #' @return model The fitted model with adjusted variance and df.residual set to NULL
 #' 
 #' @example examples/rms_SandwichAddon_example.R
-#' @import sandwich
+#' @importFrom sandwich vcovHC
 #' @author max
 #' @export
-robcov_alt <- function (fit, ...) 
+robcov_alt <- function (fit, type="HC3", ...) 
 {
   if (!is.null(list(...)$cluster))
     stop("This function has no working implementation of the cluster option")
   
   fit$orig.var <- vcov(fit, intercepts = "all")
-  fit$var <- vcovHC(fit, ...)
+  fit$var <- vcovHC(fit, type=type, ...)
   # The vcovHC can't always handle the names correctly
   rownames(fit$var) <- rownames(fit$orig.var)
   colnames(fit$var) <- colnames(fit$orig.var)
   # Remove fit$df.residuals as the function then
   # wrongly uses the t-distribution instead of the normal distribution
+  attr(fit, "original_degrees_of_freedom") <- fit$df.residual 
+  attr(fit, "robust") <- type
   fit$df.residual <- NULL
   fit
 }
@@ -50,6 +54,7 @@ robcov_alt <- function (fit, ...)
 #'  in % (by default 2.5% and 97.5%).
 #' 
 #' @example examples/rms_SandwichAddon_example.R
+#' @method confint ols
 #' @author max
 #' @export
 confint.ols <- function(object, parm, level = 0.95, ...) {
@@ -92,7 +97,8 @@ confint.ols <- function(object, parm, level = 0.95, ...) {
 #' @return vector
 #' @example examples/rms_SandwichAddon_example.R
 #' 
-#' @import rms
+#' @importFrom rms ols
+#' @method hatvalues ols
 #' @export
 #' @author max
 hatvalues.ols <- function(x, ...) {
@@ -113,13 +119,16 @@ hatvalues.ols <- function(x, ...) {
 #' @param ... arguments passed to methods.
 #' @example examples/rms_SandwichAddon_example.R
 #'  
-#' @import rms
+#' @importFrom rms ols
+#' @method bread ols
 #' @export 
 #' @author max
 bread.ols <- function(x, ...)
 {
   if (!inherits(x, "ols"))
-    stop("You have provided a non-ols object that is not defined for this function, the classes of the object:", paste(class(x), collapse=", "))
+    stop("You have provided a non-ols object that is not defined",
+         " for this function, the classes of the object: ", 
+         paste(class(x), collapse=", "))
   
   X <- model.matrix(x)
   
@@ -137,6 +146,8 @@ bread.ols <- function(x, ...)
 #' @param ... Parameters passed on
 #' @return matrix
 #' 
+#' @method model.matrix ols
+#' @importFrom rms ols
 #' @author max
 #' @export
 model.matrix.ols <- function(x, ...){
@@ -167,8 +178,9 @@ model.matrix.ols <- function(x, ...){
 #' @return matrix A matrix containing the empirical estimating functions.
 #' @example examples/rms_SandwichAddon_example.R
 #' 
-#' @import rms
+#' @importFrom rms ols
 #' @author Max
+#' @method estfun ols
 #' @export 
 estfun.ols <- function(x, ...){
   if (!inherits(x, "ols"))
@@ -186,8 +198,8 @@ estfun.ols <- function(x, ...){
   rval <- as.vector(res) * wts * xmat
   attr(rval, "assign") <- NULL
   attr(rval, "contrasts") <- NULL
-  if (is.zoo(res))
-    rval <- zoo(rval, index(res), attr(res, "frequency"))
+#   if (zoo::is.zoo(res))
+#     rval <- zoo(rval, index(res), attr(res, "frequency"))
   if (is.ts(res))
     rval <- ts(rval, start = start(res), frequency = frequency(res))
   return(rval)

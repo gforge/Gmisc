@@ -2,7 +2,7 @@
 \alias{model.matrix.ols}
 \title{A fix for the model.matrix}
 \usage{
-  model.matrix.ols(x, ...)
+  \method{model.matrix}{ols} (x, ...)
 }
 \arguments{
   \item{x}{A Model}

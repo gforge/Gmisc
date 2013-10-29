@@ -1,5 +1,17 @@
 NEWS for the Gmisc package
 
+Changes for 0.5.7.0
+-------------------
+* getCrudeAndAdjusted is now an S3 method that has a default method and a method for rms objects. The rms relies on rms:::summaryrms and returns a matrix that is pruned and used for the situation.
+* printCrudeAndAdjusted has externalized a lot of its functions and handling of the new rms getCrudeAndAdjusted output 
+* printCrudeAndAdjusted now ignores any interaction variables
+
+Changes for 0.5.6.1
+-------------------
+* forestplot2 fix so that it properly handles data.frames as arguments
+* printCrudeAndAdjustedModel has a better handling of the groups argument
+* Improved import to importFrom
+
 Changes for 0.5.6.0
 -------------------
 * The forestplot2 is updated - the widths are now relative to the window size, there is a margin option, and many of the inside functions have moved to helpers outside. Also fixed the alignment of the summary label to work better.

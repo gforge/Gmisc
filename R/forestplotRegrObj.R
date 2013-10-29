@@ -51,6 +51,7 @@
 #' 
 #' @example examples/forestplotRegrObj_example.R
 #' 
+#' @importFrom miscTools insertRow
 #' @author max
 #' @export
 forestplotRegrObj <- function(  

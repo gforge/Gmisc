@@ -39,7 +39,6 @@
 #' @param output Choose the type of output that you want returned, html, latex or raw.
 #'   The raw alternative is a list with the arguments that would be sent to the latex/htmlTable
 #'   functions, where x is the main content of the table.
-#' @param ... Passed onto the Hmisc::\code{\link{latex}} function, \code{\link{htmlTable}}
 #' @param desc_column Add descriptive column to the crude and adjusted table
 #' @param desc_show_tot_perc Show percentages for the total column
 #' @param desc_numb_first Whether to show the number before the percentages
@@ -59,9 +58,11 @@
 #'  the expected function. This is only used for rgroups that are printed. You can specify
 #'  different separators if you give a vector of rgroup - 1 length (this is since the first
 #'  rgroup doesn't have a separator). Passed on to \code{\link{htmlTable}}.
+#' @param ... Passed onto the Hmisc::\code{\link{latex}} function, \code{\link{htmlTable}}
 #' @return Returns a latex formatted table
 #' 
-#' @import miscTools
+#' @importFrom miscTools insertRow
+#' @importFrom Hmisc latex
 #' 
 #' @example examples/printCrudeAndAdjustedModel_example.R
 #' 
@@ -93,7 +94,7 @@ printCrudeAndAdjustedModel <- function(model,
   rgroupCSSseparator    = "",
   ...)
 {
-  require("miscTools") || stop("`miscTools' package not found")
+  # Shouldn't need this with importFrom: require("miscTools") || stop("`miscTools' package not found")
   
   output <- match.arg(output)
   
@@ -127,12 +128,6 @@ printCrudeAndAdjustedModel <- function(model,
   x <- getCrudeAndAdjustedModelData(fit = model)
   
   ds <- prExtractPredictorsFromModel(model)
-  
-  getRowname <- function(vn){
-    ifelse (vn %in% colnames(ds) &&
-        use_labels && 
-        label(ds[,vn]) != "", label(ds[,vn]), vn)
-  }
   
   # Set the number of digits,
   # format the confidence interval
@@ -189,10 +184,10 @@ printCrudeAndAdjustedModel <- function(model,
     }
     
     ret <- cbind(
-      tapply(x[,1], 1:NROW(x), FUN = format_number),
-      apply(x[,2:3], MARGIN=1, FUN=format_ci),
-      tapply(x[,4], 1:NROW(x), FUN = format_number),
-      apply(x[,5:6], MARGIN=1, FUN=format_ci))
+      tapply(x[,1, drop=FALSE], 1:NROW(x), FUN = format_number),
+      apply(x[,2:3, drop=FALSE], MARGIN=1, FUN=format_ci),
+      tapply(x[,4, drop=FALSE], 1:NROW(x), FUN = format_number),
+      apply(x[,5:6, drop=FALSE], MARGIN=1, FUN=format_ci))
     
     colnames(ret) <- c(
       colnames(x)[1], 
@@ -206,297 +201,6 @@ printCrudeAndAdjustedModel <- function(model,
   }
   
   x <- prepareCrudeAndAdjusted(x)
-  
-  # Add reference according to the model
-  # this is of course for factored variables
-  addReferenceAndStatsFromModelData <- function(values){
-    if (is.null(model[["variance.inflation.impute"]]) == FALSE)
-      stop("The model seems to have been created using fit.mult.impute and unfortunately that doesn't work with the current version of this function.")
-    
-    if ("rms" %nin% class(model) &&
-      all(class(model) == c("glm", "lm")) == FALSE &&
-      length(class(model)) == 1 && class(model) %nin% c("lm", "glm"))
-      stop("This is only prepared for RMS, glm and lm regressions")
-
-    # InsertRow fails to notice that the values are a
-    # matrix unless we set the class to matrix
-    if (is.matrix(values))
-      class(values) <- "matrix"
-
-    vars <- prGetModelVariables(model)
-    if (length(order) > 1 || is.character(order)){
-      greps <- getOrderVariables(vars)
-      vars <- vars[unlist(greps)]
-    }
-    
-    ret <- list("values" = values, "rgroup" = c(""), "n.rgroup" = c(NROW(values)))
-    
-    if (desc_column){
-      stats <- list()
-      
-      # Get the original data
-      outcome <- prExtractOutcomeFromModel(model)
-      if ("coxph" %in% class(model)){
-        # Get the left part of the formula
-        outcome <- outcome[,"status"]
-      }
-    }
-    
-    stats <- list()
-    
-    addReference <- function(vn, matches, available_factors, ret){
-      ref_value <- rep(c(reference_zero_effect, "ref"), times=2)
-      
-      # TODO: Could probably be extended to other regression models but needs testing
-      used_factors <- gsub(sprintf("^%s[=]{0,1}", vn), "", rownames(ret$values)[matches])
-      
-      # Fetch the reference level, would probably work just as well with a levels()[1]
-      reference <- available_factors[available_factors %nin% used_factors]
-      if (length(reference) > 1)
-        stop(sprintf("Error occurred in looking for reference, found %d reference categories instead of expected 1, %s", 
-            length(reference), 
-            paste(reference, collapse=", ")))
-      
-      # Remove the main label as that goes into the ret$rgroup
-      rownames(ret$values)[matches] <- used_factors
-      
-      # Add ret$rgroup information
-      # ... yes this got way more complicated than desired but it seems to work :-)
-      lab <- getRowname(vn)
-      
-      group_2_split <- which(cumsum(ret$n.rgroup) >= matches[1])
-      if (length(group_2_split) == 0)
-        stop(sprintf("Could not find the group at match %d within %d rows", matches[1], sum(ret$n.rgroup)))
-      else
-        group_2_split <- group_2_split[1]
-      
-      if (ret$rgroup[group_2_split] != "")
-        stop(sprintf("An error occurred when adding the group labels, the software tried to overwrite an already existing group: %s", ret$rgroup[group_2_split]))
-      
-      row_prior_match <- matches[1]-1
-      
-      rgroup_b4 <- ret$rgroup[1:(group_2_split-1)]
-      n.rgroup_b4 <- ret$n.rgroup[1:(group_2_split-1)]
-      rgroup_after <- ret$rgroup[(group_2_split + 1):length(ret$rgroup)]
-      n.rgroup_after <- ret$n.rgroup[(group_2_split + 1):length(ret$n.rgroup)]
-      
-      if (group_2_split == 1){
-        rgroup_b4 <- NULL
-        n.rgroup_b4 <- NULL
-      }
-      # It can be both the first and the last group
-      # avoid therefore an else here
-      if (group_2_split == length(ret$rgroup)){
-        rgroup_after <- NULL
-        n.rgroup_after <- NULL
-      }
-      
-      ret$rgroup <- c(rgroup_b4, 
-        "", lab, "",
-        rgroup_after)
-      ret$n.rgroup <- c(n.rgroup_b4,
-        row_prior_match-sum(n.rgroup_b4), # The number of rows prior to our variable
-        length(used_factors) + 1, # The number of factors + the one were adding
-        ret$n.rgroup[group_2_split] - 
-          (row_prior_match-sum(n.rgroup_b4)) - 
-          length(used_factors),  # The remaining rows from that group, if 0 then removed below
-        n.rgroup_after)
-      
-      
-      # Remove empty group
-      if (any(ret$n.rgroup == 0)){
-        ret$rgroup <- ret$rgroup[-which(ret$n.rgroup == 0)]
-        ret$n.rgroup <- ret$n.rgroup[-which(ret$n.rgroup == 0)]
-      }
-      
-      if (any(ret$n.rgroup < 0))
-        stop(sprintf("Sorry, the software created an invalid group length of less than 0, this occurred when adding the variable: %s (%s)", vn, lab))
-      
-      ret$values <- insertRow(ret$values, 
-        matches[1], 
-        ref_value,  
-        rName=reference)
-      
-      return(ret)
-    }
-    
-    getVnStats <- function(vn){
-      # TODO: add some option of handling missing from the model, a second/third column
-  
-      # If there is a binomial outcome variable then 
-      # it makes sense to have two columns, the overall
-      # and the event data.
-      if (any(class(model) %in% c("lrm", "coxph")) ||
-          ("glm" %in% class(model) &&
-            model$family$family == "binomial")){
-          ret <- getDescriptionStatsBy(x=ds[is.na(outcome) == FALSE,vn], 
-            by=outcome[is.na(outcome) == FALSE],
-            hrzl_prop = TRUE,
-            digits = desc_digits,
-            continuous_fn = desc_continuous_fn,
-            prop_fn = desc_prop_fn,
-            factor_fn = desc_factor_fn,
-            show_all_values = add_references,
-            show_missing = desc_show_missing,
-            add_total_col = TRUE,
-            total_col_show_perc = desc_show_tot_perc, 
-            html = output == "html")
-          
-          # Don't select the no-event alternative as this is usually
-          # not interesting since we have the total column
-          ret <- ret[,c(1,3),drop=FALSE]
-          colnames(ret) <- c("Total", "Event")
-      }else{
-        ret <- prGetStatistics(x=ds[is.na(outcome) == FALSE,vn],  
-          show_perc = desc_show_tot_perc, 
-          html = output == "html",
-          digits = desc_digits,
-          continuous_fn = desc_continuous_fn,
-          prop_fn = desc_prop_fn,
-          factor_fn = desc_factor_fn,
-          show_missing = desc_show_missing)
-        
-      }
-      return(ret)
-    }
-    
-    for(vn in vars)
-    {
-      if (desc_column){
-        stats[[vn]] <- getVnStats(vn)
-      }
-      
-      if (is.factor(ds[,vn])){
-        # Sometimes there is a subset argument or something leading to 
-        # that one of the factors isn't included and therefore I use
-        # this perhaps slightly trickier identification of all the factors
-        available_factors <- as.character(unique(ds[, vn][is.na(ds[, vn]) == FALSE]))
-        # We need to clean from characters that might cause issues with the 
-        # regular expression
-        regex_clean_levels <- gsub("([()\\[\\]{}\\.])", "\\\\\\1", available_factors, perl=TRUE)
-        regex_clean_levels <- gsub("([+*\\.])", "[\\1]", regex_clean_levels, available_factors, perl = TRUE)
-        matches <- grep(
-          sprintf("^%s[=]{0,1}(%s)$", vn, 
-            paste(regex_clean_levels,
-              collapse="|")), 
-          rownames(ret$values))
-        if (length(matches) > 0){
-          ret <- addReference(vn = vn, matches = matches, available_factors=available_factors, ret = ret)
-        }
-      }
-    }
-    
-    if (desc_column){
-      # Intiate empty matrix
-      if (is.matrix(stats[[1]])){
-        cols <- ncol(stats[[1]])
-      }else{
-        cols <- 1
-      }
-      desc_mtrx <- matrix("-", ncol=cols, nrow=nrow(ret$values))
-      rownames(desc_mtrx) <- rownames(ret$values)
-
-      # Should probably make sure we're always dealing
-      # with a matrix but this is a quick fix for now
-      # TODO: fix consistent matrix handling
-      getRows <- function(x){
-        ifelse(is.matrix(x), nrow(x), length(x))
-      }
-      getRownames <- function(x){
-        if(is.matrix(x))
-          rownames(x)
-        else
-          names(x)
-      }
-      getValue <- function(x, rn){
-        if(is.matrix(x))
-          x[rn,] 
-        else
-          x[rn]
-      }
-      for(vn in vars){
-        rowname <- getRowname(vn)
-        if (is.factor(ds[,vn])){
-          # Get the row number of the first element in that group of factors
-          group_nr <- which(rowname == ret$rgroup)
-          if (length(group_nr) == 0)
-            stop(sprintf("Couldn't find the row '%s' (org. name %s) in the value matrix: '%s'", 
-                rowname, vn, paste(ret$rgroup, collapse="', '")))
-          if (length(group_nr) > 1)
-            stop(sprintf(paste("Too many rows matched the row '%s' (org. name %s)\n",
-                  "this is probably due to the fact that the name occurs twice",
-                  "in the value matrix: '%s'\n",
-                  "The most probably cause is that you have the same label() for two variables."), 
-                rowname, vn, paste(ret$rgroup, collapse="', '")))
-          
-          if (group_nr == 1){
-            row <- 1
-          }else{
-            row <- sum(ret$n.rgroup[1:(group_nr-1)]) + 1
-          }
-
-          last_row <- row+ret$n.rgroup[group_nr]-1
-          existing_labels <- rownames(ret$values)[row:last_row]
-          # TODO: check how this works when no labels are checked while there are labels set for the variables
-          if (any(existing_labels %nin% rownames(stats[[vn]])))
-            stop(paste("A few labels from factor", vn, "weren't found in the stats:",
-                paste(existing_labels[existing_labels %nin% rownames(stats[[vn]])], 
-                  collapse=", ")))
-          
-          # Add the stats to the desc 
-          for(rn in existing_labels){
-            # Find that row within the group
-            group_rownames <- rownames(desc_mtrx[row:last_row, ,drop=FALSE])
-            row_within_group <- which(rn == group_rownames)
-            if (length(row_within_group) > 1)
-              stop("There are more than one occurrence within group ", vn,
-                "that have the value: '", rn, "'\n",
-                "The rownames in that group are: '", paste(group_rownames, "', '"), "'")
-            else if (length(row_within_group) == 0)
-              stop("There was no match within group ", vn,
-                "for the value: '", rn, "'\n",
-                "The rownames in that group are: '", paste(group_rownames, "', '"), "'")
-            
-            # Set the value of that row
-            desc_mtrx[row + row_within_group - 1, ] <- getValue(stats[[vn]], rn)
-          }
-            
-          # There are more values in the stats than in the 
-          # regression, this is probably due to missing values,
-          # these will be added to the current group last
-          if (getRows(stats[[vn]]) > ret$n.rgroup[group_nr]){
-            rows_2_add <- getRownames(stats[[vn]])[getRownames(stats[[vn]]) %nin% existing_labels]
-            for (i in 1:length(rows_2_add)){
-              rn <- rows_2_add[i]
-              ret$values <- insertRow(ret$values, row + ret$n.rgroup[group_nr], rep("-", length.out=cols), rn)
-              desc_mtrx <- insertRow(desc_mtrx, row + ret$n.rgroup[group_nr], getValue(stats[[vn]], rn), rn)
-            }
-            ret$n.rgroup[group_nr] <- getRows(stats[[vn]])
-          }
-        }else{
-          # This is fairly straight forward as there is only one row per
-          # value and we can find that row by just looking at the row name
-          row <- grep(rowname, rownames(ret$values))
-          if (length(row) == 0){
-            row <- grep(vn, rownames(ret$values))
-            if (length(row) == 0)
-              stop(sprintf("Couldn't find the row '%s' (org. name %s) in the value matrix", rowname, vn))
-          }
-          
-          desc_mtrx[row, ] <- stats[[vn]]
-        }
-      }
-      
-      ret$values <- cbind(desc_mtrx, ret$values)
-      if (ncol(desc_mtrx) == 1 && colnames(ret$values)[1] == "")
-        colnames(ret$values)[1] <- "Total"
-      else if(all(colnames(ret$values)[1:2] == ""))
-        colnames(ret$values)[1:2] <- c("Total", "Event")
-      
-    }
-    
-    return(ret)
-  }
   
   rgroup <- NULL
   n.rgroup <- NULL
@@ -516,10 +220,36 @@ printCrudeAndAdjustedModel <- function(model,
     
     if (length(add_references) == 1 && 
       add_references == TRUE){
-      ret <- addReferenceAndStatsFromModelData(reorderd_groups)
+      ret <- prCaAddReferenceAndStatsFromModelData(model = model,
+        order = order, 
+        add_references = add_references,
+        reference_zero_effect = reference_zero_effect, 
+        values = reorderd_groups, 
+        ds = ds,
+        output = output,
+        desc_column = desc_column, 
+        desc_show_tot_perc = desc_show_tot_perc,
+        desc_numb_first = desc_numb_first,
+        desc_continuous_fn = desc_continuous_fn, 
+        desc_prop_fn = desc_prop_fn,
+        desc_factor_fn = desc_factor_fn, 
+        desc_show_missing = desc_show_missing,
+        desc_digits = desc_digits,
+        use_labels = use_labels)
       reorderd_groups <- ret$values
       n.rgroup <- ret$n.rgroup
       rgroup <- ret$rgroup
+      if (length(groups) > 0){
+        if (length(groups) == length(rgroups)){
+          rgroups <- groups
+        }else{
+          warning("You have wanted to use groups but the number of rgroups identified ",
+              " by the automatic add_reference (", length(rgroups), " rgroups)",
+              " is not equal the number of groups provided by you (", length(groups), ").",
+              "\n You have provided the groups: ", paste(groups, collapse=", "), 
+              "\n and the rgroups are: ", paste(rgroups, collapse=", "))
+        }
+      }
     }else if (length(add_references) == length(greps)){
       if (desc_column)
         warning("The descriptive column works so far only when used with automated references")
@@ -529,7 +259,7 @@ printCrudeAndAdjustedModel <- function(model,
         # Add reference if it's not empty
         if (length(add_references) > 1 &&
           is.na(add_references[i]) == FALSE){
-          reorderd_groups<- insertRow(reorderd_groups, 
+          reorderd_groups<- miscTools::insertRow(reorderd_groups, 
             line_row, 
             rep(c(reference_zero_effect, "ref"), times=2),  
             rName=add_references[i])
@@ -542,25 +272,46 @@ printCrudeAndAdjustedModel <- function(model,
       }
       
       # Add row groups according to the ordering
-      if (length(groups) == length(greps) && 
-        length(greps) > 0){
-        rgroup <- groups[is.na(groups) == FALSE]
-        n.rgroup <- c()
-        l <- 0
-        for(i in 1:length(greps)){
-          l <- l + length(greps[[i]])
-          if (is.na(groups[i]) == FALSE){
-            n.rgroup <- append(n.rgroup, l)
+      if (length(groups) > 0){
+          if (length(groups) == length(greps)){
+            rgroup <- groups[is.na(groups) == FALSE]
+            n.rgroup <- c()
             l <- 0
+            for(i in 1:length(greps)){
+              l <- l + length(greps[[i]])
+              if (is.na(groups[i]) == FALSE){
+                n.rgroup <- append(n.rgroup, l)
+                l <- 0
+              }
+            }
+          }else{
+            warning("You have wanted to use groups but the number of hits",
+              " by the order regular expression argument (", length(greps), " hits)",
+              " is not equal the number of groups (", length(groups), ").",
+              " You have provided the groups: ", paste(groups, collapse=", "))
           }
-        }
       }
     }
   }else{
     reorderd_groups <- x
     if (length(add_references) == 1 && 
       add_references == TRUE){
-      ret <- addReferenceAndStatsFromModelData(reorderd_groups)
+      ret <- prCaAddReferenceAndStatsFromModelData(model = model,
+        order = order, 
+        add_references = add_references,
+        reference_zero_effect = reference_zero_effect, 
+        values = reorderd_groups, 
+        ds = ds,
+        output = output,
+        desc_column = desc_column, 
+        desc_show_tot_perc = desc_show_tot_perc,
+        desc_numb_first = desc_numb_first,
+        desc_continuous_fn = desc_continuous_fn, 
+        desc_prop_fn = desc_prop_fn,
+        desc_factor_fn = desc_factor_fn, 
+        desc_show_missing = desc_show_missing,
+        desc_digits = desc_digits,
+        use_labels = use_labels)
       reorderd_groups <- ret$values
       n.rgroup <- ret$n.rgroup
       rgroup <- ret$rgroup
@@ -574,13 +325,13 @@ printCrudeAndAdjustedModel <- function(model,
     for (name in rownames(reorderd_groups)){
       new_name <- rowname.fn(name)
       if (new_name == name)
-        new_name <- getRowname(name)
+        new_name <- prCaGetRowname(vn = name, use_labels = use_labels, ds = ds)
       rn <- append(rn, new_name)
     }
   }else{
     rn <- c()
     for (name in rownames(reorderd_groups)){
-      rn <- append(rn, getRowname(name))
+      rn <- append(rn, prCaGetRowname(vn = name, use_labels = use_labels, ds = ds))
     }
   }
   
@@ -638,3 +389,456 @@ printCrudeAndAdjustedModel <- function(model,
         n.rgroup      = n.rgroup))
   }
 }
+
+
+
+
+#' Add reference according to the model
+#' 
+#' This is of course for factored variables and not in general.
+#'  
+#' @param model The regression model 
+#' @param order The order
+#' @param add_references True if it should use the dataset to look for references, otherwise
+#'   supply the function with a vector with names. Sometimes you want to indicate 
+#'   the reference row for each group. This needs to be just as many as the 
+#'   groups as the order identified. Use NA if you don't want to have a 
+#'   reference for that particular group.
+#' @param reference_zero_effect The zero effect that the reference uses
+#' @param values The values that are to be outputted
+#' @param ds The dataset
+#' @param output Choose the type of output that you want returned, html, latex or raw.
+#'   The raw alternative is a list with the arguments that would be sent to the latex/htmlTable
+#'   functions, where x is the main content of the table.
+#' @param desc_column Add descriptive column to the crude and adjusted table
+#' @param desc_show_tot_perc Show percentages for the total column
+#' @param desc_numb_first Whether to show the number before the percentages
+#' @param desc_continuous_fn Stat function used for the descriptive statistics, defaults
+#'   to \code{\link{describeMean}}
+#' @param desc_prop_fn Stat function used for the descriptive statistics, defaults
+#'   to \code{\link{describeProp}}
+#' @param desc_factor_fn Stat function used for the descriptive statistics, defaults
+#'   to \code{\link{describeFactors}}
+#' @param desc_show_missing Show missing variables in the descriptive columns
+#' @param desc_digits Number of digits to use in the descriptive columns. Defaults
+#'  to the general digits if not specified.
+#' @param use_labels If labels should be used for rownames
+#' @return list 
+#' 
+#' @author max
+prCaAddReferenceAndStatsFromModelData <- function(model, 
+  order, 
+  add_references,
+  reference_zero_effect, 
+  values, 
+  ds,
+  output,
+  desc_column, 
+  desc_show_tot_perc,
+  desc_numb_first,
+  desc_continuous_fn, 
+  desc_prop_fn,
+  desc_factor_fn, 
+  desc_show_missing,
+  desc_digits, 
+  use_labels
+  ){
+  if (!is.null(model[["variance.inflation.impute"]]))
+    stop("The model seems to have been created using fit.mult.impute",
+      " and unfortunately that doesn't work with the current version of this function.")
+  
+  if ("rms" %nin% class(model) &&
+    all(class(model) == c("glm", "lm")) == FALSE &&
+    length(class(model)) == 1 && class(model) %nin% c("lm", "glm"))
+    stop("This is only prepared for RMS, glm and lm regressions")
+  
+  # InsertRow fails to notice that the values are a
+  # matrix unless we set the class to matrix
+  if (is.matrix(values))
+    class(values) <- "matrix"
+  
+  vars <- prGetModelVariables(model, remove_splines = TRUE, remove_interaction_vars = TRUE)
+  if (length(order) > 1 || is.character(order)){
+    greps <- getOrderVariables(vars)
+    vars <- vars[unlist(greps)]
+  }
+  
+  ret <- list("values" = values, "rgroup" = c(""), "n.rgroup" = c(NROW(values)))
+  
+  outcome <- NULL
+  if (desc_column){
+    stats <- list()
+    
+    # Get the original data
+    outcome <- prExtractOutcomeFromModel(model)
+    if ("coxph" %in% class(model)){
+      # Get the left part of the formula
+      outcome <- outcome[,"status"]
+    }
+  }
+  
+  stats <- list()
+  
+  for(vn in vars)
+  {
+    if (desc_column && !is.null(outcome)){
+      stats[[vn]] <- prCaGetVnStats(model = model,
+        vn = vn, 
+        outcome = outcome,
+        output = output,
+        ds = ds,
+        add_references = add_references, 
+        desc_digits= desc_digits, 
+        desc_continuous_fn=desc_continuous_fn, 
+        desc_prop_fn=desc_prop_fn,
+        desc_factor_fn=desc_factor_fn, 
+        desc_show_missing=desc_show_missing,
+        desc_show_tot_perc=desc_show_tot_perc)
+    }
+    
+    if (is.factor(ds[,vn])){
+      # Sometimes there is a subset argument or something leading to 
+      # that one of the factors isn't included and therefore I use
+      # this perhaps slightly trickier identification of all the factors
+      available_factors <- as.character(unique(ds[, vn][is.na(ds[, vn]) == FALSE]))
+      # We need to clean from characters that might cause issues with the 
+      # regular expression
+      regex_clean_levels <- gsub("([()\\[\\]{}\\.])", "\\\\\\1", available_factors, perl=TRUE)
+      regex_clean_levels <- gsub("([+*\\.])", "[\\1]", regex_clean_levels, available_factors, perl = TRUE)
+      
+      # Matches:
+      # varname=Outcome
+      # varname - Outcome:reference
+      # varname-Outcome
+      # ...
+      regex_expr_str <- sprintf("^%s[ ]{0,1}[=-]{0,1}[ ]{0,1}(%s)(|:.+)$", 
+        vn, 
+        paste(regex_clean_levels, collapse = "|"))
+      
+      matches <- grep(regex_expr_str, 
+        rownames(ret$values))
+      if (length(matches) > 0){
+        ret <- prCaAddReference(vn = vn, 
+          matches = matches, 
+          available_factors=available_factors, 
+          ret = ret,
+          reference_zero_effect = reference_zero_effect,
+          ds = ds,
+          use_labels = use_labels)
+      }
+    }
+  }
+  
+  if (desc_column){
+    # Intiate empty matrix
+    if (is.matrix(stats[[1]])){
+      cols <- ncol(stats[[1]])
+    }else{
+      cols <- 1
+    }
+    desc_mtrx <- matrix("-", ncol=cols, nrow=nrow(ret$values))
+    rownames(desc_mtrx) <- rownames(ret$values)
+    
+    # Should probably make sure we're always dealing
+    # with a matrix but this is a quick fix for now
+    # TODO: fix consistent matrix handling
+    getRows <- function(x){
+      ifelse(is.matrix(x), nrow(x), length(x))
+    }
+    getRownames <- function(x){
+      if(is.matrix(x))
+        rownames(x)
+      else
+        names(x)
+    }
+    getValue <- function(x, rn){
+      if(is.matrix(x))
+        x[rn,] 
+      else
+        x[rn]
+    }
+    for(vn in vars){
+      rowname <- prCaGetRowname(vn = vn, use_labels = use_labels, ds = ds)
+      if (is.factor(ds[,vn])){
+        # Get the row number of the first element in that group of factors
+        group_nr <- which(rowname == ret$rgroup)
+        if (length(group_nr) == 0)
+          stop(sprintf("Couldn't find the row '%s' (org. name %s) in the value matrix: '%s'", 
+              rowname, vn, paste(ret$rgroup, collapse="', '")))
+        if (length(group_nr) > 1)
+          stop(sprintf(paste("Too many rows matched the row '%s' (org. name %s)\n",
+                "this is probably due to the fact that the name occurs twice",
+                "in the value matrix: '%s'\n",
+                "The most probably cause is that you have the same label() for two variables."), 
+              rowname, vn, paste(ret$rgroup, collapse="', '")))
+        
+        if (group_nr == 1){
+          row <- 1
+        }else{
+          row <- sum(ret$n.rgroup[1:(group_nr-1)]) + 1
+        }
+        
+        last_row <- row+ret$n.rgroup[group_nr]-1
+        existing_labels <- rownames(ret$values)[row:last_row]
+        # TODO: check how this works when no labels are checked while there are labels set for the variables
+        if (any(existing_labels %nin% rownames(stats[[vn]])))
+          stop(paste("A few labels from factor", vn, "weren't found in the stats:",
+              paste(existing_labels[existing_labels %nin% rownames(stats[[vn]])], 
+                collapse=", ")))
+        
+        # Add the stats to the desc 
+        for(rn in existing_labels){
+          # Find that row within the group
+          group_rownames <- rownames(desc_mtrx[row:last_row, ,drop=FALSE])
+          row_within_group <- which(rn == group_rownames)
+          if (length(row_within_group) > 1)
+            stop("There are more than one occurrence within group ", vn,
+              "that have the value: '", rn, "'\n",
+              "The rownames in that group are: '", paste(group_rownames, "', '"), "'")
+          else if (length(row_within_group) == 0)
+            stop("There was no match within group ", vn,
+              "for the value: '", rn, "'\n",
+              "The rownames in that group are: '", paste(group_rownames, "', '"), "'")
+          
+          # Set the value of that row
+          desc_mtrx[row + row_within_group - 1, ] <- getValue(stats[[vn]], rn)
+        }
+        
+        # There are more values in the stats than in the 
+        # regression, this is probably due to missing values,
+        # these will be added to the current group last
+        if (getRows(stats[[vn]]) > ret$n.rgroup[group_nr]){
+          rows_2_add <- getRownames(stats[[vn]])[getRownames(stats[[vn]]) %nin% existing_labels]
+          for (i in 1:length(rows_2_add)){
+            rn <- rows_2_add[i]
+            ret$values <- miscTools::insertRow(ret$values, row + ret$n.rgroup[group_nr], rep("-", length.out=cols), rn)
+            desc_mtrx <- miscTools::insertRow(desc_mtrx, row + ret$n.rgroup[group_nr], getValue(stats[[vn]], rn), rn)
+          }
+          ret$n.rgroup[group_nr] <- getRows(stats[[vn]])
+        }
+      }else{
+        # This is fairly straight forward as there is only one row per
+        # value and we can find that row by just looking at the row name
+        row <- grep(rowname, rownames(ret$values))
+        if (length(row) == 0){
+          row <- grep(vn, rownames(ret$values))
+          if (length(row) == 0)
+            stop(sprintf("Couldn't find the row '%s' (org. name %s) in the value matrix", rowname, vn))
+        }
+        
+        desc_mtrx[row, ] <- stats[[vn]]
+      }
+    }
+    
+    ret$values <- cbind(desc_mtrx, ret$values)
+    if (ncol(desc_mtrx) == 1 && colnames(ret$values)[1] == "")
+      colnames(ret$values)[1] <- "Total"
+    else if(all(colnames(ret$values)[1:2] == ""))
+      colnames(ret$values)[1:2] <- c("Total", "Event")
+    
+  }
+  
+  return(ret)
+}
+
+#' Adds a reference to value matrix
+#' 
+#' @param vn Variable name 
+#' @param matches Rows that match
+#' @param available_factors Factors that are available
+#' @param ret The ret list
+#' @param reference_zero_effect The reference zero effect 
+#' @param ds The data set
+#' @param use_labels If labels should be used for row names
+#' @return \code{list} The ret list 
+#' 
+#' @author max
+prCaAddReference <- function(vn, matches, available_factors, ret, reference_zero_effect, ds, use_labels){
+  ref_value <- rep(c(reference_zero_effect, "ref"), times=2)
+  
+  reference <- NULL
+  # The rms package generates rownames with factor name:reference factor
+  # and it is therefore a good idea to find the refreence by checking
+  # which one is at the end
+  for (f_name in available_factors){
+    tmp <- gsub(f_name, "", rownames(ret$values)[matches], fixed=TRUE)
+    if (all(grepl(":$", tmp))){
+      reference <- f_name
+      break
+    }
+  }
+  
+  if (length(reference) == 0){
+    # TODO: Could probably be extended to other regression models but needs testing
+    used_factors <- gsub(sprintf("^%s[ ]{0,1}[=-]{0,1}{0,1}", vn), "", rownames(ret$values)[matches])
+    
+    # Fetch the reference level, would probably work just as well with a levels()[1]
+    reference <- available_factors[!available_factors %in% used_factors]
+    if (length(reference) != 1)
+      stop("Error occurred in looking for reference, found ", length(reference), " reference categories",
+        " instead of expected 1, out of these factors:\n ", paste(available_factors, collapse=", "),
+        ifelse(length(reference) > 1, 
+          sprintf(" \n The refrences found: %s", paste(reference, collapse=", ")),
+          sprintf(" \n The rownames that have searched: %s", paste(rownames(ret$values)[matches], collapse=", "))))
+  }else{
+    used_factors <- available_factors[reference != available_factors]
+  }
+  
+  # Remove the main label as that goes into the ret$rgroup
+  rownames(ret$values)[matches] <- used_factors
+  
+  # Add ret$rgroup information
+  # ... yes this got way more complicated than desired but it seems to work :-)
+  lab <- prCaGetRowname(vn = vn, use_labels = use_labels, ds = ds)
+  
+  group_2_split <- which(cumsum(ret$n.rgroup) >= matches[1])
+  if (length(group_2_split) == 0)
+    stop(sprintf("Could not find the group at match %d within %d rows", matches[1], sum(ret$n.rgroup)))
+  else
+    group_2_split <- group_2_split[1]
+  
+  if (ret$rgroup[group_2_split] != "")
+    stop(sprintf("An error occurred when adding the group labels, the software tried to overwrite an already existing group: %s", ret$rgroup[group_2_split]))
+  
+  row_prior_match <- matches[1]-1
+  
+  rgroup_b4 <- ret$rgroup[1:(group_2_split-1)]
+  n.rgroup_b4 <- ret$n.rgroup[1:(group_2_split-1)]
+  rgroup_after <- ret$rgroup[(group_2_split + 1):length(ret$rgroup)]
+  n.rgroup_after <- ret$n.rgroup[(group_2_split + 1):length(ret$n.rgroup)]
+  
+  if (group_2_split == 1){
+    rgroup_b4 <- NULL
+    n.rgroup_b4 <- NULL
+  }
+  # It can be both the first and the last group
+  # avoid therefore an else here
+  if (group_2_split == length(ret$rgroup)){
+    rgroup_after <- NULL
+    n.rgroup_after <- NULL
+  }
+  
+  ret$rgroup <- c(rgroup_b4, 
+    "", lab, "",
+    rgroup_after)
+  ret$n.rgroup <- c(n.rgroup_b4,
+    row_prior_match-sum(n.rgroup_b4), # The number of rows prior to our variable
+    length(used_factors) + 1, # The number of factors + the one were adding
+    ret$n.rgroup[group_2_split] - 
+      (row_prior_match-sum(n.rgroup_b4)) - 
+      length(used_factors),  # The remaining rows from that group, if 0 then removed below
+    n.rgroup_after)
+  
+  
+  # Remove empty group
+  if (any(ret$n.rgroup == 0)){
+    ret$rgroup <- ret$rgroup[-which(ret$n.rgroup == 0)]
+    ret$n.rgroup <- ret$n.rgroup[-which(ret$n.rgroup == 0)]
+  }
+  
+  if (any(ret$n.rgroup < 0))
+    stop(sprintf("Sorry, the software created an invalid group length of less than 0, this occurred when adding the variable: %s (%s)", vn, lab))
+  
+  ret$values <- miscTools::insertRow(ret$values, 
+    matches[1], 
+    ref_value,  
+    rName=reference)
+  
+  return(ret)
+}
+
+#' Gets the variable stats
+#' 
+#' @param model The model
+#' @param vn The variable name
+#' @param outcome The outcome vector
+#' @param output Choose the type of output that you want returned, html, latex or raw.
+#'   The raw alternative is a list with the arguments that would be sent to the latex/htmlTable
+#'   functions, where x is the main content of the table.
+#' @param ds The dataset
+#' @param add_references True if it should use the dataset to look for references, otherwise
+#'   supply the function with a vector with names. Sometimes you want to indicate 
+#'   the reference row for each group. This needs to be just as many as the 
+#'   groups as the order identified. Use NA if you don't want to have a 
+#'   reference for that particular group.
+#' @param desc_column Add descriptive column to the crude and adjusted table
+#' @param desc_show_tot_perc Show percentages for the total column
+#' @param desc_numb_first Whether to show the number before the percentages
+#' @param desc_continuous_fn Stat function used for the descriptive statistics, defaults
+#'   to \code{\link{describeMean}}
+#' @param desc_prop_fn Stat function used for the descriptive statistics, defaults
+#'   to \code{\link{describeProp}}
+#' @param desc_factor_fn Stat function used for the descriptive statistics, defaults
+#'   to \code{\link{describeFactors}}
+#' @param desc_show_missing Show missing variables in the descriptive columns
+#' @param desc_digits Number of digits to use in the descriptive columns. Defaults
+#'  to the general digits if not specified.
+#' @return \code{matrix} A matrix from \code{\link{getDescriptionStatsBy}} or
+#'  \code{\link{prGetStatistics}}
+#' 
+#' @author max
+prCaGetVnStats <- function(model,
+  vn, 
+  outcome, 
+  output,
+  ds,
+  add_references, 
+  desc_digits, 
+  desc_continuous_fn, 
+  desc_prop_fn,
+  desc_factor_fn, 
+  desc_show_missing,
+  desc_show_tot_perc){
+  # TODO: add some option of handling missing from the model, a second/third column
+  
+  # If there is a binomial outcome variable then 
+  # it makes sense to have two columns, the overall
+  # and the event data.
+  if (any(class(model) %in% c("lrm", "coxph")) ||
+    ("glm" %in% class(model) &&
+      model$family$family == "binomial")){
+    ret <- getDescriptionStatsBy(x=ds[is.na(outcome) == FALSE,vn], 
+      by=outcome[is.na(outcome) == FALSE],
+      hrzl_prop = TRUE,
+      digits = desc_digits,
+      continuous_fn = desc_continuous_fn,
+      prop_fn = desc_prop_fn,
+      factor_fn = desc_factor_fn,
+      show_all_values = add_references,
+      show_missing = desc_show_missing,
+      add_total_col = TRUE,
+      total_col_show_perc = desc_show_tot_perc, 
+      html = output == "html")
+    
+    # Don't select the no-event alternative as this is usually
+    # not interesting since we have the total column
+    ret <- ret[,c(1,3),drop=FALSE]
+    colnames(ret) <- c("Total", "Event")
+  }else{
+    ret <- prGetStatistics(x=ds[is.na(outcome) == FALSE,vn],  
+      show_perc = desc_show_tot_perc, 
+      html = output == "html",
+      digits = desc_digits,
+      continuous_fn = desc_continuous_fn,
+      prop_fn = desc_prop_fn,
+      factor_fn = desc_factor_fn,
+      show_missing = desc_show_missing)
+    
+  }
+  return(ret)
+}
+
+#' Gets the labelled rowname if it exists
+#' 
+#' @param vn The variable name 
+#' @param use_labels If labels should be used
+#' @param ds The dataset
+#' @return \code{string} The rowname 
+#' 
+#' @author max
+prCaGetRowname <- function(vn, use_labels, ds){
+  ifelse (vn %in% colnames(ds) &&
+      use_labels && 
+      label(ds[,vn]) != "", label(ds[,vn]), vn)
+}
+

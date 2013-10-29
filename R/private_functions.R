@@ -18,6 +18,7 @@
 #' @author max
 prExtractOutcomeFromModel <- function(model, check_subset = TRUE){
   outcome_formula <- formula(model)[[2]]
+  outcome <- NULL
   
   if (length(all.vars(outcome_formula)) != 1){
     # We can probably figure this one out if we have
@@ -38,22 +39,35 @@ prExtractOutcomeFromModel <- function(model, check_subset = TRUE){
           "\n In order for this function to work in a predictive way",
           "you can only have one outcome - sorry"))
     }
+  }else if (length(outcome_formula) > 1){
+    # A complex outcome formula
+    if (is.null(model$call$data))
+      stop("You need to use the regression model together with the data= option",
+        " when you have complex outcomes that consist out of more than one thing or",
+        " the software will get confused on how to extract that information.")
+    ds <- eval(model$call$data)
+    outcome <- with(ds, eval(outcome_formula))
   }else{
     outcome_var_name <- all.vars(outcome_formula)[1]
   }
   
-  if (is.null(model$call$data)){
-    outcome <- get(outcome_var_name)
-  }else{
-    ds <- eval(model$call$data)
-    if (outcome_var_name %in% colnames(ds))
-      outcome <- ds[,outcome_var_name]
-    else
+  if (length(outcome) == 0){
+    if (is.null(model$call$data)){
       outcome <- get(outcome_var_name)
+    }else{
+      ds <- eval(model$call$data)
+      if (outcome_var_name %in% colnames(ds))
+        outcome <- ds[,outcome_var_name]
+      else
+        outcome <- get(outcome_var_name)
+    }
   }
 
   if  (check_subset && is.null(model$call$subset) == FALSE){
-    ds <- prExtractPredictorsFromModel(model, check_subset = FALSE)
+    if (is.null(model$call$data))
+      stop("If you are using the subset argument then please also provide the data= argument.")
+    
+    ds <- eval(model$call$data)
     outcome <- outcome[with(ds, eval(model$call$subset))]
   }
   
@@ -148,23 +162,32 @@ prGetModelData <- function(x, check_subset = TRUE){
 #' @param model A model fit
 #' @param remove_splines If splines, etc. should be cleaned 
 #'  from the variables as these no longer are "pure" variables
+#' @param remove_interaction_vars If interaction variables are
+#'  not interesting then these should be removed. Often in
+#'  the case of \code{\link{printCrudeAndAdjusted}} it is impossible
+#'  to properly show interaction variables and it's better to show
+#'  these in a separate table
 #' @return vector with names 
 #' 
+#' @importFrom stringr str_split
 #' @author max
-prGetModelVariables <- function(model, remove_splines = TRUE){
+prGetModelVariables <- function(model, remove_splines = TRUE, remove_interaction_vars=FALSE){
   vars <- attr(model$terms, "term.labels")
   
   # Remove I() as these are not true variables
   # and their names can probably have lots of variants
   unwanted_vars <- grep("^I\\(.*$", vars)
-  if (length(unwanted_vars) > 0)
+  if (length(unwanted_vars) > 0){
+    attr(vars, "I() removed") <- vars[unwanted_vars]
     vars <- vars[-unwanted_vars]
+  }
   
   pat <- "^[[:alpha:]\\.]+[^(]+\\(.*$"
   fn_vars <- grep(pat, vars)
   if(length(fn_vars) > 0){
     if (remove_splines){
       # Remove splines and other functions
+      attr(vars, "functions removed") <- vars[fn_vars]
       vars <- vars[-fn_vars]
     }else{
       # Cleane the variable names into proper names
@@ -178,10 +201,18 @@ prGetModelVariables <- function(model, remove_splines = TRUE){
   # Remove interaction terms as these are not variables
   int_term <- "^.+:.+$"
   in_vars <- grep(int_term, vars)
-  if (length(in_vars) > 0)
+  if (length(in_vars) > 0){
+    if (remove_interaction_vars){
+      in_vn <- unlist(str_split(vars[in_vars], ":"))
+      in_vars <- unique(c(in_vars, which(vars %in% in_vn)))
+    }
+    attr(vars, "interactions removed") <- vars[in_vars]
     vars <- vars[-in_vars]
+  }
   
-  return(unique(vars))
+  clean_vars <- unique(vars)
+  attributes(clean_vars) <- attributes(vars)
+  return(clean_vars)
 }
 
 #' Get statistics according to the type

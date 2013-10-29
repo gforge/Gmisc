@@ -2,7 +2,7 @@
 \alias{bread.ols}
 \title{Getting the bread for the vcovHC}
 \usage{
-  bread.ols(x, ...)
+  \method{bread}{ols} (x, ...)
 }
 \arguments{
   \item{x}{The ols model fit}

@@ -2,7 +2,7 @@
 \alias{estfun.ols}
 \title{Fix for the Extract Empirical Estimating Functions}
 \usage{
-  estfun.ols(x, ...)
+  \method{estfun}{ols} (x, ...)
 }
 \arguments{
   \item{x}{A fitted ols model object.}

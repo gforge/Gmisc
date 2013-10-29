@@ -2,7 +2,7 @@
 \alias{hatvalues.ols}
 \title{Get the hat matrix for the OLS}
 \usage{
-  hatvalues.ols(x, ...)
+  \method{hatvalues}{ols} (x, ...)
 }
 \arguments{
   \item{x}{The ols model fit}

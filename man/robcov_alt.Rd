@@ -2,10 +2,13 @@
 \alias{robcov_alt}
 \title{Robust covariance matrix based upon the sandwich-package}
 \usage{
-  robcov_alt(fit, ...)
+  robcov_alt(fit, type = "HC3", ...)
 }
 \arguments{
   \item{fit}{}
+
+  \item{type}{a character string specifying the estimation
+  type. See \code{\link[sandwich]{vcovHC}} for options.}
 
   \item{...}{You should specify type= followed by some of
   the alternative available for the

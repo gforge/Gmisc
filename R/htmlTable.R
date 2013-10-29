@@ -87,7 +87,8 @@
 #' 
 #' @seealso \code{\link{latex}}, \code{\link{getDescriptionStatsBy}}, \code{\link{splitLines4Table}}
 #' 
-#' @import stringr
+#' @importFrom stringr str_trim
+#' @importFrom stringr str_replace
 #' @author max
 #' @export
 htmlTable <- function(x,
@@ -156,8 +157,6 @@ htmlTable <- function(x,
     
     tc_string <- sprintf("Table %d: ", tc)
   }
-  
-  require("stringr")
   
   # The CSS expects a semicolon at the end of each argument
   # this function just adds a semicolong if none is given

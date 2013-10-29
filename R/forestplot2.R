@@ -105,6 +105,14 @@ forestplot2 <- function (labeltext,
     legend.pos = match.arg(legend.pos)
   }
   
+  # Fix if data.frames were provided in the arguments
+  if (is.data.frame(mean))
+    mean <- as.matrix(mean)
+  if (is.data.frame(lower))
+    lower<- as.matrix(lower)
+  if (is.data.frame(upper))
+    upper <- as.matrix(upper)
+  
   # Save the original values since the function due to it's inheritance
   # from the original forestplot needs some changing to the parameters
   if (xlog){
