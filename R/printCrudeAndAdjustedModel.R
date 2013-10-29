@@ -102,27 +102,7 @@ printCrudeAndAdjustedModel <- function(model,
   if (length(add_references) == 1 && add_references == FALSE)
     add_references <- NULL
   
-  getOrderVariables <- function(names){
-    greps <- c()
-    for (r_expr in order) {
-      # Find the names that matches
-      matches <- grep(r_expr, names)
-      if (length(matches) == 0)
-        stop("You have a strange selection order,",
-          "this could be due to that you try to select a factor subvariable and not the full variable.",
-          "Re-arranging factors should be done in the factor() function and not here.",
-          sprintf("Anyway the expression '%s' was not found in these variable names:", r_expr),
-          paste(names, collapse=", "))
-      
-      # Avoid reselecting
-      new_vars <- setdiff(matches, unlist(greps))
-      if (length(new_vars) > 0){
-        greps <- append(greps, list(new_vars))
-      }
-    }
-    return(greps)
-  }
-  
+   
   # Convert the x that should be a model into a matrix that
   # originally was expected
   x <- getCrudeAndAdjustedModelData(fit = model)
@@ -205,7 +185,7 @@ printCrudeAndAdjustedModel <- function(model,
   rgroup <- NULL
   n.rgroup <- NULL
   if (length(order) > 1 || is.character(order)){
-    greps <- getOrderVariables(rownames(x))
+    greps <- prCaGetOrderVariables(names = rownames(x), order = order)
     
     reorderd_groups <- x[unlist(greps), ]
     if (any(rownames(reorderd_groups) %nin% rownames(x))){
@@ -459,7 +439,7 @@ prCaAddReferenceAndStatsFromModelData <- function(model,
   
   vars <- prGetModelVariables(model, remove_splines = TRUE, remove_interaction_vars = TRUE)
   if (length(order) > 1 || is.character(order)){
-    greps <- getOrderVariables(vars)
+    greps <- prCaGetOrderVariables(names = vars, order = order)
     vars <- vars[unlist(greps)]
   }
   
@@ -842,3 +822,30 @@ prCaGetRowname <- function(vn, use_labels, ds){
       label(ds[,vn]) != "", label(ds[,vn]), vn)
 }
 
+#' Re-order variables
+#' 
+#' @param names The names of the variables 
+#' @param order The order regular expression
+#' @return \code{vector} A vector containing the greps 
+#' 
+#' @author max
+prCaGetOrderVariables <- function(names, order){
+  greps <- c()
+  for (r_expr in order) {
+    # Find the names that matches
+    matches <- grep(r_expr, names)
+    if (length(matches) == 0)
+      stop("You have a strange selection order,",
+        "this could be due to that you try to select a factor subvariable and not the full variable.",
+        "Re-arranging factors should be done in the factor() function and not here.",
+        sprintf("Anyway the expression '%s' was not found in these variable names:", r_expr),
+        paste(names, collapse=", "))
+    
+    # Avoid reselecting
+    new_vars <- setdiff(matches, unlist(greps))
+    if (length(new_vars) > 0){
+      greps <- append(greps, list(new_vars))
+    }
+  }
+  return(greps)
+}
