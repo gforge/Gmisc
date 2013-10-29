@@ -664,8 +664,20 @@ prCaAddReference <- function(vn, matches, available_factors, ret, reference_zero
     used_factors <- available_factors[reference != available_factors]
   }
   
-  # Remove the main label as that goes into the ret$rgroup
-  rownames(ret$values)[matches] <- used_factors
+  for (uf_name in used_factors){
+    r_no <- grep(uf_name, rownames(ret$values), fixed=TRUE)
+    if (!any(r_no %in% matches))
+      stop("Could not find rowname with factor ", uf_name, 
+        " among any of the row names: ", paste(rownames(ret$values), collapse=", "))
+    r_no <- r_no[r_no %in% matches]
+    if (length(r_no) > 1)
+      stop("Multiple rows matched the factor ", uf_name,
+        " from the available: ", paste(rownames(ret$values)[matches], collapse=", "))
+    
+    # Remove the main label as that goes into the ret$rgroup
+    rownames(ret$values)[r_no] <- uf_name
+    
+  }
   
   # Add ret$rgroup information
   # ... yes this got way more complicated than desired but it seems to work :-)
