@@ -16,11 +16,11 @@
 #' @param ... Additional parameters that are passed on.
 #' @return a matrix with the confidence intervals
 #' 
-#' @example examples/confint.robust_example.R
+#' @example examples/confint_robust_example.R
 #' 
 #' @author Max
 #' @export
-confint.robust <- function(object, parm, level = 0.95, 
+confint_robust <- function(object, parm, level = 0.95, 
     HC_type="HC3", t_distribution = FALSE,...){
   cf <- coef(object); pnames <- names(cf)
   if(missing(parm))

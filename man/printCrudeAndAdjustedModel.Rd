@@ -1,19 +1,23 @@
 \name{printCrudeAndAdjustedModel}
+\alias{print.printCrudeandAdjusted}
 \alias{printCrudeAndAdjustedModel}
 \title{Output crude and adjusted model data}
 \usage{
   printCrudeAndAdjustedModel(model, order = FALSE,
-    digits = 2, max = Inf, min = -Inf,
+    digits = 2, ci_max = Inf, ci_min = -Inf,
     sprintf_ci_str = "\%s to \%s", add_references = FALSE,
-    reference_zero_effect = ifelse(all("lm" \%in\% class(model)) || "ols" \%in\% class(model) || (inherits(model, "glm") && model$family$link == "identity"), 0, 1),
-    groups = NULL, rowname.fn = NULL, use_labels = TRUE,
+    add_references_pos = list(),
+    reference_zero_effect = NULL, groups = NULL,
+    rowname.fn = NULL, use_labels = TRUE,
     desc_column = FALSE, desc_show_tot_perc = FALSE,
     desc_numb_first = TRUE,
     desc_continuous_fn = describeMean,
     desc_prop_fn = describeProp,
     desc_factor_fn = describeFactors,
     desc_show_missing = FALSE, desc_digits = digits,
-    output = c("html", "latex", "raw"),
+    output = "html", ...)
+
+  \method{print}{printCrudeAndAdjusted} (x,
     rgroupCSSstyle = "", rgroupCSSseparator = "", ...)
 }
 \arguments{
@@ -24,24 +28,24 @@
 
   \item{digits}{The number of digits to round to}
 
-  \item{max}{A number that specifies if any values should
-  be abbreviated above this value, for instance a value of
-  1000 would give a value of $> 1000$ for a value of 1001.
-  This gives a prettier table when you have very wide
-  confidence intervals.}
+  \item{ci_max}{A number that specifies if any values
+  should be abbreviated above this value, for instance a
+  value of 1000 would give a value of \deqn{> -1000}{>
+  -1000} for a value of 1001. This gives a prettier table
+  when you have very wide confidence intervals.}
 
-  \item{min}{A number that specifies if any values should
-  be abbreviated above this value, for instance a value of
-  -1000 would give a value of $< -1000$ for a value of
-  -1001. This gives a prettier table when you have very
-  wide confidence intervals.}
+  \item{ci_min}{A number that specifies if any values
+  should be abbreviated above this value, for instance a
+  value of -1000 would give a value of \deqn{< -1000}{<
+  -1000} for a value of -1001. This gives a prettier table
+  when you have very wide confidence intervals.}
 
   \item{sprintf_ci_str}{A string according to
   \code{\link{sprintf}} to write the confidence interval
   where the first \%s is the lower and the second the
   upper.}
 
-  \item{add_references}{True if it should use the dataset
+  \item{add_references}{True if it should use the data set
   to look for references, otherwise supply the function
   with a vector with names. Sometimes you want to indicate
   the reference row for each group. This needs to be just
@@ -49,10 +53,20 @@
   you don't want to have a reference for that particular
   group.}
 
+  \item{add_references_pos}{The position where a reference
+  should be added. Sometimes you don't want the reference
+  to be at the top, for instance if you have age groups
+  then you may have < 25, 25-39, 40-55, > 55 and you have
+  the reference to be 25-39 then you should set the
+  reference list for \code{age_groups} as
+  \code{add_references_pos = list(age_groups = 2)} so that
+  you have the second group as the position for the
+  reference.}
+
   \item{reference_zero_effect}{Used with references, tells
-  if zero effect is in exponential form, i.e. exp(0) = 1,
-  or in regular format, i.e. 0 = 0 (can be set to any
-  value)}
+  if zero effect is in exponential form, i.e. \code{exp(0)
+  = 1}, or in regular format, i.e. \code{0 = 0} (can be set
+  to any value)}
 
   \item{groups}{Only used together with regular expression
   for ordering and grouping.  Should be a vector with group
@@ -60,7 +74,7 @@
   identified order groups. If you wish to skip one just us
   NA for that instance.}
 
-  \item{rowname.fn}{A function that takes a rowname and
+  \item{rowname.fn}{A function that takes a row name and
   sees if it needs beautifying. The function has only one
   parameter the coefficients name and should return a
   string or expression.}
@@ -69,12 +83,6 @@
   change the name then the label should be used instead of
   the name, that is if there is a label and it isn't a
   factor.}
-
-  \item{output}{Choose the type of output that you want
-  returned, html, latex or raw.  The raw alternative is a
-  list with the arguments that would be sent to the
-  latex/htmlTable functions, where x is the main content of
-  the table.}
 
   \item{desc_column}{Add descriptive column to the crude
   and adjusted table}
@@ -104,6 +112,15 @@
   descriptive columns. Defaults to the general digits if
   not specified.}
 
+  \item{output}{Set to latex if you want latex output}
+
+  \item{...}{Passed onto the Hmisc::\code{\link{latex}}
+  function, or to the \code{\link{htmlTable}} via the print
+  call}
+
+  \item{x}{The output object from the
+  printCrudeAndAdjustedModel function}
+
   \item{rgroupCSSstyle}{Css style for the rgorup, if
   different styles are wanted for each of the rgroups you
   can just specify a vector with the number of elements.
@@ -117,12 +134,11 @@
   different separators if you give a vector of rgroup - 1
   length (this is since the first rgroup doesn't have a
   separator). Passed on to \code{\link{htmlTable}}.}
-
-  \item{...}{Passed onto the Hmisc::\code{\link{latex}}
-  function, \code{\link{htmlTable}}}
 }
 \value{
-  Returns a latex formatted table
+  \code{matrix} Returns a matrix of class
+  printCrudeAndAdjusted that has a default print method
+  associated with
 }
 \description{
   Prints table for a fitted object. It prints by default a
@@ -185,6 +201,7 @@ require(splines)
 fit_mtcar <- lm(mpg ~ wt + gear + col, data=mtcars)
 printCrudeAndAdjustedModel(fit_mtcar, file="", add_references=TRUE, ctable=TRUE, desc_column = TRUE)
 
+printCrudeAndAdjustedModel(fit_mtcar)
 # Alterntive print - just an example, doesn't make sense to skip reference
 printCrudeAndAdjustedModel(fit_mtcar, 
                            file="", 
@@ -195,6 +212,8 @@ printCrudeAndAdjustedModel(fit_mtcar,
                            output = "html")
 }
 \author{
+  max
+
   max
 }
 

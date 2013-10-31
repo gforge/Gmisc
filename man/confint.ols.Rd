@@ -28,6 +28,9 @@
   qnorm() function. Otherwise it is a copy of the
   \code{\link[stats]{confint}} function.
 }
+\details{
+  TODO: Switch to the summaryrms
+}
 \examples{
 # Generate some data
 n <- 500

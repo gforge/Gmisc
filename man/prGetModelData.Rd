@@ -5,7 +5,7 @@
   prGetModelData(x, check_subset = TRUE)
 }
 \arguments{
-  \item{model}{The fitted model.}
+  \item{x}{The fitted model.}
 
   \item{check_subset}{Check if the model has been subsetted
   and if so subset the outcome variable too.}

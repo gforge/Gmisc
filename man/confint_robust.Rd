@@ -1,8 +1,8 @@
-\name{confint.robust}
-\alias{confint.robust}
+\name{confint_robust}
+\alias{confint_robust}
 \title{The confint function adapted for vcovHC}
 \usage{
-  confint.robust(object, parm, level = 0.95,
+  confint_robust(object, parm, level = 0.95,
     HC_type = "HC3", t_distribution = FALSE, ...)
 }
 \arguments{
@@ -39,7 +39,7 @@ x <- runif(n)
 y <- x + rnorm(n)
 
 fit <- lm(y~x)
-confint.robust(fit, HC_type = "HC4m")
+confint_robust(fit, HC_type = "HC4m")
 }
 \author{
   Max

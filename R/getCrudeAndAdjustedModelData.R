@@ -23,6 +23,7 @@
 #' @param fit The regression model
 #' @param level The confidence interval level
 #' @param remove_interaction_vars Removes the interaction terms as this makes no sense in the output
+#' @param ... Not used
 #' @return Returns a matrix with the columns: 
 #'   \code{c("Crude", "2.5 \%", "97.5 \%", "Adjusted", "2.5 \%", "97.5 \%")}.
 #'   The row order is not changed from the original fit. The percentages can vary depending

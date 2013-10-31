@@ -1,5 +1,11 @@
 NEWS for the Gmisc package
 
+Changes for 0.5.7.1
+-------------------
+* Fixed rownames in printCrudeAndAdjusted
+* Changed printCrudeAndAdjusted to return a matrix subclass instead of immediately printing
+* Ran through som Pkg-check and hopefully cleared out some bugs
+
 Changes for 0.5.7.0
 -------------------
 * getCrudeAndAdjusted is now an S3 method that has a default method and a method for rms objects. The rms relies on rms:::summaryrms and returns a matrix that is pruned and used for the situation.

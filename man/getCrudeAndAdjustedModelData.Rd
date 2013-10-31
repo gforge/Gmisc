@@ -19,6 +19,8 @@
 
   \item{remove_interaction_vars}{Removes the interaction
   terms as this makes no sense in the output}
+
+  \item{...}{Not used}
 }
 \value{
   Returns a matrix with the columns: \code{c("Crude", "2.5

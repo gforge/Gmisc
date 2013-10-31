@@ -83,6 +83,14 @@
   \item{mar}{A numerical vector of the form c(bottom, left,
   top, right) of the type \code{unit()}}
 
+  \item{legend}{Legen corresponding to the number of bars.}
+
+  \item{legend.pos}{The position of the legend, either at
+  the "top" or the "right"}
+
+  \item{legend.cex}{The cex size of the legend, by default
+  \code{cex*0.8}}
+
   \item{...}{Not used}
 }
 \value{

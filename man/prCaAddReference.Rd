@@ -2,8 +2,9 @@
 \alias{prCaAddReference}
 \title{Adds a reference to value matrix}
 \usage{
-  prCaAddReference(vn, matches, available_factors, ret,
-    reference_zero_effect, ds, use_labels)
+  prCaAddReference(vn, matches, available_factors, values,
+    add_references_pos, reference_zero_effect, ds,
+    use_labels)
 }
 \arguments{
   \item{vn}{Variable name}
@@ -12,7 +13,10 @@
 
   \item{available_factors}{Factors that are available}
 
-  \item{ret}{The ret list}
+  \item{values}{The value matrix}
+
+  \item{add_references_pos}{The position within the factors
+  if it exists}
 
   \item{reference_zero_effect}{The reference zero effect}
 
@@ -21,7 +25,8 @@
   \item{use_labels}{If labels should be used for row names}
 }
 \value{
-  \code{list} The ret list
+  \code{matrix} A matrix with rgroup and n.rgroup
+  attributes
 }
 \description{
   Adds a reference to value matrix

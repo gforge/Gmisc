@@ -3,9 +3,9 @@
 \title{Gets the variable stats}
 \usage{
   prCaGetVnStats(model, vn, outcome, output, ds,
-    add_references, desc_digits, desc_continuous_fn,
-    desc_prop_fn, desc_factor_fn, desc_show_missing,
-    desc_show_tot_perc)
+    add_references, add_references_pos, desc_digits,
+    desc_continuous_fn, desc_prop_fn, desc_factor_fn,
+    desc_show_missing, desc_show_tot_perc)
 }
 \arguments{
   \item{model}{The model}
@@ -30,14 +30,18 @@
   you don't want to have a reference for that particular
   group.}
 
-  \item{desc_column}{Add descriptive column to the crude
-  and adjusted table}
+  \item{add_references_pos}{The position where a reference
+  should be added. Sometimes you don't want the reference
+  to be at the top, for instance if you have age groups
+  then you may have < 25, 25-39, 40-55, > 55 and you have
+  the reference to be 25-39 then you should set the
+  reference list for \code{age_groups} as
+  \code{add_references_pos = list(age_groups = 2)} so that
+  you have the second group as the position for the
+  reference.}
 
   \item{desc_show_tot_perc}{Show percentages for the total
   column}
-
-  \item{desc_numb_first}{Whether to show the number before
-  the percentages}
 
   \item{desc_continuous_fn}{Stat function used for the
   descriptive statistics, defaults to

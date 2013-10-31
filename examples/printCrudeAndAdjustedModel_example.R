@@ -45,6 +45,7 @@ require(splines)
 fit_mtcar <- lm(mpg ~ wt + gear + col, data=mtcars)
 printCrudeAndAdjustedModel(fit_mtcar, file="", add_references=TRUE, ctable=TRUE, desc_column = TRUE)
 
+printCrudeAndAdjustedModel(fit_mtcar)
 # Alterntive print - just an example, doesn't make sense to skip reference
 printCrudeAndAdjustedModel(fit_mtcar, 
                            file="", 

@@ -14,7 +14,7 @@
 #' Note that when using complex cgroup alignments with multiple levels
 #' not every browser is able to handle this. For instance the RStudio
 #' webkit browser seems to have issues with this and a bug has been filed:
-#' \code{\link{http://code.google.com/p/chromium/issues/detail?id=305130}}
+#' "http://code.google.com/p/chromium/issues/detail?id=305130"
 #' 
 #' If you in your knitr html-document get a "structure" noted under
 #' the rowlabel heading then this is an effect from the automated

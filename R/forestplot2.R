@@ -51,6 +51,9 @@
 #' @param cex The font adjustment
 #' @param boxsize Override the default box size based on precision
 #' @param mar A numerical vector of the form c(bottom, left, top, right) of the type \code{unit()}
+#' @param legend Legen corresponding to the number of bars.
+#' @param legend.pos The position of the legend, either at the "top" or the "right"
+#' @param legend.cex The cex size of the legend, by default \code{cex*0.8}
 #' @param ... Not used 
 #' @return void
 #' 

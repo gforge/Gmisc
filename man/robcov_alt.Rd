@@ -5,7 +5,7 @@
   robcov_alt(fit, type = "HC3", ...)
 }
 \arguments{
-  \item{fit}{}
+  \item{fit}{The ols fit that}
 
   \item{type}{a character string specifying the estimation
   type. See \code{\link[sandwich]{vcovHC}} for options.}

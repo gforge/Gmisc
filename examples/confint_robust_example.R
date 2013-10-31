@@ -3,4 +3,4 @@ x <- runif(n)
 y <- x + rnorm(n)
 
 fit <- lm(y~x)
-confint.robust(fit, HC_type = "HC4m")
+confint_robust(fit, HC_type = "HC4m")

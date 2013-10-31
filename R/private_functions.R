@@ -139,7 +139,7 @@ prExtractPredictorsFromModel <- function(model, check_subset = TRUE){
 #' with the \code{\link{prExtractOutcomeFromModel}} to generate
 #' a full model dataset
 #' 
-#' @param model The fitted model.  
+#' @param x The fitted model.  
 #' @param check_subset Check if the model has been subsetted and 
 #'  if so subset the outcome variable too.
 #' @return data.frame 
@@ -164,7 +164,7 @@ prGetModelData <- function(x, check_subset = TRUE){
 #'  from the variables as these no longer are "pure" variables
 #' @param remove_interaction_vars If interaction variables are
 #'  not interesting then these should be removed. Often in
-#'  the case of \code{\link{printCrudeAndAdjusted}} it is impossible
+#'  the case of \code{\link{printCrudeAndAdjustedModel}} it is impossible
 #'  to properly show interaction variables and it's better to show
 #'  these in a separate table
 #' @return vector with names 
@@ -498,4 +498,90 @@ prGetAndValidateDefaultRef <- function(x, default_ref){
       " as this is only used for factors.")
   
   return(default_ref)
+}
+
+#' A simple thing to keep the attributes
+#' 
+#' Skips the dimension as this is not intended to be copied
+#' between matrices of different sizes and not rownames
+#' etc between data frames
+#' 
+#' @param from The from object 
+#' @param to The to object
+#' @return object The to object  
+#' 
+#' @author max
+prCopyAllAttribsExceptDim <- function(from, to){
+  for (name in names(attributes(from))){
+    if (!grepl("(^dim|names|row.names|class)", name))
+      attr(to, name) <- attr(from, name)
+  }
+  return (to)
+}
+
+#' Insert a row to a matrix
+#' 
+#' Inserts a row and keeps the attributes \code{\link{prCopyAllAttribsExceptDim}}
+#' 
+#' @param m matrix.
+#' @param r row number where the new row should be inserted
+#' @param v optional values for the new row.
+#' @param rName optional character string: the name of the new row.
+#' @return a matrix with one more row than the provided matrix m.
+#' 
+#' @author max, Arne Henningsen
+prInsertRowAndKeepAttr <- function (m, r, v = NA, rName = "") 
+{
+  if (!inherits(m, "matrix")) {
+    stop("argument 'm' must be a matrix")
+  }
+  if (r == as.integer(r)) {
+    r <- as.integer(r)
+  }
+  else {
+    stop("argument 'r' must be an integer")
+  }
+  if (length(r) != 1) {
+    stop("argument 'r' must be a scalar")
+  }
+  if (r < 1) {
+    stop("argument 'r' must be positive")
+  }
+  if (r > nrow(m) + 1) {
+    stop("argument 'r' must not be larger than the number of rows", 
+      " of matrix 'm' plus one")
+  }
+  if (!is.character(rName)) {
+    stop("argument 'rName' must be a character string")
+  }
+  if (length(rName) != 1) {
+    stop("argument 'rName' must be a be a single character string")
+  }
+  nr <- nrow(m)
+  nc <- ncol(m)
+  rNames <- rownames(m)
+  if (is.null(rNames) & rName != "") {
+    rNames <- rep("", nr)
+  }
+  if (r == 1) {
+    m2 <- rbind(matrix(v, ncol = nc), m)
+    if (!is.null(rNames)) {
+      rownames(m2) <- c(rName, rNames)
+    }
+  }
+  else if (r == nr + 1) {
+    m2 <- rbind(m, matrix(v, ncol = nc))
+    if (!is.null(rNames)) {
+      rownames(m2) <- c(rNames, rName)
+    }
+  }
+  else {
+    m2 <- rbind(m[1:(r - 1), , drop = FALSE], matrix(v, ncol = nc), 
+      m[r:nr, , drop = FALSE])
+    if (!is.null(rNames)) {
+      rownames(m2) <- c(rNames[1:(r - 1)], rName, rNames[r:nr])
+    }
+  }
+  
+  return(prCopyAllAttribsExceptDim(from = m, to = m2))
 }

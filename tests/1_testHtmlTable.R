@@ -1,3 +1,4 @@
+library('Gmisc')
 # A simple example
 mx <- matrix(1:6, ncol=3) 
 colnames(mx) <- sprintf("Col %s", LETTERS[1:NCOL(mx)])

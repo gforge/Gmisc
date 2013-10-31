@@ -5,7 +5,7 @@
 #' instead of the rms-built-in estimator. The advantage being that 
 #' many more estimation types are available.
 #'  
-#' @param fit
+#' @param fit The ols fit that
 #' @param type a character string specifying the estimation type. See 
 #'  \code{\link[sandwich]{vcovHC}} for options. 
 #' @param ... You should specify type= followed by some of the alternative available
@@ -41,6 +41,8 @@ robcov_alt <- function (fit, type="HC3", ...)
 #' defaults to the qnorm() function. Otherwise it is
 #' a copy of the \code{\link[stats]{confint}} function.
 #' 
+#' TODO: Switch to the summaryrms 
+#' 
 #' @param object 	a fitted ols-model object.
 #' @param parm a specification of which parameters 
 #'  are to be given confidence intervals, either a vector 
@@ -55,6 +57,8 @@ robcov_alt <- function (fit, type="HC3", ...)
 #' 
 #' @example examples/rms_SandwichAddon_example.R
 #' @method confint ols
+#' @method confint ols
+#' @importFrom stats confint
 #' @author max
 #' @export
 confint.ols <- function(object, parm, level = 0.95, ...) {
@@ -98,7 +102,9 @@ confint.ols <- function(object, parm, level = 0.95, ...) {
 #' @example examples/rms_SandwichAddon_example.R
 #' 
 #' @importFrom rms ols
+#' @importFrom stats hatvalues
 #' @method hatvalues ols
+#' @S3method hatvalues ols
 #' @export
 #' @author max
 hatvalues.ols <- function(x, ...) {
@@ -120,7 +126,9 @@ hatvalues.ols <- function(x, ...) {
 #' @example examples/rms_SandwichAddon_example.R
 #'  
 #' @importFrom rms ols
+#' @importFrom sandwich bread
 #' @method bread ols
+#' @S3method bread ols
 #' @export 
 #' @author max
 bread.ols <- function(x, ...)
@@ -147,7 +155,9 @@ bread.ols <- function(x, ...)
 #' @return matrix
 #' 
 #' @method model.matrix ols
+#' @S3method model.matrix ols
 #' @importFrom rms ols
+#' @importFrom stats model.matrix
 #' @author max
 #' @export
 model.matrix.ols <- function(x, ...){
@@ -179,8 +189,10 @@ model.matrix.ols <- function(x, ...){
 #' @example examples/rms_SandwichAddon_example.R
 #' 
 #' @importFrom rms ols
+#' @importFrom sandwich estfun
 #' @author Max
 #' @method estfun ols
+#' @S3method estfun ols
 #' @export 
 estfun.ols <- function(x, ...){
   if (!inherits(x, "ols"))
