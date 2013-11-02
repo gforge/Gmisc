@@ -1,5 +1,9 @@
 NEWS for the Gmisc package
 
+Changes for 0.5.7.3
+-------------------
+* Removed the plot.new() from transitionplot, this is in order to allow splitting plots, adding it to a viewport etc.
+
 Changes for 0.5.7.2
 -------------------
 * Added the lineheight option for forestplot2

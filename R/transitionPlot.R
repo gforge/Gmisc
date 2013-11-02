@@ -442,7 +442,6 @@ transitionPlot <- function (transition_flow,
   }
   
   # Do the plot
-  plot.new()
   shift <- .01
   vp1 <- viewport(x = 0.5+shift, y = 0.5-shift, height=.95, width=.95, name="shadow_boxes")
   pushViewport(vp1)

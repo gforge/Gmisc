@@ -69,8 +69,10 @@
   to standardize their line height, then you set this
   variable to a certain height, note this should be
   provided as a \code{\link[grid]{unit}} object. A good
-  option is to set the line height to \code{unit(2,
-  "cm")}.}
+  option is to set the line height to \code{unit(2, "cm")}.
+  A third option is to set line height to "lines" and then
+  you get 50 % more than what the text height is as your
+  line height.}
 
   \item{col}{See \code{\link{fpColors}}}
 
@@ -148,6 +150,7 @@ forestplot2(row_names,
             test_data$high, 
             zero = 1, 
             cex  = 2,
+            lineheight = "auto",
             xlab = "Lab axis txt")
 
 

@@ -694,13 +694,15 @@ prCaAddReference <- function(vn, matches, available_factors, values, add_referen
   offset <- ifelse(vn %in% names(add_references_pos),
     add_references_pos[[vn]] - 1,
     0)
-  if (offset > available_factors){
-    warning("You have a reference position that is outside the number of levels, ", offset + 1, " > ", length(available_factors),
+  if (offset > length(available_factors) - 1 ||
+    offset < 0){
+    warning("You have a reference position that is outside the number of levels, '", offset + 1, "'",
+      " is not among, 1 to ", length(available_factors),
       ". This will therefore be ignored")
     offset <- 0
   }
   values <- prInsertRowAndKeepAttr(values, 
-    matches[1], 
+    matches[1] + offset, 
     ref_value,  
     rName=reference)
   
@@ -838,8 +840,13 @@ prCaGetRowname <- function(vn, use_labels, dataset){
   vn <- as.character(vn)
   if(vn %in% colnames(dataset) &&
     use_labels && 
-    label(dataset[,vn]) != "")
+    label(dataset[,vn]) != ""){
     return(capitalize(label(dataset[,vn])))
+  }else if (any(vn == colnames(dataset))){
+    # An exact match means that there is no factor information
+    # for this row and we should be able to return this row
+    return(capitalize(vn))
+  }
     
   # Check if this is actually a factor and return that factors name
   colno_containing_name = unlist(lapply(colnames(dataset), function(x) grepl(x, vn, fixed=TRUE)))

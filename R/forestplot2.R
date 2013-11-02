@@ -46,7 +46,9 @@
 #'   instance if you have several forestplots you may want to standardize their
 #'   line height, then you set this variable to a certain height, note this should 
 #'   be provided as a \code{\link[grid]{unit}} object. A good option
-#'   is to set the line height to \code{unit(2, "cm")}.
+#'   is to set the line height to \code{unit(2, "cm")}. A third option
+#'   is to set line height to "lines" and then you get 50 % more than what the
+#'   text height is as your line height.
 #' @param col See \code{\link{fpColors}}
 #' @param xlog If TRUE, x-axis tick marks are exponentiated
 #' @param xticks Optional user-specified x-axis tick marks. Specify NULL to use 
@@ -107,7 +109,7 @@ forestplot2 <- function (labeltext,
          " Upper bound columns:", ncol(upper))
   
      
-  if (!is.unit(lineheight) && lineheight != "auto")
+  if (!is.unit(lineheight) && !lineheight %in% c("auto", "lines"))
     stop("The argument lineheight must either be of type unit or set to 'auto',",
       " you have provided a '", class(lineheight), "' class")
   
@@ -508,6 +510,31 @@ forestplot2 <- function (labeltext,
       unit(.5*cex, "lines")
   }
   
+  getLayoutVP <- function (lineheight, marList, nr, legend_layout = NULL) {
+    if (!is.unit(lineheight)){
+      if (lineheight == "auto"){
+        lvp_height <- unit(1, "npc")-marList$bottom-marList$top
+      }else if (lineheight == "lines"){
+        # Use the height of a grob + 50 %
+        lvp_height <- unit(convertUnit(grobHeight(textGrob("A")), 
+                         unitTo="npc", 
+                         valueOnly=TRUE)*nr*1.5, "npc")
+      }else{
+        stop("The lineheight option '", lineheight, "'is yet not implemented")
+      }
+    }else{
+      lvp_height <- height=unit(convertUnit(lineheight, unitTo="npc", valueOnly=TRUE)*nr, "npc")
+    }
+    
+    lvp <- viewport(x = unit(.5, "npc") - marList$x_adjust, 
+                    y = unit(.5, "npc") - marList$y_adjust,
+                    width=unit(1, "npc")-marList$left-marList$right,
+                    height=lvp_height,
+                    layout = legend_layout,
+                    name = ifelse(is.null(legend_layout), "main", "main_and_legend"))
+    return (lvp)
+  }
+  
   if (length(legend) > 0){
     lGrobs <- prFpGetLegendGrobs(legend, legend.cex)
     if (legend.pos == "top"){
@@ -537,20 +564,9 @@ forestplot2 <- function (labeltext,
                        col = 1)
     }
     
-    if (!is.unit(lineheight)){
-      lvp <- viewport(x = unit(.5, "npc") - marList$x_adjust, 
-        y = unit(.5, "npc") - marList$y_adjust,
-        width=unit(1, "npc")-marList$left-marList$right,
-        height=unit(1, "npc")-marList$bottom-marList$top,
-        layout = legend_layout)
-    }else{
-      lvp <- viewport(x = unit(.5, "npc") - marList$x_adjust, 
-        y = unit(.5, "npc") - marList$y_adjust,
-        width=unit(1, "npc")-marList$left-marList$right,
-        height=unit(convertUnit(lineheight, unitTo="npc", valueOnly=TRUE)*nr, "npc"),
-        layout = legend_layout)
-    }
-    pushViewport(lvp)
+    
+    pushViewport(getLayoutVP(lineheight=lineheight, marList=marList, 
+                             nr=nr, legend_layout=legend_layout))
     vp <- viewport(layout.pos.row = legend_pos$row, 
                    layout.pos.col = legend_pos$col,
                    name = "legend")
@@ -569,22 +585,8 @@ forestplot2 <- function (labeltext,
                    name="main")
     pushViewport(vp)
   }else{
-    if (!is.unit(lineheight)){
-      mvp <- viewport(x = unit(.5, "npc") - marList$x_adjust, 
-                      y = unit(.5, "npc") - marList$y_adjust,
-                      width=unit(1, "npc")-marList$left-marList$right,
-                      height=unit(1, "npc")-marList$bottom-marList$top,
-                      name="main")
-    }else{
-      mvp <- viewport(x = unit(.5, "npc") - marList$x_adjust, 
-                      y = unit(.5, "npc") - marList$y_adjust,
-                      width=unit(1, "npc")-marList$left-marList$right,
-                      height=unit(convertUnit(lineheight, unitTo="npc", valueOnly=TRUE)*nr, "npc"),
-                      name="main")
-    }
-    # Set the main viewport with margins
-    pushViewport(mvp)
-    
+    pushViewport(getLayoutVP(lineheight=lineheight, marList=marList, 
+                             nr=nr))
   }
   
   # The base viewport, set the increase.line_height paremeter if it seems a little

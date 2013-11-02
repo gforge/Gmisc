@@ -15,6 +15,7 @@ forestplot2(row_names,
             test_data$high, 
             zero = 1, 
             cex  = 2,
+            lineheight = "auto",
             xlab = "Lab axis txt")
 
 

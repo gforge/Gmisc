@@ -513,7 +513,8 @@ prGetAndValidateDefaultRef <- function(x, default_ref){
 #' @author max
 prCopyAllAttribsExceptDim <- function(from, to){
   for (name in names(attributes(from))){
-    if (!grepl("(^dim|names|row.names|class)", name))
+    # Don't overwrite attributes
+    if (!name %in% names(attributes(to)))
       attr(to, name) <- attr(from, name)
   }
   return (to)
