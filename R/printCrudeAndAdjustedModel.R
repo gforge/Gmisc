@@ -263,7 +263,7 @@ printCrudeAndAdjustedModel <- function(model,
     attr(reordered_groups, "cgroup") <- c("Crude", "Adjusted")
   }
   
-  class(reordered_groups) <- c("printCrudeandAdjusted", class(reordered_groups))
+  class(reordered_groups) <- c("printCrudeAndAdjusted", class(reordered_groups))
   
   if (output == "latex"){
     return(latex(reordered_groups, 
@@ -295,10 +295,8 @@ printCrudeAndAdjustedModel <- function(model,
 #'  rgroup doesn't have a separator). Passed on to \code{\link{htmlTable}}.
 #' @rdname printCrudeAndAdjustedModel
 #' @method print printCrudeAndAdjusted
-#' @S3method print printCrudeandAdjusted
-#' 
-#' @author max
-print.printCrudeandAdjusted <- function(x,
+#' @S3method print printCrudeAndAdjusted
+print.printCrudeAndAdjusted <- function(x,
   rgroupCSSstyle        = "",
   rgroupCSSseparator    = "", ...){
   

@@ -2,10 +2,10 @@
 \alias{hatvalues.ols}
 \title{Get the hat matrix for the OLS}
 \usage{
-  \method{hatvalues}{ols} (x, ...)
+  \method{hatvalues}{ols} (model, ...)
 }
 \arguments{
-  \item{x}{The ols model fit}
+  \item{model}{The ols model fit}
 
   \item{...}{arguments passed to methods.}
 }

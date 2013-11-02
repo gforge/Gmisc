@@ -38,7 +38,15 @@
 #' @param xlab x-axis label
 #' @param zero x-axis coordinate for zero line
 #' @param graphwidth Width of confidence interval graph, see \code{\link{unit}} for
-#'   details on how to utilize mm etc.
+#'   details on how to utilize mm etc. The default is \code{auto}, that is it uses up whatever
+#'   space that is left after adjusting for text size and legend.
+#' @param lineheight Height of the graph. By default this is \code{auto} and adjustes to the
+#'   space that is left after adjusting for x-axis size and legend. Sometimes
+#'   it might be desireable to set the line height to a certain height, for
+#'   instance if you have several forestplots you may want to standardize their
+#'   line height, then you set this variable to a certain height, note this should 
+#'   be provided as a \code{\link[grid]{unit}} object. A good option
+#'   is to set the line height to \code{unit(2, "cm")}.
 #' @param col See \code{\link{fpColors}}
 #' @param xlog If TRUE, x-axis tick marks are exponentiated
 #' @param xticks Optional user-specified x-axis tick marks. Specify NULL to use 
@@ -73,6 +81,7 @@ forestplot2 <- function (labeltext,
                          xlab                 = "", 
                          zero                 = 0, 
                          graphwidth           = "auto", 
+                         lineheight           = "auto",
                          col                  = fpColors(), 
                          xlog                 = FALSE, 
                          xticks               = NULL,
@@ -88,7 +97,6 @@ forestplot2 <- function (labeltext,
                          legend.cex           = cex*.8,
                          ...) 
 {
-  require("grid") || stop("`grid' package not found")
 
   if (NCOL(mean) != NCOL(lower) ||
         NCOL(lower) != NCOL(upper) ||
@@ -97,6 +105,11 @@ forestplot2 <- function (labeltext,
          " Mean columns:", ncol(mean),
          " Lower bound columns:", ncol(lower),
          " Upper bound columns:", ncol(upper))
+  
+     
+  if (!is.unit(lineheight) && lineheight != "auto")
+    stop("The argument lineheight must either be of type unit or set to 'auto',",
+      " you have provided a '", class(lineheight), "' class")
   
   if (length(legend) > 0){
     if (length(legend) != ncol(mean))
@@ -499,7 +512,7 @@ forestplot2 <- function (labeltext,
     lGrobs <- prFpGetLegendGrobs(legend, legend.cex)
     if (legend.pos == "top"){
       legend_layout <- grid.layout(nrow=3, ncol=1, 
-                                   height=unit.c(attr(lGrobs, "max_height"),
+                                   heights=unit.c(attr(lGrobs, "max_height"),
                                                  colgap+colgap,
                                                  unit(1, "npc")-
                                                    attr(lGrobs, "max_height")-colgap))
@@ -514,7 +527,7 @@ forestplot2 <- function (labeltext,
                              attr(lGrobs, "max_width"))
       
       legend_layout <- grid.layout(nrow=1, ncol=3, 
-                                   width = unit.c(unit(1, "npc") - 
+                                   widths = unit.c(unit(1, "npc") - 
                                                     colgap - sum(legend_width),
                                                   colgap,
                                                   sum(legend_width)))
@@ -524,11 +537,19 @@ forestplot2 <- function (labeltext,
                        col = 1)
     }
     
-    lvp <- viewport(x = unit(.5, "npc") - marList$x_adjust, 
-                    y = unit(.5, "npc") - marList$y_adjust,
-                    width=unit(1, "npc")-marList$left-marList$right,
-                    height=unit(1, "npc")-marList$bottom-marList$top,
-                    layout = legend_layout)
+    if (!is.unit(lineheight)){
+      lvp <- viewport(x = unit(.5, "npc") - marList$x_adjust, 
+        y = unit(.5, "npc") - marList$y_adjust,
+        width=unit(1, "npc")-marList$left-marList$right,
+        height=unit(1, "npc")-marList$bottom-marList$top,
+        layout = legend_layout)
+    }else{
+      lvp <- viewport(x = unit(.5, "npc") - marList$x_adjust, 
+        y = unit(.5, "npc") - marList$y_adjust,
+        width=unit(1, "npc")-marList$left-marList$right,
+        height=unit(convertUnit(lineheight, unitTo="npc", valueOnly=TRUE)*nr, "npc"),
+        layout = legend_layout)
+    }
     pushViewport(lvp)
     vp <- viewport(layout.pos.row = legend_pos$row, 
                    layout.pos.col = legend_pos$col,
@@ -548,12 +569,21 @@ forestplot2 <- function (labeltext,
                    name="main")
     pushViewport(vp)
   }else{
+    if (!is.unit(lineheight)){
+      mvp <- viewport(x = unit(.5, "npc") - marList$x_adjust, 
+                      y = unit(.5, "npc") - marList$y_adjust,
+                      width=unit(1, "npc")-marList$left-marList$right,
+                      height=unit(1, "npc")-marList$bottom-marList$top,
+                      name="main")
+    }else{
+      mvp <- viewport(x = unit(.5, "npc") - marList$x_adjust, 
+                      y = unit(.5, "npc") - marList$y_adjust,
+                      width=unit(1, "npc")-marList$left-marList$right,
+                      height=unit(convertUnit(lineheight, unitTo="npc", valueOnly=TRUE)*nr, "npc"),
+                      name="main")
+    }
     # Set the main viewport with margins
-    pushViewport(viewport(x = unit(.5, "npc") - marList$x_adjust, 
-                          y = unit(.5, "npc") - marList$y_adjust,
-                          width=unit(1, "npc")-marList$left-marList$right,
-                          height=unit(1, "npc")-marList$bottom-marList$top,
-                          name="main"))
+    pushViewport(mvp)
     
   }
   

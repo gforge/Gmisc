@@ -2,7 +2,7 @@
 #' @rdname getCrudeAndAdjustedModelData
 #' @method getCrudeAndAdjustedModelData rms
 #' @S3method getCrudeAndAdjustedModelData rms
-getCrudeAndAdjustedModelData.rms <- function(fit, level=.95, remove_interaction_vars = TRUE){
+getCrudeAndAdjustedModelData.rms <- function(fit, level=.95, remove_interaction_vars = TRUE, ...){
   
   # The skip intercept is not an option as the summary doesn't include the intercept
   # for the rms regression outputs

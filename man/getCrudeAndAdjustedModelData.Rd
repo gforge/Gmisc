@@ -4,13 +4,13 @@
 \alias{getCrudeAndAdjustedModelData.rms}
 \title{This function helps with printing regression models}
 \usage{
-  getCrudeAndAdjustedModelData(...)
+  getCrudeAndAdjustedModelData(fit, level, ...)
 
   \method{getCrudeAndAdjustedModelData}{default} (fit,
-    level = 0.95, remove_interaction_vars = TRUE)
+    level = 0.95, remove_interaction_vars = TRUE, ...)
 
   \method{getCrudeAndAdjustedModelData}{rms} (fit,
-    level = 0.95, remove_interaction_vars = TRUE)
+    level = 0.95, remove_interaction_vars = TRUE, ...)
 }
 \arguments{
   \item{fit}{The regression model}

@@ -6,9 +6,10 @@
     is.summary = FALSE, fontfamily.summary = NULL,
     fontfamily.labelrow = NULL, clip = c(-Inf, Inf),
     xlab = "", zero = 0, graphwidth = "auto",
-    col = fpColors(), xlog = FALSE, xticks = NULL,
-    xticks.digits = 2, lwd.xaxis = NULL, lwd.zero = NULL,
-    lwd.ci = NULL, cex = 1, boxsize = NULL,
+    lineheight = "auto", col = fpColors(), xlog = FALSE,
+    xticks = NULL, xticks.digits = 2, lwd.xaxis = NULL,
+    lwd.zero = NULL, lwd.ci = NULL, cex = 1,
+    boxsize = NULL,
     mar = unit(rep(0.05, times = 4), "npc"), legend = NULL,
     legend.pos = c("top", "right"), legend.cex = cex * 0.8,
     ...)
@@ -55,7 +56,21 @@
   \item{zero}{x-axis coordinate for zero line}
 
   \item{graphwidth}{Width of confidence interval graph, see
-  \code{\link{unit}} for details on how to utilize mm etc.}
+  \code{\link{unit}} for details on how to utilize mm etc.
+  The default is \code{auto}, that is it uses up whatever
+  space that is left after adjusting for text size and
+  legend.}
+
+  \item{lineheight}{Height of the graph. By default this is
+  \code{auto} and adjustes to the space that is left after
+  adjusting for x-axis size and legend. Sometimes it might
+  be desireable to set the line height to a certain height,
+  for instance if you have several forestplots you may want
+  to standardize their line height, then you set this
+  variable to a certain height, note this should be
+  provided as a \code{\link[grid]{unit}} object. A good
+  option is to set the line height to \code{unit(2,
+  "cm")}.}
 
   \item{col}{See \code{\link{fpColors}}}
 

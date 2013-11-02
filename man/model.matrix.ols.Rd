@@ -2,10 +2,10 @@
 \alias{model.matrix.ols}
 \title{A fix for the model.matrix}
 \usage{
-  \method{model.matrix}{ols} (x, ...)
+  \method{model.matrix}{ols} (object, ...)
 }
 \arguments{
-  \item{x}{A Model}
+  \item{object}{A Model}
 
   \item{...}{Parameters passed on}
 }

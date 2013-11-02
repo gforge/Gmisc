@@ -47,8 +47,6 @@ bezierArrowSmplGradient <- function(
   # Get initial values
   grdt_type <- match.arg(grdt_type)
   
-  require("grid")
-  
   if (is.na(grdt_line_width))
     grdt_line_width <- getGridVal(width, default.units)*.2
   

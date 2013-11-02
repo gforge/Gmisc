@@ -32,7 +32,6 @@ bezierArrowSmpl <- function(x = c(0.2, .7, .3, .9), y = c(0.2, .2, .9, .9),
                             align_2_axis = TRUE,
                             name = NULL, 
                             gp = gpar(), vp = NULL){
-  require(grid)
   if (class(x) == "unit")
     x <- convertX(x, unitTo=default.units, valueOnly=TRUE)
   if (class(y) == "unit")

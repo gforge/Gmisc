@@ -332,7 +332,7 @@ prFpDrawLegend <- function (lGrobs, legend.pos,
     l_layout <- grid.layout(ncol=length(widths), 
                             nrow=length(heights), 
                             widths=widths,
-                            height=heights)
+                            heights=heights)
     
     lvp <- viewport(layout = l_layout, just="left", x=0,
                     name="legend")

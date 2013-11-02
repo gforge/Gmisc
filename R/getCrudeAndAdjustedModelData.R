@@ -38,14 +38,14 @@
 #' @rdname getCrudeAndAdjustedModelData
 #' @author max
 #' @export
-getCrudeAndAdjustedModelData <- function(...)
+getCrudeAndAdjustedModelData <- function(fit, level, ...)
   UseMethod("getCrudeAndAdjustedModelData")
 
 #' @author max
 #' @rdname getCrudeAndAdjustedModelData
 #' @method getCrudeAndAdjustedModelData default
 #' @S3method getCrudeAndAdjustedModelData default
-getCrudeAndAdjustedModelData.default <- function(fit, level=.95, remove_interaction_vars = TRUE){
+getCrudeAndAdjustedModelData.default <- function(fit, level=.95, remove_interaction_vars = TRUE, ...){
   # Just a prettifier for the output an alternative could be:
   # paste(round(x[,1],1), " (95% CI ", min(round(x[,2:3])), "-", max(round(x[,2:3])), ")", sep="") 
   get_coef_and_ci <- function(fit, skip_intercept=FALSE){

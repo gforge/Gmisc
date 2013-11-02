@@ -96,7 +96,7 @@ confint.ols <- function(object, parm, level = 0.95, ...) {
 #' values are actually the diagonal elements of the matrix that sum up
 #' to p (the rank of X, i.e. the number of parameters + 1). See \code{\link[rms]{ols.influence}}.
 #' 
-#' @param x The ols model fit
+#' @param model The ols model fit
 #' @param ... arguments passed to methods.
 #' @return vector
 #' @example examples/rms_SandwichAddon_example.R
@@ -107,11 +107,8 @@ confint.ols <- function(object, parm, level = 0.95, ...) {
 #' @S3method hatvalues ols
 #' @export
 #' @author max
-hatvalues.ols <- function(x, ...) {
-  if (inherits(x, "ols"))
-    return(ols.influence(x, ...)$hat)
-  else
-    stop("You have provided a non-ols object that is not defined for this function, the classes of the object:", paste(class(x), collapse=", "))
+hatvalues.ols <- function(model, ...) {
+  return(ols.influence(model, ...)$hat)
 }
 
 #' Getting the bread for the vcovHC
@@ -150,7 +147,7 @@ bread.ols <- function(x, ...)
 #' the vcovHC() funcitons. I've therefore created this subfunction
 #' to generate the actual model.matrix() by just accessing the formula.
 #'  
-#' @param x A Model 
+#' @param object A Model 
 #' @param ... Parameters passed on
 #' @return matrix
 #' 
@@ -160,18 +157,18 @@ bread.ols <- function(x, ...)
 #' @importFrom stats model.matrix
 #' @author max
 #' @export
-model.matrix.ols <- function(x, ...){
+model.matrix.ols <- function(object, ...){
   # If the ols already has a model.matrix saved
   # then use that one but add the intercept
-  if (!is.null(x$x))
-    return(cbind(Intercept=rep(1, times=nrow(x$x)),
-                 x$x))
+  if (!is.null(object$x))
+    return(cbind(Intercept=rep(1, times=nrow(object$x)),
+        object$x))
            
   warning("You should set the ols(..., x=TRUE) as the fallback may be somewhat unreliable")
   
-  data <- prGetModelData(x)
-  mtrx <- model.matrix(formula(x), data=data)
-  colnames(mtrx) <- names(coef(x))
+  data <- prGetModelData(object)
+  mtrx <- model.matrix(formula(object), data=data)
+  colnames(mtrx) <- names(coef(object))
   return(mtrx)
 }
 

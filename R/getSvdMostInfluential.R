@@ -75,8 +75,6 @@ getSvdMostInfluential <- function(mtrx,
   vars <- getMostInfluentialVars()
 
   plotSvdSelection <- function(){    
-    require(lattice)
-    
     if (plot_threshold < 0 || plot_threshold > 1)
       stop("The plot_threshold mus be between 0-1")
     

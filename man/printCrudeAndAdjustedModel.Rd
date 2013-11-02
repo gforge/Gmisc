@@ -1,5 +1,5 @@
 \name{printCrudeAndAdjustedModel}
-\alias{print.printCrudeandAdjusted}
+\alias{print.printCrudeAndAdjusted}
 \alias{printCrudeAndAdjustedModel}
 \title{Output crude and adjusted model data}
 \usage{
@@ -212,8 +212,6 @@ printCrudeAndAdjustedModel(fit_mtcar,
                            output = "html")
 }
 \author{
-  max
-
   max
 }
 
