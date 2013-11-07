@@ -1,5 +1,11 @@
 NEWS for the Gmisc package
 
+Changes for 0.5.7.4
+-------------------
+* Externalized many of the forestplot2 functions and added the option of having a set line height
+* Added new_page option for grid-based plots
+* Updated the simpleRmsAnova function
+
 Changes for 0.5.7.3
 -------------------
 * Removed the plot.new() from transitionplot, this is in order to allow splitting plots, adding it to a viewport etc.

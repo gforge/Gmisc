@@ -12,7 +12,7 @@
     boxsize = NULL,
     mar = unit(rep(0.05, times = 4), "npc"), legend = NULL,
     legend.pos = c("top", "right"), legend.cex = cex * 0.8,
-    ...)
+    new_page = FALSE, ...)
 }
 \arguments{
   \item{labeltext}{A list, matrix, vector or expression
@@ -108,6 +108,10 @@
   \item{legend.cex}{The cex size of the legend, by default
   \code{cex*0.8}}
 
+  \item{new_page}{If you want the plot to appear on a new
+  blank page then set this to \code{TRUE}, by default it is
+  \code{FALSE}.}
+
   \item{...}{Not used}
 }
 \value{
@@ -151,7 +155,8 @@ forestplot2(row_names,
             zero = 1, 
             cex  = 2,
             lineheight = "auto",
-            xlab = "Lab axis txt")
+            xlab = "Lab axis txt",
+            new_page = TRUE)
 
 
 # An advanced test
@@ -180,7 +185,8 @@ high <- with(test_data, cbind(high1, high2))
 forestplot2(row_names, coef, low, high, zero = 1, boxsize=0.5,
             col=fpColors(box=c("royalblue", "gold"),
                          line=c("darkblue", "orange")),
-            xlab="The estimates")
+            xlab="The estimates",
+            new_page = TRUE)
 
 # An example of how the exponential works
 test_data <- data.frame(coef=c(2.45, 0.43),
@@ -199,7 +205,8 @@ forestplot2(labeltext = row_names,
             boxsize   = test_data$boxsize,
             zero      = 1,
             xlog      = TRUE,
-            col = fpColors(lines="red", box="darkred"))
+            col = fpColors(lines="red", box="darkred"),
+            new_page = TRUE)
 
 par(ask=ask)
 }

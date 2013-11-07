@@ -1,5 +1,5 @@
 Package: Gmisc
-Version: 0.5.7.3
+Version: 0.5.7.4
 Date: 2013-11-01
 Title: A few handy functions of mine
 Author: Max Gordon <max@gforge.se>
@@ -17,7 +17,6 @@ Biarch: yes
 Collate:
     'forestplot2.R'
     'plotHR.R'
-    'termplot2.R'
     'forestplotCombineRegrObj.R'
     'forestplotRegrObj.R'
     'getCphRegrObjData.R'
@@ -29,7 +28,6 @@ Collate:
     'private_functions.R'
     'getTicks.R'
     'getDescriptionStatsBy.R'
-    'simpleRmsAnovaLatex.R'
     'getModelData4Forestplot.R'
     'htmlTable.R'
     'descriptionStats.R'
@@ -45,6 +43,7 @@ Collate:
     'forestplot2_helpers.R'
     'getCrudeAndAdjustedModelData.rms.R'
     'confint_robust.R'
+    'simpleRmsAnova.R'
 Depends:
     rms,
     sandwich,

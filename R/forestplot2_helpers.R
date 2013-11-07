@@ -351,3 +351,221 @@ prFpDrawLegend <- function (lGrobs, legend.pos,
     upViewport()
   }
 }
+
+
+#' Gets the x-axis range
+#' 
+#' If the borders are smaller than the upper/lower limits  
+#' then clip the graph. The line will have arrows indicating  
+#' that it continues beyond the graph The zero bar has to 
+#' be on the chart though!
+#' 
+#' @param upper Upper confidence intervals 
+#' @param lower Lower confidence intervals
+#' @param clip The clip argument
+#' @param zero The zero effect line position
+#' @param xticks The xticks if any
+#' @param xlog A TRUE or FALSE for if the axis is log()
+#' @return \code{vector} Contains a min and max value
+#' 
+#' @author Max
+prFpXrange <- function(upper, lower, clip, zero, xticks, xlog){
+  top <- min(max(upper, na.rm = TRUE), clip[2])
+  bottom <- max(min(lower, na.rm = TRUE), clip[1])
+  # Although perhops not entirely intuitive 
+  # I've decided that the function should
+  # extend the range to include the clip
+  # endpoints unless there are prespecified 
+  # ticks indicating that the end-points aren't
+  # included in the x-axis
+  if (is.null(xticks)){
+    ret <- c(
+        min(
+            zero, 
+            bottom
+        ), 
+        max(
+            zero,
+            top
+        )
+    )
+    
+  }else{
+    ret <- c(
+        min(
+            c(zero, bottom, xticks)
+        ), 
+        max(
+            c(zero, top, xticks)
+        )
+    )
+  }
+  
+  if (xlog){
+    return(log(ret))
+  }else{
+    return(ret)
+  }
+} 
+
+#' Gets the forestplot labels
+#' 
+#' A function that gets all the labels
+#' 
+#' @param label_type The type of text labels
+#' @param labeltext The text labels
+#' @param align Alignment, should be equal to \code{length(nc}
+#' @param nc Number of columns
+#' @param nr Number of rows
+#' @param is.summary If the row is a summary
+#' @param fontfamily.summary The summary fontfamily
+#' @param fontfamily.labelrow The regular fontfamily (non-summary)
+#' @param col A list with the colors
+#' @param cex The font size adjustment
+#' @return \code{list} A list with \code{length(nc)} where each element contains
+#'  a list of \code{length(nr)} elements with attributes width/height for each
+#'  element and max_width/max_height for the total
+#' 
+#' @author max
+prFpGetLabels <- function(label_type, labeltext, align, 
+  nc, nr, 
+  is.summary,
+  fontfamily.summary, fontfamily.labelrow, 
+  col, cex){
+  labels <- vector("list", nc)
+  
+  max_height <- NULL
+  max_width <- NULL
+  # Walk through the labeltext
+  # Creates a list matrix with 
+  # The column part
+  for (j in 1:nc) {
+    labels[[j]] <- vector("list", nr)
+    
+    # The row part
+    for (i in 1:nr) {
+      txt_out <- prFpFetchRowLabel(label_type, labeltext, i, j)
+      # If it's a call created by bquote or similar it
+      # needs evaluating
+      if (is.call(txt_out))
+        txt_out <- eval(txt_out)
+      
+      if (is.expression(txt_out) || is.character(txt_out) || is.numeric(txt_out)){
+        x <- switch(align[j], l = 0, r = 1, c = 0.5)
+        
+        just <- switch(align[j], 
+          l = "left", 
+          r = "right",
+          c = "center")
+        
+        # Bold the text if this is a summary
+        if (is.summary[i]){
+          if (is.expression(txt_out)){
+            x <- 0.5
+          }else{
+            x <- switch(align[j], l = 0, r = 1, c = 0.5)
+          }
+          
+          # Create a textGrob for the summary
+          labels[[j]][[i]] <- textGrob(txt_out, x = x,
+            just = just,
+            gp = gpar(fontface = "bold",
+              fontfamily=fontfamily.summary,  
+              cex = cex*1.1, 
+              col = rep(col$text, length = nr)[i]))
+        }else{
+          # Create a textGrob with the current row-cell for the label
+          labels[[j]][[i]] <- textGrob(txt_out, x = x,
+            just = just, 
+            gp = gpar(fontface = "plain",
+              cex = cex,
+              fontfamily=fontfamily.labelrow, 
+              col = rep(col$text, length = nr)[i]))
+        }
+        
+        attr(labels[[j]][[i]], "height") <- grobHeight(labels[[j]][[i]])
+        attr(labels[[j]][[i]], "width") <- grobWidth(labels[[j]][[i]])
+        if (is.null(max_height)){
+          max_height <- attr(labels[[j]][[i]], "height")
+          max_width <- attr(labels[[j]][[i]], "width")
+        }else{
+          max_height <- max(max_height, attr(labels[[j]][[i]], "height"))
+          max_width <- max(max_width, attr(labels[[j]][[i]], "width"))
+        }
+      }
+    }
+  }
+  attr(labels, "max_height") <- max_height
+  attr(labels, "max_width") <- max_width
+  
+  return(labels)
+}
+
+#' Get the label
+#' 
+#' A function used for fetching the text or 
+#' expression from the supplied labeltext.
+#' 
+#' @param label_type The type of label 
+#' @param labeltext The text
+#' @param i The row
+#' @param j The column
+#' @return An expression or a text
+#' 
+#' @author max
+prFpFetchRowLabel <- function(label_type, labeltext, i, j){
+  if (label_type=="expression"){
+    # Haven't figured out it this is possible with 
+    # a multilevel expression
+    row_column_text <- labeltext[[i]]
+  }
+  else if(label_type=="list"){
+    # I get annoying warnings with this
+    #if (!is.expression(labeltext[[j]][[i]]) && is.na(labeltext[[j]][[i]]))
+    #    return(FALSE)
+    row_column_text <- labeltext[[j]][[i]]
+  }
+  else{
+    if (is.na(labeltext[i, j])) 
+      return(FALSE)
+    row_column_text <- labeltext[i, j]
+  }
+  return(row_column_text)
+}
+
+#' Get the main foresplot 
+#' 
+#' The layout makes space for a legend if needed
+#' 
+#' @param lineheight The line height 
+#' @param marList The margin list
+#' @param labels The labels
+#' @param nr Number of rows
+#' @param legend_layout A legend layout object if applicable
+#' @return \code{viewport} Returns the viewport needed 
+#' 
+#' @author max
+prFpGetLayoutVP <- function (lineheight, marList, labels, nr, legend_layout = NULL) {
+  if (!is.unit(lineheight)){
+    if (lineheight == "auto"){
+      lvp_height <- unit(1, "npc")-marList$bottom-marList$top
+    }else if (lineheight == "lines"){
+      # Use the height of a grob + 50 %
+      lvp_height <- unit(convertUnit(attr(labels, "max_height"), 
+          unitTo="mm", 
+          valueOnly=TRUE)*(nr+.5)*1.5, "mm")
+    }else{
+      stop("The lineheight option '", lineheight, "'is yet not implemented")
+    }
+  }else{
+    lvp_height <- unit(convertUnit(lineheight, unitTo="npc", valueOnly=TRUE)*(nr+.5), "npc")
+  }
+  
+  lvp <- viewport(x = unit(.5, "npc") - marList$x_adjust, 
+    y = unit(.5, "npc") - marList$y_adjust,
+    width=unit(1, "npc")-marList$left-marList$right,
+    height=lvp_height,
+    layout = legend_layout,
+    name = ifelse(is.null(legend_layout), "main", "main_and_legend"))
+  return (lvp)
+}

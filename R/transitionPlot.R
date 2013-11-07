@@ -59,6 +59,8 @@
 #'  as a unit which is recommended as it looks better. If the scalar is < 1 then the overlap is ignored.
 #' @param box_prop If you want the boxes to have proportions indicating some other factors then input
 #'  a matrix with quantiles for the proportions. Note the size mus be nrow(transition_flow) x 2.
+#' @param new_page If you want the plot to appear on a new blank page then set this to \code{TRUE}, by
+#'  default it is \code{FALSE}.
 #' @return void 
 #' @example examples/transitionPlot_example.R
 #' 
@@ -83,7 +85,8 @@ transitionPlot <- function (transition_flow,
                             overlap_bg_clr = "#FFFFFF",
                             overlap_order = 1:nrow(transition_flow),
                             overlap_add_width = 1.5,
-                            box_prop = NULL) {
+                            box_prop = NULL,
+                            new_page = FALSE) {
   # Just for convenience
   no_boxes <- nrow(transition_flow)
   
@@ -337,6 +340,8 @@ transitionPlot <- function (transition_flow,
     }
   }
   
+  if (new_page) grid.newpage()
+    
   plotBoxes <- function (no_boxes, width, txt, 
     fill_start_clr, fill_end_clr,
     lwd=2, line_col="#000000", plot_arrows = TRUE, proportion=FALSE) {

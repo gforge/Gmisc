@@ -54,7 +54,8 @@ fit2 <- cph(Surv(ftime, fstatus) ~ x1 + x3, data=cov)
 forestplotCombineRegrObj (
   regr.obj = list(fit1, fit2),
   variablesOfInterest.regexp = "(x2|x3)",
-  reference.names = c("First model", "Second model"))
+  reference.names = c("First model", "Second model"),
+  new_page = TRUE)
 
 modifyNameFunction <- function(x){
   if (x == "x1")
@@ -70,7 +71,8 @@ forestplotCombineRegrObj (
   regr.obj = list(fit1, fit2),
   variablesOfInterest.regexp = "(x2|x3)",
   reference.names = c("First model", "Second model"),
-  rowname.fn = modifyNameFunction)
+  rowname.fn = modifyNameFunction,
+  new_page = TRUE)
 
 par(org.par)
 }

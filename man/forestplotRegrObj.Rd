@@ -110,11 +110,11 @@ options(datadist="dd")
 fit1 <- cph(Surv(ftime, fstatus == 1) ~ x1 + x2 + x3, data=cov)
 fit2 <- cph(Surv(ftime, fstatus == 2) ~ x1 + x2 + x3, data=cov)
 
-forestplotRegrObj (regr.obj = fit1)
+forestplotRegrObj (regr.obj = fit1, new_page=TRUE)
 
 forestplotRegrObj (
 		regr.obj = list(fit1, fit2),
-		legend.content = c("Status = 1", "Status = 2"))
+		legend.content = c("Status = 1", "Status = 2"), new_page=TRUE)
   
 
 modifyNameFunction <- function(x){
@@ -131,7 +131,7 @@ forestplotRegrObj (
   regr.obj = list(fit1, fit2),
   variablesOfInterest.regexp = "(x2|x3)",
   reference.names = c("First model", "Second model"),
-  rowname.fn = modifyNameFunction)
+  rowname.fn = modifyNameFunction, new_page=TRUE)
   
 par(org.par)
 }

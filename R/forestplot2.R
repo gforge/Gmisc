@@ -64,6 +64,8 @@
 #' @param legend Legen corresponding to the number of bars.
 #' @param legend.pos The position of the legend, either at the "top" or the "right"
 #' @param legend.cex The cex size of the legend, by default \code{cex*0.8}
+#' @param new_page If you want the plot to appear on a new blank page then set this to \code{TRUE}, by
+#'  default it is \code{FALSE}.
 #' @param ... Not used 
 #' @return void
 #' 
@@ -97,6 +99,7 @@ forestplot2 <- function (labeltext,
                          legend               = NULL,
                          legend.pos           = c("top", "right"),
                          legend.cex           = cex*.8,
+                         new_page             = FALSE,
                          ...) 
 {
 
@@ -153,48 +156,6 @@ forestplot2 <- function (labeltext,
     upper <- as.vector(upper)
   }   
   
-  # If the borders are smaller than the upper/lower limits 
-  # then clip the graph. The line will have arrows indicating
-  # that it continues beyond the graph
-  # The zero bar has to be on the chart though!
-  xrange <- function(){
-    top <- min(max(upper, na.rm = TRUE), clip[2])
-    bottom <- max(min(lower, na.rm = TRUE), clip[1])
-    # Although perhops not entirely intuitive 
-    # I've decided that the function should
-    # extend the range to include the clip
-    # endpoints unless there are prespecified 
-    # ticks indicating that the end-points aren't
-    # included in the x-axis
-    if (is.null(xticks)){
-      ret <- c(
-        min(
-          zero, 
-          bottom
-        ), 
-        max(
-          zero,
-          top
-        )
-      )
-      
-    }else{
-      ret <- c(
-        min(
-          c(zero, bottom, xticks)
-        ), 
-        max(
-          c(zero, top, xticks)
-        )
-      )
-    }
-    
-    if (xlog){
-      return(log(ret))
-    }else{
-      return(ret)
-    }
-  } 
   
   # A function that is used to draw the different confidence intervals
   drawNormalCI <- function(LL, OR, UL, size, y.offset = 0.5, clr.line, clr.box) {
@@ -254,27 +215,7 @@ forestplot2 <- function (labeltext,
                            col = col$summary))
   }
   
-  # A function used for fetching the text or expression
-  # from the supplied labeltext.
-  fetchRowLabel <- function(label_type, labeltext, i, j){
-    if (label_type=="expression"){
-      # Haven't figured out it this is possible with 
-      # a multilevel expression
-      row_column_text <- labeltext[[i]]
-    }
-    else if(label_type=="list"){
-      # I get annoying warnings with this
-      #if (!is.expression(labeltext[[j]][[i]]) && is.na(labeltext[[j]][[i]]))
-      #    return(FALSE)
-      row_column_text <- labeltext[[j]][[i]]
-    }
-    else{
-      if (is.na(labeltext[i, j])) 
-        return(FALSE)
-      row_column_text <- labeltext[i, j]
-    }
-    return(row_column_text)
-  }
+  
   
   validateLabelList <- function(labelList){
     l = length(labelList[[1]])
@@ -363,61 +304,14 @@ forestplot2 <- function (labeltext,
   
   is.summary <- rep(is.summary, length = nr)
   
-  getLabels <- function(){
-    labels <- vector("list", nc)
-    
-    # Walk through the labeltext
-    # Creates a list matrix with 
-    # The column part
-    for (j in 1:nc) {
-      labels[[j]] <- vector("list", nr)
-      
-      # The row part
-      for (i in 1:nr) {
-        txt_out <- fetchRowLabel(label_type, labeltext, i, j)
-        # If it's a call created by bquote or similar it
-        # needs evaluating
-        if (is.call(txt_out))
-          txt_out <- eval(txt_out)
-        
-        if (is.expression(txt_out) || is.character(txt_out) || is.numeric(txt_out)){
-          x <- switch(align[j], l = 0, r = 1, c = 0.5)
-          
-          just <- switch(align[j], 
-                         l = "left", 
-                         r = "right",
-                         c = "center")
-          
-          # Bold the text if this is a summary
-          if (is.summary[i]){
-            if (is.expression(txt_out)){
-              x <- 0.5
-            }else{
-              x <- switch(align[j], l = 0, r = 1, c = 0.5)
-            }
-            
-            # Create a textGrob for the summary
-            labels[[j]][[i]] <- textGrob(txt_out, x = x,
-                                         just = just,
-                                         gp = gpar(fontface = "bold",
-                                                   fontfamily=fontfamily.summary,  
-                                                   cex = cex*1.1, 
-                                                   col = rep(col$text, length = nr)[i]))
-          }else{
-            # Create a textGrob with the current row-cell for the label
-            labels[[j]][[i]] <- textGrob(txt_out, x = x,
-                                         just = just, 
-                                         gp = gpar(fontface = "plain",
-                                                   cex = cex,
-                                                   fontfamily=fontfamily.labelrow, 
-                                                   col = rep(col$text, length = nr)[i]))
-          }
-        }
-      }
-    }
-    return(labels)
-  }
-  labels <- getLabels()
+
+  labels <- prFpGetLabels(label_type = label_type,
+    labeltext = labeltext, align = align,
+    nc = nc, nr = nr,
+    is.summary = is.summary,
+    fontfamily.summary = fontfamily.summary,
+    fontfamily.labelrow = fontfamily.labelrow,
+    col = col, cex = cex)
   
   # Set the gap between columns, I set it to
   # 6 mm but for relative widths we switch it
@@ -473,14 +367,19 @@ forestplot2 <- function (labeltext,
                                         cex=cex,
                                         col=col,
                                         clip=clip, zero=zero, 
-                                        x_range=xrange(),
+                                        x_range=prFpXrange(upper = upper, 
+                                            lower = lower, 
+                                            clip = clip, 
+                                            zero = zero, 
+                                            xticks = xticks, 
+                                            xlog = xlog),
                                         nc = nc)
   clip <- axisList$clip
   
   ###################
   # Create the plot #
   ###################
-  grid.newpage()
+  if (new_page) grid.newpage()
   
   # Adjust for the margins and the x-axis + label
   mar <- convertUnit(mar, unitTo="npc", valueOnly=TRUE)
@@ -510,30 +409,6 @@ forestplot2 <- function (labeltext,
       unit(.5*cex, "lines")
   }
   
-  getLayoutVP <- function (lineheight, marList, nr, legend_layout = NULL) {
-    if (!is.unit(lineheight)){
-      if (lineheight == "auto"){
-        lvp_height <- unit(1, "npc")-marList$bottom-marList$top
-      }else if (lineheight == "lines"){
-        # Use the height of a grob + 50 %
-        lvp_height <- unit(convertUnit(grobHeight(textGrob("A")), 
-                         unitTo="npc", 
-                         valueOnly=TRUE)*nr*1.5, "npc")
-      }else{
-        stop("The lineheight option '", lineheight, "'is yet not implemented")
-      }
-    }else{
-      lvp_height <- height=unit(convertUnit(lineheight, unitTo="npc", valueOnly=TRUE)*nr, "npc")
-    }
-    
-    lvp <- viewport(x = unit(.5, "npc") - marList$x_adjust, 
-                    y = unit(.5, "npc") - marList$y_adjust,
-                    width=unit(1, "npc")-marList$left-marList$right,
-                    height=lvp_height,
-                    layout = legend_layout,
-                    name = ifelse(is.null(legend_layout), "main", "main_and_legend"))
-    return (lvp)
-  }
   
   if (length(legend) > 0){
     lGrobs <- prFpGetLegendGrobs(legend, legend.cex)
@@ -565,8 +440,9 @@ forestplot2 <- function (labeltext,
     }
     
     
-    pushViewport(getLayoutVP(lineheight=lineheight, marList=marList, 
-                             nr=nr, legend_layout=legend_layout))
+    pushViewport(prFpGetLayoutVP(lineheight=lineheight, marList=marList, 
+        labels = labels,
+        nr=nr, legend_layout=legend_layout))
     vp <- viewport(layout.pos.row = legend_pos$row, 
                    layout.pos.col = legend_pos$col,
                    name = "legend")
@@ -585,8 +461,8 @@ forestplot2 <- function (labeltext,
                    name="main")
     pushViewport(vp)
   }else{
-    pushViewport(getLayoutVP(lineheight=lineheight, marList=marList, 
-                             nr=nr))
+    pushViewport(prFpGetLayoutVP(lineheight=lineheight, marList=marList, 
+        labels = labels, nr=nr))
   }
   
   # The base viewport, set the increase.line_height paremeter if it seems a little
@@ -594,7 +470,7 @@ forestplot2 <- function (labeltext,
   main_grid_layout <- grid.layout(nrow   = nr + 1, 
                                   ncol   = length(colwidths),
                                   widths = colwidths,
-                                  heights = unit(c(rep(1/(nr+.5), nr), .5/(nr+.5)), "npc"),
+                                  heights = unit(c(rep(1, nr), .5)/(nr+.5), "npc"),
                                   respect = TRUE)
   pushViewport(viewport(layout = main_grid_layout,
                         name="BaseGrid"))
@@ -652,7 +528,12 @@ forestplot2 <- function (labeltext,
     
     line_vp <- viewport(layout.pos.row = i,
                         layout.pos.col = 2 * nc + 1, 
-                        xscale = xrange(),
+                        xscale = prFpXrange(upper = upper, 
+                            lower = lower, 
+                            clip = clip, 
+                            zero = zero, 
+                            xticks = xticks, 
+                            xlog = xlog),
                         name = sprintf("Line_%d_%d", i, 2 * nc + 1))
     pushViewport(line_vp)
     

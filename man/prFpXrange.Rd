@@ -1,0 +1,32 @@
+\name{prFpXrange}
+\alias{prFpXrange}
+\title{Gets the x-axis range}
+\usage{
+  prFpXrange(upper, lower, clip, zero, xticks, xlog)
+}
+\arguments{
+  \item{upper}{Upper confidence intervals}
+
+  \item{lower}{Lower confidence intervals}
+
+  \item{clip}{The clip argument}
+
+  \item{zero}{The zero effect line position}
+
+  \item{xticks}{The xticks if any}
+
+  \item{xlog}{A TRUE or FALSE for if the axis is log()}
+}
+\value{
+  \code{vector} Contains a min and max value
+}
+\description{
+  If the borders are smaller than the upper/lower limits
+  then clip the graph. The line will have arrows indicating
+  that it continues beyond the graph The zero bar has to be
+  on the chart though!
+}
+\author{
+  Max
+}
+

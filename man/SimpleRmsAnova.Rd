@@ -1,10 +1,13 @@
-\name{simpleRmsAnovaLatex}
-\alias{simpleRmsAnovaLatex}
+\name{simpleRmsAnova}
+\alias{print.SimpleRmsAnova}
+\alias{simpleRmsAnova}
 \title{A simpler latex output of the latex.anova.rms}
 \usage{
-  simpleRmsAnovaLatex(anova_output, subregexps = NA,
+  simpleRmsAnova(anova_output, subregexps = NA,
     html = FALSE, digits = 4, pval_threshold = 10^-4,
     rowlabel = "Variable", ...)
+
+  \method{print}{SimpleRmsAnova} (x, ...)
 }
 \arguments{
   \item{anova_output}{An object from the
@@ -26,6 +29,9 @@
   default is < 0.0001}
 
   \item{...}{Passed on to latex() or htmlTable}
+
+  \item{x}{The output object from the SimpleRmsAnova
+  function}
 }
 \value{
   void See the latex() function
@@ -79,15 +85,15 @@ a_out <- anova(fit_lrm,
                dec.F = 1,
                ss    = FALSE)
              
-simpleRmsAnovaLatex(a_out, 
-                     subregexps = rbind(c("age", "Age"),
-                                        c("cholesterol", "Cholesterol"),
-                                        c("sex", "Sex")),
-                     file="",
-                     where="!htbp",
-                     label="tab:Anova4lrm",
-                     caption="Anova output for a logistic regression model",
-                     ctable=FALSE)
+simpleRmsAnova(a_out, 
+               subregexps = rbind(c("age", "Age"),
+                                  c("cholesterol", "Cholesterol"),
+                                  c("sex", "Sex")),
+               file="",
+               where="!htbp",
+               label="tab:Anova4lrm",
+               caption="Anova output for a logistic regression model",
+               ctable=FALSE)
 }
 \author{
   max

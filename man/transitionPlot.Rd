@@ -12,7 +12,8 @@
     arrow_clr = "#000000", abs_arrow_width = FALSE,
     overlap_bg_clr = "#FFFFFF",
     overlap_order = 1:nrow(transition_flow),
-    overlap_add_width = 1.5, box_prop = NULL)
+    overlap_add_width = 1.5, box_prop = NULL,
+    new_page = FALSE)
 }
 \arguments{
   \item{transition_flow}{This should be a matrix with the
@@ -114,6 +115,10 @@
   indicating some other factors then input a matrix with
   quantiles for the proportions. Note the size mus be
   nrow(transition_flow) x 2.}
+
+  \item{new_page}{If you want the plot to appear on a new
+  blank page then set this to \code{TRUE}, by default it is
+  \code{FALSE}.}
 }
 \value{
   void

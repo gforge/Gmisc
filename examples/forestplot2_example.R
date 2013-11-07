@@ -16,7 +16,8 @@ forestplot2(row_names,
             zero = 1, 
             cex  = 2,
             lineheight = "auto",
-            xlab = "Lab axis txt")
+            xlab = "Lab axis txt",
+            new_page = TRUE)
 
 
 # An advanced test
@@ -45,7 +46,8 @@ high <- with(test_data, cbind(high1, high2))
 forestplot2(row_names, coef, low, high, zero = 1, boxsize=0.5,
             col=fpColors(box=c("royalblue", "gold"),
                          line=c("darkblue", "orange")),
-            xlab="The estimates")
+            xlab="The estimates",
+            new_page = TRUE)
 
 # An example of how the exponential works
 test_data <- data.frame(coef=c(2.45, 0.43),
@@ -64,6 +66,7 @@ forestplot2(labeltext = row_names,
             boxsize   = test_data$boxsize,
             zero      = 1,
             xlog      = TRUE,
-            col = fpColors(lines="red", box="darkred"))
+            col = fpColors(lines="red", box="darkred"),
+            new_page = TRUE)
 
 par(ask=ask)

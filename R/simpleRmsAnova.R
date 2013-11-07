@@ -19,11 +19,20 @@
 #' @param ... Passed on to latex() or htmlTable
 #' @return void See the latex() function 
 #' 
-#' @example examples/simpleRmsAnovaLatex_example.R
+#' @example examples/simpleRmsAnova_example.R
 #' 
+#' @rdname SimpleRmsAnova
 #' @author max
 #' @export
-simpleRmsAnovaLatex <- function(anova_output, subregexps = NA, html=FALSE, digits=4, pval_threshold = 10^-4, rowlabel="Variable", ...){
+simpleRmsAnova <- function(anova_output, subregexps = NA, html=FALSE, digits=4, pval_threshold = 10^-4, rowlabel="Variable", ...){
+  
+  if (!inherits(anova_output, "anova.rms"))
+    if (inherits(anova_output, "rms")){
+      anova_output <- anova(anova_output) 
+    }else{
+      stop("You must provide either an rms-regression object or an anova rms output for this to work")
+    }
+  
   rownames <- names(attr(anova_output, "which"))
   if (is.matrix(subregexps) && NCOL(subregexps) == 2){
     for (i in 1:NROW(subregexps))
@@ -59,14 +68,36 @@ simpleRmsAnovaLatex <- function(anova_output, subregexps = NA, html=FALSE, digit
     sprintf(ifelse(html, "&lt; %s", "< %s"), format(pval_threshold, scientific=FALSE)),
     format(pvals, digits=2))
   mtrx <- cbind(mtrx, pvals)
-  number_of_total_rows <- length(grep("TOTAL", names(attr(anova_output, "which")))) 
-  if (html){
-    rownames <- sub("^ ", "&nbsp;&nbsp;", rownames)
-    htmlTable(mtrx, title=rownames, n.rgroup=c(NROW(mtrx)-number_of_total_rows, number_of_total_rows), 
-      rgroup=c("Variables", "Total"), rowlabel=rowlabel,...)
+  number_of_total_rows <- length(grep("TOTAL", names(attr(anova_output, "which"))))
+  class(mtrx) <- c("simpleRmsAnova", class(mtrx))
+  attr(mtrx, "title") <- rownames
+  attr(mtrx, "n.rgroup") <- c(NROW(mtrx)-number_of_total_rows, number_of_total_rows)
+  attr(mtrx, "rgroup") <- c("Variables", "Total")
+  attr(mtrx, "rowlabel") <- rowlabel
+  attr(mtrx, "html") <- html
+  return(mtrx)
+}
+
+#' @param x The output object from the SimpleRmsAnova function 
+#' @rdname SimpleRmsAnova
+#' @method print SimpleRmsAnova
+#' @S3method print SimpleRmsAnova
+print.SimpleRmsAnova <- function(x, ...){
+  if (attr(x, "html")){
+    rownames <- sub("^ ", "&nbsp;&nbsp;", attr(x, "rownames"))
+    htmlTable(x, 
+      title=rownames, 
+      n.rgroup=attr(x, "n.rgroup"), 
+      rgroup=attr(x, "rgroup"),
+      rowlabel=attr(x, "rowlabel"),
+      ...)
   }else{
-    rownames <- sub("^ ", "\\\\hspace{3 mm}", latexTranslate(rownames))
-    latex(mtrx, rowname=rownames, n.rgroup=c(NROW(mtrx)-number_of_total_rows, number_of_total_rows), 
-      rgroup=c("Variables", "Total"), rowlabel=rowlabel, ...)
+    rownames <- sub("^ ", "\\\\hspace{3 mm}", latexTranslate(attr(x, "rownames")))
+    latex(x, 
+      rowname=rownames, 
+      n.rgroup=attr(x, "n.rgroup"), 
+      rgroup=attr(x, "rgroup"),
+      rowlabel=attr(x, "rowlabel"),
+      ...)
   }
 }

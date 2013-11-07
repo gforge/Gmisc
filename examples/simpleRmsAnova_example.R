@@ -38,12 +38,12 @@ a_out <- anova(fit_lrm,
                dec.F = 1,
                ss    = FALSE)
              
-simpleRmsAnovaLatex(a_out, 
-                     subregexps = rbind(c("age", "Age"),
-                                        c("cholesterol", "Cholesterol"),
-                                        c("sex", "Sex")),
-                     file="",
-                     where="!htbp",
-                     label="tab:Anova4lrm",
-                     caption="Anova output for a logistic regression model",
-                     ctable=FALSE)
+simpleRmsAnova(a_out, 
+               subregexps = rbind(c("age", "Age"),
+                                  c("cholesterol", "Cholesterol"),
+                                  c("sex", "Sex")),
+               file="",
+               where="!htbp",
+               label="tab:Anova4lrm",
+               caption="Anova output for a logistic regression model",
+               ctable=FALSE)
