@@ -47,7 +47,9 @@ forestplot2(row_names, coef, low, high, zero = 1, boxsize=0.5,
             col=fpColors(box=c("royalblue", "gold"),
                          line=c("darkblue", "orange")),
             xlab="The estimates",
-            new_page = TRUE)
+            new_page = TRUE, 
+            legend=c("Treatment", "Placebo"),
+            legend.pos=list("topleft"))
 
 # An example of how the exponential works
 test_data <- data.frame(coef=c(2.45, 0.43),

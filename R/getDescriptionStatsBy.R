@@ -277,6 +277,16 @@ getDescriptionStatsBy <-
       prop_fn = prop_fn,
       percentage_sign = percentage_sign)
     
+    if (!is.matrix(total_table)){
+      total_table <- matrix(total_table, ncol=1, dimnames=list(names(total_table)))
+    }
+    
+    if (nrow(total_table) != nrow(results)){
+      stop("There is an discrepancy in the number of rows in the total table", 
+        " and the by results: ", nrow(total_table), " total vs ", nrow(results), " results",
+        "\n Rows total:", paste(rownames(total_table), collapse=", "),
+        "\n Rows results:", paste(rownames(results), collapse=", "))
+    }
     if (add_total_col != "last"){
       results <- cbind(total_table, results)
       cn <- c("Total", cn)
@@ -292,6 +302,12 @@ getDescriptionStatsBy <-
       unitcol[rownames(results) == "Missing"] <- ""
     }else{
       unitcol <- rep("", times=NROW(results))
+    }
+    if (length(unitcol) != nrow(results)){
+      stop("There is an discrepancy in the number of rows in the units", 
+        " and the by results: ", length(unitcol), " units vs ", nrow(results), " results",
+        "\n Units:", paste(unitcol, collapse=", "),
+        "\n Rows results:", paste(rownames(results), collapse=", "))
     }
     results <- cbind(results, unitcol)
     cn <- c(cn, "units")

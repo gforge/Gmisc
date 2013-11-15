@@ -1,5 +1,14 @@
 NEWS for the Gmisc package
 
+Changes for 0.5.7.5
+-------------------
+* Added more legend options to the forestplot
+* Minor changes to simleRmsAnova
+
+Changes for 0.5.7.4
+-------------------
+* Added some debugging info for the getDescriptionStatsBy with more detailed errors when unit/total columns don't match
+
 Changes for 0.5.7.4
 -------------------
 * Externalized many of the forestplot2 functions and added the option of having a set line height

@@ -62,7 +62,16 @@
 #' @param boxsize Override the default box size based on precision
 #' @param mar A numerical vector of the form c(bottom, left, top, right) of the type \code{unit()}
 #' @param legend Legen corresponding to the number of bars.
-#' @param legend.pos The position of the legend, either at the "top" or the "right"
+#' @param legend.pos The position of the legend, either at the "top" or the "right" unlesss
+#'  positioned inside the plot. If you want the legend to be positioned inside the plot
+#'  then you have to provide a list with the same x & y qualities as \code{\link[graphics]{legend}}.
+#'  For instance if you want the legend to be positioned at the top right corner then
+#'  use \code{legend.pos = list("topright")} - this is equivalent to \code{legend.pos = list(x=1, y=1)}.
+#'  If you want to have a distance from the edge of the graph then add a inset to the list,
+#'  e.g. \code{legend.pos = list("topright", "inset"=.1)} - the inset should be either a \code{\link[grid]{unit}}
+#'  element or a value between 0 and 1. The default is to have the boxes aligned vertical, if
+#'  you want them to be in a line then you can specify the "align" option, e.g. 
+#'  \code{legend.pos = list("topright", "inset"=.1, "align"="horizontal")} 
 #' @param legend.cex The cex size of the legend, by default \code{cex*0.8}
 #' @param new_page If you want the plot to appear on a new blank page then set this to \code{TRUE}, by
 #'  default it is \code{FALSE}.
@@ -97,7 +106,7 @@ forestplot2 <- function (labeltext,
                          boxsize              = NULL, 
                          mar                  = unit(rep(.05, times=4), "npc"),
                          legend               = NULL,
-                         legend.pos           = c("top", "right"),
+                         legend.pos           = "top",
                          legend.cex           = cex*.8,
                          new_page             = FALSE,
                          ...) 
@@ -122,8 +131,81 @@ forestplot2 <- function (labeltext,
            " legend descriptors as you have boxes per line, currently you have ", 
            ncol(mean), " boxes and ",
            length(legend), " legends.")
-    
-    legend.pos = match.arg(legend.pos)
+    if (is.list(legend.pos)){
+      valid_txt_pos <- c("bottomright", "bottom", "bottomleft", "left", "topleft", "top", "topright", "right", "center")
+      if (!all(c("x", "y") %in% names(legend.pos)) &&
+        !(("x" %in% legend.pos && 
+            any(legend.pos[["x"]] == valid_txt_pos)) ||
+          any(legend.pos[[1]] == valid_txt_pos)))
+          stop("If you want to specify the legend position in a certain corner",
+            " within the main plot then you need to have list names x and y specified,",
+            " or you should have the first list element to be '", paste(valid_txt_pos, collapse="'/'"), "',",
+            " if you don't specify the first element then it can be the 'x' element")
+      # Convert to the x & y format to make things easier
+      if (!all(c("x", "y") %in% names(legend.pos))){
+        if ("x" %in% names(legend.pos))
+          txt_pos <- legend.pos[["x"]]
+        else
+          txt_pos <- legend.pos[[1]]
+        
+        # The inset offsets the position
+        if (!"inset" %in% names(legend.pos)){
+          legend.pos[["inset"]] <- unit(0, "npc")
+        }else if (!is.unit(legend.pos[["inset"]])){
+          if (legend.pos[["inset"]] > 1 || legend.pos[["inset"]] < 0)
+            stop("If you have not specified the unit of the legend.pos inset then it should be between 0 and 1")
+          legend.pos[["inset"]] <- unit(legend.pos[["inset"]], "npc")
+        }else{
+          if (convertUnit(legend.pos[["inset"]], unitTo="npc", valueOnly=TRUE) > 1)
+            stop("You have provided a value outside the possible range ('npc' bigger than 1)")
+        }
+        
+        if (txt_pos == "bottomright"){
+          legend.pos[["x"]] <- unit(1, "npc") - legend.pos[["inset"]]
+          legend.pos[["y"]] <- unit(0, "npc") + legend.pos[["inset"]]
+          legend.pos[["just"]] <- c("right", "bottom")
+        }else if(txt_pos == "bottom"){
+          legend.pos[["x"]] <- unit(0.5, "npc")
+          legend.pos[["y"]] <- unit(0, "npc") + legend.pos[["inset"]]
+          legend.pos[["just"]] <- c("center", "bottom")
+        }else if (txt_pos == "bottomleft"){
+          legend.pos[["x"]] <- unit(0, "npc") + legend.pos[["inset"]]
+          legend.pos[["y"]] <- unit(0, "npc") + legend.pos[["inset"]]
+          legend.pos[["just"]] <- c("left", "bottom")
+        }else if (txt_pos == "left"){
+          legend.pos[["x"]] <- unit(0, "npc") + legend.pos[["inset"]]
+          legend.pos[["y"]] <- unit(.5, "npc")
+          legend.pos[["just"]] <- c("left", "center")
+        }else if (txt_pos == "topleft"){
+          legend.pos[["x"]] <- unit(0, "npc") + legend.pos[["inset"]]
+          legend.pos[["y"]] <- unit(1, "npc") - legend.pos[["inset"]]
+          legend.pos[["just"]] <- c("left", "top")
+        }else if (txt_pos == "top"){
+          legend.pos[["x"]] <- unit(0.5, "npc")
+          legend.pos[["y"]] <- unit(1, "npc") - legend.pos[["inset"]]
+          legend.pos[["just"]] <- c("center", "top")
+        }else if (txt_pos == "topright"){
+          legend.pos[["x"]] <- unit(1, "npc") - legend.pos[["inset"]]
+          legend.pos[["y"]] <- unit(1, "npc") - legend.pos[["inset"]]
+          legend.pos[["just"]] <- c("right", "top")
+        }else if (txt_pos == "right"){
+          legend.pos[["x"]] <- unit(1, "npc") - legend.pos[["inset"]]
+          legend.pos[["y"]] <- unit(.5, "npc")
+          legend.pos[["just"]] <- c("right", "center")
+        }else if (txt_pos == "center" || txt_pos == "centre"){
+          legend.pos[["x"]] <- unit(.5, "npc")
+          legend.pos[["y"]] <- unit(.5, "npc")
+          legend.pos[["just"]] <- c("center", "center")
+        }else{
+          stop("Position '", legend.pos[["x"]], "'not yet implemented")
+        }
+      }else if(!"just" %in% names(legend.pos)){
+        legend.pos[["just"]] <- c("center", "center")
+      }
+    }else if (!legend.pos %in% c("top", "right")){
+      stop("The legend is either a list positioning it inside the main plot or at the 'top' or 'right' side,",
+        " the position '", legend.pos, "' is not valid.")
+    }
   }
   
   # Fix if data.frames were provided in the arguments
@@ -215,39 +297,6 @@ forestplot2 <- function (labeltext,
                            col = col$summary))
   }
   
-  
-  
-  validateLabelList <- function(labelList){
-    l = length(labelList[[1]])
-    if (length(labelList) == 1)
-      return(TRUE)
-    
-    for(i in 1:length(labelList)){
-      # All elements should have the same length
-      if (l != length(labelList[[i]]))
-        return(FALSE)
-    }
-    
-    return(TRUE)
-  }
-  
-  # The previous algorithm failed when I added the expressions
-  findWidestGrob <- function (grob.list, return_unit="mm"){
-    len <- c()
-    for (i in seq(along.with=grob.list)){
-      if (is.object(grob.list[[i]])){
-        # There is a tendency of underestemating grob size
-        # when there are expressions
-        grob_width <- convertWidth(grobWidth(grob.list[[i]]), return_unit, valueOnly=TRUE)
-        len <- append(len, grob_width)
-      }else{
-        len <- append(len, 0)
-      }
-    }
-    
-    return(unit(max(len), return_unit))
-  }
-  
   # Get the number of columns (nc) and number of rows (nr)
   # if any columns are to be spacers the widthcolumn variable
   if (is.expression(labeltext)){
@@ -257,7 +306,7 @@ forestplot2 <- function (labeltext,
     nr <- length(labeltext)
     label_type = "expression"
   } else if (is.list(labeltext)){
-    if (validateLabelList(labeltext) == FALSE)
+    if (!prFpValidateLabelList(labeltext))
       stop("Invalid labellist, it has to be formed as a matrix m x n elements")
     
     # Can't figure out multiple levels of expressions
@@ -321,16 +370,17 @@ forestplot2 <- function (labeltext,
     colgap <- unit(.05, "npc")
   else
     colgap <- unit(colgap, "npc")
+  colgap <- convertUnit(colgap, "mm")
   
   # There is always at least one column so grab the widest one
   # and have that as the base for the column widths
-  colwidths <- unit.c(findWidestGrob(labels[[1]]), colgap)
+  colwidths <- unit.c(prFpFindWidestGrob(labels[[1]]), colgap)
   
   # If multiple row label columns, add the other column widths
   if (nc > 1) {
     for (i in 2:nc){
       colwidths <- unit.c(colwidths, 
-                          findWidestGrob(labels[[i]]), 
+                          prFpFindWidestGrob(labels[[i]]), 
                           colgap)  
     } 
   }
@@ -409,10 +459,11 @@ forestplot2 <- function (labeltext,
       unit(.5*cex, "lines")
   }
   
-  
+  # Initiate the legend
   if (length(legend) > 0){
     lGrobs <- prFpGetLegendGrobs(legend, legend.cex)
-    if (legend.pos == "top"){
+    if ((!is.list(legend.pos) && legend.pos == "top") ||
+      ("align" %in% names(legend.pos) && legend.pos[["align"]] == "horizontal")){
       legend_layout <- grid.layout(nrow=3, ncol=1, 
                                    heights=unit.c(attr(lGrobs, "max_height"),
                                                  colgap+colgap,
@@ -438,8 +489,11 @@ forestplot2 <- function (labeltext,
       main_pos <- list(row = 1,
                        col = 1)
     }
+  }
     
-    
+  # If the legend should be positioned within the plot then wait
+  # until after the plot has been drawn
+  if (length(legend) > 0 && !is.list(legend.pos)){
     pushViewport(prFpGetLayoutVP(lineheight=lineheight, marList=marList, 
         labels = labels,
         nr=nr, legend_layout=legend_layout))
@@ -562,6 +616,35 @@ forestplot2 <- function (labeltext,
     
     
     upViewport()
+  }
+  
+  # Output the legend if it is inside the main plot
+  if (length(legend) > 0 && is.list(legend.pos)){
+    plot_vp <- viewport(layout.pos.row = 1:(nr+1),
+      layout.pos.col = 2 * nc + 1, 
+      name = "main_plot_area")
+    pushViewport(plot_vp)
+    
+    height <- sum(convertUnit(attr(lGrobs, "line_height_and_spacing"), unitTo="npc", valueOnly=TRUE))
+    if ("align" %in% legend.pos && legend.pos[["align"]] == "horizontal"){
+      height <- unit(height, "npc")
+      width <- unit(convertUnit(attr(lGrobs, "max_height") + colgap + attr(lGrobs, "max_width"),
+          unitTo="npc", valueOnly=TRUE) * length(legend), "npc")
+    }else{
+      height <- unit(height * length(legend), "npc")
+      width <- attr(lGrobs, "max_height") + colgap + attr(lGrobs, "max_width")
+    }
+    pushViewport(viewport(x=legend.pos[["x"]],
+        y=legend.pos[["y"]],
+        width=width,
+        height=height, 
+        just=legend.pos[["just"]]))
+    # Draw the legend
+    prFpDrawLegend(lGrobs=lGrobs, 
+      legend.pos=legend.pos, 
+      col=col, 
+      colgap=colgap)
+    upViewport(2)
   }
   upViewport(2)
 }

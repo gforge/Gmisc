@@ -1,13 +1,12 @@
 \name{simpleRmsAnova}
-\alias{print.SimpleRmsAnova}
+\alias{print.simpleRmsAnova}
 \alias{simpleRmsAnova}
 \title{A simpler latex output of the latex.anova.rms}
 \usage{
-  simpleRmsAnova(anova_output, subregexps = NA,
-    html = FALSE, digits = 4, pval_threshold = 10^-4,
-    rowlabel = "Variable", ...)
+  simpleRmsAnova(anova_output, subregexps = NA, digits = 4,
+    pval_threshold = 10^-4, rowlabel = "Variable", ...)
 
-  \method{print}{SimpleRmsAnova} (x, ...)
+  \method{print}{simpleRmsAnova} (x, html = TRUE, ...)
 }
 \arguments{
   \item{anova_output}{An object from the
@@ -17,9 +16,6 @@
   expressions to search for and their substitutions. The
   regular expression should be located in column 1 and the
   substitution in column 2.}
-
-  \item{html}{If HTML output through the htmlTable should
-  be used instead of traditional latex() function}
 
   \item{digits}{Number of digits in using the round}
 
@@ -32,6 +28,9 @@
 
   \item{x}{The output object from the SimpleRmsAnova
   function}
+
+  \item{html}{If HTML output through the htmlTable should
+  be used instead of traditional latex() function}
 }
 \value{
   void See the latex() function

@@ -269,6 +269,8 @@ prFpGetLegendGrobs <- function(legend, legend.cex){
   }
   attr(lGrobs, "max_height") <- unit(max_height, "mm")
   attr(lGrobs, "max_width") <- unit(max_width, "mm")
+  attr(lGrobs, "line_height_and_spacing") <- unit.c(attr(lGrobs, "max_height"), 
+      unit(.5, "lines"))
   class(lGrobs) <- c("Legend", class(lGrobs))
   return(lGrobs)
 }
@@ -278,6 +280,12 @@ prFpDrawLegend <- function (lGrobs, legend.pos,
                             colgap) {
   legend_width <- 0
   legend_height <- 0
+  if (!is.list(legend.pos) && legend.pos == "top" ||
+    is.list(legend.pos) && "align" %in% names(legend.pos) && legend.pos[["align"]] == "horizontal"){
+    orientation <- "horizontal"
+  }else{
+    orientation <- "vertical"
+  }
 
   if (!inherits(lGrobs, "Legend"))
     stop("The lGrobs object should be created by the internal Gmisc:::prFpGetLegendGrobs and be of class legend.")
@@ -292,7 +300,8 @@ prFpDrawLegend <- function (lGrobs, legend.pos,
               height=attr(lGrobs, "max_height"))
     upViewport()
   }
-  if (legend.pos == "top"){
+  
+  if (orientation == "horizontal"){
     widths <- NULL
     for (n in 1:length(lGrobs)){
       if (length(widths) == 0)
@@ -322,12 +331,12 @@ prFpDrawLegend <- function (lGrobs, legend.pos,
     
   }else{
     widths <- unit.c(boxSize, colgap, attr(lGrobs, "max_width"))
-    line_and_adj_height <- convertUnit(unit.c(boxSize, 
-                                              unit(.5, "lines")), 
-                                       "npc", valueOnly=TRUE)
+    line_and_adj_height <- attr(lGrobs, "line_height_and_spacing") 
     
-    heights <- unit(rep(line_and_adj_height,
-                        times=length(lGrobs)), "npc")
+    # Remove bottom line
+    heights <- rep(convertUnit(line_and_adj_height, unitTo="npc", valueOnly=TRUE),
+      times=length(lGrobs))[1:(length(lGrobs)*2-1)]
+    heights <- unit(heights/sum(heights), "npc")
     
     l_layout <- grid.layout(ncol=length(widths), 
                             nrow=length(heights), 
@@ -568,4 +577,50 @@ prFpGetLayoutVP <- function (lineheight, marList, labels, nr, legend_layout = NU
     layout = legend_layout,
     name = ifelse(is.null(legend_layout), "main", "main_and_legend"))
   return (lvp)
+}
+
+#' Validate the forestplot label list
+#' 
+#' Checks that all list elements have equal
+#' length, i.e. there is a m x n relation
+#'  
+#' @param labelList The list of labels 
+#' @return \code{boolean} TRUE or FALSE
+#' 
+#' @author max
+prFpValidateLabelList <- function(labelList){
+  l = length(labelList[[1]])
+  if (length(labelList) == 1)
+    return(TRUE)
+  
+  for(i in 2:length(labelList)){
+    # All elements should have the same length
+    if (l != length(labelList[[i]]))
+      return(FALSE)
+  }
+  
+  return(TRUE)
+}
+
+#' Finds the widest grob in the current list of grobs
+#'  
+#' @param grob.list A list of grobs 
+#' @param return_unit A valid \code{\link[grid]{unit}} specifier
+#' @return \code{\link[grid]{unit}}
+#' 
+#' @author max
+prFpFindWidestGrob <- function (grob.list, return_unit="mm"){
+  len <- c()
+  for (i in seq(along.with=grob.list)){
+    if (is.object(grob.list[[i]])){
+      # There is a tendency of underestemating grob size
+      # when there are expressions
+      grob_width <- convertWidth(grobWidth(grob.list[[i]]), return_unit, valueOnly=TRUE)
+      len <- append(len, grob_width)
+    }else{
+      len <- append(len, 0)
+    }
+  }
+  
+  return(unit(max(len), return_unit))
 }

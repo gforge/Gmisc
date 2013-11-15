@@ -300,26 +300,31 @@ print.printCrudeAndAdjusted <- function(x,
   rgroupCSSstyle        = "",
   rgroupCSSseparator    = "", ...){
   
-  if (rgroupCSSstyle == "" &&
-    "rgroupCSSstyle" %in% attr(x, "other"))
-    rgroupCSSstyle <- attr(x, "other")[["rgroupCSSstyle"]]
+  call_list <- list(x = x, 
+    headings      = attr(x, "headings"), 
+    rowlabel.just = attr(x, "rowlabel.just"), 
+    rowlabel      = attr(x, "rowlabel"),
+    n.cgroup      = attr(x, "n.cgroup"), 
+    cgroup        = attr(x, "cgroup"), 
+    col.just      = attr(x, "just"),
+    rgroup        = attr(x, "rgroup"), 
+    n.rgroup      = attr(x, "n.rgroup"), 
+    rgroupCSSstyle= rgroupCSSstyle,
+    rgroupCSSseparator = rgroupCSSseparator)
   
-  if (rgroupCSSseparator == "" &&
-    "rgroupCSSseparator" %in% attr(x, "other"))
-    rgroupCSSseparator <- attr(x, "other")[["rgroupCSSseparator"]]
+  if (length(attr(x, "other")) > 0){
+    other <- attr(x, "other")
+    for (option in names(other))
+      if (nchar(option) > 0) call_list[option] <- other[[option]]
+  }
   
-  htmlTable(x,
-      headings      = attr(x, "headings"), 
-      rowlabel.just = attr(x, "rowlabel.just"), 
-      rowlabel      = attr(x, "rowlabel"),
-      n.cgroup      = attr(x, "n.cgroup"), 
-      cgroup        = attr(x, "cgroup"), 
-      col.just      = attr(x, "just"),
-      rgroup        = attr(x, "rgroup"), 
-      n.rgroup      = attr(x, "n.rgroup"), 
-      rgroupCSSstyle= rgroupCSSstyle,
-      rgroupCSSseparator = rgroupCSSseparator,
-      ...)
+  dots <- list(...)
+  if (length(dots) > 0){
+    for (option in names(dots))
+      if (nchar(option) > 0) call_list[option] <- dots[[option]]
+  }
+
+  do.call(htmlTable, call_list)
 }
 
 

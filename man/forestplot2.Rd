@@ -11,7 +11,7 @@
     lwd.zero = NULL, lwd.ci = NULL, cex = 1,
     boxsize = NULL,
     mar = unit(rep(0.05, times = 4), "npc"), legend = NULL,
-    legend.pos = c("top", "right"), legend.cex = cex * 0.8,
+    legend.pos = "top", legend.cex = cex * 0.8,
     new_page = FALSE, ...)
 }
 \arguments{
@@ -103,7 +103,22 @@
   \item{legend}{Legen corresponding to the number of bars.}
 
   \item{legend.pos}{The position of the legend, either at
-  the "top" or the "right"}
+  the "top" or the "right" unlesss positioned inside the
+  plot. If you want the legend to be positioned inside the
+  plot then you have to provide a list with the same x & y
+  qualities as \code{\link[graphics]{legend}}.  For
+  instance if you want the legend to be positioned at the
+  top right corner then use \code{legend.pos =
+  list("topright")} - this is equivalent to
+  \code{legend.pos = list(x=1, y=1)}.  If you want to have
+  a distance from the edge of the graph then add a inset to
+  the list, e.g. \code{legend.pos = list("topright",
+  "inset"=.1)} - the inset should be either a
+  \code{\link[grid]{unit}} element or a value between 0 and
+  1. The default is to have the boxes aligned vertical, if
+  you want them to be in a line then you can specify the
+  "align" option, e.g.  \code{legend.pos = list("topright",
+  "inset"=.1, "align"="horizontal")}}
 
   \item{legend.cex}{The cex size of the legend, by default
   \code{cex*0.8}}
@@ -186,7 +201,9 @@ forestplot2(row_names, coef, low, high, zero = 1, boxsize=0.5,
             col=fpColors(box=c("royalblue", "gold"),
                          line=c("darkblue", "orange")),
             xlab="The estimates",
-            new_page = TRUE)
+            new_page = TRUE, 
+            legend=c("Treatment", "Placebo"),
+            legend.pos=list("topleft"))
 
 # An example of how the exponential works
 test_data <- data.frame(coef=c(2.45, 0.43),
