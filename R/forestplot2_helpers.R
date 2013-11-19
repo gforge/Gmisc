@@ -78,6 +78,7 @@ fpColors <- function (all.elements,
 #' @param zero The zero effect
 #' @param x_range The range that values span
 #' @param nc Number of columns
+#' @param mean The original means, either matrix or vector
 #' @return list Returns a list with axis_vp, axisGrob, labGrob, zero and clip
 #' 
 #' @author Max
@@ -91,12 +92,28 @@ prFpGetGraphTicksAndClips <- function(xticks,
                                       clip, 
                                       zero, 
                                       x_range, 
-                                      nc){
+                                      nc,
+                                      mean){
+                                      
+  # Active rows are all excluding the top ones with NA in the mean value
+  if (is.matrix(mean)){
+    for (from in 1:nrow(mean))
+      if (!all(is.na(mean[from, ])))
+        break;
+    to <- nrow(mean)
+  }else{
+    for (from in 1:length(mean))
+      if (!is.na(mean[from]))
+        break;
+    to <- length(mean)
+  }
+  
   if (xlog) {
     clip[clip < 0] <- 0
     clip <- log(clip)
     zero <- log(zero)
-    axis_vp <- viewport(layout.pos.col = 2 * nc + 1, 
+    axis_vp <- viewport(layout.pos.col = 2 * nc + 1,
+                        layout.pos.row = from:to,
                         xscale         = x_range,
                         name           = "axis")
     
@@ -133,6 +150,7 @@ prFpGetGraphTicksAndClips <- function(xticks,
     
   } else {
     axis_vp <- viewport(layout.pos.col = 2 * nc + 1, 
+                        layout.pos.row = from:to,
                         xscale         = x_range,
                         name           = "axis")
     
@@ -249,7 +267,19 @@ prFpPrintLabels <- function(labels, nc, nr){
   }
 }
 
-prFpGetLegendGrobs <- function(legend, legend.cex){
+#' Gets the forestplot legend grobs
+#' 
+#' @param legend The legend names 
+#' @param legend.cex The cex for the text size
+#' @param legend.title The title of the legend if any
+#' @return \code{list} A "Legend" class that derives from a 
+#'  list with all the different legends. The list also contains 
+#'  attributes such as height, width, max_height, 
+#'  max_width, line_height_and_spacing. The title of the
+#'  legend is saved inside \code{attr("title")}
+#' 
+#' @author max
+prFpGetLegendGrobs <- function(legend, legend.cex, legend.title=NULL){
   lGrobs <- list()
   max_width <- 0
   max_height <- 0
@@ -271,13 +301,59 @@ prFpGetLegendGrobs <- function(legend, legend.cex){
   attr(lGrobs, "max_width") <- unit(max_width, "mm")
   attr(lGrobs, "line_height_and_spacing") <- unit.c(attr(lGrobs, "max_height"), 
       unit(.5, "lines"))
+    
+  # Do title stuff if present
+  if (is.character(legend.title)){
+    title <- textGrob(legend.title, x=0, just="left",
+        gp=gpar(fontface = "bold",
+        cex = legend.cex*1.1))
+    attr(lGrobs, "title") <- title
+      
+    attr(lGrobs, "titleHeight") <- grobHeight(title)
+    attr(lGrobs, "titleWidth") <- grobHeight(title)
+    if (convertUnit(attr(lGrobs, "titleWidth"), unitTo="npc", valueOnly=TRUE) >
+      convertUnit(attr(lGrobs, "max_width"), unitTo="npc", valueOnly=TRUE))
+      attr(lGrobs, "max_width") <- attr(lGrobs, "titleWidth")
+  }
   class(lGrobs) <- c("Legend", class(lGrobs))
   return(lGrobs)
 }
 
+#' Draw the forestplot legend
+#' 
+#' Takes the grobs and outputs the legend
+#' inside the current viewport.
+#' 
+#' @param lGrobs A list with all the grobs, see \code{\link{prFpGetLegendGrobs}} 
+#' @param legend.pos Specifies if the legend is horizontal or not. Can either
+#'  be a list or a string.
+#' @param col The colors of the legends.
+#' @param colgap The gap between the box and the text
+#' @param legend.gp The \code{\link[grid]{gpar}} options for background fill, border etc.
+#'  If NULL this is not used,
+#' @param legend.r The radius for the box if any (see \code{\link[grid]{grid.roundedrect}}
+#' @param legend.padding The padding for the legend box, only used if box is drawn. This is 
+#'  the distance from the border to the text/boxes of the legend.
+#' @return \code{void} 
+#' 
+#' @author max
 prFpDrawLegend <- function (lGrobs, legend.pos, 
                             col, 
-                            colgap) {
+                            colgap,
+                            legend.gp,
+                            legend.r,
+                            legend.padding) {
+  if (!inherits(lGrobs, "Legend"))
+    stop("The lGrobs object should be created by the internal Gmisc:::prFpGetLegendGrobs and be of class 'Legend'.")
+
+  # Draw the rounded rectangle at first
+  # if there is a gpar specified.
+  if (length(legend.gp) > 0){
+    grid.roundrect(gp = legend.gp, r=legend.r)
+    inner_vp <- viewport(width=unit(1, "npc") - legend.padding - legend.padding,
+      height=unit(1, "npc") - legend.padding - legend.padding)
+    pushViewport(inner_vp)
+  }
   legend_width <- 0
   legend_height <- 0
   if (!is.list(legend.pos) && legend.pos == "top" ||
@@ -286,9 +362,6 @@ prFpDrawLegend <- function (lGrobs, legend.pos,
   }else{
     orientation <- "vertical"
   }
-
-  if (!inherits(lGrobs, "Legend"))
-    stop("The lGrobs object should be created by the internal Gmisc:::prFpGetLegendGrobs and be of class legend.")
 
   boxSize <- attr(lGrobs, "max_height")
 
@@ -302,6 +375,7 @@ prFpDrawLegend <- function (lGrobs, legend.pos,
   }
   
   if (orientation == "horizontal"){
+    # Output the horizontal boxes and texts
     widths <- NULL
     for (n in 1:length(lGrobs)){
       if (length(widths) == 0)
@@ -309,19 +383,35 @@ prFpDrawLegend <- function (lGrobs, legend.pos,
       else
         widths <- unit.c(widths, colgap, boxSize, colgap, attr(lGrobs[[n]], "width"))
     }
+    heights <- attr(lGrobs, "max_height")
+    # Add title height if any
+    if (!is.null(attr(lGrobs, "title"))) heights <- unit.c(attr(lGrobs, "titleHeight"),
+          attr(lGrobs, "line_height_and_spacing")[2],
+          heights)
     
-    l_layout <- grid.layout(nrow=1, 
+    l_layout <- grid.layout(nrow=length(heights),
+                            heights = heights,
                             ncol=length(widths), 
                             widths=widths)
     lvp <- viewport(layout = l_layout,
                     name = "legend_details")
     pushViewport(lvp)
+    row <- 1
+    # Output title
+    if (!is.null(attr(lGrobs, "title"))){
+      vp <- viewport(layout.pos.row = 1)
+      pushViewport(vp)
+      pushViewport(viewport(width=attr(lGrobs, "titleWidth")))
+      grid.draw(attr(lGrobs, "title"))
+      upViewport(2)
+      row <- 3
+    }
     for (i in 1:length(lGrobs)){
       offset <- 4*(i-1)
-      vp <- viewport(layout.pos.row = 1, 
+      vp <- viewport(layout.pos.row = row, 
                      layout.pos.col = 1 + offset)
       drawBox(vp, i, col, lGrobs)
-      vp <- viewport(layout.pos.row = 1, 
+      vp <- viewport(layout.pos.row = row, 
                      layout.pos.col = 3 + offset)
       pushViewport(vp)
       grid.draw(lGrobs[[i]])
@@ -330,13 +420,16 @@ prFpDrawLegend <- function (lGrobs, legend.pos,
     upViewport()
     
   }else{
+    # Output the vertical boxes and texts
     widths <- unit.c(boxSize, colgap, attr(lGrobs, "max_width"))
-    line_and_adj_height <- attr(lGrobs, "line_height_and_spacing") 
     
     # Remove bottom line
-    heights <- rep(convertUnit(line_and_adj_height, unitTo="npc", valueOnly=TRUE),
-      times=length(lGrobs))[1:(length(lGrobs)*2-1)]
-    heights <- unit(heights/sum(heights), "npc")
+    heights <- attr(lGrobs, "line_height_and_spacing")[rep(1:2, length.out=length(lGrobs)*2-1)]
+    #heights <- unit(convertUnit(heights, unitTo="npc", valueOnly=TRUE)/sum(convertUnit(heights, unitTo="npc", valueOnly=TRUE), "npc")
+    # Add title height if any
+    if (!is.null(attr(lGrobs, "title"))) heights <- unit.c(attr(lGrobs, "titleHeight"),
+        attr(lGrobs, "line_height_and_spacing")[2],
+        heights)
     
     l_layout <- grid.layout(ncol=length(widths), 
                             nrow=length(heights), 
@@ -346,17 +439,31 @@ prFpDrawLegend <- function (lGrobs, legend.pos,
     lvp <- viewport(layout = l_layout, just="left", x=0,
                     name="legend")
     pushViewport(lvp)
+    row_start <- 1
+    # Output title
+    if (!is.null(attr(lGrobs, "title"))){
+      vp <- viewport(layout.pos.row = 1)
+      pushViewport(vp)
+      grid.draw(attr(lGrobs, "title"))
+      upViewport()
+      row_start <- 3
+    }
+    
     for (i in 1:length(lGrobs)){
-      vp <- viewport(layout.pos.row = 1 + (i-1)*2, 
+      vp <- viewport(layout.pos.row = row_start + (i-1)*2, 
                      layout.pos.col = 1)
       drawBox(vp, i, col, lGrobs)
       
-      vp <- viewport(layout.pos.row = 1 + (i-1)*2, 
+      vp <- viewport(layout.pos.row = row_start + (i-1)*2, 
                      layout.pos.col = 3)
       pushViewport(vp)
       grid.draw(lGrobs[[i]])
       upViewport()
     }
+    upViewport()
+  }
+  
+  if (length(legend.gp) > 0){
     upViewport()
   }
 }

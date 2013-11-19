@@ -48,8 +48,11 @@ forestplot2(row_names, coef, low, high, zero = 1, boxsize=0.5,
                          line=c("darkblue", "orange")),
             xlab="The estimates",
             new_page = TRUE, 
+            legend.title="Group",
             legend=c("Treatment", "Placebo"),
-            legend.pos=list("topleft"))
+            legend.pos=list("topright"),
+            legend.r = unit(.1, "snpc"),
+            legend.gp = gpar(col="#CCCCCC", lwd=1.5))
 
 # An example of how the exponential works
 test_data <- data.frame(coef=c(2.45, 0.43),

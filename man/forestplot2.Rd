@@ -12,7 +12,9 @@
     boxsize = NULL,
     mar = unit(rep(0.05, times = 4), "npc"), legend = NULL,
     legend.pos = "top", legend.cex = cex * 0.8,
-    new_page = FALSE, ...)
+    legend.gp = NULL, legend.r = unit(0, "snpc"),
+    legend.padding = unit(ifelse(length(legend.gp) > 0, 3, 0), "mm"),
+    legend.title = NULL, new_page = FALSE, ...)
 }
 \arguments{
   \item{labeltext}{A list, matrix, vector or expression
@@ -123,6 +125,30 @@
   \item{legend.cex}{The cex size of the legend, by default
   \code{cex*0.8}}
 
+  \item{legend.gp}{The \code{\link[grid]{gpar}} options for
+  the legend. If you want the background color to be light
+  grey then use \code{legend.gp = gpar(fill =
+  "lightgrey")}.  If you want a border then set the col
+  argument: \code{legend.gp = gpar(fill = "lightgrey",
+  col="black")}.  You can also use the lwd and lty argument
+  as usual, \code{legend.gp = gpar(lwd=2, lty=1)}, will
+  result in a black border box of line type 1 and line
+  width 2.}
+
+  \item{legend.r}{The box can have rounded edges, check out
+  \code{\link[grid]{grid.roundrect}}. The r option should
+  be a \code{\link[grid]{unit}} object. This is by default
+  \code{unit(0, "snpc")} but you can choose any value that
+  you want. The \code{"snpc"} unit is the preferred
+  option.}
+
+  \item{legend.padding}{The padding for the legend box,
+  only used if box is drawn. This is the distance from the
+  border to the text/boxes of the legend.}
+
+  \item{legend.title}{The title of the legend if any,
+  default to NULL}
+
   \item{new_page}{If you want the plot to appear on a new
   blank page then set this to \code{TRUE}, by default it is
   \code{FALSE}.}
@@ -202,8 +228,11 @@ forestplot2(row_names, coef, low, high, zero = 1, boxsize=0.5,
                          line=c("darkblue", "orange")),
             xlab="The estimates",
             new_page = TRUE, 
+            legend.title="Group",
             legend=c("Treatment", "Placebo"),
-            legend.pos=list("topleft"))
+            legend.pos=list("topright"),
+            legend.r = unit(.1, "snpc"),
+            legend.gp = gpar(col="#CCCCCC", lwd=1.5))
 
 # An example of how the exponential works
 test_data <- data.frame(coef=c(2.45, 0.43),

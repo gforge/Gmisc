@@ -3,7 +3,8 @@
 \title{A helper function to forestplot2}
 \usage{
   prFpGetGraphTicksAndClips(xticks, xticks.digits, xlog,
-    xlab, lwd.xaxis, col, cex, clip, zero, x_range, nc)
+    xlab, lwd.xaxis, col, cex, clip, zero, x_range, nc,
+    mean)
 }
 \arguments{
   \item{xticks}{The xticks}
@@ -27,6 +28,8 @@
   \item{x_range}{The range that values span}
 
   \item{nc}{Number of columns}
+
+  \item{mean}{The original means, either matrix or vector}
 }
 \value{
   list Returns a list with axis_vp, axisGrob, labGrob, zero

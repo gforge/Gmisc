@@ -73,6 +73,17 @@
 #'  you want them to be in a line then you can specify the "align" option, e.g. 
 #'  \code{legend.pos = list("topright", "inset"=.1, "align"="horizontal")} 
 #' @param legend.cex The cex size of the legend, by default \code{cex*0.8}
+#' @param legend.gp The \code{\link[grid]{gpar}} options for the legend. If you want
+#'  the background color to be light grey then use \code{legend.gp = gpar(fill = "lightgrey")}.
+#'  If you want a border then set the col argument: \code{legend.gp = gpar(fill = "lightgrey", col="black")}.
+#'  You can also use the lwd and lty argument as usual, \code{legend.gp = gpar(lwd=2, lty=1)}, will result
+#'  in a black border box of line type 1 and line width 2.
+#' @param legend.r The box can have rounded edges, check out \code{\link[grid]{grid.roundrect}}. The 
+#'  r option should be a \code{\link[grid]{unit}} object. This is by default \code{unit(0, "snpc")}
+#'  but you can choose any value that you want. The \code{"snpc"} unit is the preferred option.
+#' @param legend.padding The padding for the legend box, only used if box is drawn. This is 
+#'  the distance from the border to the text/boxes of the legend.
+#' @param legend.title The title of the legend if any, default to NULL 
 #' @param new_page If you want the plot to appear on a new blank page then set this to \code{TRUE}, by
 #'  default it is \code{FALSE}.
 #' @param ... Not used 
@@ -108,6 +119,10 @@ forestplot2 <- function (labeltext,
                          legend               = NULL,
                          legend.pos           = "top",
                          legend.cex           = cex*.8,
+                         legend.gp            = NULL,
+                         legend.r             = unit(0, "snpc"),
+                         legend.padding       = unit(ifelse(length(legend.gp) > 0, 3, 0), "mm"),
+                         legend.title         = NULL,
                          new_page             = FALSE,
                          ...) 
 {
@@ -205,6 +220,18 @@ forestplot2 <- function (labeltext,
     }else if (!legend.pos %in% c("top", "right")){
       stop("The legend is either a list positioning it inside the main plot or at the 'top' or 'right' side,",
         " the position '", legend.pos, "' is not valid.")
+    }
+    
+    if (inherits(legend.gp, "gpar")){
+      # Remove default border if no color
+      # unless there is a line width or type specified
+      if (!"col" %in% names(legend.gp)){
+        if (any(c("lwd", "lwd") %in% names(legend.gp))){
+          legend.gp[["col"]] = "black"
+        }else{
+          legend.gp[["col"]] = NA
+        }
+      } 
     }
   }
   
@@ -386,29 +413,6 @@ forestplot2 <- function (labeltext,
   }
   
   
-  ###########################################
-  # Normalize the widths to cover the whole #
-  # width of the graph space.               #
-  ###########################################
-  if (is.unit(graphwidth)){
-    # Add the base grapwh width to the total column width
-    # default is 2 inches
-    colwidths <- unit.c(colwidths, graphwidth)
-    
-    npc_colwidths <- convertUnit(colwidths, "npc", valueOnly=TRUE)
-    colwidths <- unit(npc_colwidths/sum(npc_colwidths), "npc")
-  }else if(graphwidth=="auto"){
-    # If graph width is not provided as a unit the autosize it to the
-    # rest of the space available
-    npc_colwidths <- convertUnit(colwidths, "npc", valueOnly=TRUE)
-    graphwidth <- unit(1 - sum(npc_colwidths), "npc")
-    colwidths <- unit.c(colwidths, graphwidth)
-  }else{
-    stop("You have to provide graph width either as a unit() object or as auto.",
-         " Auto sizes the graph to maximally use the available space.",
-         " If you want to have exact mm width then use graphwidth = unit(34, 'mm').")
-  }
-  
   axisList <- prFpGetGraphTicksAndClips(xticks=xticks, 
                                         xticks.digits=xticks.digits, 
                                         xlog=xlog,
@@ -423,7 +427,8 @@ forestplot2 <- function (labeltext,
                                             zero = zero, 
                                             xticks = xticks, 
                                             xlog = xlog),
-                                        nc = nc)
+                                        nc = nc,
+                                        mean = org_mean)
   clip <- axisList$clip
   
   ###################
@@ -461,29 +466,45 @@ forestplot2 <- function (labeltext,
   
   # Initiate the legend
   if (length(legend) > 0){
-    lGrobs <- prFpGetLegendGrobs(legend, legend.cex)
+    lGrobs <- prFpGetLegendGrobs(legend = legend, 
+      legend.cex = legend.cex, 
+      legend.title = legend.title)
+    legend_horizontal_height <- sum(legend.padding,
+      attr(lGrobs, "max_height"), 
+      legend.padding)
+    if (!is.null(attr(lGrobs, "title"))){
+      legend_horizontal_height <- sum(attr(lGrobs, "titleHeight"),
+        attr(lGrobs, "line_height_and_spacing")[2],
+        legend_horizontal_height)
+    }
+    legend_vertical_width <- sum(unit.c(legend.padding,
+      attr(lGrobs, "max_height"),
+      colgap,
+      attr(lGrobs, "max_width"),
+      legend.padding))
+    
+    # Prepare the viewports if the legend is not
+    # positioned inside the forestplot, i.e. on the top or right side
     if ((!is.list(legend.pos) && legend.pos == "top") ||
       ("align" %in% names(legend.pos) && legend.pos[["align"]] == "horizontal")){
       legend_layout <- grid.layout(nrow=3, ncol=1, 
-                                   heights=unit.c(attr(lGrobs, "max_height"),
+                                   heights=unit.c(legend_horizontal_height,
                                                  colgap+colgap,
                                                  unit(1, "npc")-
-                                                   attr(lGrobs, "max_height")-colgap))
+                                                   legend_horizontal_height-
+                                                   colgap-colgap))
       
       legend_pos <- list(row = 1,
                          col = 1)
       main_pos <- list(row = 3,
                        col = 1)
     }else{
-      legend_width <- unit.c(attr(lGrobs, "max_height"),
-                             colgap + colgap,
-                             attr(lGrobs, "max_width"))
-      
       legend_layout <- grid.layout(nrow=1, ncol=3, 
                                    widths = unit.c(unit(1, "npc") - 
-                                                    colgap - sum(legend_width),
-                                                  colgap,
-                                                  sum(legend_width)))
+                                                     colgap - 
+                                                     legend_vertical_width,
+                                                   colgap,
+                                                   legend_vertical_width))
       legend_pos <- list(row = 1,
                          col = 3)
       main_pos <- list(row = 1,
@@ -503,10 +524,13 @@ forestplot2 <- function (labeltext,
     pushViewport(vp)
     
     # Draw the legend
-    prFpDrawLegend(lGrobs=lGrobs, 
-                   legend.pos=legend.pos, 
-                   col=col, 
-                   colgap=convertUnit(colgap, unitTo="mm"))
+    prFpDrawLegend(lGrobs = lGrobs, 
+                   legend.pos = legend.pos, 
+                   col = col, 
+                   colgap = convertUnit(colgap, unitTo="mm"),
+                   legend.gp = legend.gp,
+                   legend.r = legend.r,
+                   legend.padding = legend.padding)
     upViewport()
 
     # Reset to the main plot
@@ -517,6 +541,29 @@ forestplot2 <- function (labeltext,
   }else{
     pushViewport(prFpGetLayoutVP(lineheight=lineheight, marList=marList, 
         labels = labels, nr=nr))
+  }
+  
+  ###########################################
+  # Normalize the widths to cover the whole #
+  # width of the graph space.               #
+  ###########################################
+  if (is.unit(graphwidth)){
+    # Add the base grapwh width to the total column width
+    # default is 2 inches
+    colwidths <- unit.c(colwidths, graphwidth)
+    
+    npc_colwidths <- convertUnit(colwidths, "npc", valueOnly=TRUE)
+    colwidths <- unit(npc_colwidths/sum(npc_colwidths), "npc")
+  }else if(graphwidth=="auto"){
+    # If graph width is not provided as a unit the autosize it to the
+    # rest of the space available
+    npc_colwidths <- convertUnit(colwidths, "npc", valueOnly=TRUE)
+    graphwidth <- unit(1 - sum(npc_colwidths), "npc")
+    colwidths <- unit.c(colwidths, graphwidth)
+  }else{
+    stop("You have to provide graph width either as a unit() object or as auto.",
+      " Auto sizes the graph to maximally use the available space.",
+      " If you want to have exact mm width then use graphwidth = unit(34, 'mm').")
   }
   
   # The base viewport, set the increase.line_height paremeter if it seems a little
@@ -581,7 +628,7 @@ forestplot2 <- function (labeltext,
     clr.box <- rep(col$box, length=length(low_values))
     
     line_vp <- viewport(layout.pos.row = i,
-                        layout.pos.col = 2 * nc + 1, 
+                        layout.pos.col = length(colwidths), 
                         xscale = prFpXrange(upper = upper, 
                             lower = lower, 
                             clip = clip, 
@@ -625,14 +672,29 @@ forestplot2 <- function (labeltext,
       name = "main_plot_area")
     pushViewport(plot_vp)
     
-    height <- sum(convertUnit(attr(lGrobs, "line_height_and_spacing"), unitTo="npc", valueOnly=TRUE))
-    if ("align" %in% legend.pos && legend.pos[["align"]] == "horizontal"){
-      height <- unit(height, "npc")
-      width <- unit(convertUnit(attr(lGrobs, "max_height") + colgap + attr(lGrobs, "max_width"),
-          unitTo="npc", valueOnly=TRUE) * length(legend), "npc")
+    if ("align" %in% names(legend.pos) && legend.pos[["align"]] == "horizontal"){
+      # Calculated with padding above
+      height <- legend_horizontal_height
+      # Calculate the horizontal width by iterating througha all elements
+      # as each element may have a different width
+      width <- 0
+      for (i in 1:length(lGrobs)){
+        if (width > 0){
+          width <- width + convertUnit(colgap, unitTo="npc", valueOnly=TRUE)
+        }
+        width <- width + convertUnit(attr(lGrobs, "max_height") + colgap + attr(lGrobs[[i]], "width"), unitTo="npc", valueOnly=TRUE) 
+      }
+      # Add the padding
+      width <- unit(width + convertUnit(legend.padding, unitTo="npc", valueOnly=TRUE)*2, "npc")
     }else{
-      height <- unit(height * length(legend), "npc")
-      width <- attr(lGrobs, "max_height") + colgap + attr(lGrobs, "max_width")
+      legend_height <- attr(lGrobs, "line_height_and_spacing")[rep(1:2, length.out=length(legend)*2-1)]
+      if (!is.null(attr(lGrobs, "title"))){
+        legend_height <- unit.c(attr(lGrobs, "titleHeight"),
+          attr(lGrobs, "line_height_and_spacing")[2], legend_height)
+      }
+      
+      height <- sum(legend.padding, legend_height, legend.padding)
+      width <- legend_vertical_width
     }
     pushViewport(viewport(x=legend.pos[["x"]],
         y=legend.pos[["y"]],
@@ -640,10 +702,13 @@ forestplot2 <- function (labeltext,
         height=height, 
         just=legend.pos[["just"]]))
     # Draw the legend
-    prFpDrawLegend(lGrobs=lGrobs, 
-      legend.pos=legend.pos, 
-      col=col, 
-      colgap=colgap)
+    prFpDrawLegend(lGrobs = lGrobs, 
+      legend.pos = legend.pos, 
+      col = col, 
+      colgap = colgap,
+      legend.gp = legend.gp,
+      legend.r = legend.r,
+      legend.padding = legend.padding)
     upViewport(2)
   }
   upViewport(2)
