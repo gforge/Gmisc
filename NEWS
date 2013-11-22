@@ -1,15 +1,20 @@
 NEWS for the Gmisc package
 
+Changes for 0.5.7.7
+-------------------
+* Added title for forestplot2
+* Fixed the margins for forestplot2
+
 Changes for 0.5.7.6
 -------------------
-* Added more legend border and fill options to the forestplot
-* Added the legend.title option in the forestplot
-* Fixed the auto-sizing of the area for the forestplot
+* Added more legend border and fill options to the forestplot2
+* Added the legend.title option in the forestplot2
+* Fixed the auto-sizing of the area for the forestplot2
 * Rows/elements with NA are now not included in the zero-line as they are considered to be headers
 
 Changes for 0.5.7.5
 -------------------
-* Added more legend options to the forestplot
+* Added more legend options to the forestplot2
 * Minor changes to simleRmsAnova
 
 Changes for 0.5.7.4

@@ -10,9 +10,10 @@
     xticks = NULL, xticks.digits = 2, lwd.xaxis = NULL,
     lwd.zero = NULL, lwd.ci = NULL, cex = 1,
     boxsize = NULL,
-    mar = unit(rep(0.05, times = 4), "npc"), legend = NULL,
-    legend.pos = "top", legend.cex = cex * 0.8,
-    legend.gp = NULL, legend.r = unit(0, "snpc"),
+    mar = unit(rep(0.05, times = 4), "npc"), main = NULL,
+    legend = NULL, legend.pos = "top",
+    legend.cex = cex * 0.8, legend.gp = NULL,
+    legend.r = unit(0, "snpc"),
     legend.padding = unit(ifelse(length(legend.gp) > 0, 3, 0), "mm"),
     legend.title = NULL, new_page = FALSE, ...)
 }
@@ -101,6 +102,9 @@
 
   \item{mar}{A numerical vector of the form c(bottom, left,
   top, right) of the type \code{unit()}}
+
+  \item{main}{The title of the plot if any, default
+  \code{NULL}}
 
   \item{legend}{Legen corresponding to the number of bars.}
 
@@ -223,7 +227,9 @@ row_names <- list(
 coef <- with(test_data, cbind(coef1, coef2))
 low <- with(test_data, cbind(low1, low2))
 high <- with(test_data, cbind(high1, high2))
-forestplot2(row_names, coef, low, high, zero = 1, boxsize=0.5,
+forestplot2(row_names, coef, low, high, 
+            main="Cool study",
+            zero = 1, boxsize=0.5,
             col=fpColors(box=c("royalblue", "gold"),
                          line=c("darkblue", "orange")),
             xlab="The estimates",

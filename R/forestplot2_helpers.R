@@ -654,17 +654,16 @@ prFpFetchRowLabel <- function(label_type, labeltext, i, j){
 #' The layout makes space for a legend if needed
 #' 
 #' @param lineheight The line height 
-#' @param marList The margin list
 #' @param labels The labels
 #' @param nr Number of rows
 #' @param legend_layout A legend layout object if applicable
 #' @return \code{viewport} Returns the viewport needed 
 #' 
 #' @author max
-prFpGetLayoutVP <- function (lineheight, marList, labels, nr, legend_layout = NULL) {
+prFpGetLayoutVP <- function (lineheight, labels, nr, legend_layout = NULL) {
   if (!is.unit(lineheight)){
     if (lineheight == "auto"){
-      lvp_height <- unit(1, "npc")-marList$bottom-marList$top
+      lvp_height <- unit(1, "npc")
     }else if (lineheight == "lines"){
       # Use the height of a grob + 50 %
       lvp_height <- unit(convertUnit(attr(labels, "max_height"), 
@@ -677,10 +676,7 @@ prFpGetLayoutVP <- function (lineheight, marList, labels, nr, legend_layout = NU
     lvp_height <- unit(convertUnit(lineheight, unitTo="npc", valueOnly=TRUE)*(nr+.5), "npc")
   }
   
-  lvp <- viewport(x = unit(.5, "npc") - marList$x_adjust, 
-    y = unit(.5, "npc") - marList$y_adjust,
-    width=unit(1, "npc")-marList$left-marList$right,
-    height=lvp_height,
+  lvp <- viewport(height=lvp_height,
     layout = legend_layout,
     name = ifelse(is.null(legend_layout), "main", "main_and_legend"))
   return (lvp)
@@ -730,4 +726,88 @@ prFpFindWidestGrob <- function (grob.list, return_unit="mm"){
   }
   
   return(unit(max(len), return_unit))
+}
+
+#' Converts legend position to a standard position
+#' 
+#' Used for the forestplot legend box.
+#' 
+#' @param legend.pos The legend position list
+#' @return \code{list} Returns the legend.pos list with
+#'  the correct x/y/adjust values
+#'
+#' @author max
+prFpGetLegendBoxPosition <- function (legend.pos) {
+  valid_txt_pos <- c("bottomright", "bottom", "bottomleft", "left", "topleft", "top", "topright", "right", "center")
+  if (!all(c("x", "y") %in% names(legend.pos)) &&
+        !(("x" %in% legend.pos && 
+             any(legend.pos[["x"]] == valid_txt_pos)) ||
+            any(legend.pos[[1]] == valid_txt_pos)))
+    stop("If you want to specify the legend position in a certain corner",
+         " within the main plot then you need to have list names x and y specified,",
+         " or you should have the first list element to be '", paste(valid_txt_pos, collapse="'/'"), "',",
+         " if you don't specify the first element then it can be the 'x' element")
+  
+  # Convert to the x & y format to make things easier
+  if (!all(c("x", "y") %in% names(legend.pos))){
+    if ("x" %in% names(legend.pos))
+      txt_pos <- legend.pos[["x"]]
+    else
+      txt_pos <- legend.pos[[1]]
+    
+    # The inset offsets the position
+    if (!"inset" %in% names(legend.pos)){
+      legend.pos[["inset"]] <- unit(0, "npc")
+    }else if (!is.unit(legend.pos[["inset"]])){
+      if (legend.pos[["inset"]] > 1 || legend.pos[["inset"]] < 0)
+        stop("If you have not specified the unit of the legend.pos inset then it should be between 0 and 1")
+      legend.pos[["inset"]] <- unit(legend.pos[["inset"]], "npc")
+    }else{
+      if (convertUnit(legend.pos[["inset"]], unitTo="npc", valueOnly=TRUE) > 1)
+        stop("You have provided a value outside the possible range ('npc' bigger than 1)")
+    }
+    
+    if (txt_pos == "bottomright"){
+      legend.pos[["x"]] <- unit(1, "npc") - legend.pos[["inset"]]
+      legend.pos[["y"]] <- unit(0, "npc") + legend.pos[["inset"]]
+      legend.pos[["just"]] <- c("right", "bottom")
+    }else if(txt_pos == "bottom"){
+      legend.pos[["x"]] <- unit(0.5, "npc")
+      legend.pos[["y"]] <- unit(0, "npc") + legend.pos[["inset"]]
+      legend.pos[["just"]] <- c("center", "bottom")
+    }else if (txt_pos == "bottomleft"){
+      legend.pos[["x"]] <- unit(0, "npc") + legend.pos[["inset"]]
+      legend.pos[["y"]] <- unit(0, "npc") + legend.pos[["inset"]]
+      legend.pos[["just"]] <- c("left", "bottom")
+    }else if (txt_pos == "left"){
+      legend.pos[["x"]] <- unit(0, "npc") + legend.pos[["inset"]]
+      legend.pos[["y"]] <- unit(.5, "npc")
+      legend.pos[["just"]] <- c("left", "center")
+    }else if (txt_pos == "topleft"){
+      legend.pos[["x"]] <- unit(0, "npc") + legend.pos[["inset"]]
+      legend.pos[["y"]] <- unit(1, "npc") - legend.pos[["inset"]]
+      legend.pos[["just"]] <- c("left", "top")
+    }else if (txt_pos == "top"){
+      legend.pos[["x"]] <- unit(0.5, "npc")
+      legend.pos[["y"]] <- unit(1, "npc") - legend.pos[["inset"]]
+      legend.pos[["just"]] <- c("center", "top")
+    }else if (txt_pos == "topright"){
+      legend.pos[["x"]] <- unit(1, "npc") - legend.pos[["inset"]]
+      legend.pos[["y"]] <- unit(1, "npc") - legend.pos[["inset"]]
+      legend.pos[["just"]] <- c("right", "top")
+    }else if (txt_pos == "right"){
+      legend.pos[["x"]] <- unit(1, "npc") - legend.pos[["inset"]]
+      legend.pos[["y"]] <- unit(.5, "npc")
+      legend.pos[["just"]] <- c("right", "center")
+    }else if (txt_pos == "center" || txt_pos == "centre"){
+      legend.pos[["x"]] <- unit(.5, "npc")
+      legend.pos[["y"]] <- unit(.5, "npc")
+      legend.pos[["just"]] <- c("center", "center")
+    }else{
+      stop("Position '", legend.pos[["x"]], "'not yet implemented")
+    }
+  }else if(!"just" %in% names(legend.pos)){
+    legend.pos[["just"]] <- c("center", "center")
+  }
+  return (legend.pos)
 }

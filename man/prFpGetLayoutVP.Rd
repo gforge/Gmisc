@@ -2,13 +2,11 @@
 \alias{prFpGetLayoutVP}
 \title{Get the main foresplot}
 \usage{
-  prFpGetLayoutVP(lineheight, marList, labels, nr,
+  prFpGetLayoutVP(lineheight, labels, nr,
     legend_layout = NULL)
 }
 \arguments{
   \item{lineheight}{The line height}
-
-  \item{marList}{The margin list}
 
   \item{labels}{The labels}
 

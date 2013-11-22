@@ -61,6 +61,7 @@
 #' @param cex The font adjustment
 #' @param boxsize Override the default box size based on precision
 #' @param mar A numerical vector of the form c(bottom, left, top, right) of the type \code{unit()}
+#' @param main The title of the plot if any, default \code{NULL}
 #' @param legend Legen corresponding to the number of bars.
 #' @param legend.pos The position of the legend, either at the "top" or the "right" unlesss
 #'  positioned inside the plot. If you want the legend to be positioned inside the plot
@@ -116,6 +117,7 @@ forestplot2 <- function (labeltext,
                          cex                  = 1,
                          boxsize              = NULL, 
                          mar                  = unit(rep(.05, times=4), "npc"),
+                         main                 = NULL,
                          legend               = NULL,
                          legend.pos           = "top",
                          legend.cex           = cex*.8,
@@ -147,76 +149,7 @@ forestplot2 <- function (labeltext,
            ncol(mean), " boxes and ",
            length(legend), " legends.")
     if (is.list(legend.pos)){
-      valid_txt_pos <- c("bottomright", "bottom", "bottomleft", "left", "topleft", "top", "topright", "right", "center")
-      if (!all(c("x", "y") %in% names(legend.pos)) &&
-        !(("x" %in% legend.pos && 
-            any(legend.pos[["x"]] == valid_txt_pos)) ||
-          any(legend.pos[[1]] == valid_txt_pos)))
-          stop("If you want to specify the legend position in a certain corner",
-            " within the main plot then you need to have list names x and y specified,",
-            " or you should have the first list element to be '", paste(valid_txt_pos, collapse="'/'"), "',",
-            " if you don't specify the first element then it can be the 'x' element")
-      # Convert to the x & y format to make things easier
-      if (!all(c("x", "y") %in% names(legend.pos))){
-        if ("x" %in% names(legend.pos))
-          txt_pos <- legend.pos[["x"]]
-        else
-          txt_pos <- legend.pos[[1]]
-        
-        # The inset offsets the position
-        if (!"inset" %in% names(legend.pos)){
-          legend.pos[["inset"]] <- unit(0, "npc")
-        }else if (!is.unit(legend.pos[["inset"]])){
-          if (legend.pos[["inset"]] > 1 || legend.pos[["inset"]] < 0)
-            stop("If you have not specified the unit of the legend.pos inset then it should be between 0 and 1")
-          legend.pos[["inset"]] <- unit(legend.pos[["inset"]], "npc")
-        }else{
-          if (convertUnit(legend.pos[["inset"]], unitTo="npc", valueOnly=TRUE) > 1)
-            stop("You have provided a value outside the possible range ('npc' bigger than 1)")
-        }
-        
-        if (txt_pos == "bottomright"){
-          legend.pos[["x"]] <- unit(1, "npc") - legend.pos[["inset"]]
-          legend.pos[["y"]] <- unit(0, "npc") + legend.pos[["inset"]]
-          legend.pos[["just"]] <- c("right", "bottom")
-        }else if(txt_pos == "bottom"){
-          legend.pos[["x"]] <- unit(0.5, "npc")
-          legend.pos[["y"]] <- unit(0, "npc") + legend.pos[["inset"]]
-          legend.pos[["just"]] <- c("center", "bottom")
-        }else if (txt_pos == "bottomleft"){
-          legend.pos[["x"]] <- unit(0, "npc") + legend.pos[["inset"]]
-          legend.pos[["y"]] <- unit(0, "npc") + legend.pos[["inset"]]
-          legend.pos[["just"]] <- c("left", "bottom")
-        }else if (txt_pos == "left"){
-          legend.pos[["x"]] <- unit(0, "npc") + legend.pos[["inset"]]
-          legend.pos[["y"]] <- unit(.5, "npc")
-          legend.pos[["just"]] <- c("left", "center")
-        }else if (txt_pos == "topleft"){
-          legend.pos[["x"]] <- unit(0, "npc") + legend.pos[["inset"]]
-          legend.pos[["y"]] <- unit(1, "npc") - legend.pos[["inset"]]
-          legend.pos[["just"]] <- c("left", "top")
-        }else if (txt_pos == "top"){
-          legend.pos[["x"]] <- unit(0.5, "npc")
-          legend.pos[["y"]] <- unit(1, "npc") - legend.pos[["inset"]]
-          legend.pos[["just"]] <- c("center", "top")
-        }else if (txt_pos == "topright"){
-          legend.pos[["x"]] <- unit(1, "npc") - legend.pos[["inset"]]
-          legend.pos[["y"]] <- unit(1, "npc") - legend.pos[["inset"]]
-          legend.pos[["just"]] <- c("right", "top")
-        }else if (txt_pos == "right"){
-          legend.pos[["x"]] <- unit(1, "npc") - legend.pos[["inset"]]
-          legend.pos[["y"]] <- unit(.5, "npc")
-          legend.pos[["just"]] <- c("right", "center")
-        }else if (txt_pos == "center" || txt_pos == "centre"){
-          legend.pos[["x"]] <- unit(.5, "npc")
-          legend.pos[["y"]] <- unit(.5, "npc")
-          legend.pos[["just"]] <- c("center", "center")
-        }else{
-          stop("Position '", legend.pos[["x"]], "'not yet implemented")
-        }
-      }else if(!"just" %in% names(legend.pos)){
-        legend.pos[["just"]] <- c("center", "center")
-      }
+      legend.pos <- prFpGetLegendBoxPosition(legend.pos)
     }else if (!legend.pos %in% c("top", "right")){
       stop("The legend is either a list positioning it inside the main plot or at the 'top' or 'right' side,",
         " the position '", legend.pos, "' is not valid.")
@@ -439,8 +372,6 @@ forestplot2 <- function (labeltext,
   # Adjust for the margins and the x-axis + label
   mar <- convertUnit(mar, unitTo="npc", valueOnly=TRUE)
   marList <- list()
-  marList$x_adjust <- unit(mar[2]/2 - mar[4]/2, "npc")
-  marList$y_adjust <- unit(mar[1]/2 - mar[3]/2, "npc")
   
   # This breaks without separate variables
   marList$bottom <- unit(mar[1], "npc")
@@ -448,20 +379,24 @@ forestplot2 <- function (labeltext,
   marList$top <- unit(mar[3], "npc")
   marList$right <- unit(mar[4], "npc")
   
-  if (is.grob(axisList$axisGrob)){
-    marList$bottom <- marList$bottom + axisList$axisHeight
-    marList$y_adjust <- marList$y_adjust - 
-      unit(convertUnit(axisList$axisHeight, "npc", valueOnly=TRUE)/2, "npc")
-  }
+#  if (is.grob(axisList$axisGrob)){
+#    marList$bottom <- marList$bottom + axisList$axisHeight
+#  }
+#  
+#  if (is.grob(axisList$labGrob)){
+#    marList$bottom <- marList$bottom + 
+#      grobHeight(axisList$labGrob) + 
+#      unit(1*cex, "lines")
+#  }
   
-  if (is.grob(axisList$labGrob)){
-    marList$bottom <- marList$bottom + 
-      grobHeight(axisList$labGrob) + 
-      unit(1*cex, "lines")
-    
-    marList$y_adjust <- marList$y_adjust - 
-      unit(.5, "grobheight", data=axisList$labGrob) - 
-      unit(.5*cex, "lines")
+  prPushMarginViewport(bottom = marList$bottom,
+    left = marList$left,
+    top = marList$top,
+    right = marList$right,
+    "main_margins")
+  
+  if (is.character(main)){
+    prGridPlotTitle(title=main, base_cex = cex)
   }
   
   # Initiate the legend
@@ -515,7 +450,7 @@ forestplot2 <- function (labeltext,
   # If the legend should be positioned within the plot then wait
   # until after the plot has been drawn
   if (length(legend) > 0 && !is.list(legend.pos)){
-    pushViewport(prFpGetLayoutVP(lineheight=lineheight, marList=marList, 
+    pushViewport(prFpGetLayoutVP(lineheight=lineheight,  
         labels = labels,
         nr=nr, legend_layout=legend_layout))
     vp <- viewport(layout.pos.row = legend_pos$row, 
@@ -539,7 +474,7 @@ forestplot2 <- function (labeltext,
                    name="main")
     pushViewport(vp)
   }else{
-    pushViewport(prFpGetLayoutVP(lineheight=lineheight, marList=marList, 
+    pushViewport(prFpGetLayoutVP(lineheight=lineheight,  
         labels = labels, nr=nr))
   }
   
@@ -712,4 +647,8 @@ forestplot2 <- function (labeltext,
     upViewport(2)
   }
   upViewport(2)
+
+  if (is.character(main)){
+    upViewport()
+  }
 }
