@@ -530,7 +530,7 @@ forestplot2 <- function (labeltext,
     info <- info/max(info[!is.summary], na.rm = TRUE)
     # Adjust the dots as it gets ridiculous with small text and huge dots
     if (any(textHeight*(nr+.5) * 1.5 < info))
-      info <- textHeight*(nr+.5) * 1.5 * info/max(info) + textHeight*(nr+.5)*1.5/4
+      info <- textHeight*(nr+.5) * 1.5 * info/max(info, na.rm=TRUE) + textHeight*(nr+.5)*1.5/4
     info[is.summary] <- 1
   }
   

@@ -1,5 +1,9 @@
 NEWS for the Gmisc package
 
+Changes for 0.5.7.9
+-------------------
+* Bugfix for forestplot2 with headers
+
 Changes for 0.5.7.7
 -------------------
 * Added title for forestplot2
