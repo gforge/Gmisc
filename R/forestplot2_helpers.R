@@ -118,7 +118,7 @@ prFpGetGraphTicksAndClips <- function(xticks,
                         name           = "axis")
     
     if (is.null(xticks)) {
-      ticks <- getTicks(exp(x_range), clip=clip, exp=TRUE, digits=xticks.digits)
+      ticks <- getTicks(exp(x_range), clip=clip, exp=xlog, digits=xticks.digits)
       
       # Add the endpoint ticks to the tick list if 
       # it's not already there
@@ -155,7 +155,7 @@ prFpGetGraphTicksAndClips <- function(xticks,
                         name           = "axis")
     
     if (is.null(xticks)){
-      ticks <- getTicks(exp(x_range), clip=clip, digits=xticks.digits)
+      ticks <- getTicks(x_range, clip=clip, exp=xlog, digits=xticks.digits)
       
       # Add the endpoint ticks to the tick list if 
       # it's not already there

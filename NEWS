@@ -2,6 +2,10 @@ NEWS for the Gmisc package
 
 Changes for 0.5.7.9
 -------------------
+* Bugfix for getTics so that it can handle small spans < .5
+
+Changes for 0.5.7.8
+-------------------
 * Bugfix for forestplot2 with headers
 
 Changes for 0.5.7.7

@@ -383,11 +383,11 @@ forestplot2 <- function (labeltext,
 #    marList$bottom <- marList$bottom + axisList$axisHeight
 #  }
 #  
-#  if (is.grob(axisList$labGrob)){
-#    marList$bottom <- marList$bottom + 
-#      grobHeight(axisList$labGrob) + 
-#      unit(1*cex, "lines")
-#  }
+ if (is.grob(axisList$labGrob)){
+   marList$bottom <- marList$bottom + 
+     grobHeight(axisList$labGrob) + 
+     unit(1*cex, "lines")
+ }
   
   prPushMarginViewport(bottom = marList$bottom,
     left = marList$left,

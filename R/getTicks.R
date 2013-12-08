@@ -38,6 +38,10 @@ getTicks <- function(low,
       bottom <- floor(bottom)
       roof <- ceiling(roof)
       xticks <- seq(from=bottom, to=roof, by=1)
+    }else if(highest - lowest < .5){
+      bottom <- floor(lowest*2*5)/2/5
+      roof <- ceiling(highest*2*5)/2/5
+      xticks <- seq(from=bottom, to=roof, by=.5/10)
     }else{
       bottom <- floor(bottom*2)/2
       roof <- ceiling(roof*2)/2
