@@ -582,13 +582,13 @@ forestplot2 <- function (labeltext,
         y.offset_increase <- (1-y.offset_base*2)/length(low_values)
         
         for(j in 1:length(low_values)){
-          drawNormalCI(low_values[j], 
-                       mean_values[j], 
-                       up_values[j], 
-                       info_values[j], 
+          drawNormalCI(rev(low_values)[j], 
+                       rev(mean_values)[j], 
+                       rev(up_values)[j], 
+                       rev(info_values)[j], 
                        y.offset = y.offset_base + (j-1)*y.offset_increase,
-                       clr.line = clr.line[j],
-                       clr.box = clr.box[j])
+                       clr.line = rev(clr.line)[j],
+                       clr.box = rev(clr.box)[j])
         }
       }else{
         drawNormalCI(low_values, mean_values, up_values, info_values,

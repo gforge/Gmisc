@@ -1,5 +1,9 @@
 NEWS for the Gmisc package
 
+Changes for 0.5.7.10
+-------------------
+* Switched the order in the multi-line forestplot for the legend
+
 Changes for 0.5.7.9
 -------------------
 * Bugfix for getTics so that it can handle small spans < .5
