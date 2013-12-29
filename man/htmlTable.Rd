@@ -11,8 +11,9 @@
     rgroupCSSstyle = "font-weight: 900;",
     rgroupCSSseparator = "border-top: 1px solid grey;",
     rowlabel = title, rowlabel.pos = "bottom",
-    ctable = FALSE, rowname = NA, caption = NULL,
-    caption.loc = "top", label = NULL, output = TRUE, ...)
+    ctable = FALSE, compatibility = "LibreOffice",
+    rowname = NA, caption = NULL, caption.loc = "top",
+    tfoot = NULL, label = NULL, output = TRUE, ...)
 }
 \arguments{
   \item{x}{The matrix/data.frame with the data}
@@ -110,6 +111,9 @@
   caption below the table instead of the default of
   \code{"top"}.}
 
+  \item{tfoot}{Add a table footer if needed at the bottom
+  of the table using the \code{<tfoot>} html element.}
+
   \item{label}{a text string representing a symbolic label
   for the table for referencing as an anchor. All you need
   to do is to reference the table, for instance \code{<a
@@ -117,6 +121,17 @@
 
   \item{ctable}{If the table should have a double top
   border or a single a' la LaTeX ctable style}
+
+  \item{compatibility}{Is default set to \code{LibreOffice}
+  as some settings need to be in old html format as Libre
+  Office can't handle some commands such as the css
+  caption-alignment. Note: this option is not yet fully
+  implemented for all details, in the future I aim to
+  generate a html-correct table and one that is aimed at
+  Libre Office compatibility. Word-compatibility is
+  difficult as Word ignores most settings and destroys all
+  layout attempts (at least that is how my 2010 version
+  behaves).}
 
   \item{...}{Currently not used, here for compatibility
   reasons}
@@ -141,7 +156,19 @@
 \details{
   If you set the option table_counter you will get a Table
   1,2,3 etc before each table, just set
-  \code{options("table_counter"=TRUE)}.
+  \code{options(table_counter=TRUE)}. If you set it to a
+  number then that number will correspond to the start of
+  the table_counter. The table_counter option will also
+  contain the number of the last table, this can be useful
+  when referencing it in text. By setting the option
+  \code{options(table_counter_str = "<b>Table %s:</b> ")}
+  you can manipulate the counter table text that is added
+  prior to the actual caption. Note, you should use the
+  \code{\link{sprintf}} \code{%s} instead of \code{%d} as
+  the software converts all numbers to characters for
+  compatibility reasons. If you set
+  \code{options(table_counter_roman = TRUE)} then the table
+  counter will use Roman numumerals instead of Arabic.
 
   Note that when using complex cgroup alignments with
   multiple levels not every browser is able to handle this.

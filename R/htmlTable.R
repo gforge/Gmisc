@@ -9,7 +9,16 @@
 #' advanced understanding of HTML & CSS. 
 #' 
 #' If you set the option table_counter you will get a Table 1,2,3
-#' etc before each table, just set \code{options("table_counter"=TRUE)}.
+#' etc before each table, just set \code{options(table_counter=TRUE)}. If
+#' you set it to a number then that number will correspond to the start of 
+#' the table_counter. The table_counter option will also contain the number
+#' of the last table, this can be useful when referencing it in text. By 
+#' setting the option \code{options(table_counter_str = "<b>Table %s:</b> ")}
+#' you can manipulate the counter table text that is added prior to the 
+#' actual caption. Note, you should use the \code{\link{sprintf}} \code{%s}
+#' instead of \code{%d} as the software converts all numbers to characters
+#' for compatibility reasons. If you set \code{options(table_counter_roman = TRUE)}
+#' then the table counter will use Roman numumerals instead of Arabic.
 #' 
 #' Note that when using complex cgroup alignments with multiple levels
 #' not every browser is able to handle this. For instance the RStudio
@@ -75,10 +84,20 @@
 #'    page of the table. Default is no caption.
 #' @param caption.loc set to \code{"bottom"} to position a caption below the table 
 #'    instead of the default of \code{"top"}.
+#' @param tfoot Add a table footer if needed at the bottom of the table using 
+#'    the \code{<tfoot>} html element.
 #' @param label a text string representing a symbolic label for the 
 #'    table for referencing as an anchor. All you need to do is to reference the
 #'    table, for instance \code{<a href="#anchor_name">see table 2</a>}
 #' @param ctable If the table should have a double top border or a single a' la LaTeX ctable style
+#' @param compatibility Is default set to \code{LibreOffice} as some 
+#'    settings need to be in old html format as Libre Office can't 
+#'    handle some commands such as the css caption-alignment. Note: this
+#'    option is not yet fully implemented for all details, in the future
+#'    I aim to generate a html-correct table and one that is aimed
+#'    at Libre Office compatibility. Word-compatibility is difficult as
+#'    Word ignores most settings and destroys all layout attempts 
+#'    (at least that is how my 2010 version behaves).
 #' @param ... Currently not used, here for compatibility reasons
 #' @param output Set to false if you don't want an immediate print
 #' @return Returns a string with the output table if output is not set
@@ -97,16 +116,18 @@ htmlTable <- function(x,
   align =paste(c("l", rep('c',ncol(x)-1)),collapse=''),
   halign=paste(rep('c',ncol(x)),collapse=''),
   cgroup=NULL, n.cgroup=NULL,
-  cgroup.just= NULL,
+  cgroup.just = NULL,
   rgroup=NULL, n.rgroup=NULL,
-  rgroupCSSstyle="font-weight: 900;",
+  rgroupCSSstyle = "font-weight: 900;",
   rgroupCSSseparator = "border-top: 1px solid grey;",
-  rowlabel=title,
+  rowlabel = title,
   rowlabel.pos = "bottom",
-  ctable=FALSE,
+  ctable = FALSE,
+  compatibility = "LibreOffice",
   rowname=NA,
   caption=NULL,
   caption.loc='top',
+  tfoot=NULL,
   label=NULL,
   output = TRUE,
   ...)
@@ -142,6 +163,10 @@ htmlTable <- function(x,
   if (length(align) > 1)
     align <- paste(align, collapse="")
   
+  if (tolower(compatibility) %in% c("libreoffice", "libre office", 
+                                    "open office", "openoffice",
+                                    "word", "ms word", "msword"))
+    compatibility <- "LibreOffice"
   
   # Table counter #
   tc <- getOption("table_counter")
@@ -153,9 +178,11 @@ htmlTable <- function(x,
       tc <- tc + 1
     else
       tc <- 1
-    options("table_counter" = tc)
-    
-    tc_string <- sprintf("Table %d: ", tc)
+    options(table_counter = tc)
+    table_template <- getOption("table_counter_str", "Table %s: ")
+    tc_string <- sprintf(table_template, ifelse(getOption("table_counter_roman", FALSE),
+                                                as.character(as.roman(tc)),
+                                                as.character(tc)))
   }
   
   # The CSS expects a semicolon at the end of each argument
@@ -227,10 +254,10 @@ htmlTable <- function(x,
         header_str <- sprintf("%s\n\t\t<th style='font-weight: 900; %s'>%s</th>", 
           header_str, ts, rowlabel)
       else
-        header_str <- sprintf("%s\n\t\t<th style='font-weight: 900; %s'>&nbsp;</th>", 
+        header_str <- sprintf("%s\n\t\t<th style='%s'></th>", 
           header_str, ts)
     }else if (set_rownames){
-      header_str <- sprintf("%s\n\t\t<th style='font-weight: 900; %s'>&nbsp;</th>", 
+      header_str <- sprintf("%s\n\t\t<th style='%s'></th>", 
         header_str, ts)
     }
     
@@ -488,10 +515,19 @@ htmlTable <- function(x,
   
   
   if (!is.null(caption) && nchar(caption) > 0){
-    if (caption.loc == "bottom"){
-      table_str <- sprintf("%s\n\t<caption align='bottom'>", table_str)
+    if (compatibility == "LibreOffice"){
+      if (caption.loc == "bottom"){
+        table_str <- sprintf("%s\n\t<caption align='bottom' style='text-align: left;'>", table_str)
+      }else{
+        table_str <- sprintf("%s\n\t<caption align='top' style='text-align: left;'>", table_str)
+      }
     }else{
-      table_str <- sprintf("%s\n\t<caption align='top'>", table_str)
+      if (caption.loc == "bottom"){
+        table_str <- sprintf("%s\n\t<caption style='caption-side: bottom'>", table_str)
+      }else{
+        table_str <- sprintf("%s\n\t<caption style='caption-side: top'>", table_str)
+      }
+      
     }
     
     # Combine a table counter if provided
@@ -615,6 +651,19 @@ htmlTable <- function(x,
   
   # Close body
   table_str <- sprintf("%s\n\t</tbody>", table_str)
+  
+  # Add footer
+  if (!is.null(tfoot) && nchar(tfoot) > 0){
+    # Initiate the tfoot
+    table_str <- sprintf("%s\n\t<tfoot><tr><td colspan=%d>", table_str, total_columns)
+    
+    # Add the actual tfoot to a new row
+    table_str<- sprintf("%s\n\t%s", table_str, tfoot)
+    
+    # Close the tfoot
+    table_str <- sprintf("%s</td></tr></tfoot>", table_str)
+  }
+  
   # Close table
   table_str <- sprintf("%s\n</table>", table_str)
   if (output){

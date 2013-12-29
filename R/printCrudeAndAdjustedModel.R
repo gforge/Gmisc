@@ -254,11 +254,11 @@ printCrudeAndAdjustedModel <- function(model,
       "Coef"))
   if(desc_column){
     extra_cols <- ncol(reordered_groups)-4
-    attr(reordered_groups, "just") <- c(rep("r", times=extra_cols), rep(c("r", "c"), times=2))
+    attr(reordered_groups, "align") <- c(rep("r", times=extra_cols), rep(c("r", "c"), times=2))
     attr(reordered_groups, "n.cgroup") <- c(extra_cols, 2, 2)
     attr(reordered_groups, "cgroup") = c("", "Crude", "Adjusted")
   }else{
-    attr(reordered_groups, "just") <- rep(c("r", "c"), times=2)
+    attr(reordered_groups, "align") <- rep(c("r", "c"), times=2)
     attr(reordered_groups, "n.cgroup") <- c(2, 2)
     attr(reordered_groups, "cgroup") <- c("Crude", "Adjusted")
   }
@@ -272,7 +272,7 @@ printCrudeAndAdjustedModel <- function(model,
         rowlabel      = "Variable",
         rowname       = latexTranslate(rownames(reordered_groups)),
         n.cgroup      = attr(reordered_groups, "n.cgroup"), cgroup = attr(reordered_groups, "cgroup"), 
-        col.just      = attr(reordered_groups, "just"),
+        align         = attr(reordered_groups, "align"),
         rgroup        = attr(reordered_groups, "rgroup"), 
         n.rgroup      = attr(reordered_groups, "n.rgroup"), 
         ...))
@@ -306,7 +306,7 @@ print.printCrudeAndAdjusted <- function(x,
     rowlabel      = attr(x, "rowlabel"),
     n.cgroup      = attr(x, "n.cgroup"), 
     cgroup        = attr(x, "cgroup"), 
-    col.just      = attr(x, "just"),
+    align         = attr(x, "align"),
     rgroup        = attr(x, "rgroup"), 
     n.rgroup      = attr(x, "n.rgroup"), 
     rgroupCSSstyle= rgroupCSSstyle,
