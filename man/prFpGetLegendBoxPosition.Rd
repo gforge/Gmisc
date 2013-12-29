@@ -1,0 +1,20 @@
+\name{prFpGetLegendBoxPosition}
+\alias{prFpGetLegendBoxPosition}
+\title{Converts legend position to a standard position}
+\usage{
+  prFpGetLegendBoxPosition(legend.pos)
+}
+\arguments{
+  \item{legend.pos}{The legend position list}
+}
+\value{
+  \code{list} Returns the legend.pos list with the correct
+  x/y/adjust values
+}
+\description{
+  Used for the forestplot legend box.
+}
+\author{
+  max
+}
+
