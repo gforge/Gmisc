@@ -1,5 +1,12 @@
 NEWS for the Gmisc package
 
+Changes for 0.5.7.11
+-------------------
+* Added tfoot option to the htmlTable function
+* Switched to the proper caption-align for htmlTable
+* Added options for htmlTable() where you now can format the table counter text and change to Arabic numerals.
+* Bug: changed just to align for printCrudeAndAdjustedModel()
+
 Changes for 0.5.7.10
 -------------------
 * Switched the order in the multi-line forestplot for the legend
