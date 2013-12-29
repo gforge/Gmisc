@@ -1,0 +1,25 @@
+\name{prFpPrintXaxis}
+\alias{prFpPrintXaxis}
+\title{Plots the x-axis for forestplot2}
+\usage{
+  prFpPrintXaxis(axisList, col, lwd.zero)
+}
+\arguments{
+  \item{axisList}{The list from
+  \code{\link{prFpGetGraphTicksAndClips}}}
+
+  \item{col}{The colors list}
+
+  \item{lwd.zero}{The zero line's line width}
+}
+\value{
+  void
+}
+\description{
+  A helper function to the \code{\link{forestplot2}}
+  function.
+}
+\author{
+  Max
+}
+

@@ -1,0 +1,33 @@
+\name{prGridPlotTitle}
+\alias{prGridPlotTitle}
+\title{Adds a title to the plot}
+\usage{
+  prGridPlotTitle(title, base_cex, cex_mult = 1.2,
+    fontface = "bold", space_below = NULL)
+}
+\arguments{
+  \item{title}{The title as accepted by
+  \code{\link[grid]{textGrob}}}
+
+  \item{base_cex}{The base cex used for the plot}
+
+  \item{cex_mult}{The multiplier of the base - i.e. the
+  increase of the text size for the title as compared to
+  the general}
+
+  \item{fontface}{The type of fontfacte}
+
+  \item{space_below}{The space below, defaults to 1/5 of
+  the title height}
+}
+\value{
+  \code{NULL} The function does not return a value
+}
+\description{
+  Adds the title and generates a new main viewport below
+  the title
+}
+\author{
+  max
+}
+
