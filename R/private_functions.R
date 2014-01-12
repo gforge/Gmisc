@@ -25,7 +25,14 @@ prExtractOutcomeFromModel <- function(model, check_subset = TRUE){
     # the Surv() call to work with
     if (grepl("^Surv", outcome_formula)[1]){
       ls <- as.list(outcome_formula)
-      if ("event" %in% names(ls))
+      if(is.null(names(ls))){
+        if (length(ls) %in% 3:4){
+          outcome_var_name <- as.character(tail(ls, 1))
+        }else{
+          stop("Could not identify the survival outcome from the elements:",
+               paste(ls, collapse=", "))
+        }
+      }else if ("event" %in% names(ls))
         outcome_var_name <- ls$event
       else if(sum("" == names(ls)) >= 4)
         outcome_var_name <- ls[[which("" ==  names(ls))[4]]]
@@ -56,6 +63,11 @@ prExtractOutcomeFromModel <- function(model, check_subset = TRUE){
       outcome <- get(outcome_var_name)
     }else{
       ds <- eval(model$call$data)
+      # Remove any $ prior to the call if there is
+      # a dataset that was used
+      if (grepl("$", outcome_var_name, fixed=TRUE)){
+        outcome_var_name <- gsub(".+\\$", "", "melanoma$test")
+      }
       if (outcome_var_name %in% colnames(ds))
         outcome <- ds[,outcome_var_name]
       else
