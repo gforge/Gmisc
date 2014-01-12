@@ -413,7 +413,8 @@ prCaAddReferenceAndStatsFromModelData <- function(model,
     
     # Get the original data
     outcome <- prExtractOutcomeFromModel(model)
-    if ("coxph" %in% class(model)){
+    if (is.matrix(outcome) && 
+          "coxph" %in% class(model)){
       # Get the left part of the formula
       outcome <- outcome[,"status"]
     }

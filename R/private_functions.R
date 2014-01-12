@@ -66,12 +66,24 @@ prExtractOutcomeFromModel <- function(model, check_subset = TRUE){
       # Remove any $ prior to the call if there is
       # a dataset that was used
       if (grepl("$", outcome_var_name, fixed=TRUE)){
-        outcome_var_name <- gsub(".+\\$", "", "melanoma$test")
+        outcome_var_name <- gsub(".+\\$", "", outcome_var_name)
       }
-      if (outcome_var_name %in% colnames(ds))
-        outcome <- ds[,outcome_var_name]
-      else
-        outcome <- get(outcome_var_name)
+      
+      if (grepl("==", outcome_var_name, fixed=TRUE)){
+        o_vars <- strsplit(outcome_var_name, "[ ]*==[ ]*")
+        if (o_vars[[1]][1] %in% colnames(ds))
+          outcome <- ds[,o_vars[[1]][1]]
+        else
+          outcome <- get(o_vars[[1]][1])
+        outcome <- outcome == gsub("\\\"", "", o_vars[[1]][2])
+      }else if (grepl("%in%", outcome_var_name, fixed=TRUE)){
+        stop("The %in% is not yet implemented, try creating a new variable")
+      }else{
+        if (outcome_var_name %in% colnames(ds))
+          outcome <- ds[,outcome_var_name]
+        else
+          outcome <- get(outcome_var_name)
+      }
     }
   }
 
