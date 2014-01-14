@@ -3,6 +3,7 @@ NEWS for the Gmisc package
 Changes for 0.5.7.12
 --------------------
 * Minor bugfixes behind the scenes
+* Fixed issue with getCrudeAndAdjustedModelData mixing up rows for rms objects
 
 Changes for 0.5.7.11
 -------------------

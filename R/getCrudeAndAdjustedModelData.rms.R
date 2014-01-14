@@ -95,6 +95,26 @@ getCrudeAndAdjustedModelData.rms <- function(fit, level=.95, remove_interaction_
     unadjusted <- rbind(unadjusted, new_vars)
   }
   
+  # Fix if ordering got mixed up because the summary call
+  if (any(rownames(adjusted) != rownames(unadjusted))){
+    ua_order <- c()
+    a_order <- c()
+    for(variable in var_names){
+      ua_order <- c(ua_order, 
+                    grep(variable, rownames(unadjusted), fixed=TRUE))
+      a_order <- c(a_order, 
+                   grep(variable, rownames(adjusted), fixed=TRUE))
+    }
+    if (length(ua_order) != length(a_order)){
+      stop ("An error happend when fetching the",
+            "adjusted and unadjusted variables")
+    }
+
+    # Now reorder the matrices so they match
+    unadjusted <- unadjusted[ua_order,]
+    adjusted <- adjusted[a_order,]
+  }
+  
   # If just one variable it's not a proper matrix
   if (is.null(dim(adjusted))){
     both <- matrix(c(unadjusted, adjusted), nrow=1)
