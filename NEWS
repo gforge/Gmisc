@@ -1,5 +1,9 @@
 NEWS for the Gmisc package
 
+Changes for 0.5.7.12
+--------------------
+* Minor bugfixes behind the scenes
+
 Changes for 0.5.7.11
 -------------------
 * Added tfoot option to the htmlTable function
