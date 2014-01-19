@@ -2,8 +2,7 @@
 \alias{validateAndConvertVectorInputs}
 \title{Checks the input of a vector}
 \usage{
-  validateAndConvertVectorInputs(x, y, x_origo = NA,
-    y_origo = NA)
+validateAndConvertVectorInputs(x, y, x_origo = NA, y_origo = NA)
 }
 \arguments{
   \item{x}{The x point of the vector}
@@ -15,15 +14,14 @@
   \item{y_origo}{The y origin if other than 0}
 }
 \value{
-  list with the input variables checked and converted if
-  necessary.
+list with the input variables checked and converted if
+necessary.
 }
 \description{
-  It checks that a vector makes sense in its grid
-  parameters. It also creates an origo at point 0 if none
-  is provided.
+It checks that a vector makes sense in its grid parameters.
+It also creates an origo at point 0 if none is provided.
 }
 \author{
-  max
+max
 }
 

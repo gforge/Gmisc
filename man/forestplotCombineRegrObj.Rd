@@ -2,14 +2,12 @@
 \alias{forestplotCombineRegrObj}
 \title{Compares different scores in different regression objects.}
 \usage{
-  forestplotCombineRegrObj(regr.obj,
-    variablesOfInterest.regexp, plot_title = NULL,
-    clip = c(-Inf, Inf), col.zero = "lightgray",
-    reference.names = NULL, rowname.fn = NULL,
-    box.default.size = 0.5, xlab = NULL, xlog = FALSE,
-    estimate.txt = NULL, zero = NULL, exp = TRUE,
-    add_first_as_ref = FALSE, ref_txt = "ref.",
-    ref_labels = c(), digits = 1, ...)
+forestplotCombineRegrObj(regr.obj, variablesOfInterest.regexp,
+  plot_title = NULL, clip = c(-Inf, Inf), col.zero = "lightgray",
+  reference.names = NULL, rowname.fn = NULL, box.default.size = 0.5,
+  xlab = NULL, xlog = FALSE, estimate.txt = NULL, zero = NULL,
+  exp = TRUE, add_first_as_ref = FALSE, ref_txt = "ref.",
+  ref_labels = c(), digits = 1, ...)
 }
 \arguments{
   \item{regr.obj}{A list with all the fits that have
@@ -71,12 +69,12 @@
   \item{...}{Passed to forestplot2}
 }
 \value{
-  void
+void
 }
 \description{
-  Creates a composite from different regression objects
-  into one forestplot where you can choose the variables of
-  interest to get an overview and easier comparison.
+Creates a composite from different regression objects into
+one forestplot where you can choose the variables of
+interest to get an overview and easier comparison.
 }
 \examples{
 org.par <- par("ask" = TRUE)
@@ -123,9 +121,9 @@ forestplotCombineRegrObj (
 par(org.par)
 }
 \author{
-  max
+max
 }
 \seealso{
-  \code{\link{forestplot2}}
+\code{\link{forestplot2}}
 }
 

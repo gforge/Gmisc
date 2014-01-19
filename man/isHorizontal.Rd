@@ -2,18 +2,18 @@
 \alias{isHorizontal}
 \title{Just a simple help with interpreting the radians}
 \usage{
-  isHorizontal(angle_radian)
+isHorizontal(angle_radian)
 }
 \arguments{
   \item{angle_radian}{The angle in radians}
 }
 \value{
-  boolean
+boolean
 }
 \description{
-  Just a simple help with interpreting the radians
+Just a simple help with interpreting the radians
 }
 \author{
-  max
+max
 }
 

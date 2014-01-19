@@ -2,8 +2,8 @@
 \alias{prGridPlotTitle}
 \title{Adds a title to the plot}
 \usage{
-  prGridPlotTitle(title, base_cex, cex_mult = 1.2,
-    fontface = "bold", space_below = NULL)
+prGridPlotTitle(title, base_cex, cex_mult = 1.2, fontface = "bold",
+  space_below = NULL)
 }
 \arguments{
   \item{title}{The title as accepted by
@@ -21,13 +21,13 @@
   the title height}
 }
 \value{
-  \code{NULL} The function does not return a value
+\code{NULL} The function does not return a value
 }
 \description{
-  Adds the title and generates a new main viewport below
-  the title
+Adds the title and generates a new main viewport below the
+title
 }
 \author{
-  max
+max
 }
 

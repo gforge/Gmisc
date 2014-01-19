@@ -2,7 +2,7 @@
 \alias{estfun.ols}
 \title{Fix for the Extract Empirical Estimating Functions}
 \usage{
-  \method{estfun}{ols} (x, ...)
+\method{estfun}{ols}(x, ...)
 }
 \arguments{
   \item{x}{A fitted ols model object.}
@@ -10,18 +10,18 @@
   \item{...}{arguments passed to methods.}
 }
 \value{
-  matrix A matrix containing the empirical estimating
-  functions.
+matrix A matrix containing the empirical estimating
+functions.
 }
 \description{
-  As missing data is handled a little different for the ols
-  than for the lm we need to change the estfun to work with
-  the ols()
+As missing data is handled a little different for the ols
+than for the lm we need to change the estfun to work with
+the ols()
 }
 \details{
-  I have never worked with weights and this should probably
-  be checked as this just uses the original estfun.lm as a
-  template
+I have never worked with weights and this should probably
+be checked as this just uses the original estfun.lm as a
+template
 }
 \examples{
 # Generate some data
@@ -51,6 +51,6 @@ confint(f_rob)
 options(org.op)
 }
 \author{
-  Max
+Max
 }
 

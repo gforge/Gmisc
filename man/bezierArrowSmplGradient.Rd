@@ -2,12 +2,11 @@
 \alias{bezierArrowSmplGradient}
 \title{A bezier arrow with gradient}
 \usage{
-  bezierArrowSmplGradient(width = 0.05, clr = "#000000",
-    default.units = "npc", align_2_axis = TRUE,
-    grdt_type = c("triangle"), grdt_decrease_prop = 0.4,
-    grdt_start_prop = 0.4, grdt_clr_prop = 0.7,
-    grdt_line_width = NA, grdt_clr = "#2F4F2F", vp = NULL,
-    gp = gpar(), ...)
+bezierArrowSmplGradient(width = 0.05, clr = "#000000",
+  default.units = "npc", align_2_axis = TRUE, grdt_type = c("triangle"),
+  grdt_decrease_prop = 0.4, grdt_start_prop = 0.4, grdt_clr_prop = 0.7,
+  grdt_line_width = NA, grdt_clr = "#2F4F2F", vp = NULL, gp = gpar(),
+  ...)
 }
 \arguments{
   \item{width}{The width of the arrow, either a numeric
@@ -56,14 +55,14 @@
   \item{vp}{A Grid viewport object (or NULL).}
 }
 \value{
-  A grob of gList() type
+A grob of gList() type
 }
 \description{
-  This is an experimental addition to the original
-  \code{\link{bezierArrowSmpl}} with the addition of a
-  gradient in the center of the arrow that fades.
-  \strong{Note:} the arrow section is not currently
-  included in the gradient.
+This is an experimental addition to the original
+\code{\link{bezierArrowSmpl}} with the addition of a
+gradient in the center of the arrow that fades.
+\strong{Note:} the arrow section is not currently included
+in the gradient.
 }
 \examples{
 par_org <- par(ask=TRUE) 
@@ -104,6 +103,6 @@ transitionPlot(transition_matrix, box_prop=box_prop,
 par(par_org)
 }
 \author{
-  max
+max
 }
 

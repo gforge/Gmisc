@@ -2,8 +2,7 @@
 \alias{getTicks}
 \title{Ticks for plot axis}
 \usage{
-  getTicks(low, high = low, clip = c(-Inf, Inf),
-    exp = FALSE, digits = 0)
+getTicks(low, high = low, clip = c(-Inf, Inf), exp = FALSE, digits = 0)
 }
 \arguments{
   \item{low}{lower bound, can be a single number or a
@@ -20,14 +19,13 @@
   \item{digits}{Number of digits - used in exp mode}
 }
 \value{
-  Returns a vector with the ticks appropriate
+Returns a vector with the ticks appropriate
 }
 \description{
-  Gets the ticks in a formatted version. This is since I'm
-  not always that fond of just pretty(1:10/5). In
-  exponential form the ticks are determined from the
-  2-base, meaning that you get an intuitive feeling for
-  when the value is doubled.
+Gets the ticks in a formatted version. This is since I'm
+not always that fond of just pretty(1:10/5). In exponential
+form the ticks are determined from the 2-base, meaning that
+you get an intuitive feeling for when the value is doubled.
 }
 \examples{
 test_data <- data.frame(coef=c(2, 0.5),
@@ -58,6 +56,6 @@ getTicks(1:10*.33,
   exp=TRUE)
 }
 \author{
-  max
+max
 }
 

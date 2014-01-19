@@ -2,7 +2,7 @@
 \alias{prGetAndValidateDefaultRef}
 \title{A helper function for the description stats}
 \usage{
-  prGetAndValidateDefaultRef(x, default_ref)
+prGetAndValidateDefaultRef(x, default_ref)
 }
 \arguments{
   \item{x}{The variable of interest with the levels}
@@ -11,12 +11,12 @@
   the level name or a number within the levels}
 }
 \value{
-  integer The level number of interest
+integer The level number of interest
 }
 \description{
-  A helper function for the description stats
+A helper function for the description stats
 }
 \author{
-  max
+max
 }
 

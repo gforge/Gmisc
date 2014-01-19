@@ -1,3 +1,153 @@
+#' Draw standard confidence intervals
+#' 
+#' A function that is used to draw the different 
+#' confidence intervals for the non-summary lines.
+#' Use this function as a template if you want to 
+#' substitute it with your own funky line + marker.
+#'  
+#' @param lower_limit The lower limit of the line.
+#'  A native numeric variable that can actually be 
+#'  outside the boundaries. If you want to see if it
+#'  is outside then convert it to 'npc' and see if the
+#'  value ends up more than 1 or less than 0. Here's how 
+#'  you do the conversion: 
+#'  \code{convertX(unit(upper_limit, "native"), "npc", valueOnly = TRUE)}
+#'  and the \code{\link[grid]{convertX}} together with \code{\link[grid]{unit}}
+#'  is needed to get the right values while you need to provide the valueOnly 
+#'  as you cannot compare a unit object. 
+#' @param estimate The estimate indicating the placement
+#'  of the actual box. Note, this can also be outside bounds
+#'  and is provided in a numeric format the same way as the 
+#'  \code{lower_limit}.
+#' @param upper_limit The upper limit of the line. See
+#'  lower_limit for details.
+#' @param size The actual size of the box. This provided in the 'snpc'
+#'  format to generate a perfect box. If you provide anything else 
+#'  it will be converted prior to that.
+#' @param y.offset If you have multiple lines they need an offset in
+#'  the y-direction.
+#' @param clr.line The color of the line.
+#' @param clr.box The color of the box
+#' @param lwd Line width
+#' @return \code{void} The function outputs the line using grid compatible
+#'  functions and does not return anything. 
+#' 
+#' @example examples/forestplot2_example.R
+#' @author Max
+#' @export
+fpDrawNormalCI <- function(lower_limit, 
+                           estimate, 
+                           upper_limit, 
+                           size, 
+                           y.offset = 0.5, 
+                           clr.line, clr.box,
+                           lwd) {
+  # If the limit is outside the 0-1 range in npc-units
+  # then that part is outside the box and it should 
+  # be clipped (this function adds an arrow to the end
+  # of the line)
+  clipupper <- 
+    convertX(unit(upper_limit, "native"), 
+             "npc", 
+             valueOnly = TRUE) > 1
+  cliplower <- 
+    convertX(unit(lower_limit, "native"), 
+             "npc", 
+             valueOnly = TRUE) < 0
+  
+  # If the box is outside the plot the it shouldn't be plotted
+  box <- convertX(unit(estimate, "native"), "npc", valueOnly = TRUE)
+  skipbox <- box < 0 || box > 1
+  
+  # Convert size into 'snpc'
+  size <- ifelse(is.unit(size), 
+      size, unit(size, "snpc"))
+  
+  # A version where arrows are added to the part outside 
+  # the limits of the graph
+  if (clipupper || cliplower) {
+    ends <- "both"
+    lims <- unit(c(0, 1), c("npc", "npc"))
+    if (!clipupper) {
+      ends <- "first"
+      lims <- unit(c(0, upper_limit), c("npc", "native"))
+    }
+    if (!cliplower) {
+      ends <- "last"
+      lims <- unit(c(lower_limit, 1), c("native", "npc"))
+    }
+    grid.lines(x = lims, 
+               y = y.offset, 
+               arrow = arrow(ends = ends, 
+                             length = unit(0.05, "inches")), 
+               gp = gpar(col = clr.line, lwd=lwd))
+    if (!skipbox)
+      grid.rect(x = unit(estimate, "native"), 
+                y = y.offset, 
+                width = size, 
+                height = size, 
+                gp = gpar(fill = clr.box, 
+                          col = clr.box))
+  } else {
+    # Don't draw the line if it's no line to draw
+    if (lower_limit != upper_limit)
+      grid.lines(x = unit(c(lower_limit, upper_limit), "native"), y = y.offset, 
+                 gp = gpar(col = clr.line, lwd=lwd))
+    grid.rect(x = unit(estimate, "native"), y=y.offset, 
+              width = size, 
+              height = size, 
+              gp = gpar(fill = clr.box, 
+                        col = clr.box))
+  }
+}
+
+#' Draw summary confidence intervals
+#' 
+#' A function that is used to draw the different 
+#' confidence intervals for the summary lines.
+#' Use this function as a template if you want to 
+#' substitute it with your own funky summary display.
+#'  
+#' @param lower_limit The lower limit of the diamond.
+#'  A native numeric variable that can actually be 
+#'  outside the boundaries. If you want to see if it
+#'  is outside then convert it to 'npc' and see if the
+#'  value ends up more than 1 or less than 0. Here's how 
+#'  you do the conversion: 
+#'  \code{convertX(unit(upper_limit, "native"), "npc", valueOnly = TRUE)}
+#'  and the \code{\link[grid]{convertX}} together with \code{\link[grid]{unit}}
+#'  is needed to get the right values while you need to provide the valueOnly 
+#'  as you cannot compare a unit object. 
+#' @param estimate The estimate indicating the maximum height
+#'  of the diamond. Note, this can also be outside bounds
+#'  and is provided in a numeric format the same way as the 
+#'  \code{lower_limit}.
+#' @param upper_limit The upper limit of the diamond. See
+#'  lower_limit for details.
+#' @param size The actual height of the diamond.
+#' @param y.offset If you have multiple lines they need an offset in
+#'  the y-direction.
+#' @param col The color of the summary diamond.
+#' @return \code{void} The function outputs the line using grid compatible
+#'  functions and does not return anything. 
+#' 
+#' @example examples/forestplot2_example.R
+#' @author Max
+#' @export
+fpDrawSummaryCI <- function(lower_limit, estimate, upper_limit, 
+                            size, col, y.offset = 0.5) {
+  # Convert size into 'npc' value only if
+  # it is provided as a unit() object
+  size <- ifelse(is.unit(size), 
+      convertUnit(size, unitTo="npc", valueOnly=TRUE),
+      size)
+  grid.polygon(x = unit(c(lower_limit, estimate, upper_limit, estimate), "native"), 
+               y = unit(y.offset + 
+                          c(0, 0.5 * size, 0, -0.5 * size), "npc"), 
+               gp = gpar(fill = col, 
+                         col = col))
+}
+
 #' A copy of rmeta meta.colors. 
 #' 
 #' If you have several values per row in a
@@ -50,7 +200,9 @@ fpColors <- function (all.elements,
         box <- append(box, 
                         colorRampPalette(c(lines[n], par("fg")))(10)[2])
     }
-      
+
+    if (length(summary) < length(box))
+      summary <- rep(summary, length.out = length(box))
     return(list(box = box, lines = lines, summary = summary, 
                 zero = zero, text = text, axes = axes))
   }
@@ -58,9 +210,174 @@ fpColors <- function (all.elements,
   if (is.null(all.elements)) 
     all.elements <- par("fg")
   
-  return(list(box = all.elements, lines = all.elements, summary = all.elements, 
-              zero = all.elements, text = all.elements, 
+  return(list(box = all.elements, 
+              lines = all.elements, 
+              summary = all.elements, 
+              zero = all.elements, 
+              text = all.elements, 
               axes = all.elements))
+}
+
+#' Get a function list
+#' 
+#' This function helps the \code{\link{forestplot2}}
+#' to deal with multiple drawing functions for the 
+#' confidence intervals.
+#' 
+#' @param fn The function list/matrix. If a list it
+#'  should be in the format [[row]][[col]], the function
+#'  tries to handle this but in cases where the columns
+#'  and rows are the same it will not know what is a column 
+#'  and what is a row. 
+#' @param no_rows Number of rows
+#' @param no_cols Number of columns
+#' @return \code{list} The function returns a list that has
+#' the format [[row]][[col]] where each element contains the
+#' function that you need to call using the \code{\link[base]{as.call}}
+#' and \code{\link[base]{eval}} functions: \code{eval(as.call(list(fn[[row]][[col]], arg_1=1, arg_2=2)))}
+#' 
+#' @author Max
+prFpGetConfintFnList <- function(fn, no_rows, no_cols){
+  # Return a list that has
+  # a two dim structure of [[row]][[col]]
+  # if you have a matrix provided but if you
+  # have only a vector with only 1 column then you
+  # get the [[row]] by default
+  # If the fn is a character or a matrix then
+  ret <- list()
+  if (is.function(fn)){
+    if (no_cols == 1){
+      for (i in 1:no_rows){
+        ret[[i]] <- fn
+      }
+    }else{
+      for (i in 1:no_rows){
+        ret[[i]] <- list()
+        for (ii in 1:no_cols){
+          ret[[i]][[ii]] <- fn
+        }
+      }
+    }
+  }else if (typeof(fn) == "character"){
+    if (is.matrix(fn)){
+      if (ncol(fn) != no_cols)
+        stop("Your columns do not add upp for your",
+             " confidence interval funcitons, ", 
+             ncol(fn), " != ", no_cols)
+      if (nrow(fn) != no_rows)
+        stop("Your rows do not add upp for your",
+             " confidence interval funcitons, ", 
+             nrow(fn), " != ", no_rows)
+
+    }else if (length(fn) %in% c(1, no_rows)){
+      fn <- matrix(fn, nrow=no_rows, ncol=no_cols)
+    }else if (length(fn) == no_cols){
+      fn <- matrix(fn, nrow=no_rows, ncol=no_cols, byrow=TRUE)
+    }else{
+      stop("You have not provided the expected",
+           " number of funciton names: ",
+           length(fn), " is not 1, ", no_cols, ", or ", no_rows)
+      
+    }
+
+    # Convert into function format
+    for (i in 1:no_rows){
+      if (no_cols == 1){
+        ret[[i]] <- get(fn[i, 1])
+      }else{
+        ret[[i]] <- list()
+        for (ii in 1:no_cols){
+          ## Go by row for the fn
+          ret[[i]][[ii]] <- get(fn[i, ii])
+        }
+      }
+    }
+    
+  }else if (is.list(fn)){
+    if (no_cols == 1){
+      # Actually correct if the lengths add up
+      if (length(fn) != no_rows)
+        stop("You do not have the same number of ",
+             "confidence interval functions as you have ",
+             "number of rows: ", length(fn), "!=", no_rows,
+             " You should provide the same number.")
+    }else{
+      # Populate a new fn list
+      if (length(fn) == no_rows){
+        # One dim-list provided
+        # now generate a two-dim list
+        if (!is.list(fn[[1]])){
+          for (i in 1:no_rows){
+            ret[[i]] <- list()
+            for (ii in 1:no_cols){
+              ## Go by row for the fn
+              ret[[i]][[ii]] <- fn[[i]]
+            }
+          }
+        }else{
+          # Verify that the list structure
+          # is provided as a valid matrix
+          # with the correct size
+          n <- sapply(fn, length)
+          if (any(n != no_cols)){
+            stop("You need to provide a 'square' list (of dim. n x m)",
+                 " of the same dimension as the number of lines",
+                 " in order for this function to work. Currently your",
+                 " confidence interval function has the format",
+                 " ", no_rows , " x ", paste(n, collapse="/"),
+                 " where you want all of the second argument to be",
+                 " equal to ", no_cols)
+          }
+        }
+      }else if (length(fn) == no_cols){
+        # One dim-list provided
+        # now generate a two-dim list
+        if (!is.list(fn[[1]])){
+          for (i in 1:no_rows){
+            ret[[i]] <- list()
+            for (ii in 1:no_cols){
+              ## Go by row for the fn
+              ret[[i]][[ii]] <- fn[[ii]]
+            }
+          }
+        }else{
+          # Verify that the list structure
+          # is provided as a matrix
+          n <- sapply(fn, length)
+          if (any(n != no_rows)){
+            stop("You need to provide a 'square' list (of dim. n x m)",
+                 " of the same dimension as the number of lines",
+                 " in order for this function to work. Currently your",
+                 " confidence interval function has the format",
+                 " ", no_rows , " x ", paste(n, collapse="/"),
+                 " where you want all of the second argument to be",
+                 " equal to ", no_cols)
+          }
+          
+          # Change to the [[row]][[col]] format
+          for (i in 1:no_rows){
+            ret[[i]] <- list()
+            for (ii in 1:no_cols){
+              ## Go by row for the fn
+              ret[[i]][[ii]] <- fn[[ii]][[i]]
+            }
+          }
+        }
+      }else{
+        stop("The number of provided confidence intervals",
+             " functions, ", length(fn), ", ",
+             " does not seem to match up with either",
+             " number of rows, ", no_rows,
+             " or number of cols, ", no_cols)
+      }
+    }
+  }else{
+    stop("You have provided something else than",
+         " a function, list or function name: ", 
+         class(fn))
+  }
+  
+  return(ret)
 }
 
 #' A helper function to forestplot2
@@ -74,6 +391,7 @@ fpColors <- function (all.elements,
 #' @param lwd.xaxis The line width of the x-axis
 #' @param col The color object
 #' @param cex The text size
+#' @param cex.axis The axis tick text size
 #' @param clip The clip margins
 #' @param zero The zero effect
 #' @param x_range The range that values span
@@ -89,6 +407,7 @@ prFpGetGraphTicksAndClips <- function(xticks,
                                       lwd.xaxis, 
                                       col,
                                       cex,
+                                      cex.axis,
                                       clip, 
                                       zero, 
                                       x_range, 
@@ -118,7 +437,10 @@ prFpGetGraphTicksAndClips <- function(xticks,
                         name           = "axis")
     
     if (is.null(xticks)) {
-      ticks <- getTicks(exp(x_range), clip=clip, exp=xlog, digits=xticks.digits)
+      ticks <- getTicks(exp(x_range), 
+                        clip=clip, 
+                        exp=xlog, 
+                        digits=xticks.digits)
       
       # Add the endpoint ticks to the tick list if 
       # it's not already there
@@ -139,8 +461,8 @@ prFpGetGraphTicksAndClips <- function(xticks,
       # Decide on the number of digits, if below zero then there should
       # be by default one more digit
       ticklabels <- ifelse(ticks < 1 | abs(floor(ticks*10)-ticks*10) > 0, 
-                           formatC(ticks, digits = 2, format="f", drop0trailing=FALSE), 
-                           format(ticks, digits = 1, drop0trailing=TRUE))
+                           format(ticks, digits = 2, nsmall = 2), 
+                           format(ticks, digits = 1, nsmall = 1))
       xticks <- log(ticks)
     }else{
       xticks <- NULL
@@ -155,7 +477,10 @@ prFpGetGraphTicksAndClips <- function(xticks,
                         name           = "axis")
     
     if (is.null(xticks)){
-      ticks <- getTicks(x_range, clip=clip, exp=xlog, digits=xticks.digits)
+      ticks <- getTicks(x_range, 
+                        clip=clip, 
+                        exp=xlog, 
+                        digits=xticks.digits)
       
       # Add the endpoint ticks to the tick list if 
       # it's not already there
@@ -178,8 +503,12 @@ prFpGetGraphTicksAndClips <- function(xticks,
   if (length(xticks) != 1 || xticks != 0){
     dg <- xaxisGrob(at    = xticks, 
                     label = ticklabels,
-                    gp    = gpar(cex = cex*0.6, col = col$axes, lwd=lwd.xaxis))
-    dg_height <- convertUnit(grobHeight(textGrob("I", gp=gpar(cex=cex*0.6))), "npc") + unit(1, "lines")
+                    gp    = gpar(cex = cex.axis, 
+                                 col = col$axes, 
+                                 lwd=lwd.xaxis))
+    dg_height <- 
+      convertUnit(grobHeight(textGrob("I", gp=gpar(cex=cex.axis))), "npc") + 
+      unit(1, "lines")
   }else{
     dg <- FALSE
     dg_height <- 0 

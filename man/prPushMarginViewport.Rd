@@ -2,8 +2,7 @@
 \alias{prPushMarginViewport}
 \title{Pushes viewport with margins}
 \usage{
-  prPushMarginViewport(bottom, left, top, right,
-    name = NULL)
+prPushMarginViewport(bottom, left, top, right, name = NULL)
 }
 \arguments{
   \item{bottom}{The margin object, either in npc or a
@@ -21,14 +20,14 @@
   \item{name}{The name of the last viewport}
 }
 \value{
-  \code{NULL}
+\code{NULL}
 }
 \description{
-  A \code{\link[grid]{grid.layout}} object is used to
-  generate the margins. A second viewport selecting the
-  mid-row/col is used to create the effect of margins
+A \code{\link[grid]{grid.layout}} object is used to
+generate the margins. A second viewport selecting the
+mid-row/col is used to create the effect of margins
 }
 \author{
-  max
+max
 }
 

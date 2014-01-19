@@ -2,20 +2,17 @@
 \alias{forestplot2}
 \title{Create a forestplot}
 \usage{
-  forestplot2(labeltext, mean, lower, upper, align = NULL,
-    is.summary = FALSE, fontfamily.summary = NULL,
-    fontfamily.labelrow = NULL, clip = c(-Inf, Inf),
-    xlab = "", zero = 0, graphwidth = "auto",
-    lineheight = "auto", col = fpColors(), xlog = FALSE,
-    xticks = NULL, xticks.digits = 2, lwd.xaxis = NULL,
-    lwd.zero = NULL, lwd.ci = NULL, cex = 1,
-    boxsize = NULL,
-    mar = unit(rep(0.05, times = 4), "npc"), main = NULL,
-    legend = NULL, legend.pos = "top",
-    legend.cex = cex * 0.8, legend.gp = NULL,
-    legend.r = unit(0, "snpc"),
-    legend.padding = unit(ifelse(length(legend.gp) > 0, 3, 0), "mm"),
-    legend.title = NULL, new_page = FALSE, ...)
+forestplot2(labeltext, mean, lower, upper, align = NULL, is.summary = FALSE,
+  fontfamily.summary = NULL, fontfamily.labelrow = NULL, clip = c(-Inf,
+  Inf), xlab = "", zero = 0, graphwidth = "auto", lineheight = "auto",
+  col = fpColors(), xlog = FALSE, xticks = NULL, xticks.digits = 2,
+  lwd.xaxis = NULL, lwd.zero = NULL, lwd.ci = NULL, cex = 1,
+  cex.axis = cex * 0.6, boxsize = NULL, mar = unit(rep(0.05, times = 4),
+  "npc"), main = NULL, legend = NULL, legend.pos = "top",
+  legend.cex = cex * 0.8, legend.gp = NULL, legend.r = unit(0, "snpc"),
+  legend.padding = unit(ifelse(length(legend.gp) > 0, 3, 0), "mm"),
+  legend.title = NULL, new_page = FALSE, confintNormalFn = fpDrawNormalCI,
+  confintSummaryFn = fpDrawSummaryCI, ...)
 }
 \arguments{
   \item{labeltext}{A list, matrix, vector or expression
@@ -97,6 +94,9 @@
 
   \item{cex}{The font adjustment}
 
+  \item{cex.axis}{The font adjustment for the x-xaxis,
+  defaults to 60 \% of the cex parameter.}
+
   \item{boxsize}{Override the default box size based on
   precision}
 
@@ -126,8 +126,8 @@
   "align" option, e.g.  \code{legend.pos = list("topright",
   "inset"=.1, "align"="horizontal")}}
 
-  \item{legend.cex}{The cex size of the legend, by default
-  \code{cex*0.8}}
+  \item{legend.cex}{The cex size of the legend, defaults to
+  80 \% procent of cex parameter.}
 
   \item{legend.gp}{The \code{\link[grid]{gpar}} options for
   the legend. If you want the background color to be light
@@ -157,29 +157,39 @@
   blank page then set this to \code{TRUE}, by default it is
   \code{FALSE}.}
 
+  \item{confintNormalFn}{You can specify exactly how the
+  line with the box is drawn for the normal (i.e.
+  non-summary) confidence interval by changing this
+  parameter to your own function or some of the
+  alternatives provided in the package.  It defaults to the
+  box function \code{\link{fpDrawNormalCI}}.}
+
+  \item{confintSummaryFn}{Same as previous argument but for
+  the summary outputs and it defaults to
+  \code{\link{fpDrawSummaryCI}}.}
+
   \item{...}{Not used}
 }
 \value{
-  void
+void
 }
 \description{
-  forestplot2 is based on the rmeta 2.16 forestplot
-  function. This function resolves some limitations of the
-  original functions such as: \itemize{ \item{Adding
-  expressions: }{Allows use of expressions, e.g.
-  \code{expression(beta)}} \item{Multiple bands: }{Using
-  multiple confidence bands for the same label}
-  \item{Autosize: }{Adapts to windows size} }
+forestplot2 is based on the rmeta 2.16 forestplot function.
+This function resolves some limitations of the original
+functions such as: \itemize{ \item{Adding expressions:
+}{Allows use of expressions, e.g. \code{expression(beta)}}
+\item{Multiple bands: }{Using multiple confidence bands for
+the same label} \item{Autosize: }{Adapts to windows size} }
 }
 \details{
-  Using multiple bands for the same label can be
-  interesting when one wants to compare different outcomer.
-  It can also be an alternative when you want to show both
-  crude and adjusted estimates.
+Using multiple bands for the same label can be interesting
+when one wants to compare different outcomer. It can also
+be an alternative when you want to show both crude and
+adjusted estimates.
 
-  Known issues: the x-axis does not entirely respect the
-  margin. Autosizing boxes is not always the best option,
-  try to set these manually as much as possible.
+Known issues: the x-axis does not entirely respect the
+margin. Autosizing boxes is not always the best option, try
+to set these manually as much as possible.
 }
 \examples{
 ##############################################################
@@ -263,6 +273,6 @@ forestplot2(labeltext = row_names,
 par(ask=ask)
 }
 \author{
-  Max Gordon, Thomas Lumley
+Max Gordon, Thomas Lumley
 }
 

@@ -2,7 +2,7 @@
 \alias{mergeLists}
 \title{Merging of multiple lists}
 \usage{
-  mergeLists(..., lapplyOutput = NULL)
+mergeLists(..., lapplyOutput = NULL)
 }
 \arguments{
   \item{...}{Any number of lists that you want to merge}
@@ -12,13 +12,12 @@
   those.}
 }
 \value{
-  Returns a list with all the given lists.
+Returns a list with all the given lists.
 }
 \description{
-  The merge allows for a recursive component where the
-  lists are compared on the subelement. If one does not
-  contain that element it will get NA in for those
-  parameters.
+The merge allows for a recursive component where the lists
+are compared on the subelement. If one does not contain
+that element it will get NA in for those parameters.
 }
 \examples{
 v1 <- list("a"=c(1,2), b="test 1", sublist=list(one=20:21, two=21:22))
@@ -26,6 +25,6 @@ v2 <- list("a"=c(3,4), b="test 2", sublist=list(one=10:11, two=11:12, three=1:2)
 mergeLists(v1, v2)
 }
 \author{
-  Max
+Max
 }
 

@@ -2,16 +2,16 @@
 \alias{isFitLogit}
 \title{Tests if function is of a logistic regression type}
 \usage{
-  isFitLogit(fit)
+isFitLogit(fit)
 }
 \arguments{
   \item{fit}{Regression object}
 }
 \value{
-  boolean
+boolean
 }
 \description{
-  Tests if function is of a logistic regression type
+Tests if function is of a logistic regression type
 }
 \examples{
 # ** Borrowed code from the lrm example **
@@ -68,6 +68,6 @@ if (isFitLogit(fit_glm) == FALSE)
   print("Correct, the glm without logit as a family is not a logistic regression")
 }
 \author{
-  max
+max
 }
 

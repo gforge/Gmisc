@@ -4,4 +4,3 @@
 #' 
 #' @name Gmisc
 #' @docType package
-NA

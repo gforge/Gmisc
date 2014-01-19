@@ -3,10 +3,9 @@
 \title{A function that returns a description proportion that contains
 the number and the percentage}
 \usage{
-  describeFactors(x, html = FALSE, digits = 1,
-    number_first = TRUE, show_missing = FALSE,
-    horizontal_proportions = NULL, percentage_sign = TRUE,
-    ...)
+describeFactors(x, html = FALSE, digits = 1, number_first = TRUE,
+  show_missing = FALSE, horizontal_proportions = NULL,
+  percentage_sign = TRUE, ...)
 }
 \arguments{
   \item{x}{The variable that you want the statistics for}
@@ -41,11 +40,11 @@ the number and the percentage}
   \item{...}{Discarded}
 }
 \value{
-  A string formatted for printing either latex by HTML
+A string formatted for printing either latex by HTML
 }
 \description{
-  A function that returns a description proportion that
-  contains the number and the percentage
+A function that returns a description proportion that
+contains the number and the percentage
 }
 \examples{
 set.seed(1)
@@ -63,9 +62,9 @@ by(my_var,
    horizontal_proportions = total)
 }
 \author{
-  max
+max
 }
 \seealso{
-  \code{\link{getDescriptionStatsBy}}
+\code{\link{getDescriptionStatsBy}}
 }
 

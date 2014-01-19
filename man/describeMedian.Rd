@@ -3,9 +3,9 @@
 \title{A function that returns a description median that contains
 the interquartile range or the full range}
 \usage{
-  describeMedian(x, iqr = TRUE, html = FALSE, digits = 1,
-    number_first = TRUE, show_missing = FALSE,
-    horizontal_proportions = NULL, percentage_sign = TRUE)
+describeMedian(x, iqr = TRUE, html = FALSE, digits = 1,
+  number_first = TRUE, show_missing = FALSE,
+  horizontal_proportions = NULL, percentage_sign = TRUE)
 }
 \arguments{
   \item{x}{The variable that you want the statistics for}
@@ -47,20 +47,20 @@ the interquartile range or the full range}
   when combined with the missing information.}
 }
 \value{
-  A string formatted for printing either latex by HTML
+A string formatted for printing either latex by HTML
 }
 \description{
-  A function that returns a description median that
-  contains the interquartile range or the full range
+A function that returns a description median that contains
+the interquartile range or the full range
 }
 \examples{
 describeMedian(1:10)
 describeMedian(c(1:10, NA), show_missing=TRUE)
 }
 \author{
-  max
+max
 }
 \seealso{
-  \code{\link{getDescriptionStatsBy}}
+\code{\link{getDescriptionStatsBy}}
 }
 

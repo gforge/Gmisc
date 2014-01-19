@@ -3,14 +3,13 @@
 \alias{plotHR}
 \title{Plot a spline in a Cox regression model}
 \usage{
-  plotHR(models, term = 1, se = TRUE, polygon_ci = TRUE,
-    rug = "density", xlab = "", ylab = "Hazard Ratio",
-    main = NULL, xlim = NULL, ylim = NULL,
-    col.term = "#08519C", col.se = "#DEEBF7",
-    col.dens = grey(0.9), lwd.term = 3, lty.term = 1,
-    lwd.se = lwd.term, lty.se = lty.term, x.ticks = NULL,
-    y.ticks = NULL, ylog = TRUE, cex = 1, y_axis_side = 2,
-    plot.bty = "n", axes = TRUE, alpha = 0.05, ...)
+plotHR(models, term = 1, se = TRUE, polygon_ci = TRUE, rug = "density",
+  xlab = "", ylab = "Hazard Ratio", main = NULL, xlim = NULL,
+  ylim = NULL, col.term = "#08519C", col.se = "#DEEBF7",
+  col.dens = grey(0.9), lwd.term = 3, lty.term = 1, lwd.se = lwd.term,
+  lty.se = lty.term, x.ticks = NULL, y.ticks = NULL, ylog = TRUE,
+  cex = 1, y_axis_side = 2, plot.bty = "n", axes = TRUE, alpha = 0.05,
+  ...)
 }
 \arguments{
   \item{models}{A single model or a list() with several
@@ -112,33 +111,33 @@
   the plot() function}
 }
 \value{
-  The function does not return anything
+The function does not return anything
 }
 \description{
-  This function is a more specialized version of the
-  \code{\link{termplot}()} function. It creates a simple
-  plot with the spline against hazard ratio.
+This function is a more specialized version of the
+\code{\link{termplot}()} function. It creates a simple plot
+with the spline against hazard ratio.
 }
 \details{
-  The function allows for plotting multiple splines in one
-  graph. Sometimes you might want to show more than one
-  spline for the same variable. This allows you to create
-  that comparison.
+The function allows for plotting multiple splines in one
+graph. Sometimes you might want to show more than one
+spline for the same variable. This allows you to create
+that comparison.
 
-  Examples of a situation where I've used multiple splines
-  in one plot is when I want to look at a variables
-  behavior in different time periods. This is another way
-  of looking at the proportional hazards assumption. The
-  Schoenfeld residuals can be a little tricky to look at
-  when you have the splines.
+Examples of a situation where I've used multiple splines in
+one plot is when I want to look at a variables behavior in
+different time periods. This is another way of looking at
+the proportional hazards assumption. The Schoenfeld
+residuals can be a little tricky to look at when you have
+the splines.
 
-  Another example of when I've used this is when I've
-  wanted to plot adjusted and unadjusted splines. This can
-  very nicely demonstrate which of the variable span is
-  mostly confounded. For instance - younger persons may
-  exhibit a higher risk for a procedure but when you put in
-  your covariates you find that the increased hazard
-  changes back to the basic
+Another example of when I've used this is when I've wanted
+to plot adjusted and unadjusted splines. This can very
+nicely demonstrate which of the variable span is mostly
+confounded. For instance - younger persons may exhibit a
+higher risk for a procedure but when you put in your
+covariates you find that the increased hazard changes back
+to the basic
 }
 \examples{
 library(survival)
@@ -202,9 +201,9 @@ plotHR(list(fit.cph, unadjusted_fit), term="age", xlab="Age",
 par(org_par)
 }
 \author{
-  Reinhard Seifert, Max Gordon
+Reinhard Seifert, Max Gordon
 }
 \references{
-  \url{http://rforge.org/plothr/}
+\url{http://rforge.org/plothr/}
 }
 

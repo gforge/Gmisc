@@ -3,9 +3,9 @@
 \title{A function that returns a description mean that contains
 the standard deviation}
 \usage{
-  describeMean(x, html = FALSE, digits = 1,
-    number_first = TRUE, show_missing = FALSE,
-    horizontal_proportions = NULL, percentage_sign = TRUE)
+describeMean(x, html = FALSE, digits = 1, number_first = TRUE,
+  show_missing = FALSE, horizontal_proportions = NULL,
+  percentage_sign = TRUE)
 }
 \arguments{
   \item{x}{The variable that you want the statistics for}
@@ -45,20 +45,20 @@ the standard deviation}
   when combined with the missing information.}
 }
 \value{
-  A string formatted for printing either latex by HTML
+A string formatted for printing either latex by HTML
 }
 \description{
-  A function that returns a description mean that contains
-  the standard deviation
+A function that returns a description mean that contains
+the standard deviation
 }
 \examples{
 describeMean(1:10)
 describeMean(c(1:10, NA), show_missing=TRUE)
 }
 \author{
-  max
+max
 }
 \seealso{
-  \code{\link{getDescriptionStatsBy}}
+\code{\link{getDescriptionStatsBy}}
 }
 

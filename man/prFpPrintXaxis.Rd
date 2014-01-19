@@ -2,7 +2,7 @@
 \alias{prFpPrintXaxis}
 \title{Plots the x-axis for forestplot2}
 \usage{
-  prFpPrintXaxis(axisList, col, lwd.zero)
+prFpPrintXaxis(axisList, col, lwd.zero)
 }
 \arguments{
   \item{axisList}{The list from
@@ -13,13 +13,13 @@
   \item{lwd.zero}{The zero line's line width}
 }
 \value{
-  void
+void
 }
 \description{
-  A helper function to the \code{\link{forestplot2}}
-  function.
+A helper function to the \code{\link{forestplot2}}
+function.
 }
 \author{
-  Max
+Max
 }
 

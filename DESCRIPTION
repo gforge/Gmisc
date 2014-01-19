@@ -14,36 +14,6 @@ Description: This is a collection of functions that I've found useful in my
 License: GPL (>= 3)
 URL: http://gforge.se
 Biarch: yes
-Collate:
-    'forestplot2.R'
-    'plotHR.R'
-    'forestplotCombineRegrObj.R'
-    'forestplotRegrObj.R'
-    'getCphRegrObjData.R'
-    'getCrudeAndAdjustedModelData.R'
-    'isFitCoxPH.R'
-    'isFitLogit.R'
-    'printCrudeAndAdjustedModel.R'
-    'printSimpleFit.R'
-    'private_functions.R'
-    'getTicks.R'
-    'getDescriptionStatsBy.R'
-    'getModelData4Forestplot.R'
-    'htmlTable.R'
-    'descriptionStats.R'
-    'outputInt.R'
-    'Gmisc.R'
-    'getSvdMostInfluential.R'
-    'transitionPlot.R'
-    'bezier_private_functions.R'
-    'bezierArrowSmpl.R'
-    'bezierArrowSmplGradient.R'
-    'mergeLists.R'
-    'rms_SandwichAddon.R'
-    'forestplot2_helpers.R'
-    'getCrudeAndAdjustedModelData.rms.R'
-    'confint_robust.R'
-    'simpleRmsAnova.R'
 Depends:
     rms,
     sandwich,

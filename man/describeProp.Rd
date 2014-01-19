@@ -3,10 +3,9 @@
 \title{A function that returns a description proportion that contains
 the number and the percentage}
 \usage{
-  describeProp(x, html = FALSE, digits = 1,
-    number_first = TRUE, show_missing = FALSE,
-    horizontal_proportions = NULL, default_ref = "First",
-    percentage_sign = TRUE)
+describeProp(x, html = FALSE, digits = 1, number_first = TRUE,
+  show_missing = FALSE, horizontal_proportions = NULL,
+  default_ref = "First", percentage_sign = TRUE)
 }
 \arguments{
   \item{x}{The variable that you want the statistics for}
@@ -50,21 +49,21 @@ the number and the percentage}
   so wish by setting this variable.}
 }
 \value{
-  A string formatted for printing either latex by HTML
+A string formatted for printing either latex by HTML
 }
 \description{
-  A function that returns a description proportion that
-  contains the number and the percentage
+A function that returns a description proportion that
+contains the number and the percentage
 }
 \examples{
 describeProp(factor(sample(50, x=c("A","B"), replace=TRUE)))
 describeProp(factor(sample(50, x=c("A","B", NA), replace=TRUE)), show_missing=TRUE)
 }
 \author{
-  max
+max
 }
 \seealso{
-  \code{\link{getDescriptionStatsBy}},
-  \code{\link{describeFactors}}
+\code{\link{getDescriptionStatsBy}},
+\code{\link{describeFactors}}
 }
 

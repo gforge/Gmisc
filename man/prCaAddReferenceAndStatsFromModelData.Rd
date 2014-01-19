@@ -2,12 +2,10 @@
 \alias{prCaAddReferenceAndStatsFromModelData}
 \title{Add reference according to the model}
 \usage{
-  prCaAddReferenceAndStatsFromModelData(model, order,
-    add_references, add_references_pos,
-    reference_zero_effect, values, ds, output, desc_column,
-    desc_show_tot_perc, desc_numb_first,
-    desc_continuous_fn, desc_prop_fn, desc_factor_fn,
-    desc_show_missing, desc_digits, use_labels)
+prCaAddReferenceAndStatsFromModelData(model, order, add_references,
+  add_references_pos, reference_zero_effect, values, ds, output, desc_column,
+  desc_show_tot_perc, desc_numb_first, desc_continuous_fn, desc_prop_fn,
+  desc_factor_fn, desc_show_missing, desc_digits, use_labels)
 }
 \arguments{
   \item{model}{The regression model}
@@ -76,13 +74,13 @@
   \item{use_labels}{If labels should be used for rownames}
 }
 \value{
-  list
+list
 }
 \description{
-  This is of course for factored variables and not in
-  general.
+This is of course for factored variables and not in
+general.
 }
 \author{
-  max
+max
 }
 

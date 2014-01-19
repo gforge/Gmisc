@@ -2,9 +2,8 @@
 \alias{prFpGetGraphTicksAndClips}
 \title{A helper function to forestplot2}
 \usage{
-  prFpGetGraphTicksAndClips(xticks, xticks.digits, xlog,
-    xlab, lwd.xaxis, col, cex, clip, zero, x_range, nc,
-    mean)
+prFpGetGraphTicksAndClips(xticks, xticks.digits, xlog, xlab, lwd.xaxis, col,
+  cex, cex.axis, clip, zero, x_range, nc, mean)
 }
 \arguments{
   \item{xticks}{The xticks}
@@ -21,6 +20,8 @@
 
   \item{cex}{The text size}
 
+  \item{cex.axis}{The axis tick text size}
+
   \item{clip}{The clip margins}
 
   \item{zero}{The zero effect}
@@ -32,13 +33,13 @@
   \item{mean}{The original means, either matrix or vector}
 }
 \value{
-  list Returns a list with axis_vp, axisGrob, labGrob, zero
-  and clip
+list Returns a list with axis_vp, axisGrob, labGrob, zero
+and clip
 }
 \description{
-  Gets the x-label and zero-bar details
+Gets the x-label and zero-bar details
 }
 \author{
-  Max
+Max
 }
 

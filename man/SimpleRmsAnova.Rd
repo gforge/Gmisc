@@ -3,10 +3,10 @@
 \alias{simpleRmsAnova}
 \title{A simpler latex output of the latex.anova.rms}
 \usage{
-  simpleRmsAnova(anova_output, subregexps = NA, digits = 4,
-    pval_threshold = 10^-4, rowlabel = "Variable", ...)
+simpleRmsAnova(anova_output, subregexps = NA, digits = 4,
+  pval_threshold = 10^-4, rowlabel = "Variable", ...)
 
-  \method{print}{simpleRmsAnova} (x, html = TRUE, ...)
+\method{print}{simpleRmsAnova}(x, html = TRUE, ...)
 }
 \arguments{
   \item{anova_output}{An object from the
@@ -33,15 +33,15 @@
   be used instead of traditional latex() function}
 }
 \value{
-  void See the latex() function
+void See the latex() function
 }
 \description{
-  The original problem is that the anova default function
-  output is very detailed and cause a complaint in
-  Sweave/knitr that \\hbox is overfull. It basically
-  changes capitalized TOTAL, TOTAL INTERACTION and TOTAL
-  NONLINEAR INTERACTION into lower case letters. It also
-  deletes the (Factor + Higher Order Factors).
+The original problem is that the anova default function
+output is very detailed and cause a complaint in
+Sweave/knitr that \\hbox is overfull. It basically changes
+capitalized TOTAL, TOTAL INTERACTION and TOTAL NONLINEAR
+INTERACTION into lower case letters. It also deletes the
+(Factor + Higher Order Factors).
 }
 \examples{
 # ** Borrowed code from the lrm example **
@@ -95,6 +95,6 @@ simpleRmsAnova(a_out,
                ctable=FALSE)
 }
 \author{
-  max
+max
 }
 

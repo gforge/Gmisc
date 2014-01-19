@@ -2,8 +2,7 @@
 \alias{prFpGetLegendGrobs}
 \title{Gets the forestplot legend grobs}
 \usage{
-  prFpGetLegendGrobs(legend, legend.cex,
-    legend.title = NULL)
+prFpGetLegendGrobs(legend, legend.cex, legend.title = NULL)
 }
 \arguments{
   \item{legend}{The legend names}
@@ -13,16 +12,16 @@
   \item{legend.title}{The title of the legend if any}
 }
 \value{
-  \code{list} A "Legend" class that derives from a list
-  with all the different legends. The list also contains
-  attributes such as height, width, max_height, max_width,
-  line_height_and_spacing. The title of the legend is saved
-  inside \code{attr("title")}
+\code{list} A "Legend" class that derives from a list with
+all the different legends. The list also contains
+attributes such as height, width, max_height, max_width,
+line_height_and_spacing. The title of the legend is saved
+inside \code{attr("title")}
 }
 \description{
-  Gets the forestplot legend grobs
+Gets the forestplot legend grobs
 }
 \author{
-  max
+max
 }
 

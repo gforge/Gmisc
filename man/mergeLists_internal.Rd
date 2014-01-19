@@ -2,7 +2,7 @@
 \alias{mergeLists_internal}
 \title{A helper function for mergeLists that does the actual work.}
 \usage{
-  mergeLists_internal(o_element, n_element)
+mergeLists_internal(o_element, n_element)
 }
 \arguments{
   \item{o_element}{Old element}
@@ -10,13 +10,12 @@
   \item{n_element}{New element to add to the old element}
 }
 \value{
-  list with the two merged
+list with the two merged
 }
 \description{
-  A helper function for mergeLists that does the actual
-  work.
+A helper function for mergeLists that does the actual work.
 }
 \author{
-  Max
+Max
 }
 

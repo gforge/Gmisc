@@ -2,7 +2,7 @@
 \alias{splitLines4Table}
 \title{If you want a row to span two or more lines}
 \usage{
-  splitLines4Table(..., html = FALSE)
+splitLines4Table(..., html = FALSE)
 }
 \arguments{
   \item{...}{The lines that you want to be joined}
@@ -11,14 +11,14 @@
   Default is LaTeX.}
 }
 \value{
-  string
+string
 }
 \description{
-  This function helps you to do a multiline table header in
-  both html and in LaTeX. In html this isn't that tricky,
-  you just use the <br /> command but in LaTeX I often find
-  myself writing vbox/hbox stuff and therefore I've created
-  this simple helper function
+This function helps you to do a multiline table header in
+both html and in LaTeX. In html this isn't that tricky, you
+just use the <br /> command but in LaTeX I often find
+myself writing vbox/hbox stuff and therefore I've created
+this simple helper function
 }
 \examples{
 splitLines4Table("hello", "world")
@@ -26,6 +26,6 @@ splitLines4Table("hello", "world", html=TRUE)
 splitLines4Table("hello", "world", list("A list", "is OK"))
 }
 \author{
-  max
+max
 }
 

@@ -2,7 +2,7 @@
 \alias{prFpPrintLabels}
 \title{Plots the labels}
 \usage{
-  prFpPrintLabels(labels, nc, nr)
+prFpPrintLabels(labels, nc, nr)
 }
 \arguments{
   \item{labels}{A list to the labels}
@@ -12,13 +12,13 @@
   \item{nr}{Number of rows}
 }
 \value{
-  void
+void
 }
 \description{
-  This is a helper function to the
-  \code{\link{forestplot2}} function.
+This is a helper function to the \code{\link{forestplot2}}
+function.
 }
 \author{
-  Max
+Max
 }
 

@@ -2,7 +2,7 @@
 \alias{getCphRegrObjData}
 \title{Prints the cph output}
 \usage{
-  getCphRegrObjData(fit, round = TRUE)
+getCphRegrObjData(fit, round = TRUE)
 }
 \arguments{
   \item{fit}{The cph return object}
@@ -10,14 +10,12 @@
   \item{round}{How many integers to display}
 }
 \value{
-  Returns a matrix with columns HR, 2.5%, 97.5 % and
-  Pr(>|Z|)
+Returns a matrix with columns HR, 2.5%, 97.5 % and Pr(>|Z|)
 }
 \description{
-  This is a different way of outputting the cph outcome
-  from the rms package. I needed something a little simpler
-  than the general summary and therefore created this
-  function.
+This is a different way of outputting the cph outcome from
+the rms package. I needed something a little simpler than
+the general summary and therefore created this function.
 }
 \examples{
 # simulated data to use 
@@ -39,6 +37,6 @@ fit <- cph(s ~ x1 + x2 + x3, data=ds)
 printSimpleFit(fit)
 }
 \author{
-  max
+max
 }
 

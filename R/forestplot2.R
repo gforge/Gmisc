@@ -59,6 +59,8 @@
 #' @param lwd.zero  lwd for the vertical line that gives the no-effect line
 #' @param lwd.ci lwd for the confidence bands
 #' @param cex The font adjustment
+#' @param cex.axis The font adjustment for the x-xaxis, defaults to 60 \%
+#'   of the cex parameter.
 #' @param boxsize Override the default box size based on precision
 #' @param mar A numerical vector of the form c(bottom, left, top, right) of the type \code{unit()}
 #' @param main The title of the plot if any, default \code{NULL}
@@ -73,7 +75,7 @@
 #'  element or a value between 0 and 1. The default is to have the boxes aligned vertical, if
 #'  you want them to be in a line then you can specify the "align" option, e.g. 
 #'  \code{legend.pos = list("topright", "inset"=.1, "align"="horizontal")} 
-#' @param legend.cex The cex size of the legend, by default \code{cex*0.8}
+#' @param legend.cex The cex size of the legend, defaults to 80 \% procent of cex parameter.
 #' @param legend.gp The \code{\link[grid]{gpar}} options for the legend. If you want
 #'  the background color to be light grey then use \code{legend.gp = gpar(fill = "lightgrey")}.
 #'  If you want a border then set the col argument: \code{legend.gp = gpar(fill = "lightgrey", col="black")}.
@@ -87,8 +89,14 @@
 #' @param legend.title The title of the legend if any, default to NULL 
 #' @param new_page If you want the plot to appear on a new blank page then set this to \code{TRUE}, by
 #'  default it is \code{FALSE}.
+#' @param confintNormalFn You can specify exactly how the line with the box is 
+#'  drawn for the normal (i.e. non-summary) confidence interval by changing this 
+#'  parameter to your own function or some of the alternatives provided in the package.
+#'  It defaults to the box function \code{\link{fpDrawNormalCI}}.
+#' @param confintSummaryFn Same as previous argument but for the summary outputs
+#'  and it defaults to \code{\link{fpDrawSummaryCI}}.
 #' @param ... Not used 
-#' @return void
+#' @return void 
 #' 
 #' @import grid
 #' 
@@ -115,6 +123,7 @@ forestplot2 <- function (labeltext,
                          lwd.zero             = NULL,
                          lwd.ci               = NULL,
                          cex                  = 1,
+                         cex.axis             = cex * 0.6,
                          boxsize              = NULL, 
                          mar                  = unit(rep(.05, times=4), "npc"),
                          main                 = NULL,
@@ -126,6 +135,8 @@ forestplot2 <- function (labeltext,
                          legend.padding       = unit(ifelse(length(legend.gp) > 0, 3, 0), "mm"),
                          legend.title         = NULL,
                          new_page             = FALSE,
+                         confintNormalFn      = fpDrawNormalCI,
+                         confintSummaryFn     = fpDrawSummaryCI,
                          ...) 
 {
 
@@ -136,8 +147,16 @@ forestplot2 <- function (labeltext,
          " Mean columns:", ncol(mean),
          " Lower bound columns:", ncol(lower),
          " Upper bound columns:", ncol(upper))
+
+  confintNormalFn <- 
+    prFpGetConfintFnList(fn = confintNormalFn, 
+                         no_rows = NROW(mean), 
+                         no_cols = NCOL(mean))
+  confintSummaryFn <- 
+    prFpGetConfintFnList(fn = confintSummaryFn, 
+                         no_rows = NROW(mean), 
+                         no_cols = NCOL(mean))
   
-     
   if (!is.unit(lineheight) && !lineheight %in% c("auto", "lines"))
     stop("The argument lineheight must either be of type unit or set to 'auto',",
       " you have provided a '", class(lineheight), "' class")
@@ -196,65 +215,6 @@ forestplot2 <- function (labeltext,
     mean <- as.vector(mean)
     lower <- as.vector(lower)
     upper <- as.vector(upper)
-  }   
-  
-  
-  # A function that is used to draw the different confidence intervals
-  drawNormalCI <- function(LL, OR, UL, size, y.offset = 0.5, clr.line, clr.box) {
-    size = 0.75 * size
-    
-    # Check if line/box outside graph
-    clipupper <- convertX(unit(UL, "native"), "npc", valueOnly = TRUE) > 
-      1
-    cliplower <- convertX(unit(LL, "native"), "npc", valueOnly = TRUE) < 
-      0
-    box <- convertX(unit(OR, "native"), "npc", valueOnly = TRUE)
-    skipbox <- box < 0 || box > 1
-    
-    # A version where arrows are added to the part outside 
-    # the limits of the graph
-    if (clipupper || cliplower) {
-      ends <- "both"
-      lims <- unit(c(0, 1), c("npc", "npc"))
-      if (!clipupper) {
-        ends <- "first"
-        lims <- unit(c(0, UL), c("npc", "native"))
-      }
-      if (!cliplower) {
-        ends <- "last"
-        lims <- unit(c(LL, 1), c("native", "npc"))
-      }
-      grid.lines(x = lims, 
-                 y = y.offset, 
-                 arrow = arrow(ends = ends, 
-                               length = unit(0.05, "inches")), 
-                 gp = gpar(col = clr.line, lwd=lwd.ci))
-      if (!skipbox)
-        grid.rect(x = unit(OR, "native"), 
-                  y = y.offset, 
-                  width = unit(size, 
-                               "snpc"), 
-                  height = unit(size, "snpc"), 
-                  gp = gpar(fill = clr.box, 
-                            col = clr.box))
-    } else {
-      # Don't draw the line if it's no line to draw
-      if (LL != UL)
-        grid.lines(x = unit(c(LL, UL), "native"), y = y.offset, 
-                   gp = gpar(col = clr.line, lwd=lwd.ci))
-      grid.rect(x = unit(OR, "native"), y=y.offset, 
-                width = unit(size, 
-                             "snpc"), 
-                height = unit(size, "snpc"), 
-                gp = gpar(fill = clr.box, 
-                          col = clr.box))
-    }
-  }
-  drawSummaryCI <- function(LL, OR, UL, size) {
-    grid.polygon(x = unit(c(LL, OR, UL, OR), "native"), y = unit(0.5 + 
-                                                                   c(0, 0.5 * size, 0, -0.5 * size), "npc"), 
-                 gp = gpar(fill = col$summary, 
-                           col = col$summary))
   }
   
   # Get the number of columns (nc) and number of rows (nr)
@@ -352,6 +312,7 @@ forestplot2 <- function (labeltext,
                                         xlab=xlab,
                                         lwd.xaxis=lwd.xaxis, 
                                         cex=cex,
+                                        cex.axis=cex.axis,
                                         col=col,
                                         clip=clip, zero=zero, 
                                         x_range=prFpXrange(upper = upper, 
@@ -512,7 +473,7 @@ forestplot2 <- function (labeltext,
                         name="BaseGrid"))
   
   
-  # Create the fourth argument 4 the drawNormalCI() function 
+  # Create the fourth argument 4 the fpDrawNormalCI() function 
   if (!is.null(boxsize)){
     # If matrix is provided this will convert it
     # to a vector but it doesn't matter in this case
@@ -526,12 +487,14 @@ forestplot2 <- function (labeltext,
     textHeight <- convertUnit(grobHeight(textGrob("A", gp=gpar(cex=cex))),
                               unitTo="npc", 
                               valueOnly=TRUE)
-    info <- 1/cwidth
+    info <- 1/cwidth*0.75
     info <- info/max(info[!is.summary], na.rm = TRUE)
     # Adjust the dots as it gets ridiculous with small text and huge dots
     if (any(textHeight*(nr+.5) * 1.5 < info))
       info <- textHeight*(nr+.5) * 1.5 * info/max(info, na.rm=TRUE) + textHeight*(nr+.5)*1.5/4
-    info[is.summary] <- 1
+    
+    # Set summary to maximum size
+    info[is.summary] <- 1/NCOL(org_mean)
   }
   
   prFpPrintLabels(labels=labels,
@@ -559,8 +522,9 @@ forestplot2 <- function (labeltext,
     }
     
     # The line and box colors may vary
-    clr.line <- rep(col$line, length=length(low_values))
-    clr.box <- rep(col$box, length=length(low_values))
+    clr.line <- rep(col$line, length.out=length(low_values))
+    clr.box <- rep(col$box, length.out=length(low_values))
+    clr.summary <- rep(col$summary, length.out=length(low_values))
     
     line_vp <- viewport(layout.pos.row = i,
                         layout.pos.col = length(colwidths), 
@@ -573,29 +537,51 @@ forestplot2 <- function (labeltext,
                         name = sprintf("Line_%d_%d", i, 2 * nc + 1))
     pushViewport(line_vp)
     
-    if (is.summary[i]){
-      drawSummaryCI(low_values, mean_values, up_values, info_values)
-    }else{
-      # Draw multiple confidence intervals
-      if (length(low_values) > 1){
-        y.offset_base <- 0.2
-        y.offset_increase <- (1-y.offset_base*2)/length(low_values)
-        
-        for(j in 1:length(low_values)){
-          drawNormalCI(rev(low_values)[j], 
-                       rev(mean_values)[j], 
-                       rev(up_values)[j], 
-                       rev(info_values)[j], 
-                       y.offset = y.offset_base + (j-1)*y.offset_increase,
-                       clr.line = rev(clr.line)[j],
-                       clr.box = rev(clr.box)[j])
+    # Draw multiple confidence intervals
+    if (length(low_values) > 1){
+      y.offset_base <- 0.2
+      y.offset_increase <- (1-y.offset_base*2)/length(low_values)
+      
+      for(j in 1:length(low_values)){
+        if (is.summary[i]){
+          eval(as.call(list(confintSummaryFn[[i]][[j]],
+                            lower_limit=rev(low_values)[j], 
+                            estimate=rev(mean_values)[j], 
+                            upper_limit=rev(up_values)[j], 
+                            size=rev(info_values)[j],
+                            col = rev(clr.summary)[j],
+                            y.offset = y.offset_base + (j-1)*y.offset_increase)))
+        }else{
+          eval(as.call(list(confintNormalFn[[i]][[j]],
+                            lower_limit=rev(low_values)[j], 
+                            estimate=rev(mean_values)[j], 
+                            upper_limit=rev(up_values)[j], 
+                            size=rev(info_values)[j], 
+                            y.offset = y.offset_base + (j-1)*y.offset_increase,
+                            clr.line = rev(clr.line)[j],
+                            clr.box = rev(clr.box)[j],
+                            lwd=lwd.ci)))
         }
+      }
+    }else{
+      if (is.summary[i]){
+        eval(as.call(list(confintSummaryFn[[i]],
+                          lower_limit=low_values, 
+                          estimate=mean_values, 
+                          upper_limit=up_values, 
+                          size=info_values,
+                          col=clr.summary)))
       }else{
-        drawNormalCI(low_values, mean_values, up_values, info_values,
-                     clr.line = clr.line, clr.box = clr.box)
+        eval(as.call(list(confintNormalFn[[i]],
+                          lower_limit=low_values, 
+                          estimate=mean_values, 
+                          upper_limit=up_values, 
+                          size=info_values,
+                          clr.line = clr.line, 
+                          clr.box = clr.box,
+                          lwd=lwd.ci)))
       }
     }
-    
     
     upViewport()
   }

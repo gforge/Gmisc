@@ -43,11 +43,12 @@ row_names <- list(
 coef <- with(test_data, cbind(coef1, coef2))
 low <- with(test_data, cbind(low1, low2))
 high <- with(test_data, cbind(high1, high2))
-forestplot2(row_names, coef, low, high, 
+forestplot2(row_names, coef, low, high,
             main="Cool study",
             zero = 1, boxsize=0.5,
             col=fpColors(box=c("royalblue", "gold"),
-                         line=c("darkblue", "orange")),
+                         line=c("darkblue", "orange"),
+                         summary=c("darkblue", "red")),
             xlab="The estimates",
             new_page = TRUE, 
             legend.title="Group",

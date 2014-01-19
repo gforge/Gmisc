@@ -2,8 +2,8 @@
 \alias{confint_robust}
 \title{The confint function adapted for vcovHC}
 \usage{
-  confint_robust(object, parm, level = 0.95,
-    HC_type = "HC3", t_distribution = FALSE, ...)
+confint_robust(object, parm, level = 0.95, HC_type = "HC3",
+  t_distribution = FALSE, ...)
 }
 \arguments{
   \item{object}{The regression model object, either an ols
@@ -24,14 +24,14 @@
   \item{...}{Additional parameters that are passed on.}
 }
 \value{
-  a matrix with the confidence intervals
+a matrix with the confidence intervals
 }
 \description{
-  The confint.lm uses the t-distribution as the default
-  confidence interval estimator. According to
-  Cribari-Nieto's study 2008 this should be the normal
-  distribution. This is also supported by my own resampling
-  study with heteroscedastic outcomes.
+The confint.lm uses the t-distribution as the default
+confidence interval estimator. According to Cribari-Nieto's
+study 2008 this should be the normal distribution. This is
+also supported by my own resampling study with
+heteroscedastic outcomes.
 }
 \examples{
 n <- 50
@@ -42,6 +42,6 @@ fit <- lm(y~x)
 confint_robust(fit, HC_type = "HC4m")
 }
 \author{
-  Max
+Max
 }
 

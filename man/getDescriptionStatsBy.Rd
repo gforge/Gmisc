@@ -2,15 +2,13 @@
 \alias{getDescriptionStatsBy}
 \title{Creating of description statistics}
 \usage{
-  getDescriptionStatsBy(x, by, digits = 1, html = FALSE,
-    NEJMstyle = FALSE, numbers_first = TRUE,
-    statistics = FALSE, min_pval = 10^-4,
-    show_missing = FALSE, continuous_fn = describeMean,
-    prop_fn = describeProp, factor_fn = describeFactors,
-    show_all_values = FALSE, hrzl_prop = FALSE,
-    add_total_col = hrzl_prop, total_col_show_perc = TRUE,
-    use_units = FALSE, default_ref = "First",
-    percentage_sign = TRUE)
+getDescriptionStatsBy(x, by, digits = 1, html = FALSE, NEJMstyle = FALSE,
+  numbers_first = TRUE, statistics = FALSE, min_pval = 10^-4,
+  show_missing = FALSE, continuous_fn = describeMean,
+  prop_fn = describeProp, factor_fn = describeFactors,
+  show_all_values = FALSE, hrzl_prop = FALSE, add_total_col = hrzl_prop,
+  total_col_show_perc = TRUE, use_units = FALSE, default_ref = "First",
+  percentage_sign = TRUE)
 }
 \arguments{
   \item{x}{The variable that you want the statistics for}
@@ -88,18 +86,18 @@
   so wish by setting this variable.}
 }
 \value{
-  Returns a vector if vars wasn't specified and it's a
-  continuous or binary statistic. If vars was a matrix then
-  it appends the result to the end of that matrix. If the x
-  variable is a factor then it does not append and you get
-  a warning.
+Returns a vector if vars wasn't specified and it's a
+continuous or binary statistic. If vars was a matrix then
+it appends the result to the end of that matrix. If the x
+variable is a factor then it does not append and you get a
+warning.
 }
 \description{
-  A function that returns a description statistic that can
-  be used for creating a publication "table 1" when you
-  want it by groups. The function identifies if the
-  variable is a continuous, binary or a factored variable.
-  The format is inspired by NEJM, Lancet & BMJ.
+A function that returns a description statistic that can be
+used for creating a publication "table 1" when you want it
+by groups. The function identifies if the variable is a
+continuous, binary or a factored variable. The format is
+inspired by NEJM, Lancet & BMJ.
 }
 \examples{
 data(mtcars)
@@ -171,10 +169,10 @@ getDescriptionStatsBy(mtcars$col_with_missing, mtcars$am, statistics=TRUE,
 
 }
 \author{
-  max
+max
 }
 \seealso{
-  \code{\link{describeMean}}, \code{\link{describeProp}},
-  \code{\link{describeFactors}}, \code{\link{htmlTable}}
+\code{\link{describeMean}}, \code{\link{describeProp}},
+\code{\link{describeFactors}}, \code{\link{htmlTable}}
 }
 

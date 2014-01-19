@@ -2,10 +2,9 @@
 \alias{prCaGetVnStats}
 \title{Gets the variable stats}
 \usage{
-  prCaGetVnStats(model, vn, outcome, output, ds,
-    add_references, add_references_pos, desc_digits,
-    desc_continuous_fn, desc_prop_fn, desc_factor_fn,
-    desc_show_missing, desc_show_tot_perc)
+prCaGetVnStats(model, vn, outcome, output, ds, add_references,
+  add_references_pos, desc_digits, desc_continuous_fn, desc_prop_fn,
+  desc_factor_fn, desc_show_missing, desc_show_tot_perc)
 }
 \arguments{
   \item{model}{The model}
@@ -63,14 +62,14 @@
   not specified.}
 }
 \value{
-  \code{matrix} A matrix from
-  \code{\link{getDescriptionStatsBy}} or
-  \code{\link{prGetStatistics}}
+\code{matrix} A matrix from
+\code{\link{getDescriptionStatsBy}} or
+\code{\link{prGetStatistics}}
 }
 \description{
-  Gets the variable stats
+Gets the variable stats
 }
 \author{
-  max
+max
 }
 

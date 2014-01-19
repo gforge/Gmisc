@@ -2,7 +2,7 @@
 \alias{confint.ols}
 \title{A confint function for the ols}
 \usage{
-  \method{confint}{ols} (object, parm, level = 0.95, ...)
+\method{confint}{ols}(object, parm, level = 0.95, ...)
 }
 \arguments{
   \item{object}{a fitted ols-model object.}
@@ -17,19 +17,19 @@
   \item{...}{additional argument(s) for methods.}
 }
 \value{
-  A matrix (or vector) with columns giving lower and upper
-  confidence limits for each parameter. These will be
-  labelled as (1-level)/2 and 1 - (1-level)/2 in % (by
-  default 2.5% and 97.5%).
+A matrix (or vector) with columns giving lower and upper
+confidence limits for each parameter. These will be
+labelled as (1-level)/2 and 1 - (1-level)/2 in % (by
+default 2.5% and 97.5%).
 }
 \description{
-  This function checks that there is a df.residual before
-  running the qt(). If not found it then defaults to the
-  qnorm() function. Otherwise it is a copy of the
-  \code{\link[stats]{confint}} function.
+This function checks that there is a df.residual before
+running the qt(). If not found it then defaults to the
+qnorm() function. Otherwise it is a copy of the
+\code{\link[stats]{confint}} function.
 }
 \details{
-  TODO: Switch to the summaryrms
+TODO: Switch to the summaryrms
 }
 \examples{
 # Generate some data
@@ -59,6 +59,6 @@ confint(f_rob)
 options(org.op)
 }
 \author{
-  max
+max
 }
 

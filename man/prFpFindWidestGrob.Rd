@@ -2,7 +2,7 @@
 \alias{prFpFindWidestGrob}
 \title{Finds the widest grob in the current list of grobs}
 \usage{
-  prFpFindWidestGrob(grob.list, return_unit = "mm")
+prFpFindWidestGrob(grob.list, return_unit = "mm")
 }
 \arguments{
   \item{grob.list}{A list of grobs}
@@ -11,12 +11,12 @@
   specifier}
 }
 \value{
-  \code{\link[grid]{unit}}
+\code{\link[grid]{unit}}
 }
 \description{
-  Finds the widest grob in the current list of grobs
+Finds the widest grob in the current list of grobs
 }
 \author{
-  max
+max
 }
 

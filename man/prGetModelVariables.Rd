@@ -2,8 +2,8 @@
 \alias{prGetModelVariables}
 \title{Get the models variables}
 \usage{
-  prGetModelVariables(model, remove_splines = TRUE,
-    remove_interaction_vars = FALSE)
+prGetModelVariables(model, remove_splines = TRUE,
+  remove_interaction_vars = FALSE)
 }
 \arguments{
   \item{model}{A model fit}
@@ -19,14 +19,14 @@
   and it's better to show these in a separate table}
 }
 \value{
-  vector with names
+vector with names
 }
 \description{
-  This function extract the modelled variables. Any
-  interaction terms are removed as those should already be
-  represented by the individual terms.
+This function extract the modelled variables. Any
+interaction terms are removed as those should already be
+represented by the individual terms.
 }
 \author{
-  max
+max
 }
 

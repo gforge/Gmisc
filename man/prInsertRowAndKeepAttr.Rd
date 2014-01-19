@@ -2,7 +2,7 @@
 \alias{prInsertRowAndKeepAttr}
 \title{Insert a row to a matrix}
 \usage{
-  prInsertRowAndKeepAttr(m, r, v = NA, rName = "")
+prInsertRowAndKeepAttr(m, r, v = NA, rName = "")
 }
 \arguments{
   \item{m}{matrix.}
@@ -15,13 +15,13 @@
   new row.}
 }
 \value{
-  a matrix with one more row than the provided matrix m.
+a matrix with one more row than the provided matrix m.
 }
 \description{
-  Inserts a row and keeps the attributes
-  \code{\link{prCopyAllAttribsExceptDim}}
+Inserts a row and keeps the attributes
+\code{\link{prCopyAllAttribsExceptDim}}
 }
 \author{
-  max, Arne Henningsen
+max, Arne Henningsen
 }
 

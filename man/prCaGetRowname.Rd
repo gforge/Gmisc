@@ -2,7 +2,7 @@
 \alias{prCaGetRowname}
 \title{Gets the labelled rowname if it exists}
 \usage{
-  prCaGetRowname(vn, use_labels, dataset)
+prCaGetRowname(vn, use_labels, dataset)
 }
 \arguments{
   \item{vn}{The variable name}
@@ -12,13 +12,13 @@
   \item{dataset}{The dataset}
 }
 \value{
-  \code{string} The rowname
+\code{string} The rowname
 }
 \description{
-  Looks for matches inside factors if rowname contains the
-  name of the column. Capitalizes the name.
+Looks for matches inside factors if rowname contains the
+name of the column. Capitalizes the name.
 }
 \author{
-  max
+max
 }
 

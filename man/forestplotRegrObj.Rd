@@ -2,15 +2,13 @@
 \alias{forestplotRegrObj}
 \title{Foresplot for multiple models}
 \usage{
-  forestplotRegrObj(regr.obj, title = NULL,
-    clip = c(-Inf, Inf), col.zero = "lightgray",
-    skip.variables = NULL, insertEmptyRows = NULL,
-    order.regexps = NULL, order.addrows = FALSE,
-    legend.title = "Type of analysis",
-    legend.content = NULL, legend.position = "topright",
-    legend.inset = 0.05, box.default.size = NULL,
-    rowname.fn = NULL, xlab = NULL, xlog = FALSE,
-    estimate.txt = NULL, zero = NULL, exp = TRUE, ...)
+forestplotRegrObj(regr.obj, title = NULL, clip = c(-Inf, Inf),
+  col.zero = "lightgray", skip.variables = NULL, insertEmptyRows = NULL,
+  order.regexps = NULL, order.addrows = FALSE,
+  legend.title = "Type of analysis", legend.content = NULL,
+  legend.position = "topright", legend.inset = 0.05,
+  box.default.size = NULL, rowname.fn = NULL, xlab = NULL, xlog = FALSE,
+  estimate.txt = NULL, zero = NULL, exp = TRUE, ...)
 }
 \arguments{
   \item{regr.obj}{A regression model object. It should be
@@ -82,14 +80,14 @@
   \item{...}{Passed to \code{\link{forestplot2}}()}
 }
 \value{
-  Does not return anything
+Does not return anything
 }
 \description{
-  Plot survival objects with different lines for each
-  survival object. This gives a very nice overview of how
-  different outcomes compare but can also be used for
-  comparing different methods as long as they have the same
-  variable names.
+Plot survival objects with different lines for each
+survival object. This gives a very nice overview of how
+different outcomes compare but can also be used for
+comparing different methods as long as they have the same
+variable names.
 }
 \examples{
 org.par <- par("ask" = TRUE)
@@ -136,9 +134,9 @@ forestplotRegrObj (
 par(org.par)
 }
 \author{
-  max
+max
 }
 \seealso{
-  \code{\link{forestplot2}}
+\code{\link{forestplot2}}
 }
 

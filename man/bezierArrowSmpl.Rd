@@ -2,12 +2,10 @@
 \alias{bezierArrowSmpl}
 \title{A simple bezier arrow}
 \usage{
-  bezierArrowSmpl(x = c(0.2, 0.7, 0.3, 0.9),
-    y = c(0.2, 0.2, 0.9, 0.9), width = 0.05,
-    clr = "#000000", default.units = "npc",
-    arrow = list(base = unit(0.1, "npc"), length = unit(0.1, "npc")),
-    align_2_axis = TRUE, name = NULL, gp = gpar(),
-    vp = NULL)
+bezierArrowSmpl(x = c(0.2, 0.7, 0.3, 0.9), y = c(0.2, 0.2, 0.9, 0.9),
+  width = 0.05, clr = "#000000", default.units = "npc",
+  arrow = list(base = unit(0.1, "npc"), length = unit(0.1, "npc")),
+  align_2_axis = TRUE, name = NULL, gp = gpar(), vp = NULL)
 }
 \arguments{
   \item{x}{A numeric vector or unit object specifying
@@ -44,14 +42,14 @@
   \item{vp}{A Grid viewport object (or NULL).}
 }
 \value{
-  A grob of the class polygonGrob with attributes that
-  correspond to the bezier points.
+A grob of the class polygonGrob with attributes that
+correspond to the bezier points.
 }
 \description{
-  This is an alternative to the grid packages
-  \code{\link{bezierGrob}} with the advantage that it
-  allows you to draw an arrow with a specific unit width.
-  Note, it has only a end-arrow at this point.
+This is an alternative to the grid packages
+\code{\link{bezierGrob}} with the advantage that it allows
+you to draw an arrow with a specific unit width. Note, it
+has only a end-arrow at this point.
 }
 \examples{
 par_org <- par(ask=TRUE) 
@@ -92,6 +90,6 @@ transitionPlot(transition_matrix, box_prop=box_prop,
 par(par_org)
 }
 \author{
-  max
+max
 }
 

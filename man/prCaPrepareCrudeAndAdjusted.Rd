@@ -2,8 +2,7 @@
 \alias{prCaPrepareCrudeAndAdjusted}
 \title{Prettify the text}
 \usage{
-  prCaPrepareCrudeAndAdjusted(x, output, ci_max, ci_min,
-    digits, sprintf_ci_str)
+prCaPrepareCrudeAndAdjusted(x, output, ci_max, ci_min, digits, sprintf_ci_str)
 }
 \arguments{
   \item{x}{The value matrix from getCrudeAndAdjusted}
@@ -20,14 +19,14 @@
   the confidence interval}
 }
 \value{
-  \code{matrix} A string matrix with the values formated
+\code{matrix} A string matrix with the values formated
 }
 \description{
-  Sets the number of digits, formats the confidence
-  interval and changes the number of cols into 4 where the
-  upper and lower CI meet in one string column
+Sets the number of digits, formats the confidence interval
+and changes the number of cols into 4 where the upper and
+lower CI meet in one string column
 }
 \author{
-  max
+max
 }
 

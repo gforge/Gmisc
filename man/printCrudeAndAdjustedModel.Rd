@@ -3,22 +3,17 @@
 \alias{printCrudeAndAdjustedModel}
 \title{Output crude and adjusted model data}
 \usage{
-  printCrudeAndAdjustedModel(model, order = FALSE,
-    digits = 2, ci_max = Inf, ci_min = -Inf,
-    sprintf_ci_str = "\%s to \%s", add_references = FALSE,
-    add_references_pos = list(),
-    reference_zero_effect = NULL, groups = NULL,
-    rowname.fn = NULL, use_labels = TRUE,
-    desc_column = FALSE, desc_show_tot_perc = FALSE,
-    desc_numb_first = TRUE,
-    desc_continuous_fn = describeMean,
-    desc_prop_fn = describeProp,
-    desc_factor_fn = describeFactors,
-    desc_show_missing = FALSE, desc_digits = digits,
-    output = "html", ...)
+printCrudeAndAdjustedModel(model, order = FALSE, digits = 2, ci_max = Inf,
+  ci_min = -Inf, sprintf_ci_str = "\%s to \%s", add_references = FALSE,
+  add_references_pos = list(), reference_zero_effect = NULL,
+  groups = NULL, rowname.fn = NULL, use_labels = TRUE,
+  desc_column = FALSE, desc_show_tot_perc = FALSE, desc_numb_first = TRUE,
+  desc_continuous_fn = describeMean, desc_prop_fn = describeProp,
+  desc_factor_fn = describeFactors, desc_show_missing = FALSE,
+  desc_digits = digits, output = "html", ...)
 
-  \method{print}{printCrudeAndAdjusted} (x,
-    rgroupCSSstyle = "", rgroupCSSseparator = "", ...)
+\method{print}{printCrudeAndAdjusted}(x, rgroupCSSstyle = "",
+  rgroupCSSseparator = "", ...)
 }
 \arguments{
   \item{model}{A regression model}
@@ -136,22 +131,21 @@
   separator). Passed on to \code{\link{htmlTable}}.}
 }
 \value{
-  \code{matrix} Returns a matrix of class
-  printCrudeAndAdjusted that has a default print method
-  associated with
+\code{matrix} Returns a matrix of class
+printCrudeAndAdjusted that has a default print method
+associated with
 }
 \description{
-  Prints table for a fitted object. It prints by default a
-  latex table but can also be converted into a HTML table
-  that should be more compatible with common word
-  processors.
+Prints table for a fitted object. It prints by default a
+latex table but can also be converted into a HTML table
+that should be more compatible with common word processors.
 }
 \details{
-  A word of warning: if you call this function and you've
-  changed any of the variables used in the original call,
-  i.e. the premises are changed, this function will not
-  remember the original values and the statistics will be
-  faulty!
+A word of warning: if you call this function and you've
+changed any of the variables used in the original call,
+i.e. the premises are changed, this function will not
+remember the original values and the statistics will be
+faulty!
 }
 \examples{
 # simulated data to use 
@@ -212,6 +206,6 @@ printCrudeAndAdjustedModel(fit_mtcar,
                            output = "html")
 }
 \author{
-  max
+max
 }
 

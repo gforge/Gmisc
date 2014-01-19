@@ -2,18 +2,14 @@
 \alias{transitionPlot}
 \title{A transition plot}
 \usage{
-  transitionPlot(transition_flow,
-    type_of_arrow = c("grid", "simple", "gradient"),
-    box_txt = rownames(transition_flow), tot_spacing = 0.2,
-    box_width = 1/4, fill_start_box = "darkgreen",
-    txt_start_clr = "white", fill_end_box = "steelblue",
-    txt_end_clr = "white", cex = 2, min_lwd = 1,
-    max_lwd = 6, lwd_prop_total = TRUE,
-    arrow_clr = "#000000", abs_arrow_width = FALSE,
-    overlap_bg_clr = "#FFFFFF",
-    overlap_order = 1:nrow(transition_flow),
-    overlap_add_width = 1.5, box_prop = NULL,
-    new_page = FALSE)
+transitionPlot(transition_flow, type_of_arrow = c("grid", "simple",
+  "gradient"), box_txt = rownames(transition_flow), tot_spacing = 0.2,
+  box_width = 1/4, fill_start_box = "darkgreen", txt_start_clr = "white",
+  fill_end_box = "steelblue", txt_end_clr = "white", cex = 2,
+  min_lwd = 1, max_lwd = 6, lwd_prop_total = TRUE,
+  arrow_clr = "#000000", abs_arrow_width = FALSE,
+  overlap_bg_clr = "#FFFFFF", overlap_order = 1:nrow(transition_flow),
+  overlap_add_width = 1.5, box_prop = NULL, new_page = FALSE)
 }
 \arguments{
   \item{transition_flow}{This should be a matrix with the
@@ -121,13 +117,13 @@
   \code{FALSE}.}
 }
 \value{
-  void
+void
 }
 \description{
-  This plot purpose is to illustrate how states change
-  before and after. In my research I use it before surgery
-  and after surgery but it can be used in any situation
-  where you have a change from one state to another
+This plot purpose is to illustrate how states change before
+and after. In my research I use it before surgery and after
+surgery but it can be used in any situation where you have
+a change from one state to another
 }
 \examples{
 par_org <- par(ask=TRUE) 
@@ -168,6 +164,6 @@ transitionPlot(transition_matrix, box_prop=box_prop,
 par(par_org)
 }
 \author{
-  max
+max
 }
 

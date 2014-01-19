@@ -2,9 +2,8 @@
 \alias{rotateWidthAccAngle}
 \title{Rotates a width to match a vector}
 \usage{
-  rotateWidthAccAngle(angle, x_origo = NA, y_origo = NA,
-    width = 0, default.units = "npc", perpendicular = TRUE,
-    prev_angle = NA)
+rotateWidthAccAngle(angle, x_origo = NA, y_origo = NA, width = 0,
+  default.units = "npc", perpendicular = TRUE, prev_angle = NA)
 }
 \arguments{
   \item{angle}{Angle to rotate according to}
@@ -26,16 +25,16 @@
   previous angle}
 }
 \value{
-  list A list with left & right vectors of c(x, y) format
-  and a angle element
+list A list with left & right vectors of c(x, y) format and
+a angle element
 }
 \description{
-  This function is provided with an angle and a width. It
-  then creates a vector that uses the angle and the origo
-  points to generate a width vector used in
-  \code{\link{getLines}}, \code{\link{getLinesWithArrow}}
+This function is provided with an angle and a width. It
+then creates a vector that uses the angle and the origo
+points to generate a width vector used in
+\code{\link{getLines}}, \code{\link{getLinesWithArrow}}
 }
 \author{
-  max
+max
 }
 

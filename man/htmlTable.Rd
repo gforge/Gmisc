@@ -2,18 +2,15 @@
 \alias{htmlTable}
 \title{Outputting HTML tables}
 \usage{
-  htmlTable(x, title = first.word(deparse(substitute(x))),
-    headings = NA,
-    align = paste(c("l", rep("c", ncol(x) - 1)), collapse = ""),
-    halign = paste(rep("c", ncol(x)), collapse = ""),
-    cgroup = NULL, n.cgroup = NULL, cgroup.just = NULL,
-    rgroup = NULL, n.rgroup = NULL,
-    rgroupCSSstyle = "font-weight: 900;",
-    rgroupCSSseparator = "border-top: 1px solid grey;",
-    rowlabel = title, rowlabel.pos = "bottom",
-    ctable = FALSE, compatibility = "LibreOffice",
-    rowname = NA, caption = NULL, caption.loc = "top",
-    tfoot = NULL, label = NULL, output = TRUE, ...)
+htmlTable(x, title = first.word(deparse(substitute(x))), headings = NA,
+  align = paste(c("l", rep("c", ncol(x) - 1)), collapse = ""),
+  halign = paste(rep("c", ncol(x)), collapse = ""), cgroup = NULL,
+  n.cgroup = NULL, cgroup.just = NULL, rgroup = NULL, n.rgroup = NULL,
+  rgroupCSSstyle = "font-weight: 900;",
+  rgroupCSSseparator = "border-top: 1px solid grey;", rowlabel = title,
+  rowlabel.pos = "bottom", ctable = FALSE, compatibility = "LibreOffice",
+  rowname = NA, caption = NULL, caption.loc = "top", tfoot = NULL,
+  label = NULL, output = TRUE, ...)
 }
 \arguments{
   \item{x}{The matrix/data.frame with the data}
@@ -140,50 +137,48 @@
   print}
 }
 \value{
-  Returns a string with the output table if output is not
-  set
+Returns a string with the output table if output is not set
 }
 \description{
-  This is a function for outputting a more advanced table
-  than xtable allows. It's aim is to provide the Hmisc
-  \code{\link{latex}()} colgroup and rowgroup functions in
-  HTML. The code outputted is perhaps a little raw compared
-  to fully CSS formatted HTML. The reason for this is that
-  I've chosen maximum compatibility with
-  LibreOffice/OpenOffice that lacks any more advanced
-  understanding of HTML & CSS.
+This is a function for outputting a more advanced table
+than xtable allows. It's aim is to provide the Hmisc
+\code{\link{latex}()} colgroup and rowgroup functions in
+HTML. The code outputted is perhaps a little raw compared
+to fully CSS formatted HTML. The reason for this is that
+I've chosen maximum compatibility with
+LibreOffice/OpenOffice that lacks any more advanced
+understanding of HTML & CSS.
 }
 \details{
-  If you set the option table_counter you will get a Table
-  1,2,3 etc before each table, just set
-  \code{options(table_counter=TRUE)}. If you set it to a
-  number then that number will correspond to the start of
-  the table_counter. The table_counter option will also
-  contain the number of the last table, this can be useful
-  when referencing it in text. By setting the option
-  \code{options(table_counter_str = "<b>Table \%s:</b> ")}
-  you can manipulate the counter table text that is added
-  prior to the actual caption. Note, you should use the
-  \code{\link{sprintf}} \code{\%s} instead of \code{\%d} as
-  the software converts all numbers to characters for
-  compatibility reasons. If you set
-  \code{options(table_counter_roman = TRUE)} then the table
-  counter will use Roman numumerals instead of Arabic.
+If you set the option table_counter you will get a Table
+1,2,3 etc before each table, just set
+\code{options(table_counter=TRUE)}. If you set it to a
+number then that number will correspond to the start of the
+table_counter. The table_counter option will also contain
+the number of the last table, this can be useful when
+referencing it in text. By setting the option
+\code{options(table_counter_str = "<b>Table \%s:</b> ")}
+you can manipulate the counter table text that is added
+prior to the actual caption. Note, you should use the
+\code{\link{sprintf}} \code{\%s} instead of \code{\%d} as
+the software converts all numbers to characters for
+compatibility reasons. If you set
+\code{options(table_counter_roman = TRUE)} then the table
+counter will use Roman numumerals instead of Arabic.
 
-  Note that when using complex cgroup alignments with
-  multiple levels not every browser is able to handle this.
-  For instance the RStudio webkit browser seems to have
-  issues with this and a bug has been filed:
-  "http://code.google.com/p/chromium/issues/detail?id=305130"
+Note that when using complex cgroup alignments with
+multiple levels not every browser is able to handle this.
+For instance the RStudio webkit browser seems to have
+issues with this and a bug has been filed:
+"http://code.google.com/p/chromium/issues/detail?id=305130"
 
-  If you in your knitr html-document get a "structure"
-  noted under the rowlabel heading then this is an effect
-  from the automated rowlabel name. It is copied from the
-  title that in turn uses the \code{x} to find an
-  apropriate name:
-  \code{title=first.word(deparse(substitute(x)))}. All you
-  need to do is simply set either the \code{title} or the
-  \code{rowlabel} arguments to get rid of this "bug".
+If you in your knitr html-document get a "structure" noted
+under the rowlabel heading then this is an effect from the
+automated rowlabel name. It is copied from the title that
+in turn uses the \code{x} to find an apropriate name:
+\code{title=first.word(deparse(substitute(x)))}. All you
+need to do is simply set either the \code{title} or the
+\code{rowlabel} arguments to get rid of this "bug".
 }
 \examples{
 # A simple example
@@ -236,10 +231,10 @@ htmlTable(
 
 }
 \author{
-  max
+max
 }
 \seealso{
-  \code{\link{latex}}, \code{\link{getDescriptionStatsBy}},
-  \code{\link{splitLines4Table}}
+\code{\link{latex}}, \code{\link{getDescriptionStatsBy}},
+\code{\link{splitLines4Table}}
 }
 

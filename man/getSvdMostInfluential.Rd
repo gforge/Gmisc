@@ -2,9 +2,8 @@
 \alias{getSvdMostInfluential}
 \title{Gets the maximum contributor variables from svd()}
 \usage{
-  getSvdMostInfluential(mtrx, quantile,
-    similarity_threshold, plot_selection = TRUE,
-    plot_threshold = 0.05, varnames = NULL)
+getSvdMostInfluential(mtrx, quantile, similarity_threshold,
+  plot_selection = TRUE, plot_threshold = 0.05, varnames = NULL)
 }
 \arguments{
   \item{mtrx}{A matrix or data frame with the variables.
@@ -34,28 +33,28 @@
   colnames}
 }
 \value{
-  Returns a list with vector with the column numbers that
-  were picked in the "most_influential" variable and the
-  svd caluclation in the "svd"
+Returns a list with vector with the column numbers that
+were picked in the "most_influential" variable and the svd
+caluclation in the "svd"
 }
 \description{
-  This function is inspired by Jeff Leeks Data Analysis
-  course where he suggests that one way to use the
-  \code{\link{svd}} is to look at the most influential rows
-  for first columns in the V matrix.
+This function is inspired by Jeff Leeks Data Analysis
+course where he suggests that one way to use the
+\code{\link{svd}} is to look at the most influential rows
+for first columns in the V matrix.
 }
 \details{
-  This function expands on that idea and adds the option of
-  choosing more than just the most contributing variable
-  for each row. For instance two variables may have a major
-  impact on a certain component where the second variable
-  has 95% of the maximum variables value, since this
-  variable is probably important in that particular
-  component it makes sense to include it in the selection.
+This function expands on that idea and adds the option of
+choosing more than just the most contributing variable for
+each row. For instance two variables may have a major
+impact on a certain component where the second variable has
+95% of the maximum variables value, since this variable is
+probably important in that particular component it makes
+sense to include it in the selection.
 
-  It is of course useful when you have many continuous
-  variables and you want to determine a subgroup to look
-  at, i.e. finding the needle in the haystack.
+It is of course useful when you have many continuous
+variables and you want to determine a subgroup to look at,
+i.e. finding the needle in the haystack.
 }
 \examples{
 org_par <- par(ask=TRUE)
@@ -153,6 +152,6 @@ getSvdMostInfluential(dataMatrix,
 par(org_par)
 }
 \author{
-  max
+max
 }
 

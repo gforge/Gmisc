@@ -2,8 +2,7 @@
 \alias{prFpGetLayoutVP}
 \title{Get the main foresplot}
 \usage{
-  prFpGetLayoutVP(lineheight, labels, nr,
-    legend_layout = NULL)
+prFpGetLayoutVP(lineheight, labels, nr, legend_layout = NULL)
 }
 \arguments{
   \item{lineheight}{The line height}
@@ -16,12 +15,12 @@
   applicable}
 }
 \value{
-  \code{viewport} Returns the viewport needed
+\code{viewport} Returns the viewport needed
 }
 \description{
-  The layout makes space for a legend if needed
+The layout makes space for a legend if needed
 }
 \author{
-  max
+max
 }
 

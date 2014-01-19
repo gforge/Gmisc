@@ -2,9 +2,8 @@
 \alias{getModelData4Forestplot}
 \title{Get model data}
 \usage{
-  getModelData4Forestplot(regr.obj, exp,
-    variablesOfInterest.regexp, ref_labels,
-    add_first_as_ref)
+getModelData4Forestplot(regr.obj, exp, variablesOfInterest.regexp, ref_labels,
+  add_first_as_ref)
 }
 \arguments{
   \item{regr.obj}{A list with all the fits that have
@@ -29,8 +28,8 @@
   vector is used for the model fits.}
 }
 \description{
-  A helper function for
-  \code{\link{forestplotCombineRegrObj}}
+A helper function for
+\code{\link{forestplotCombineRegrObj}}
 }
 \examples{
 org.par <- par("ask" = TRUE)
@@ -77,6 +76,6 @@ forestplotCombineRegrObj (
 par(org.par)
 }
 \author{
-  max
+max
 }
 

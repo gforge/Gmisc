@@ -2,7 +2,7 @@
 \alias{robcov_alt}
 \title{Robust covariance matrix based upon the sandwich-package}
 \usage{
-  robcov_alt(fit, type = "HC3", ...)
+robcov_alt(fit, type = "HC3", ...)
 }
 \arguments{
   \item{fit}{The ols fit that}
@@ -15,15 +15,15 @@
   \code{\link[sandwich]{vcovHC}} function.}
 }
 \value{
-  model The fitted model with adjusted variance and
-  df.residual set to NULL
+model The fitted model with adjusted variance and
+df.residual set to NULL
 }
 \description{
-  This is an alternative to the rms-package robust
-  covariance matrix that uses the sandwich package
-  \code{\link[sandwich]{vcovHC}} function instead of the
-  rms-built-in estimator. The advantage being that many
-  more estimation types are available.
+This is an alternative to the rms-package robust covariance
+matrix that uses the sandwich package
+\code{\link[sandwich]{vcovHC}} function instead of the
+rms-built-in estimator. The advantage being that many more
+estimation types are available.
 }
 \examples{
 # Generate some data
@@ -53,6 +53,6 @@ confint(f_rob)
 options(org.op)
 }
 \author{
-  max
+max
 }
 

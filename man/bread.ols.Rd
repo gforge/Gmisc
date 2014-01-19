@@ -2,7 +2,7 @@
 \alias{bread.ols}
 \title{Getting the bread for the vcovHC}
 \usage{
-  \method{bread}{ols} (x, ...)
+\method{bread}{ols}(x, ...)
 }
 \arguments{
   \item{x}{The ols model fit}
@@ -10,12 +10,12 @@
   \item{...}{arguments passed to methods.}
 }
 \value{
-  matrix The bread for the sandwich vcovHC function
+matrix The bread for the sandwich vcovHC function
 }
 \description{
-  The original bread.lm uses the summary.lm function it
-  seems like a quick fix and I've therefore created the
-  original bread definition: $(X'X)^-1$
+The original bread.lm uses the summary.lm function it seems
+like a quick fix and I've therefore created the original
+bread definition: $(X'X)^-1$
 }
 \examples{
 # Generate some data
@@ -45,6 +45,6 @@ confint(f_rob)
 options(org.op)
 }
 \author{
-  max
+max
 }
 

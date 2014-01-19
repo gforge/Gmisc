@@ -2,8 +2,8 @@
 \alias{prFpDrawLegend}
 \title{Draw the forestplot legend}
 \usage{
-  prFpDrawLegend(lGrobs, legend.pos, col, colgap,
-    legend.gp, legend.r, legend.padding)
+prFpDrawLegend(lGrobs, legend.pos, col, colgap, legend.gp, legend.r,
+  legend.padding)
 }
 \arguments{
   \item{lGrobs}{A list with all the grobs, see
@@ -27,13 +27,13 @@
   border to the text/boxes of the legend.}
 }
 \value{
-  \code{void}
+\code{void}
 }
 \description{
-  Takes the grobs and outputs the legend inside the current
-  viewport.
+Takes the grobs and outputs the legend inside the current
+viewport.
 }
 \author{
-  max
+max
 }
 

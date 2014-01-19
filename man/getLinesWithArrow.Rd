@@ -2,8 +2,7 @@
 \alias{getLinesWithArrow}
 \title{Gets the lines for an arrow}
 \usage{
-  getLinesWithArrow(bp, arrow, end_points, width,
-    default.units, align_2_axis)
+getLinesWithArrow(bp, arrow, end_points, width, default.units, align_2_axis)
 }
 \arguments{
   \item{bp}{Bezier points that define the line. Based upon
@@ -29,17 +28,17 @@
   axis is the closes one.}
 }
 \value{
-  A list with left and right elements indicating the two
-  lines
+A list with left and right elements indicating the two
+lines
 }
 \description{
-  The lines are the upper and the lower lines that are
-  later used to generate future polygon that will be used
-  to generate the arrow. These lines are separated from the
-  points by a defined width. The width is perpendicular to
-  the lines angle at that particular point.
+The lines are the upper and the lower lines that are later
+used to generate future polygon that will be used to
+generate the arrow. These lines are separated from the
+points by a defined width. The width is perpendicular to
+the lines angle at that particular point.
 }
 \author{
-  max
+max
 }
 

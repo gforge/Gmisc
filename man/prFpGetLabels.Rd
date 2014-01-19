@@ -2,9 +2,8 @@
 \alias{prFpGetLabels}
 \title{Gets the forestplot labels}
 \usage{
-  prFpGetLabels(label_type, labeltext, align, nc, nr,
-    is.summary, fontfamily.summary, fontfamily.labelrow,
-    col, cex)
+prFpGetLabels(label_type, labeltext, align, nc, nr, is.summary,
+  fontfamily.summary, fontfamily.labelrow, col, cex)
 }
 \arguments{
   \item{label_type}{The type of text labels}
@@ -30,15 +29,15 @@
   \item{cex}{The font size adjustment}
 }
 \value{
-  \code{list} A list with \code{length(nc)} where each
-  element contains a list of \code{length(nr)} elements
-  with attributes width/height for each element and
-  max_width/max_height for the total
+\code{list} A list with \code{length(nc)} where each
+element contains a list of \code{length(nr)} elements with
+attributes width/height for each element and
+max_width/max_height for the total
 }
 \description{
-  A function that gets all the labels
+A function that gets all the labels
 }
 \author{
-  max
+max
 }
 

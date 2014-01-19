@@ -2,11 +2,10 @@
 \alias{prGetStatistics}
 \title{Get statistics according to the type}
 \usage{
-  prGetStatistics(x, show_perc = FALSE, html = TRUE,
-    digits = 1, numbers_first = TRUE, show_missing = TRUE,
-    show_all_values = FALSE, continuous_fn = describeMean,
-    factor_fn = describeFactors, prop_fn = factor_fn,
-    percentage_sign = percentage_sign)
+prGetStatistics(x, show_perc = FALSE, html = TRUE, digits = 1,
+  numbers_first = TRUE, show_missing = TRUE, show_all_values = FALSE,
+  continuous_fn = describeMean, factor_fn = describeFactors,
+  prop_fn = factor_fn, percentage_sign = percentage_sign)
 }
 \arguments{
   \item{x}{The variable that we want the statistics for}
@@ -47,16 +46,16 @@
   so wish by setting this variable.}
 }
 \value{
-  A matrix or a vector depending on the settings
+A matrix or a vector depending on the settings
 }
 \description{
-  A simple function applied by the
-  \code{\link{getDescriptionStatsBy}} for the total column.
-  This function is also used by
-  \code{\link{printCrudeAndAdjustedModel}} in case of a
-  basic linear regression is asked for a raw stat column
+A simple function applied by the
+\code{\link{getDescriptionStatsBy}} for the total column.
+This function is also used by
+\code{\link{printCrudeAndAdjustedModel}} in case of a basic
+linear regression is asked for a raw stat column
 }
 \author{
-  max
+max
 }
 

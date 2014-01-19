@@ -2,16 +2,16 @@
 \alias{isFitCoxPH}
 \title{Tests if function is of a cox regression type.}
 \usage{
-  isFitCoxPH(fit)
+isFitCoxPH(fit)
 }
 \arguments{
   \item{fit}{Regression object}
 }
 \value{
-  boolean
+boolean
 }
 \description{
-  Counts competing risk regression as a coxph
+Counts competing risk regression as a coxph
 }
 \examples{
 # simulated data to use 

@@ -2,7 +2,7 @@
 \alias{printSimpleFit}
 \title{Prints a simple fit summary for a model fit.}
 \usage{
-  printSimpleFit(fit, digits = 2)
+printSimpleFit(fit, digits = 2)
 }
 \arguments{
   \item{fit}{Regression model object}
@@ -10,11 +10,11 @@
   \item{digits}{Number of digits you want to round to}
 }
 \value{
-  The function only prints
+The function only prints
 }
 \description{
-  Sometimes you just want a simple fit print without all
-  the details and with only the confidence intervals.
+Sometimes you just want a simple fit print without all the
+details and with only the confidence intervals.
 }
 \examples{
 # simulated data to use 
@@ -36,6 +36,6 @@ fit <- cph(s ~ x1 + x2 + x3, data=ds)
 getCphRegrObjData(fit)
 }
 \author{
-  max
+max
 }
 
