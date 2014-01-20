@@ -208,6 +208,7 @@ forestplotRegrObj <- function(
     is.vector(order.regexps) && 
     is.character(order.regexps)){
     
+    rn <- rownames(models_fit_fp_data[[1]])
     # Use the first one since they all should have the same rownames
     for (expression in order.regexps) {
       matches <- grep(expression, rn)
@@ -393,11 +394,6 @@ forestplotRegrObj <- function(
     lines=line_clr, 
     zero=col.zero)
     
-#   if (xlog){
-#     t.coef <- log(t.coef)
-#     t.low <- log(t.low)
-#     t.high <- log(t.high)
-#   }
   forestplot2(rn, 
               mean                 = t.coef, 
               lower                = t.low, 
