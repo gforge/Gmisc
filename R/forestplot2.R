@@ -569,7 +569,7 @@ forestplot2 <- function (labeltext,
 
         # Add additional arguments that are passed on
         # from the original parameters
-        if (length(list(...) > 0)){
+        if (length(list(...)) > 0){
           ll <- list(...)
           for (name in names(ll)){
             call_list[[name]] <- ll[[name]]
@@ -602,7 +602,7 @@ forestplot2 <- function (labeltext,
       
       # Add additional arguments that are passed on
       # from the original parameters
-      if (length(list(...) > 0)){
+      if (length(list(...)) > 0){
         ll <- list(...)
         for (name in names(ll)){
           call_list[[name]] <- ll[[name]]

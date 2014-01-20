@@ -320,7 +320,7 @@ forestplotRegrObj <- function(
   # Make the box smaller if there are many
   # models that share the same space
   if (is.null(box.default.size)){
-    box.default.size <- 1/length(models_fit_fp_data)    
+    box.default.size <- .75/length(models_fit_fp_data)
   }
   
   variable_count <- nrow(models_fit_fp_data[[1]])-1
@@ -397,19 +397,18 @@ forestplotRegrObj <- function(
     exp = exp)
   
   forestplot2(rn, 
-    xlim                 = c(0,10),
-    mean                 = t.coef, 
-    lower                = t.low, 
-    upper                = t.high,
-    clip                 = clip,
-    col                  = t.clr,
-    boxsize              = b_size,
-    xticks               = xticks,
-    xlab                 = xlab,
-    xlog                 = xlog,
-    is.summary           = is.summary,
-    zero                 = zero,
-    ...)
+              mean                 = t.coef, 
+              lower                = t.low, 
+              upper                = t.high,
+              clip                 = clip,
+              col                  = t.clr,
+              boxsize              = b_size,
+              xticks               = xticks,
+              xlab                 = xlab,
+              xlog                 = xlog,
+              is.summary           = is.summary,
+              zero                 = zero,
+              ...)
   
   # Plot a titla
   if (is.null(title) == FALSE)
