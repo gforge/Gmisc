@@ -760,10 +760,6 @@ prFpGetGraphTicksAndClips <- function(xticks,
     clip[clip < 0] <- 0
     clip <- log(clip)
     zero <- log(zero)
-    axis_vp <- viewport(layout.pos.col = 2 * nc + 1,
-                        layout.pos.row = from:to,
-                        xscale         = x_range,
-                        name           = "axis")
     
     if (is.null(xticks)) {
       ticks <- getTicks(exp(x_range), 
@@ -780,9 +776,23 @@ prFpGetGraphTicksAndClips <- function(xticks,
       if (is.infinite(clip[2]) == FALSE &&
             max(ticks, na.rm = TRUE) > clip[2]) 
         ticks <- unique(c(ticks, exp(clip[2])))
+      
+      # Update the range so that it includes the ticks
+      if (min(x_range) > log(min(ticks)))
+        x_range[which.min(x_range)] <- log(min(ticks))
+      if (max(x_range) < max(ticks))
+        x_range[which.max(x_range)] <- log(max(ticks))
+      
     } else {
       ticks <- xticks
     }
+    
+    axis_vp <- viewport(layout.pos.col = 2 * nc + 1,
+                        layout.pos.row = from:to,
+                        xscale         = x_range,
+                        name           = "axis")
+    
+
     
     # Draw the x-axis if there are any ticks
     if (length(ticks)) {
@@ -792,19 +802,14 @@ prFpGetGraphTicksAndClips <- function(xticks,
       ticklabels <- ifelse(ticks < 1 | abs(floor(ticks*10)-ticks*10) > 0, 
                            format(ticks, digits = 2, nsmall = 2), 
                            format(ticks, digits = 1, nsmall = 1))
-      xticks <- log(ticks)
+      ticks <- log(ticks)
     }else{
-      xticks <- NULL
+      ticks <- NULL
       ticklabels <- FALSE
     }
     
     
   } else {
-    axis_vp <- viewport(layout.pos.col = 2 * nc + 1, 
-                        layout.pos.row = from:to,
-                        xscale         = x_range,
-                        name           = "axis")
-    
     if (is.null(xticks)){
       ticks <- getTicks(x_range, 
                         clip=clip, 
@@ -823,14 +828,26 @@ prFpGetGraphTicksAndClips <- function(xticks,
       
       ticklabels <- TRUE
       
+      # Update the range so that it includes the ticks
+      if (min(x_range) > min(ticks))
+        x_range[which.min(x_range)] <- min(ticks)
+      if (max(x_range) < max(ticks))
+        x_range[which.max(x_range)] <- max(ticks)
+      
     } else{
+      ticks <- xticks
       ticklabels <- TRUE
     }
     
+    axis_vp <- viewport(layout.pos.col = 2 * nc + 1, 
+                        layout.pos.row = from:to,
+                        xscale         = x_range,
+                        name           = "axis")
+    
   }
   
-  if (length(xticks) != 1 || xticks != 0){
-    dg <- xaxisGrob(at    = xticks, 
+  if (length(ticks) != 1 || ticks != 0){
+    dg <- xaxisGrob(at    = ticks, 
                     label = ticklabels,
                     gp    = gpar(cex = cex.axis, 
                                  col = col$axes, 
@@ -857,7 +874,8 @@ prFpGetGraphTicksAndClips <- function(xticks,
               axisHeight = dg_height,
               labGrob = labGrob,
               zero = zero,
-              clip = clip))
+              clip = clip,
+              x_range = x_range))
 }
 
 #' Plots the x-axis for forestplot2

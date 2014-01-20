@@ -317,11 +317,11 @@ forestplot2 <- function (labeltext,
                                         col=col,
                                         clip=clip, zero=zero, 
                                         x_range=prFpXrange(upper = upper, 
-                                            lower = lower, 
-                                            clip = clip, 
-                                            zero = zero, 
-                                            xticks = xticks, 
-                                            xlog = xlog),
+                                                           lower = lower, 
+                                                           clip = clip, 
+                                                           zero = zero, 
+                                                           xticks = xticks, 
+                                                           xlog = xlog),
                                         nc = nc,
                                         mean = org_mean)
   clip <- axisList$clip
@@ -529,12 +529,7 @@ forestplot2 <- function (labeltext,
     
     line_vp <- viewport(layout.pos.row = i,
                         layout.pos.col = length(colwidths), 
-                        xscale = prFpXrange(upper = upper, 
-                            lower = lower, 
-                            clip = clip, 
-                            zero = zero, 
-                            xticks = xticks, 
-                            xlog = xlog),
+                        xscale = axisList$x_range,
                         name = sprintf("Line_%d_%d", i, 2 * nc + 1))
     pushViewport(line_vp)
     

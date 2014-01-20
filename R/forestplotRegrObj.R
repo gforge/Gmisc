@@ -42,8 +42,6 @@
 #'  odds ratio
 #' @param zero Indicates what is zero effect. For survival/logistic fits the zero is
 #'   1 while in most other cases it's 0.
-#' @param exp Report in exponential form. Default true since the function was built for 
-#'   use with survival models. 
 #' @param ... Passed to \code{\link{forestplot2}}()
 #' @return Does not return anything
 #' 
@@ -69,10 +67,9 @@ forestplotRegrObj <- function(
   box.default.size = NULL,
   rowname.fn       = NULL,
   xlab             = NULL,
-  xlog             = FALSE,
+  xlog             = NULL,
   estimate.txt     = NULL,
   zero             = NULL,
-  exp              = TRUE,
   ...)
 {
   # Treat always as multiple regression object fits
@@ -87,16 +84,22 @@ forestplotRegrObj <- function(
     is.null(estimate.txt)){
     if (isFitCoxPH(regr.obj[[1]])){
       if (is.null(xlab))
-        xlab = "Hazard Ratio"
+        xlab <- "Hazard Ratio"
       
       if (is.null(estimate.txt))
-        estimate.txt = "HR"
+        estimate.txt <- "HR"
+      
+      if (is.null(xlog))
+        xlog = TRUE
     }else if(isFitLogit(regr.obj[[1]])){
       if (is.null(xlab))
-        xlab = "Odds Ratio"
+        xlab <- "Odds Ratio"
       
       if (is.null(estimate.txt))
-        estimate.txt = "OR"
+        estimate.txt <- "OR"
+    
+      if (is.null(xlog))
+        xlog <- TRUE
     }
   }
   
@@ -184,13 +187,13 @@ forestplotRegrObj <- function(
   # models against
   fit_data <- prGetFpDataFromFit(regr.obj[[1]],
     conf.int = 0.95,
-    exp = exp)
+    exp = xlog)
   models_fit_fp_data <- list(fit_data)
   if (length(regr.obj) > 1){
     for(i in 2:length(regr.obj)){
       new_fit_data <- prGetFpDataFromFit(regr.obj[[i]],
         conf.int = 0.95,
-        exp = exp)
+        exp = xlog)
       # Check that rownames, number of rows and order matches the first fit
       # The script stops on error
       checkIfCompatibleFits(fit_data, new_fit_data)
@@ -389,13 +392,12 @@ forestplotRegrObj <- function(
     box=box_clr, 
     lines=line_clr, 
     zero=col.zero)
-  
-  # Get the right ticks
-  xticks <- getTicks(low = t.low, 
-    high = t.high, 
-    clip = clip, 
-    exp = exp)
-  
+    
+#   if (xlog){
+#     t.coef <- log(t.coef)
+#     t.low <- log(t.low)
+#     t.high <- log(t.high)
+#   }
   forestplot2(rn, 
               mean                 = t.coef, 
               lower                = t.low, 
@@ -403,7 +405,6 @@ forestplotRegrObj <- function(
               clip                 = clip,
               col                  = t.clr,
               boxsize              = b_size,
-              xticks               = xticks,
               xlab                 = xlab,
               xlog                 = xlog,
               is.summary           = is.summary,
