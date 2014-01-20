@@ -274,11 +274,12 @@ fpDrawCircleCI <- function(lower_limit,
   box <- convertX(unit(estimate, "native"), "npc", valueOnly = TRUE)
   skipbox <- box < 0 || box > 1
   
-  # Convert size into 'snpc'
+  # Convert size into 'snpc' and change to radius
   if(is.unit(size)){
-    size <- convertUnit(size, unitTo="snpc")
+    size <- unit(convertUnit(size, unitTo="snpc", valueOnly=TRUE)/2,
+                 unitTo="snpc")
   }else{
-    size <- unit(size, "snpc")
+    size <- unit(size/2, "snpc")
   }
   
   # A version where arrows are added to the part outside 
