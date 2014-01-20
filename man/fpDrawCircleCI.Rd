@@ -1,3 +1,56 @@
+\name{fpDrawCircleCI}
+\alias{fpDrawCircleCI}
+\title{Draw confidence intervals}
+\usage{
+fpDrawCircleCI(lower_limit, estimate, upper_limit, size, y.offset = 0.5,
+  clr.line, clr.box, lwd, ...)
+}
+\arguments{
+  \item{lower_limit}{The lower limit of the line.  A native
+  numeric variable that can actually be outside the
+  boundaries. If you want to see if it is outside then
+  convert it to 'npc' and see if the value ends up more
+  than 1 or less than 0. Here's how you do the conversion:
+  \code{convertX(unit(upper_limit, "native"), "npc",
+  valueOnly = TRUE)} and the \code{\link[grid]{convertX}}
+  together with \code{\link[grid]{unit}} is needed to get
+  the right values while you need to provide the valueOnly
+  as you cannot compare a unit object.}
+
+  \item{estimate}{The estimate indicating the placement of
+  the actual circle. Note, this can also be outside bounds
+  and is provided in a numeric format the same way as the
+  \code{lower_limit}.}
+
+  \item{upper_limit}{The upper limit of the line. See
+  lower_limit for details.}
+
+  \item{size}{The actual diameter of the circle. This
+  provided in the 'snpc' format. If you provide anything
+  else it will be converted prior to that.}
+
+  \item{y.offset}{If you have multiple lines they need an
+  offset in the y-direction.}
+
+  \item{clr.line}{The color of the line.}
+
+  \item{clr.box}{The color of the circle}
+
+  \item{lwd}{Line width}
+
+  \item{...}{Allows additional parameters for sibling
+  functions}
+}
+\value{
+\code{void} The function outputs the line using grid
+compatible functions and does not return anything.
+}
+\description{
+This function is the same as \code{\link{fpDrawNormalCI}}
+with the difference that it draws a circle using the
+\code{\link[grid]{grid.circle}} function.
+}
+\examples{
 ##############################################################
 # Simple examples of how to do a forestplot with forestplot2 #
 ##############################################################
@@ -78,3 +131,8 @@ forestplot2(labeltext = row_names,
             new_page = TRUE)
 
 par(ask=ask)
+}
+\author{
+Max
+}
+

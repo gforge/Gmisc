@@ -3,6 +3,7 @@ NEWS for the Gmisc package
 Changes for 0.5.7.12
 --------------------
 * Added to forestplot2 ability create customly drawn confidence intervals/boxes
+* Generated diamond, circle and point custom draw functions for forestplot2
 * Added forestplot2 compatibility for the summary
 * Minor bugfixes behind the scenes
 * Fixed issue with getCrudeAndAdjustedModelData mixing up rows for rms objects

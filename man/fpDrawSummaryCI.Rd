@@ -1,3 +1,51 @@
+\name{fpDrawSummaryCI}
+\alias{fpDrawSummaryCI}
+\title{Draw summary confidence intervals}
+\usage{
+fpDrawSummaryCI(lower_limit, estimate, upper_limit, size, col, y.offset = 0.5,
+  ...)
+}
+\arguments{
+  \item{lower_limit}{The lower limit of the diamond.  A
+  native numeric variable that can actually be outside the
+  boundaries. If you want to see if it is outside then
+  convert it to 'npc' and see if the value ends up more
+  than 1 or less than 0. Here's how you do the conversion:
+  \code{convertX(unit(upper_limit, "native"), "npc",
+  valueOnly = TRUE)} and the \code{\link[grid]{convertX}}
+  together with \code{\link[grid]{unit}} is needed to get
+  the right values while you need to provide the valueOnly
+  as you cannot compare a unit object.}
+
+  \item{estimate}{The estimate indicating the maximum
+  height of the diamond. Note, this can also be outside
+  bounds and is provided in a numeric format the same way
+  as the \code{lower_limit}.}
+
+  \item{upper_limit}{The upper limit of the diamond. See
+  lower_limit for details.}
+
+  \item{size}{The actual height of the diamond.}
+
+  \item{y.offset}{If you have multiple lines they need an
+  offset in the y-direction.}
+
+  \item{col}{The color of the summary diamond.}
+
+  \item{...}{Allows additional parameters for sibling
+  functions}
+}
+\value{
+\code{void} The function outputs the line using grid
+compatible functions and does not return anything.
+}
+\description{
+A function that is used to draw the different confidence
+intervals for the summary lines. Use this function as a
+template if you want to substitute it with your own funky
+summary display.
+}
+\examples{
 ##############################################################
 # Simple examples of how to do a forestplot with forestplot2 #
 ##############################################################
@@ -78,3 +126,8 @@ forestplot2(labeltext = row_names,
             new_page = TRUE)
 
 par(ask=ask)
+}
+\author{
+Max
+}
+

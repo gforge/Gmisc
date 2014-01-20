@@ -29,6 +29,7 @@
 #' @param clr.line The color of the line.
 #' @param clr.box The color of the box
 #' @param lwd Line width
+#' @param ... Allows additional parameters for sibling functions
 #' @return \code{void} The function outputs the line using grid compatible
 #'  functions and does not return anything. 
 #' 
@@ -41,7 +42,8 @@ fpDrawNormalCI <- function(lower_limit,
                            size, 
                            y.offset = 0.5, 
                            clr.line, clr.box,
-                           lwd) {
+                           lwd,
+                           ...) {
   # If the limit is outside the 0-1 range in npc-units
   # then that part is outside the box and it should 
   # be clipped (this function adds an arrow to the end
@@ -60,8 +62,11 @@ fpDrawNormalCI <- function(lower_limit,
   skipbox <- box < 0 || box > 1
   
   # Convert size into 'snpc'
-  size <- ifelse(is.unit(size), 
-      size, unit(size, "snpc"))
+  if(is.unit(size)){
+    size <- convertUnit(size, unitTo="snpc")
+  }else{
+    size <- unit(size, "snpc")
+  }
   
   # A version where arrows are added to the part outside 
   # the limits of the graph
@@ -101,6 +106,328 @@ fpDrawNormalCI <- function(lower_limit,
   }
 }
 
+#' Draw confidence intervals
+#' 
+#' This function is the same as \code{\link{fpDrawNormalCI}}
+#' with the difference that it draws a diamond
+#' instead of a box.
+#'  
+#' @param lower_limit The lower limit of the line.
+#'  A native numeric variable that can actually be 
+#'  outside the boundaries. If you want to see if it
+#'  is outside then convert it to 'npc' and see if the
+#'  value ends up more than 1 or less than 0. Here's how 
+#'  you do the conversion: 
+#'  \code{convertX(unit(upper_limit, "native"), "npc", valueOnly = TRUE)}
+#'  and the \code{\link[grid]{convertX}} together with \code{\link[grid]{unit}}
+#'  is needed to get the right values while you need to provide the valueOnly 
+#'  as you cannot compare a unit object. 
+#' @param estimate The estimate indicating the placement
+#'  of the actual diamond. Note, this can also be outside bounds
+#'  and is provided in a numeric format the same way as the 
+#'  \code{lower_limit}.
+#' @param upper_limit The upper limit of the line. See
+#'  lower_limit for details.
+#' @param size The actual size of the diamond. This provided in the 'snpc'
+#'  format to generate a perfect diamond. If you provide anything else 
+#'  it will be converted prior to that.
+#' @param y.offset If you have multiple lines they need an offset in
+#'  the y-direction.
+#' @param clr.line The color of the line.
+#' @param clr.box The color of the diamond
+#' @param lwd Line width
+#' @param ... Allows additional parameters for sibling functions
+#' @return \code{void} The function outputs the line using grid compatible
+#'  functions and does not return anything. 
+#' 
+#' @example examples/forestplot2_example.R
+#' @author Max
+#' @export
+fpDrawDiamondCI <- function(lower_limit, 
+                            estimate, 
+                            upper_limit, 
+                            size, 
+                            y.offset = 0.5, 
+                            clr.line, clr.box,
+                            lwd,
+                            ...) {
+  # If the limit is outside the 0-1 range in npc-units
+  # then that part is outside the box and it should 
+  # be clipped (this function adds an arrow to the end
+  # of the line)
+  clipupper <- 
+    convertX(unit(upper_limit, "native"), 
+             "npc", 
+             valueOnly = TRUE) > 1
+  cliplower <- 
+    convertX(unit(lower_limit, "native"), 
+             "npc", 
+             valueOnly = TRUE) < 0
+  
+  # If the box is outside the plot the it shouldn't be plotted
+  box <- convertX(unit(estimate, "native"), "npc", valueOnly = TRUE)
+  skipbox <- box < 0 || box > 1
+  
+  # Convert size into 'snpc'
+  if(is.unit(size)){
+    size <- convertUnit(size, unitTo="snpc", valueOnly=TRUE)
+  }
+  
+  # A version where arrows are added to the part outside 
+  # the limits of the graph
+  if (clipupper || cliplower) {
+    ends <- "both"
+    lims <- unit(c(0, 1), c("npc", "npc"))
+    if (!clipupper) {
+      ends <- "first"
+      lims <- unit(c(0, upper_limit), c("npc", "native"))
+    }
+    if (!cliplower) {
+      ends <- "last"
+      lims <- unit(c(lower_limit, 1), c("native", "npc"))
+    }
+    grid.lines(x = lims, 
+               y = y.offset, 
+               arrow = arrow(ends = ends, 
+                             length = unit(0.05, "inches")), 
+               gp = gpar(col = clr.line, lwd=lwd))
+    if (!skipbox)
+      grid.polygon(x = unit(estimate, "native") + 
+                     unit(c(-size/2, 0, +size/2, 0), "snpc"), 
+                   y = unit(y.offset, "npc") +
+                     unit(c(0, size/2, 0, -size/2), "snpc"), 
+                   gp = gpar(fill = clr.box, 
+                             col = clr.box))
+  } else {
+    # Don't draw the line if it's no line to draw
+    if (lower_limit != upper_limit)
+      grid.lines(x = unit(c(lower_limit, upper_limit), "native"), y = y.offset, 
+                 gp = gpar(col = clr.line, lwd=lwd))
+    grid.polygon(x = unit(estimate, "native") + 
+                   unit(c(-size/2, 0, +size/2, 0), "snpc"), 
+                 y = unit(y.offset, "npc") +
+                   unit(c(0, size/2, 0, -size/2), "snpc"), 
+                 gp = gpar(fill = clr.box, 
+                           col = clr.box))
+  }
+}
+
+#' Draw confidence intervals
+#' 
+#' This function is the same as \code{\link{fpDrawNormalCI}}
+#' with the difference that it draws a circle
+#' using the \code{\link[grid]{grid.circle}} function.
+#'  
+#' @param lower_limit The lower limit of the line.
+#'  A native numeric variable that can actually be 
+#'  outside the boundaries. If you want to see if it
+#'  is outside then convert it to 'npc' and see if the
+#'  value ends up more than 1 or less than 0. Here's how 
+#'  you do the conversion: 
+#'  \code{convertX(unit(upper_limit, "native"), "npc", valueOnly = TRUE)}
+#'  and the \code{\link[grid]{convertX}} together with \code{\link[grid]{unit}}
+#'  is needed to get the right values while you need to provide the valueOnly 
+#'  as you cannot compare a unit object. 
+#' @param estimate The estimate indicating the placement
+#'  of the actual circle. Note, this can also be outside bounds
+#'  and is provided in a numeric format the same way as the 
+#'  \code{lower_limit}.
+#' @param upper_limit The upper limit of the line. See
+#'  lower_limit for details.
+#' @param size The actual diameter of the circle. This provided in the 'snpc'
+#'  format. If you provide anything else 
+#'  it will be converted prior to that.
+#' @param y.offset If you have multiple lines they need an offset in
+#'  the y-direction.
+#' @param clr.line The color of the line.
+#' @param clr.box The color of the circle
+#' @param lwd Line width
+#' @param ... Allows additional parameters for sibling functions
+#' @return \code{void} The function outputs the line using grid compatible
+#'  functions and does not return anything. 
+#' 
+#' @example examples/forestplot2_example.R
+#' @author Max
+#' @export
+fpDrawCircleCI <- function(lower_limit, 
+                           estimate, 
+                           upper_limit, 
+                           size, 
+                           y.offset = 0.5, 
+                           clr.line, clr.box,
+                           lwd,
+                           ...) {
+  # If the limit is outside the 0-1 range in npc-units
+  # then that part is outside the box and it should 
+  # be clipped (this function adds an arrow to the end
+  # of the line)
+  clipupper <- 
+    convertX(unit(upper_limit, "native"), 
+             "npc", 
+             valueOnly = TRUE) > 1
+  cliplower <- 
+    convertX(unit(lower_limit, "native"), 
+             "npc", 
+             valueOnly = TRUE) < 0
+  
+  # If the box is outside the plot the it shouldn't be plotted
+  box <- convertX(unit(estimate, "native"), "npc", valueOnly = TRUE)
+  skipbox <- box < 0 || box > 1
+  
+  # Convert size into 'snpc'
+  if(is.unit(size)){
+    size <- convertUnit(size, unitTo="snpc")
+  }else{
+    size <- unit(size, "snpc")
+  }
+  
+  # A version where arrows are added to the part outside 
+  # the limits of the graph
+  if (clipupper || cliplower) {
+    ends <- "both"
+    lims <- unit(c(0, 1), c("npc", "npc"))
+    if (!clipupper) {
+      ends <- "first"
+      lims <- unit(c(0, upper_limit), c("npc", "native"))
+    }
+    if (!cliplower) {
+      ends <- "last"
+      lims <- unit(c(lower_limit, 1), c("native", "npc"))
+    }
+    grid.lines(x = lims, 
+               y = y.offset, 
+               arrow = arrow(ends = ends, 
+                             length = unit(0.05, "inches")), 
+               gp = gpar(col = clr.line, lwd=lwd))
+    if (!skipbox)
+      grid.circle(x = unit(estimate, "native"), 
+                  y = unit(y.offset, "npc"), 
+                  r = size,
+                  gp = gpar(fill = clr.box, 
+                            col = clr.box))
+  } else {
+    # Don't draw the line if it's no line to draw
+    if (lower_limit != upper_limit)
+      grid.lines(x = unit(c(lower_limit, upper_limit), "native"), y = y.offset, 
+                 gp = gpar(col = clr.line, lwd=lwd))
+    grid.circle(x = unit(estimate, "native"), 
+                y = unit(y.offset, "npc"), 
+                r = size,
+                gp = gpar(fill = clr.box, 
+                          col = clr.box))
+  }
+}
+
+#' Draw confidence intervals
+#' 
+#' This function is the same as \code{\link{fpDrawNormalCI}}
+#' with the difference that it draws a point
+#' using the \code{\link[grid]{grid.points}} function.
+#'  
+#' @param lower_limit The lower limit of the line.
+#'  A native numeric variable that can actually be 
+#'  outside the boundaries. If you want to see if it
+#'  is outside then convert it to 'npc' and see if the
+#'  value ends up more than 1 or less than 0. Here's how 
+#'  you do the conversion: 
+#'  \code{convertX(unit(upper_limit, "native"), "npc", valueOnly = TRUE)}
+#'  and the \code{\link[grid]{convertX}} together with \code{\link[grid]{unit}}
+#'  is needed to get the right values while you need to provide the valueOnly 
+#'  as you cannot compare a unit object. 
+#' @param estimate The estimate indicating the placement
+#'  of the actual point. Note, this can also be outside bounds
+#'  and is provided in a numeric format the same way as the 
+#'  \code{lower_limit}.
+#' @param upper_limit The upper limit of the line. See
+#'  lower_limit for details.
+#' @param size The actual diameter of the point. This provided in the 'snpc'
+#'  format. If you provide anything else 
+#'  it will be converted prior to that.
+#' @param y.offset If you have multiple lines they need an offset in
+#'  the y-direction.
+#' @param clr.line The color of the line.
+#' @param clr.box The color of the point
+#' @param lwd Line width
+#' @param pch Type of point
+#' @param ... Allows additional parameters for sibling functions
+#' @return \code{void} The function outputs the line using grid compatible
+#'  functions and does not return anything. 
+#' 
+#' @example examples/forestplot2_example.R
+#' @author Max
+#' @export
+fpDrawPointCI <- function(lower_limit, 
+                          estimate, 
+                          upper_limit, 
+                          size, 
+                          y.offset = 0.5, 
+                          clr.line, clr.box,
+                          lwd,
+                          pch = 1,
+                          ...) {
+  # If the limit is outside the 0-1 range in npc-units
+  # then that part is outside the box and it should 
+  # be clipped (this function adds an arrow to the end
+  # of the line)
+  clipupper <- 
+    convertX(unit(upper_limit, "native"), 
+             "npc", 
+             valueOnly = TRUE) > 1
+  cliplower <- 
+    convertX(unit(lower_limit, "native"), 
+             "npc", 
+             valueOnly = TRUE) < 0
+  
+  # If the box is outside the plot the it shouldn't be plotted
+  box <- convertX(unit(estimate, "native"), "npc", valueOnly = TRUE)
+  skipbox <- box < 0 || box > 1
+  
+  # Convert size into 'snpc'
+  if(is.unit(size)){
+    size <- convertUnit(size, unitTo="snpc")
+  }else{
+    size <- unit(size, "snpc")
+  }
+  
+  # A version where arrows are added to the part outside 
+  # the limits of the graph
+  if (clipupper || cliplower) {
+    ends <- "both"
+    lims <- unit(c(0, 1), c("npc", "npc"))
+    if (!clipupper) {
+      ends <- "first"
+      lims <- unit(c(0, upper_limit), c("npc", "native"))
+    }
+    if (!cliplower) {
+      ends <- "last"
+      lims <- unit(c(lower_limit, 1), c("native", "npc"))
+    }
+    grid.lines(x = lims, 
+               y = y.offset, 
+               arrow = arrow(ends = ends, 
+                             length = unit(0.05, "inches")), 
+               gp = gpar(col = clr.line, lwd=lwd))
+    if (!skipbox)
+      grid.point(x = unit(estimate, "native"), 
+                 y = unit(y.offset, "npc"), 
+                 size = size,
+                 pch = pch,
+                 gp = gpar(fill = clr.box, 
+                           col = clr.box))
+  } else {
+    # Don't draw the line if it's no line to draw
+    if (lower_limit != upper_limit)
+      grid.lines(x = unit(c(lower_limit, upper_limit), "native"), y = y.offset, 
+                 gp = gpar(col = clr.line, lwd=lwd))
+    grid.points(x = unit(estimate, "native"), 
+                y = unit(y.offset, "npc"), 
+                size = size,
+                pch = pch,
+                gp = gpar(fill = clr.box, 
+                          col = clr.box))
+  }
+}
+
 #' Draw summary confidence intervals
 #' 
 #' A function that is used to draw the different 
@@ -128,6 +455,7 @@ fpDrawNormalCI <- function(lower_limit,
 #' @param y.offset If you have multiple lines they need an offset in
 #'  the y-direction.
 #' @param col The color of the summary diamond.
+#' @param ... Allows additional parameters for sibling functions
 #' @return \code{void} The function outputs the line using grid compatible
 #'  functions and does not return anything. 
 #' 
@@ -135,7 +463,7 @@ fpDrawNormalCI <- function(lower_limit,
 #' @author Max
 #' @export
 fpDrawSummaryCI <- function(lower_limit, estimate, upper_limit, 
-                            size, col, y.offset = 0.5) {
+                            size, col, y.offset = 0.5, ...) {
   # Convert size into 'npc' value only if
   # it is provided as a unit() object
   size <- ifelse(is.unit(size), 

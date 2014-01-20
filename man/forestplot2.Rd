@@ -168,7 +168,8 @@ forestplot2(labeltext, mean, lower, upper, align = NULL, is.summary = FALSE,
   the summary outputs and it defaults to
   \code{\link{fpDrawSummaryCI}}.}
 
-  \item{...}{Not used}
+  \item{...}{Passed on to the \code{confintNormalFn} and
+  \code{confintSummaryFn} arguments}
 }
 \value{
 void
@@ -241,7 +242,8 @@ forestplot2(row_names, coef, low, high,
             main="Cool study",
             zero = 1, boxsize=0.5,
             col=fpColors(box=c("royalblue", "gold"),
-                         line=c("darkblue", "orange")),
+                         line=c("darkblue", "orange"),
+                         summary=c("darkblue", "red")),
             xlab="The estimates",
             new_page = TRUE, 
             legend.title="Group",

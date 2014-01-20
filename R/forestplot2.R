@@ -95,7 +95,8 @@
 #'  It defaults to the box function \code{\link{fpDrawNormalCI}}.
 #' @param confintSummaryFn Same as previous argument but for the summary outputs
 #'  and it defaults to \code{\link{fpDrawSummaryCI}}.
-#' @param ... Not used 
+#' @param ... Passed on to the \code{confintNormalFn} and
+#'  \code{confintSummaryFn} arguments
 #' @return void 
 #' 
 #' @import grid
@@ -543,44 +544,74 @@ forestplot2 <- function (labeltext,
       y.offset_increase <- (1-y.offset_base*2)/length(low_values)
       
       for(j in 1:length(low_values)){
+        current_y.offset <- y.offset_base + (j-1)*y.offset_increase
         if (is.summary[i]){
-          eval(as.call(list(confintSummaryFn[[i]][[j]],
-                            lower_limit=rev(low_values)[j], 
-                            estimate=rev(mean_values)[j], 
-                            upper_limit=rev(up_values)[j], 
-                            size=rev(info_values)[j],
-                            col = rev(clr.summary)[j],
-                            y.offset = y.offset_base + (j-1)*y.offset_increase)))
+          call_list <- 
+            list(confintSummaryFn[[i]][[j]],
+                 lower_limit=rev(low_values)[j], 
+                 estimate=rev(mean_values)[j], 
+                 upper_limit=rev(up_values)[j], 
+                 size=rev(info_values)[j],
+                 col = rev(clr.summary)[j],
+                 y.offset = current_y.offset)
         }else{
-          eval(as.call(list(confintNormalFn[[i]][[j]],
-                            lower_limit=rev(low_values)[j], 
-                            estimate=rev(mean_values)[j], 
-                            upper_limit=rev(up_values)[j], 
-                            size=rev(info_values)[j], 
-                            y.offset = y.offset_base + (j-1)*y.offset_increase,
-                            clr.line = rev(clr.line)[j],
-                            clr.box = rev(clr.box)[j],
-                            lwd=lwd.ci)))
+          call_list <- 
+            list(confintNormalFn[[i]][[j]],
+                 lower_limit=rev(low_values)[j], 
+                 estimate=rev(mean_values)[j], 
+                 upper_limit=rev(up_values)[j], 
+                 size=rev(info_values)[j], 
+                 y.offset = current_y.offset,
+                 clr.line = rev(clr.line)[j],
+                 clr.box = rev(clr.box)[j],
+                 lwd=lwd.ci)
         }
+
+        # Add additional arguments that are passed on
+        # from the original parameters
+        if (length(list(...) > 0)){
+          ll <- list(...)
+          for (name in names(ll)){
+            call_list[[name]] <- ll[[name]]
+          }
+        }
+
+        # Do the actual drawing of the object
+        eval(as.call(call_list))
       }
     }else{
       if (is.summary[i]){
-        eval(as.call(list(confintSummaryFn[[i]],
-                          lower_limit=low_values, 
-                          estimate=mean_values, 
-                          upper_limit=up_values, 
-                          size=info_values,
-                          col=clr.summary)))
+        call_list <- 
+          list(confintSummaryFn[[i]],
+               lower_limit=low_values, 
+               estimate=mean_values, 
+               upper_limit=up_values, 
+               size=info_values,
+               col=clr.summary)
       }else{
-        eval(as.call(list(confintNormalFn[[i]],
-                          lower_limit=low_values, 
-                          estimate=mean_values, 
-                          upper_limit=up_values, 
-                          size=info_values,
-                          clr.line = clr.line, 
-                          clr.box = clr.box,
-                          lwd=lwd.ci)))
+        call_list <- 
+          list(confintNormalFn[[i]],
+               lower_limit=low_values, 
+               estimate=mean_values, 
+               upper_limit=up_values, 
+               size=info_values,
+               clr.line = clr.line, 
+               clr.box = clr.box,
+               lwd=lwd.ci)
       }
+      
+      # Add additional arguments that are passed on
+      # from the original parameters
+      if (length(list(...) > 0)){
+        ll <- list(...)
+        for (name in names(ll)){
+          call_list[[name]] <- ll[[name]]
+        }
+      }
+      
+      # Do the actual drawing of the object
+      eval(as.call(call_list))
+      
     }
     
     upViewport()
