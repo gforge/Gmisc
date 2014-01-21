@@ -524,7 +524,7 @@ forestplot2 <- function (labeltext,
     
     # The line and box colors may vary
     clr.line <- rep(col$line, length.out=length(low_values))
-    clr.box <- rep(col$box, length.out=length(low_values))
+    clr.marker <- rep(col$box, length.out=length(low_values))
     clr.summary <- rep(col$summary, length.out=length(low_values))
     
     line_vp <- viewport(layout.pos.row = i,
@@ -535,30 +535,40 @@ forestplot2 <- function (labeltext,
     
     # Draw multiple confidence intervals
     if (length(low_values) > 1){
-      y.offset_base <- 0.2
-      y.offset_increase <- (1-y.offset_base*2)/length(low_values)
+      b_height <- max(info_values)
+      if (is.unit(b_height))
+        b_height <- convertUnit(b_height, unitTo="npc", valueOnly=TRUE)
       
-      for(j in 1:length(low_values)){
-        current_y.offset <- y.offset_base + (j-1)*y.offset_increase
+      # Add some space so that the boxes 
+      # between lines don't blend
+      margin <- 0.05 
+      y.offset_base <- b_height/2 + margin 
+      y.offset_increase <- (1 - margin - y.offset_base*2)/(length(low_values)-1)
+      
+      for(j in length(low_values):1){
+        # Start from the bottom and plot up
+        # the one on top should always be
+        # above the one below
+        current_y.offset <- y.offset_base + (length(low_values)-j)*y.offset_increase
         if (is.summary[i]){
           call_list <- 
             list(confintSummaryFn[[i]][[j]],
-                 lower_limit=rev(low_values)[j], 
-                 estimate=rev(mean_values)[j], 
-                 upper_limit=rev(up_values)[j], 
-                 size=rev(info_values)[j],
-                 col = rev(clr.summary)[j],
+                 lower_limit=low_values[j], 
+                 estimate=mean_values[j], 
+                 upper_limit=up_values[j], 
+                 size=info_values[j],
+                 col = clr.summary[j],
                  y.offset = current_y.offset)
         }else{
           call_list <- 
             list(confintNormalFn[[i]][[j]],
-                 lower_limit=rev(low_values)[j], 
-                 estimate=rev(mean_values)[j], 
-                 upper_limit=rev(up_values)[j], 
-                 size=rev(info_values)[j], 
+                 lower_limit=low_values[j], 
+                 estimate=mean_values[j], 
+                 upper_limit=up_values[j], 
+                 size=info_values[j], 
                  y.offset = current_y.offset,
-                 clr.line = rev(clr.line)[j],
-                 clr.box = rev(clr.box)[j],
+                 clr.line = clr.line[j],
+                 clr.marker = clr.marker[j],
                  lwd=lwd.ci)
         }
 
@@ -591,7 +601,7 @@ forestplot2 <- function (labeltext,
                upper_limit=up_values, 
                size=info_values,
                clr.line = clr.line, 
-               clr.box = clr.box,
+               clr.marker = clr.marker,
                lwd=lwd.ci)
       }
       

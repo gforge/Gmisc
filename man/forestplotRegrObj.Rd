@@ -7,8 +7,8 @@ forestplotRegrObj(regr.obj, title = NULL, clip = c(-Inf, Inf),
   order.regexps = NULL, order.addrows = FALSE,
   legend.title = "Type of analysis", legend.content = NULL,
   legend.position = "topright", legend.inset = 0.05,
-  box.default.size = NULL, rowname.fn = NULL, xlab = NULL, xlog = FALSE,
-  estimate.txt = NULL, zero = NULL, exp = TRUE, ...)
+  box.default.size = NULL, rowname.fn = NULL, xlab = NULL, xlog = NULL,
+  estimate.txt = NULL, zero = NULL, ...)
 }
 \arguments{
   \item{regr.obj}{A regression model object. It should be
@@ -73,9 +73,6 @@ forestplotRegrObj(regr.obj, title = NULL, clip = c(-Inf, Inf),
   \item{zero}{Indicates what is zero effect. For
   survival/logistic fits the zero is 1 while in most other
   cases it's 0.}
-
-  \item{exp}{Report in exponential form. Default true since
-  the function was built for use with survival models.}
 
   \item{...}{Passed to \code{\link{forestplot2}}()}
 }

@@ -1,6 +1,6 @@
 NEWS for the Gmisc package
 
-Changes for 0.5.7.12
+Changes for 0.5.8.0
 --------------------
 * Added to forestplot2 ability create customly drawn confidence intervals/boxes
 * Generated diamond, circle and point custom draw functions for forestplot2

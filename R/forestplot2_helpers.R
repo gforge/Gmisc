@@ -2,8 +2,8 @@
 #' 
 #' A function that is used to draw the different 
 #' confidence intervals for the non-summary lines.
-#' Use this function as a template if you want to 
-#' substitute it with your own funky line + marker.
+#' Use the \code{fpDrawNormalCI} function as a
+#' template if you want to make your own funky line + marker.
 #'  
 #' @param lower_limit The lower limit of the line.
 #'  A native numeric variable that can actually be 
@@ -21,19 +21,22 @@
 #'  \code{lower_limit}.
 #' @param upper_limit The upper limit of the line. See
 #'  lower_limit for details.
-#' @param size The actual size of the box. This provided in the 'snpc'
-#'  format to generate a perfect box. If you provide anything else 
+#' @param size The actual size of the box/diamond/marker. This provided in the 'snpc'
+#'  format to generate a perfect marker. If you provide anything else 
 #'  it will be converted prior to that.
 #' @param y.offset If you have multiple lines they need an offset in
 #'  the y-direction.
 #' @param clr.line The color of the line.
-#' @param clr.box The color of the box
+#' @param clr.marker The color of the box
 #' @param lwd Line width
 #' @param ... Allows additional parameters for sibling functions
 #' @return \code{void} The function outputs the line using grid compatible
 #'  functions and does not return anything. 
+#'
+#' @seealso \code{\link{forestplot2}}
 #' 
-#' @example examples/forestplot2_example.R
+#' @example examples/forestplot2_alt_ci_example.R
+#' @rdname fpDrawCI
 #' @author Max
 #' @export
 fpDrawNormalCI <- function(lower_limit, 
@@ -41,7 +44,7 @@ fpDrawNormalCI <- function(lower_limit,
                            upper_limit, 
                            size, 
                            y.offset = 0.5, 
-                           clr.line, clr.box,
+                           clr.line, clr.marker,
                            lwd,
                            ...) {
   # If the limit is outside the 0-1 range in npc-units
@@ -91,8 +94,8 @@ fpDrawNormalCI <- function(lower_limit,
                 y = y.offset, 
                 width = size, 
                 height = size, 
-                gp = gpar(fill = clr.box, 
-                          col = clr.box))
+                gp = gpar(fill = clr.marker, 
+                          col = clr.marker))
   } else {
     # Don't draw the line if it's no line to draw
     if (lower_limit != upper_limit)
@@ -101,54 +104,19 @@ fpDrawNormalCI <- function(lower_limit,
     grid.rect(x = unit(estimate, "native"), y=y.offset, 
               width = size, 
               height = size, 
-              gp = gpar(fill = clr.box, 
-                        col = clr.box))
+              gp = gpar(fill = clr.marker, 
+                        col = clr.marker))
   }
 }
 
-#' Draw confidence intervals
-#' 
-#' This function is the same as \code{\link{fpDrawNormalCI}}
-#' with the difference that it draws a diamond
-#' instead of a box.
-#'  
-#' @param lower_limit The lower limit of the line.
-#'  A native numeric variable that can actually be 
-#'  outside the boundaries. If you want to see if it
-#'  is outside then convert it to 'npc' and see if the
-#'  value ends up more than 1 or less than 0. Here's how 
-#'  you do the conversion: 
-#'  \code{convertX(unit(upper_limit, "native"), "npc", valueOnly = TRUE)}
-#'  and the \code{\link[grid]{convertX}} together with \code{\link[grid]{unit}}
-#'  is needed to get the right values while you need to provide the valueOnly 
-#'  as you cannot compare a unit object. 
-#' @param estimate The estimate indicating the placement
-#'  of the actual diamond. Note, this can also be outside bounds
-#'  and is provided in a numeric format the same way as the 
-#'  \code{lower_limit}.
-#' @param upper_limit The upper limit of the line. See
-#'  lower_limit for details.
-#' @param size The actual size of the diamond. This provided in the 'snpc'
-#'  format to generate a perfect diamond. If you provide anything else 
-#'  it will be converted prior to that.
-#' @param y.offset If you have multiple lines they need an offset in
-#'  the y-direction.
-#' @param clr.line The color of the line.
-#' @param clr.box The color of the diamond
-#' @param lwd Line width
-#' @param ... Allows additional parameters for sibling functions
-#' @return \code{void} The function outputs the line using grid compatible
-#'  functions and does not return anything. 
-#' 
-#' @example examples/forestplot2_example.R
-#' @author Max
+#' @rdname fpDrawCI
 #' @export
 fpDrawDiamondCI <- function(lower_limit, 
                             estimate, 
                             upper_limit, 
                             size, 
                             y.offset = 0.5, 
-                            clr.line, clr.box,
+                            clr.line, clr.marker,
                             lwd,
                             ...) {
   # If the limit is outside the 0-1 range in npc-units
@@ -196,8 +164,8 @@ fpDrawDiamondCI <- function(lower_limit,
                      unit(c(-size/2, 0, +size/2, 0), "snpc"), 
                    y = unit(y.offset, "npc") +
                      unit(c(0, size/2, 0, -size/2), "snpc"), 
-                   gp = gpar(fill = clr.box, 
-                             col = clr.box))
+                   gp = gpar(fill = clr.marker, 
+                             col = clr.marker))
   } else {
     # Don't draw the line if it's no line to draw
     if (lower_limit != upper_limit)
@@ -207,54 +175,19 @@ fpDrawDiamondCI <- function(lower_limit,
                    unit(c(-size/2, 0, +size/2, 0), "snpc"), 
                  y = unit(y.offset, "npc") +
                    unit(c(0, size/2, 0, -size/2), "snpc"), 
-                 gp = gpar(fill = clr.box, 
-                           col = clr.box))
+                 gp = gpar(fill = clr.marker, 
+                           col = clr.marker))
   }
 }
 
-#' Draw confidence intervals
-#' 
-#' This function is the same as \code{\link{fpDrawNormalCI}}
-#' with the difference that it draws a circle
-#' using the \code{\link[grid]{grid.circle}} function.
-#'  
-#' @param lower_limit The lower limit of the line.
-#'  A native numeric variable that can actually be 
-#'  outside the boundaries. If you want to see if it
-#'  is outside then convert it to 'npc' and see if the
-#'  value ends up more than 1 or less than 0. Here's how 
-#'  you do the conversion: 
-#'  \code{convertX(unit(upper_limit, "native"), "npc", valueOnly = TRUE)}
-#'  and the \code{\link[grid]{convertX}} together with \code{\link[grid]{unit}}
-#'  is needed to get the right values while you need to provide the valueOnly 
-#'  as you cannot compare a unit object. 
-#' @param estimate The estimate indicating the placement
-#'  of the actual circle. Note, this can also be outside bounds
-#'  and is provided in a numeric format the same way as the 
-#'  \code{lower_limit}.
-#' @param upper_limit The upper limit of the line. See
-#'  lower_limit for details.
-#' @param size The actual diameter of the circle. This provided in the 'snpc'
-#'  format. If you provide anything else 
-#'  it will be converted prior to that.
-#' @param y.offset If you have multiple lines they need an offset in
-#'  the y-direction.
-#' @param clr.line The color of the line.
-#' @param clr.box The color of the circle
-#' @param lwd Line width
-#' @param ... Allows additional parameters for sibling functions
-#' @return \code{void} The function outputs the line using grid compatible
-#'  functions and does not return anything. 
-#' 
-#' @example examples/forestplot2_example.R
-#' @author Max
+#' @rdname fpDrawCI
 #' @export
 fpDrawCircleCI <- function(lower_limit, 
                            estimate, 
                            upper_limit, 
                            size, 
                            y.offset = 0.5, 
-                           clr.line, clr.box,
+                           clr.line, clr.marker,
                            lwd,
                            ...) {
   # If the limit is outside the 0-1 range in npc-units
@@ -304,8 +237,8 @@ fpDrawCircleCI <- function(lower_limit,
       grid.circle(x = unit(estimate, "native"), 
                   y = unit(y.offset, "npc"), 
                   r = size,
-                  gp = gpar(fill = clr.box, 
-                            col = clr.box))
+                  gp = gpar(fill = clr.marker, 
+                            col = clr.marker))
   } else {
     # Don't draw the line if it's no line to draw
     if (lower_limit != upper_limit)
@@ -314,55 +247,20 @@ fpDrawCircleCI <- function(lower_limit,
     grid.circle(x = unit(estimate, "native"), 
                 y = unit(y.offset, "npc"), 
                 r = size,
-                gp = gpar(fill = clr.box, 
-                          col = clr.box))
+                gp = gpar(fill = clr.marker, 
+                          col = clr.marker))
   }
 }
 
-#' Draw confidence intervals
-#' 
-#' This function is the same as \code{\link{fpDrawNormalCI}}
-#' with the difference that it draws a point
-#' using the \code{\link[grid]{grid.points}} function.
-#'  
-#' @param lower_limit The lower limit of the line.
-#'  A native numeric variable that can actually be 
-#'  outside the boundaries. If you want to see if it
-#'  is outside then convert it to 'npc' and see if the
-#'  value ends up more than 1 or less than 0. Here's how 
-#'  you do the conversion: 
-#'  \code{convertX(unit(upper_limit, "native"), "npc", valueOnly = TRUE)}
-#'  and the \code{\link[grid]{convertX}} together with \code{\link[grid]{unit}}
-#'  is needed to get the right values while you need to provide the valueOnly 
-#'  as you cannot compare a unit object. 
-#' @param estimate The estimate indicating the placement
-#'  of the actual point. Note, this can also be outside bounds
-#'  and is provided in a numeric format the same way as the 
-#'  \code{lower_limit}.
-#' @param upper_limit The upper limit of the line. See
-#'  lower_limit for details.
-#' @param size The actual diameter of the point. This provided in the 'snpc'
-#'  format. If you provide anything else 
-#'  it will be converted prior to that.
-#' @param y.offset If you have multiple lines they need an offset in
-#'  the y-direction.
-#' @param clr.line The color of the line.
-#' @param clr.box The color of the point
-#' @param lwd Line width
-#' @param pch Type of point
-#' @param ... Allows additional parameters for sibling functions
-#' @return \code{void} The function outputs the line using grid compatible
-#'  functions and does not return anything. 
-#' 
-#' @example examples/forestplot2_example.R
-#' @author Max
+#' @rdname fpDrawCI
+#' @param pch Type of point see \code{\link[grid]{grid.points}} for details
 #' @export
 fpDrawPointCI <- function(lower_limit, 
                           estimate, 
                           upper_limit, 
                           size, 
                           y.offset = 0.5, 
-                          clr.line, clr.box,
+                          clr.line, clr.marker,
                           lwd,
                           pch = 1,
                           ...) {
@@ -413,8 +311,8 @@ fpDrawPointCI <- function(lower_limit,
                  y = unit(y.offset, "npc"), 
                  size = size,
                  pch = pch,
-                 gp = gpar(fill = clr.box, 
-                           col = clr.box))
+                 gp = gpar(fill = clr.marker, 
+                           col = clr.marker))
   } else {
     # Don't draw the line if it's no line to draw
     if (lower_limit != upper_limit)
@@ -424,44 +322,13 @@ fpDrawPointCI <- function(lower_limit,
                 y = unit(y.offset, "npc"), 
                 size = size,
                 pch = pch,
-                gp = gpar(fill = clr.box, 
-                          col = clr.box))
+                gp = gpar(fill = clr.marker, 
+                          col = clr.marker))
   }
 }
 
-#' Draw summary confidence intervals
-#' 
-#' A function that is used to draw the different 
-#' confidence intervals for the summary lines.
-#' Use this function as a template if you want to 
-#' substitute it with your own funky summary display.
-#'  
-#' @param lower_limit The lower limit of the diamond.
-#'  A native numeric variable that can actually be 
-#'  outside the boundaries. If you want to see if it
-#'  is outside then convert it to 'npc' and see if the
-#'  value ends up more than 1 or less than 0. Here's how 
-#'  you do the conversion: 
-#'  \code{convertX(unit(upper_limit, "native"), "npc", valueOnly = TRUE)}
-#'  and the \code{\link[grid]{convertX}} together with \code{\link[grid]{unit}}
-#'  is needed to get the right values while you need to provide the valueOnly 
-#'  as you cannot compare a unit object. 
-#' @param estimate The estimate indicating the maximum height
-#'  of the diamond. Note, this can also be outside bounds
-#'  and is provided in a numeric format the same way as the 
-#'  \code{lower_limit}.
-#' @param upper_limit The upper limit of the diamond. See
-#'  lower_limit for details.
-#' @param size The actual height of the diamond.
-#' @param y.offset If you have multiple lines they need an offset in
-#'  the y-direction.
+#' @rdname fpDrawCI
 #' @param col The color of the summary diamond.
-#' @param ... Allows additional parameters for sibling functions
-#' @return \code{void} The function outputs the line using grid compatible
-#'  functions and does not return anything. 
-#' 
-#' @example examples/forestplot2_example.R
-#' @author Max
 #' @export
 fpDrawSummaryCI <- function(lower_limit, estimate, upper_limit, 
                             size, col, y.offset = 0.5, ...) {
@@ -484,7 +351,7 @@ fpDrawSummaryCI <- function(lower_limit, estimate, upper_limit,
 #' represents the first line/box, second the second line/box etc. The 
 #' vectors are only valid for the box & lines. 
 #' 
-#' This function is a copy of the meta.colors function in the
+#' This function is a copy of the \code{\link[rmeta]{meta.colors}} function in the
 #' rmeta package.
 #' 
 #' @param all.elements A color for all the elements. If set to NULL then
@@ -496,7 +363,7 @@ fpDrawSummaryCI <- function(lower_limit, estimate, upper_limit,
 #' @param text The color of the text
 #' @param axes The color of the x-axis at the bottom
 #' @return list A list with the elements:
-#' \item{box}{the color of the box}
+#' \item{box}{the color of the box/marker}
 #' \item{lines}{the color of the lines}
 #' \item{summary}{the color of the summary}
 #' \item{zero}{the color of the zero vertical line}
@@ -630,6 +497,7 @@ prFpGetConfintFnList <- function(fn, no_rows, no_cols){
              "confidence interval functions as you have ",
              "number of rows: ", length(fn), "!=", no_rows,
              " You should provide the same number.")
+      ret <- fn
     }else{
       # Populate a new fn list
       if (length(fn) == no_rows){
@@ -657,6 +525,8 @@ prFpGetConfintFnList <- function(fn, no_rows, no_cols){
                  " where you want all of the second argument to be",
                  " equal to ", no_cols)
           }
+          
+          ret <- fn
         }
       }else if (length(fn) == no_cols){
         # One dim-list provided
