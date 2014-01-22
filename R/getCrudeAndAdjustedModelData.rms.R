@@ -16,12 +16,13 @@ getCrudeAndAdjustedModelData.rms <- function(fit, level=.95, remove_interaction_
       vnames="names",
       conf.int=level,
       est.all=FALSE)
+    # Select reference for each summary call
     for(name in vn){
       if (is.factor(data[[name]]))
         scall[[name]] = levels(data[[name]])[1]
       else if (length(unique(data[[name]])) == 2){
         freq <- table(data[[name]])
-        scall[[name]] = sort(names(freq))
+        scall[[name]] = sort(names(freq))[1]
       }else{
         # Perhaps a little overkill but it seems better to
         # set it to one step inside the range than just 0 vs 1
