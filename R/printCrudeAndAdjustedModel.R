@@ -145,14 +145,14 @@ printCrudeAndAdjustedModel <- function(model,
         desc_digits = desc_digits,
         use_labels = use_labels)
       if (length(groups) > 0){
-        if (length(groups) == length(rgroups)){
-          rgroups <- groups
+        if (length(groups) == length(attr(reordered_groups, "rgroup"))){
+          attr(reordered_groups, "rgroup") <- groups
         }else{
           warning("You have wanted to use groups but the number of rgroups identified ",
-              " by the automatic add_reference (", length(rgroups), " rgroups)",
+              " by the automatic add_reference (", length(attr(reordered_groups, "rgroup")), " rgroups)",
               " is not equal the number of groups provided by you (", length(groups), ").",
               "\n You have provided the groups: ", paste(groups, collapse=", "), 
-              "\n and the rgroups are: ", paste(rgroups, collapse=", "))
+              "\n and the rgroups are: ", paste(attr(reordered_groups, "rgroup"), collapse=", "))
         }
       }
     }else if (length(add_references) == length(greps)){
