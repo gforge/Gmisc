@@ -445,22 +445,8 @@ prCaAddReferenceAndStatsFromModelData <- function(model,
       # that one of the factors isn't included and therefore I use
       # this perhaps slightly trickier identification of all the factors
       available_factors <- as.character(unique(ds[, vn][is.na(ds[, vn]) == FALSE]))
-      # We need to clean from characters that might cause issues with the 
-      # regular expression
-      regex_clean_levels <- gsub("([()\\[\\]{}\\.])", "\\\\\\1", available_factors, perl=TRUE)
-      regex_clean_levels <- gsub("([+*\\.])", "[\\1]", regex_clean_levels, available_factors, perl = TRUE)
       
-      # Matches:
-      # varname=Outcome
-      # varname - Outcome:reference
-      # varname-Outcome
-      # ...
-      regex_expr_str <- sprintf("^%s[ ]{0,1}[=-]{0,1}[ ]{0,1}(%s)(|:.+)$", 
-        vn, 
-        paste(regex_clean_levels, collapse = "|"))
-      
-      matches <- grep(regex_expr_str, 
-        rownames(values))
+      matches <- which(substr(rownames(values), 1, nchar(vn)) == vn)
       if (length(matches) > 0){
         values <- prCaAddReference(vn = vn, 
           matches = matches, 
