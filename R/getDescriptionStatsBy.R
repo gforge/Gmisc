@@ -88,14 +88,7 @@ getDescriptionStatsBy <-
   # the factors function
   if (show_all_values)
     prop_fn <- describeFactors
-  
-  getFormattedPval <- function(p_val){
-    if (p_val < min_pval)
-      return(sprintf(ifelse(html, "&lt; %s", "$< %s$"),
-          format(min_pval, scientific=FALSE)))
-    return(format(p_val, digits=2, scientific=FALSE))
-  }
-  
+    
   addEmptyValuesToMakeListCompatibleWithMatrix <- function(t){
     # Convert the list into a list with vectors instead of matrices
     for (n in names(t)){
@@ -177,7 +170,7 @@ getDescriptionStatsBy <-
     }
     
     if (statistics)
-      pval <- getFormattedPval(wilcox.test(x ~ by)$p.value)
+      pval <- pvalueFormatter(wilcox.test(x ~ by)$p.value, html=html)
     
   }else if(is.factor(x) && 
     length(levels(x)) == 2 && 
@@ -217,7 +210,7 @@ getDescriptionStatsBy <-
       else
         pval <- fisher.test(x, by, workspace=20, simulate.p.value=TRUE)$p.value
       
-      pval <- getFormattedPval(pval)
+      pval <- pvalueFormatter(pval, html=html)
     }
 
   }else{
@@ -314,7 +307,7 @@ getDescriptionStatsBy <-
   }
   
   if (statistics){
-    pval <- getFormattedPval(pval)
+    pval <- pvalueFormatter(pval, html=html)
     results <- cbind(results, c(pval, rep("", nrow(results)-1)))
     cn <- c(cn, "p-value")
   }
