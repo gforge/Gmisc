@@ -603,6 +603,7 @@ prCaAddReference <- function(vn, matches, available_factors, values, add_referen
   ref_value <- rep(c(reference_zero_effect, "ref"), times=2)
   
   reference <- NULL
+  rms_format <- FALSE
   # The rms package generates rownames with factor name:reference factor
   # and it is therefore a good idea to find the refreence by checking
   # which one is at the end
@@ -610,6 +611,7 @@ prCaAddReference <- function(vn, matches, available_factors, values, add_referen
     tmp <- gsub(f_name, "", rownames(values)[matches], fixed=TRUE)
     if (all(grepl(":$", tmp))){
       reference <- f_name
+      rms_format <- TRUE
       break
     }
   }
@@ -630,15 +632,21 @@ prCaAddReference <- function(vn, matches, available_factors, values, add_referen
     used_factors <- available_factors[reference != available_factors]
   }
   
+  clean_rn = rownames(values)
   for (uf_name in used_factors){
-    r_no <- grep(uf_name, rownames(values), fixed=TRUE)
+    if (rms_format){
+      clean_rn <- gsub("^.* - (.*):.*$", "\\1", rownames(values))
+      r_no <- which(clean_rn == uf_name)
+    }else{
+      r_no <- grep(uf_name, clean_rn, fixed=TRUE)
+    }
     if (!any(r_no %in% matches))
       stop("Could not find rowname with factor ", uf_name, 
-        " among any of the row names: ", paste(rownames(values), collapse=", "))
+        " among any of the row names: ", paste(clean_rn, collapse=", "))
     r_no <- r_no[r_no %in% matches]
     if (length(r_no) > 1)
       stop("Multiple rows matched the factor ", uf_name,
-        " from the available: ", paste(rownames(values)[matches], collapse=", "))
+        " from the available: ", paste(clean_rn[matches], collapse=", "))
     
     # Remove the main label as that goes into the attr(values, "rgroup")
     rownames(values)[r_no] <- uf_name
