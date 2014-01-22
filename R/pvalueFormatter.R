@@ -1,4 +1,3 @@
-
 #' Formats the p-values
 #' 
 #' Gets formatted p-values. For instance
@@ -16,7 +15,7 @@
 #'  as needed for html output.
 #' @return vector 
 #'
-#' @example pvalueFormatter(c(0.10234,0.010234, 0.0010234, 0.000010234)) 
+#' @examples pvalueFormatter(c(0.10234,0.010234, 0.0010234, 0.000010234)) 
 #' @author Max
 #' @export
 pvalueFormatter <- function(pvalues, two_dec.limit = 10^-2, 
