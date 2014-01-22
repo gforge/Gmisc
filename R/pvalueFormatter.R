@@ -16,7 +16,7 @@
 #'  as needed for html output.
 #' @return vector 
 #'
-#' @example pvalueFormatter(c(0.1234,0.01234, 0.001234, 0.00001234)) 
+#' @example pvalueFormatter(c(0.10234,0.010234, 0.0010234, 0.000010234)) 
 #' @author Max
 #' @export
 pvalueFormatter <- function(pvalues, two_dec.limit = 10^-2, 
@@ -24,13 +24,19 @@ pvalueFormatter <- function(pvalues, two_dec.limit = 10^-2,
   if (is.logical(html))
     html <- ifelse(html, "&lt; ", "< ")
   sapply(pvalues, function(x, two_dec.limit, sig.limit, lt_sign){
+      if (is.na(as.numeric(x))){
+        warning("The value: '", x, "' is non-numeric and pvalueFormatter",
+                " can't therfore handle it")
+        return (x)
+      }
+      
       if (x < sig.limit)
         return(sprintf("%s%s", lt_sign, format(sig.limit, scientific=FALSE))) 
   
       if (x > two_dec.limit)
         return(format(x, 
                       digits=2, 
-                      nsmall=2))
+                      nsmall=-floor(log10(x))+1))
       
       return(format(x, digits=1, scientific=FALSE))
     }, sig.limit=sig.limit, 

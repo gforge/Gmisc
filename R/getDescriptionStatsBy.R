@@ -170,7 +170,7 @@ getDescriptionStatsBy <-
     }
     
     if (statistics)
-      pval <- pvalueFormatter(wilcox.test(x ~ by)$p.value, html=html)
+      pval <- wilcox.test(x ~ by)$p.value
     
   }else if(is.factor(x) && 
     length(levels(x)) == 2 && 
@@ -209,8 +209,6 @@ getDescriptionStatsBy <-
         pval <- fisher.test(x, by, workspace=20)$p.value
       else
         pval <- fisher.test(x, by, workspace=20, simulate.p.value=TRUE)$p.value
-      
-      pval <- pvalueFormatter(pval, html=html)
     }
 
   }else{
