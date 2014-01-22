@@ -282,16 +282,18 @@ prGetStatistics <- function(x,
   percentage_sign = percentage_sign)
 {
   show_missing <- prConvertShowMissing(show_missing)
-  if (is.factor(x)){
-    if (length(levels(x)) == 2){
-      if (show_perc)
+  if (is.factor(x) || 
+        is.logical(x) ||
+        is.character(x)){
+    if (length(unique(x)) == 2){
+      if (show_perc){
         total_table <- prop_fn(x, 
             html=html, 
             digits=digits,
             number_first=numbers_first, 
             show_missing = show_missing,
             percentage_sign = percentage_sign)
-      else{
+      }else{
         total_table <- table(x, useNA=show_missing)
         names(total_table)[is.na(names(total_table))] <- "Missing"
         # Choose only the reference level
@@ -299,7 +301,7 @@ prGetStatistics <- function(x,
           total_table <- total_table[names(total_table) %in% c(levels(x)[1], "Missing")]
       }
       
-    }else {
+    } else {
       if (show_perc)
         total_table <- factor_fn(x, 
             html=html, 

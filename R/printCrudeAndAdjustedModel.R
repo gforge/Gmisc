@@ -53,6 +53,8 @@
 #' @param desc_show_missing Show missing variables in the descriptive columns
 #' @param desc_digits Number of digits to use in the descriptive columns. Defaults
 #'  to the general digits if not specified.
+#' @param desc_colnames The names of the two descriptive columns. By default
+#'  Total and Event.
 #' @param output Set to latex if you want latex output
 #' @param ... Passed onto the Hmisc::\code{\link{latex}} function, or to the \code{\link{htmlTable}} via the print call
 #' @return \code{matrix} Returns a matrix of class printCrudeAndAdjusted that has a default
@@ -85,6 +87,7 @@ printCrudeAndAdjustedModel <- function(model,
   desc_factor_fn        = describeFactors,
   desc_show_missing     = FALSE,
   desc_digits           = digits,
+  desc_colnames         = c("Total", "Event"),
   output                = "html",
   ...)
 {
@@ -143,6 +146,7 @@ printCrudeAndAdjustedModel <- function(model,
         desc_factor_fn = desc_factor_fn, 
         desc_show_missing = desc_show_missing,
         desc_digits = desc_digits,
+        desc_colnames = desc_colnames,
         use_labels = use_labels)
       if (length(groups) > 0){
         if (length(groups) == length(attr(reordered_groups, "rgroup"))){
@@ -219,6 +223,7 @@ printCrudeAndAdjustedModel <- function(model,
         desc_factor_fn = desc_factor_fn, 
         desc_show_missing = desc_show_missing,
         desc_digits = desc_digits,
+        desc_colnames = desc_colnames,
         use_labels = use_labels)
     }else{
       reordered_groups <- prCaAddFactorRgroups(value_mtrx = reordered_groups,
@@ -362,6 +367,8 @@ print.printCrudeAndAdjusted <- function(x,
 #' @param desc_show_missing Show missing variables in the descriptive columns
 #' @param desc_digits Number of digits to use in the descriptive columns. Defaults
 #'  to the general digits if not specified.
+#' @param desc_colnames The names of the two descriptive columns. By default
+#'  Total and Event.
 #' @param use_labels If labels should be used for rownames
 #' @return list 
 #' 
@@ -381,7 +388,8 @@ prCaAddReferenceAndStatsFromModelData <- function(model,
   desc_prop_fn,
   desc_factor_fn, 
   desc_show_missing,
-  desc_digits, 
+  desc_digits,
+  desc_colnames,
   use_labels
   ){
   if (!is.null(model[["variance.inflation.impute"]]))
@@ -437,7 +445,8 @@ prCaAddReferenceAndStatsFromModelData <- function(model,
         desc_prop_fn=desc_prop_fn,
         desc_factor_fn=desc_factor_fn, 
         desc_show_missing=desc_show_missing,
-        desc_show_tot_perc=desc_show_tot_perc)
+        desc_show_tot_perc=desc_show_tot_perc,
+        desc_colnames=desc_colnames)
     }
     
     if (is.factor(ds[,vn])){
@@ -490,7 +499,7 @@ prCaAddReferenceAndStatsFromModelData <- function(model,
     }
     for(vn in vars){
       rowname <- prCaGetRowname(vn = vn, use_labels = use_labels, dataset = ds)
-      if (is.factor(ds[,vn])){
+      if (is.factor(ds[,vn]) || is.logical(ds[,vn])){
         # Get the row number of the first element in that group of factors
         group_nr <- which(rowname == attr(values, "rgroup"))
         if (length(group_nr) == 0)
@@ -563,9 +572,9 @@ prCaAddReferenceAndStatsFromModelData <- function(model,
     
     values <- prCopyAllAttribsExceptDim(values, cbind(desc_mtrx, values)) 
     if (ncol(desc_mtrx) == 1 && colnames(values)[1] == "")
-      colnames(values)[1] <- "Total"
+      colnames(values)[1] <- desc_colnames
     else if(all(colnames(values)[1:2] == ""))
-      colnames(values)[1:2] <- c("Total", "Event")
+      colnames(values)[1:2] <- desc_colnames
     
   }
   
@@ -738,6 +747,8 @@ prCaAddReference <- function(vn, matches, available_factors, values, add_referen
 #' @param desc_show_missing Show missing variables in the descriptive columns
 #' @param desc_digits Number of digits to use in the descriptive columns. Defaults
 #'  to the general digits if not specified.
+#' @param desc_colnames The names of the two descriptive columns. By default
+#'  Total and Event.
 #' @return \code{matrix} A matrix from \code{\link{getDescriptionStatsBy}} or
 #'  \code{\link{prGetStatistics}}
 #' 
@@ -754,8 +765,10 @@ prCaGetVnStats <- function(model,
   desc_prop_fn,
   desc_factor_fn, 
   desc_show_missing,
-  desc_show_tot_perc){
+  desc_show_tot_perc,
+  desc_colnames){
   # TODO: add some option of handling missing from the model, a second/third column
+  # TODO: add handling for logical values
   
   # If there is a binomial outcome variable then 
   # it makes sense to have two columns, the overall
@@ -779,7 +792,7 @@ prCaGetVnStats <- function(model,
     # Don't select the no-event alternative as this is usually
     # not interesting since we have the total column
     desc_mtrx <- desc_mtrx[,c(1,3),drop=FALSE]
-    colnames(desc_mtrx) <- c("Total", "Event")
+    colnames(desc_mtrx) <- desc_colnames
   }else{
     desc_mtrx <- prGetStatistics(x=ds[is.na(outcome) == FALSE,vn],  
       show_perc = desc_show_tot_perc, 

@@ -18,9 +18,13 @@ getCrudeAndAdjustedModelData.rms <- function(fit, level=.95, remove_interaction_
       est.all=FALSE)
     # Select reference for each summary call
     for(name in vn){
-      if (is.factor(data[[name]]))
+      if (is.factor(data[[name]])){
         scall[[name]] = levels(data[[name]])[1]
-      else if (length(unique(data[[name]])) == 2){
+      }else if(is.logical(data[[name]])){
+        # Logical should always have false as the
+        # reference category
+        scall[[name]] = FALSE
+      }else if (length(unique(data[[name]])) == 2){
         freq <- table(data[[name]])
         scall[[name]] = sort(names(freq))[1]
       }else{
