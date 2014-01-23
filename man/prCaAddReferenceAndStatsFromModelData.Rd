@@ -5,7 +5,7 @@
 prCaAddReferenceAndStatsFromModelData(model, order, add_references,
   add_references_pos, reference_zero_effect, values, ds, output, desc_column,
   desc_show_tot_perc, desc_numb_first, desc_continuous_fn, desc_prop_fn,
-  desc_factor_fn, desc_show_missing, desc_digits, use_labels)
+  desc_factor_fn, desc_show_missing, desc_digits, desc_colnames, use_labels)
 }
 \arguments{
   \item{model}{The regression model}
@@ -70,6 +70,9 @@ prCaAddReferenceAndStatsFromModelData(model, order, add_references,
   \item{desc_digits}{Number of digits to use in the
   descriptive columns. Defaults to the general digits if
   not specified.}
+
+  \item{desc_colnames}{The names of the two descriptive
+  columns. By default Total and Event.}
 
   \item{use_labels}{If labels should be used for rownames}
 }

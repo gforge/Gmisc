@@ -10,7 +10,8 @@ printCrudeAndAdjustedModel(model, order = FALSE, digits = 2, ci_max = Inf,
   desc_column = FALSE, desc_show_tot_perc = FALSE, desc_numb_first = TRUE,
   desc_continuous_fn = describeMean, desc_prop_fn = describeProp,
   desc_factor_fn = describeFactors, desc_show_missing = FALSE,
-  desc_digits = digits, output = "html", ...)
+  desc_digits = digits, desc_colnames = c("Total", "Event"),
+  output = "html", ...)
 
 \method{print}{printCrudeAndAdjusted}(x, rgroupCSSstyle = "",
   rgroupCSSseparator = "", ...)
@@ -106,6 +107,9 @@ printCrudeAndAdjustedModel(model, order = FALSE, digits = 2, ci_max = Inf,
   \item{desc_digits}{Number of digits to use in the
   descriptive columns. Defaults to the general digits if
   not specified.}
+
+  \item{desc_colnames}{The names of the two descriptive
+  columns. By default Total and Event.}
 
   \item{output}{Set to latex if you want latex output}
 

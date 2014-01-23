@@ -4,7 +4,7 @@
 \usage{
 prCaGetVnStats(model, vn, outcome, output, ds, add_references,
   add_references_pos, desc_digits, desc_continuous_fn, desc_prop_fn,
-  desc_factor_fn, desc_show_missing, desc_show_tot_perc)
+  desc_factor_fn, desc_show_missing, desc_show_tot_perc, desc_colnames)
 }
 \arguments{
   \item{model}{The model}
@@ -60,6 +60,9 @@ prCaGetVnStats(model, vn, outcome, output, ds, add_references,
   \item{desc_digits}{Number of digits to use in the
   descriptive columns. Defaults to the general digits if
   not specified.}
+
+  \item{desc_colnames}{The names of the two descriptive
+  columns. By default Total and Event.}
 }
 \value{
 \code{matrix} A matrix from

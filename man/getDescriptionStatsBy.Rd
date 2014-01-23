@@ -3,12 +3,12 @@
 \title{Creating of description statistics}
 \usage{
 getDescriptionStatsBy(x, by, digits = 1, html = FALSE, NEJMstyle = FALSE,
-  numbers_first = TRUE, statistics = FALSE, min_pval = 10^-4,
-  show_missing = FALSE, continuous_fn = describeMean,
-  prop_fn = describeProp, factor_fn = describeFactors,
-  show_all_values = FALSE, hrzl_prop = FALSE, add_total_col = hrzl_prop,
-  total_col_show_perc = TRUE, use_units = FALSE, default_ref = "First",
-  percentage_sign = TRUE)
+  numbers_first = TRUE, statistics = FALSE, sig.limit = 10^-4,
+  two_dec.limit = 10^-2, show_missing = FALSE,
+  continuous_fn = describeMean, prop_fn = describeProp,
+  factor_fn = describeFactors, show_all_values = FALSE, hrzl_prop = FALSE,
+  add_total_col = hrzl_prop, total_col_show_perc = TRUE,
+  use_units = FALSE, default_ref = "First", percentage_sign = TRUE)
 }
 \arguments{
   \item{x}{The variable that you want the statistics for}
@@ -43,8 +43,12 @@ getDescriptionStatsBy(x, by, digits = 1, html = FALSE, NEJMstyle = FALSE,
   \item{statistics}{Add statistics, fisher test for
   proportions and Wilcoxon for continuous variables}
 
-  \item{min_pval}{The minimum p-value before doing a "<
-  0.0001"}
+  \item{two_dec.limit}{The limit for showing two decimals
+  .}
+
+  \item{sig.limit}{The significance limit for < sign, i.e.
+  p-value 0.0000312 should be < 0.0001 with the default
+  setting.}
 
   \item{show_all_values}{This is by default false as for
   instance if there is no missing and there is only one
@@ -76,7 +80,7 @@ getDescriptionStatsBy(x, by, digits = 1, html = FALSE, NEJMstyle = FALSE,
   appear before the units (if specified as last).}
 
   \item{default_ref}{If you use proportions with only one
-  variable, i.e. not show_all_valuse, then it can be useful
+  variable, i.e. not show_all_values, then it can be useful
   to set the reference level that is of interest to show.
   This can wither be "First", level name or level number.}
 

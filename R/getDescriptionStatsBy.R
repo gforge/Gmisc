@@ -23,7 +23,9 @@
 #' @param factor_fn The method used to describe factors, see \code{\link{describeFactors}}.
 #' @param statistics Add statistics, fisher test for proportions and Wilcoxon
 #'  for continuous variables
-#' @param min_pval The minimum p-value before doing a "< 0.0001"
+#' @param two_dec.limit The limit for showing two decimals .
+#' @param sig.limit The significance limit for < sign, i.e. p-value 0.0000312 
+#'  should be < 0.0001 with the default setting.
 #' @param show_all_values This is by default false as for instance if there is
 #'  no missing and there is only one variable then it is most sane to only show 
 #'  one option as the other one will just be a complement to the first. For instance
@@ -43,7 +45,7 @@
 #'  it may be interesting to have a column at the far right that indicates the
 #'  unit measurement. If this column is specified then the total column will
 #'  appear before the units (if specified as last). 
-#' @param default_ref If you use proportions with only one variable, i.e. not show_all_valuse,
+#' @param default_ref If you use proportions with only one variable, i.e. not show_all_values,
 #'  then it can be useful to set the reference level that is of interest to show. This can 
 #'  wither be "First", level name or level number.  
 #' @param percentage_sign If you want to surpress the percentage sign you
@@ -64,7 +66,8 @@ getDescriptionStatsBy <-
   function(x, by, digits=1, 
            html = FALSE, NEJMstyle = FALSE, 
            numbers_first = TRUE, 
-           statistics=FALSE, min_pval = 10^-4,
+           statistics=FALSE, 
+           sig.limit=10^-4, two_dec.limit= 10^-2,
            show_missing = FALSE,
            continuous_fn = describeMean,
            prop_fn = describeProp,
@@ -314,7 +317,9 @@ getDescriptionStatsBy <-
     }
     
     if (statistics){
-      pval <- pvalueFormatter(pval, html=html)
+      pval <- pvalueFormatter(pval, 
+                              sig.limit=sig.limit, two_dec.limit= two_dec.limit,
+                              html=html)
       results <- cbind(results, c(pval, rep("", nrow(results)-1)))
       cn <- c(cn, "p-value")
     }
