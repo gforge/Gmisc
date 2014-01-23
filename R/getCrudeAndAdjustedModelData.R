@@ -57,7 +57,7 @@ getCrudeAndAdjustedModelData.default <- function(fit, level=.95, remove_interact
     
     if (skip_intercept){
       intercept <- grep("[iI]ntercept", coef_names)
-      if (length(intercept)){
+      if (length(intercept) > 0){
         my_coefficients <- my_coefficients[-intercept]
         ci <- ci[-intercept,]
         coef_names <- coef_names[-intercept]
@@ -84,7 +84,9 @@ getCrudeAndAdjustedModelData.default <- function(fit, level=.95, remove_interact
     return(ret_val)
   }
   
-  var_names <- prGetModelVariables(fit, remove_interaction_vars = remove_interaction_vars)
+  var_names <- prGetModelVariables(fit, 
+      remove_interaction_vars = remove_interaction_vars,
+      add_intercept = TRUE)
   if (length(var_names) == 0)
     stop("You have no variables that can be displayed as adjusted/unadjusted",
       " since they all are part of an interaction, spline or strata.")
@@ -108,25 +110,29 @@ getCrudeAndAdjustedModelData.default <- function(fit, level=.95, remove_interact
   
   unadjusted <- c()
   for(variable in var_names){
-    # Run the same fit but with only one variable
-    fit_only1 <- update(fit, paste(".~", variable))
-    
-    # Get the coefficients processed with some advanced
-    # round part()
-    new_vars <- get_coef_and_ci(fit_only1, skip_intercept = TRUE)
-    
-    # Add them to the previous
-    unadjusted <- rbind(unadjusted, new_vars)
-  }
-  
-  # If regression contains Intercept
-  if (length(grep("[iI]ntercept", rownames(adjusted))) > 0)
-  {
-    # Run the same fit but without any variables
-    fit_only1 <- update(fit, ".~ 1")
-    new_vars <- get_coef_and_ci(fit_only1, skip_intercept = FALSE)
-    unadjusted <- rbind(new_vars, unadjusted)
-    rownames(unadjusted)[1] <- "Intercept"
+    if (!grepl("[iI]ntercept", variable)){
+      # Run the same fit but with only one variable
+      fit_only1 <- update(fit, paste(".~", variable))
+      
+      # Get the coefficients processed with some advanced
+      # round part()
+      new_vars <- get_coef_and_ci(fit_only1, skip_intercept = TRUE)
+      
+      # Add them to the previous
+      unadjusted <- rbind(unadjusted, new_vars)
+    }else{
+      # Run the same fit but without any variables
+      fit_only1 <- update(fit, ".~ 1")
+      
+      # Get the coefficients
+      new_vars <- get_coef_and_ci(fit_only1, skip_intercept = FALSE)
+      
+      # Add
+      unadjusted <- rbind(new_vars, unadjusted)
+      
+      # Change name
+      rownames(unadjusted)[1] <- "Intercept"
+    }
   }
   
   # If just one variable it's not a proper matrix

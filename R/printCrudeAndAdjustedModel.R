@@ -117,7 +117,7 @@ printCrudeAndAdjustedModel <- function(model,
   if (length(order) > 1 || is.character(order)){
     greps <- prCaGetOrderVariables(names = rownames(x), order = order)
     
-    reordered_groups <- x[unlist(greps), ]
+    reordered_groups <- x[unlist(greps), ,drop=FALSE]
     if (any(rownames(reordered_groups) %nin% rownames(x))){
       stop(
         sprintf("An error occurred when reordering, there are now more variables than initially found, the following new vars exist: %s",
@@ -406,9 +406,10 @@ prCaAddReferenceAndStatsFromModelData <- function(model,
   if (is.matrix(values))
     class(values) <- "matrix"
   
-  vars <- prGetModelVariables(model, remove_splines = TRUE, remove_interaction_vars = TRUE)
+  vars <- prGetModelVariables(model, remove_splines = TRUE,
+                              remove_interaction_vars = TRUE)
   if (length(order) > 1 || is.character(order)){
-    greps <- prCaGetOrderVariables(names = vars, order = order)
+    greps <- prCaGetOrderVariables(names = vars, order = order, ok2skip=TRUE)
     vars <- vars[unlist(greps)]
   }
   
@@ -572,7 +573,7 @@ prCaAddReferenceAndStatsFromModelData <- function(model,
     
     values <- prCopyAllAttribsExceptDim(values, cbind(desc_mtrx, values)) 
     if (ncol(desc_mtrx) == 1 && colnames(values)[1] == "")
-      colnames(values)[1] <- desc_colnames
+      colnames(values)[1] <- desc_colnames[1]
     else if(all(colnames(values)[1:2] == ""))
       colnames(values)[1:2] <- desc_colnames
     
@@ -881,25 +882,29 @@ prCaGetRowname <- function(vn, use_labels, dataset){
 #' 
 #' @param names The names of the variables 
 #' @param order The order regular expression
+#' @param ok2skip If you have the intercept then
+#'  it should be ok for the function to skip that
+#'  variable if it isn't found among the variable list
 #' @return \code{vector} A vector containing the greps 
 #' 
 #' @author max
-prCaGetOrderVariables <- function(names, order){
+prCaGetOrderVariables <- function(names, order, ok2skip = FALSE){
   greps <- c()
   for (r_expr in order) {
     # Find the names that matches
     matches <- grep(r_expr, names)
-    if (length(matches) == 0)
+    if (length(matches) == 0 & !ok2skip){
       stop("You have a strange selection order,",
-        "this could be due to that you try to select a factor subvariable and not the full variable.",
-        "Re-arranging factors should be done in the factor() function and not here.",
-        sprintf("Anyway the expression '%s' was not found in these variable names:", r_expr),
-        paste(names, collapse=", "))
-    
-    # Avoid reselecting
-    new_vars <- setdiff(matches, unlist(greps))
-    if (length(new_vars) > 0){
-      greps <- append(greps, list(new_vars))
+           "this could be due to that you try to select a factor subvariable and not the full variable.",
+           "Re-arranging factors should be done in the factor() function and not here.",
+           sprintf("Anyway the expression '%s' was not found in these variable names:", r_expr),
+           paste(names, collapse=", "))
+    }else if (length(matches) > 0){
+      # Avoid reselecting
+      new_vars <- setdiff(matches, unlist(greps))
+      if (length(new_vars) > 0){
+        greps <- append(greps, list(new_vars))
+      }
     }
   }
   return(greps)

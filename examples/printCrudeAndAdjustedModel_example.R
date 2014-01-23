@@ -23,7 +23,7 @@ printCrudeAndAdjustedModel(fit, file="", add_references = TRUE,
 
 # Use some labels to prettify the output
 # fro the mtcars dataset
-data(mtcars)
+data("mtcars")
 
 label(mtcars$mpg) <- "Gas"
 units(mtcars$mpg) <- "Miles/(US) gallon"
@@ -43,9 +43,16 @@ label(mtcars$col) <- "Car color"
 
 require(splines)
 fit_mtcar <- lm(mpg ~ wt + gear + col, data=mtcars)
-printCrudeAndAdjustedModel(fit_mtcar, file="", add_references=TRUE, ctable=TRUE, desc_column = TRUE)
+printCrudeAndAdjustedModel(fit_mtcar, file="", 
+                           add_references=TRUE,
+                           ctable=TRUE, 
+                           desc_column = TRUE)
 
-printCrudeAndAdjustedModel(fit_mtcar)
+printCrudeAndAdjustedModel(fit_mtcar, 
+                           add_references=TRUE,
+                           desc_column=TRUE,
+                           order=c("Interc", "gear"))
+
 # Alterntive print - just an example, doesn't make sense to skip reference
 printCrudeAndAdjustedModel(fit_mtcar, 
                            file="", 

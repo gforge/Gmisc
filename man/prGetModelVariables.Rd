@@ -3,7 +3,7 @@
 \title{Get the models variables}
 \usage{
 prGetModelVariables(model, remove_splines = TRUE,
-  remove_interaction_vars = FALSE)
+  remove_interaction_vars = FALSE, add_intercept = FALSE)
 }
 \arguments{
   \item{model}{A model fit}
@@ -17,6 +17,8 @@ prGetModelVariables(model, remove_splines = TRUE,
   in the case of \code{\link{printCrudeAndAdjustedModel}}
   it is impossible to properly show interaction variables
   and it's better to show these in a separate table}
+
+  \item{add_intercept}{Adds the intercept if it exists}
 }
 \value{
 vector with names

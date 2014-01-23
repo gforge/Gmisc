@@ -191,11 +191,14 @@ prGetModelData <- function(x, check_subset = TRUE){
 #'  the case of \code{\link{printCrudeAndAdjustedModel}} it is impossible
 #'  to properly show interaction variables and it's better to show
 #'  these in a separate table
+#' @param add_intercept Adds the intercept if it exists
 #' @return vector with names 
 #' 
 #' @importFrom stringr str_split
 #' @author max
-prGetModelVariables <- function(model, remove_splines = TRUE, remove_interaction_vars=FALSE){
+prGetModelVariables <- function(model, 
+    remove_splines = TRUE, remove_interaction_vars=FALSE,
+    add_intercept = FALSE){
   vars <- attr(model$terms, "term.labels")
   
   # Remove I() as these are not true variables
@@ -232,6 +235,11 @@ prGetModelVariables <- function(model, remove_splines = TRUE, remove_interaction
     }
     attr(vars, "interactions removed") <- vars[in_vars]
     vars <- vars[-in_vars]
+  }
+  
+  if (add_intercept && any(grepl("[iI]ntercept", names(coef(model))))){
+    vars <- c(vars, 
+        names(coef(model))[grep("[iI]ntercept", names(coef(model)))[1]])
   }
   
   clean_vars <- unique(vars)

@@ -4,6 +4,7 @@ Changes for 0.5.8.1
 --------------------
 * Bugfixes for printC&A and getDesc.
 * Added a pvalueFormatter
+* Fixed Intercept bug for get/printCrudeAndAdjusted - didn't include the intercept term
 
 Changes for 0.5.8.0
 --------------------
