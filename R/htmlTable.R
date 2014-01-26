@@ -587,6 +587,8 @@ htmlTable <- function(x,
   table_str <- sprintf("%s\n\t</thead><tbody>", table_str)
   # A column counter that is used for <td colspan="">
   total_columns <- ncol(x)+set_rownames
+  if(length(cgroup) > 1)
+    total_columns <- total_columns + length(cgroup) - 1
   
   rgroup_iterator <- 0
   for (row_nr in 1:nrow(x)){
@@ -613,8 +615,6 @@ htmlTable <- function(x,
       # Only add if there is anything in the group
       if (is.na(rgroup[rgroup_iterator]) == FALSE &&
         rgroup[rgroup_iterator] != ""){
-        if(length(cgroup) > 1)
-          total_columns <- total_columns + length(cgroup) - 1
         
         table_str <- sprintf("%s\n\t<tr><td colspan='%d' style='%s'>%s</td></tr>", table_str, 
           total_columns, 

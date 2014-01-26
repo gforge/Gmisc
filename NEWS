@@ -1,5 +1,9 @@
 NEWS for the Gmisc package
 
+Changes for 0.5.8.2
+--------------------
+* htmlTable caused too large colspans when cgroup was set
+
 Changes for 0.5.8.1
 --------------------
 * Bugfixes for printC&A and getDesc.
