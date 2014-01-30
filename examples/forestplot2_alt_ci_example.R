@@ -1,11 +1,13 @@
 ask <- par(ask=TRUE)
 
 test_data <- data.frame(coef1=c(1, 1.59, 1.3, 1.24),
-                        coef2=c(1, 1.7, 1.4, 1.04),
-                        low1=c(1, 1.3, 1.1, 0.99),
-                        low2=c(1, 1.6, 1.2, 0.7),
-                        high1=c(1, 1.94, 1.6, 1.55),
-                        high2=c(1, 1.8, 1.55, 1.33))
+                        coef2=c(1, 1.7, 1.4, 1.04))
+
+test_data$low1 <- test_data$coef1 - 1.96*c(0, .2, .1, .15)
+test_data$high1 <- test_data$coef1 + 1.96*c(0, .2, .1, .15)
+
+test_data$low2 <- test_data$coef2 - 1.96*c(0, .1, .15, .2)
+test_data$high2 <- test_data$coef2 + 1.96*c(0, .1, .15, .2)
 
 col_no <- grep("coef", colnames(test_data))
 row_names <- list(
