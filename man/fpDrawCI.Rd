@@ -22,24 +22,25 @@ fpDrawSummaryCI(lower_limit, estimate, upper_limit, size, col, y.offset = 0.5,
   ...)
 }
 \arguments{
-  \item{lower_limit}{The lower limit of the line.  A native
-  numeric variable that can actually be outside the
-  boundaries. If you want to see if it is outside then
-  convert it to 'npc' and see if the value ends up more
-  than 1 or less than 0. Here's how you do the conversion:
-  \code{convertX(unit(upper_limit, "native"), "npc",
-  valueOnly = TRUE)} and the \code{\link[grid]{convertX}}
-  together with \code{\link[grid]{unit}} is needed to get
-  the right values while you need to provide the valueOnly
-  as you cannot compare a unit object.}
+  \item{lower_limit}{The lower limit of the confidence
+  line.  A native numeric variable that can actually be
+  outside the boundaries. If you want to see if it is
+  outside then convert it to 'npc' and see if the value
+  ends up more than 1 or less than 0. Here's how you do the
+  conversion: \code{convertX(unit(upper_limit, "native"),
+  "npc", valueOnly = TRUE)} and the
+  \code{\link[grid]{convertX}} together with
+  \code{\link[grid]{unit}} is needed to get the right
+  values while you need to provide the valueOnly as you
+  cannot compare a unit object.}
 
   \item{estimate}{The estimate indicating the placement of
   the actual box. Note, this can also be outside bounds and
   is provided in a numeric format the same way as the
   \code{lower_limit}.}
 
-  \item{upper_limit}{The upper limit of the line. See
-  lower_limit for details.}
+  \item{upper_limit}{The upper limit of the confidence
+  line. See lower_limit for details.}
 
   \item{size}{The actual size of the box/diamond/marker.
   This provided in the 'snpc' format to generate a perfect
@@ -77,11 +78,13 @@ make your own funky line + marker.
 ask <- par(ask=TRUE)
 
 test_data <- data.frame(coef1=c(1, 1.59, 1.3, 1.24),
-                        coef2=c(1, 1.7, 1.4, 1.04),
-                        low1=c(1, 1.3, 1.1, 0.99),
-                        low2=c(1, 1.6, 1.2, 0.7),
-                        high1=c(1, 1.94, 1.6, 1.55),
-                        high2=c(1, 1.8, 1.55, 1.33))
+                        coef2=c(1, 1.7, 1.4, 1.04))
+
+test_data$low1 <- test_data$coef1 - 1.96*c(0, .2, .1, .15)
+test_data$high1 <- test_data$coef1 + 1.96*c(0, .2, .1, .15)
+
+test_data$low2 <- test_data$coef2 - 1.96*c(0, .1, .15, .2)
+test_data$high2 <- test_data$coef2 + 1.96*c(0, .1, .15, .2)
 
 col_no <- grep("coef", colnames(test_data))
 row_names <- list(

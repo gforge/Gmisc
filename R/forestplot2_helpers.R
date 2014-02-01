@@ -5,7 +5,7 @@
 #' Use the \code{fpDrawNormalCI} function as a
 #' template if you want to make your own funky line + marker.
 #'  
-#' @param lower_limit The lower limit of the line.
+#' @param lower_limit The lower limit of the confidence line.
 #'  A native numeric variable that can actually be 
 #'  outside the boundaries. If you want to see if it
 #'  is outside then convert it to 'npc' and see if the
@@ -19,7 +19,7 @@
 #'  of the actual box. Note, this can also be outside bounds
 #'  and is provided in a numeric format the same way as the 
 #'  \code{lower_limit}.
-#' @param upper_limit The upper limit of the line. See
+#' @param upper_limit The upper limit of the confidence line. See
 #'  lower_limit for details.
 #' @param size The actual size of the box/diamond/marker. This provided in the 'snpc'
 #'  format to generate a perfect marker. If you provide anything else 
