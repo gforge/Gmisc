@@ -1,0 +1,36 @@
+\name{copyAllNewAttributes}
+\alias{copyAllNewAttributes}
+\title{A simple thing to keep the attributes}
+\usage{
+copyAllNewAttributes(from, to, attr2skip = c(), attr2force = c())
+}
+\arguments{
+  \item{from}{The from object}
+
+  \item{to}{The to object}
+
+  \item{attr2skip}{An optional lists of attributes that you
+  may want to avoid having copied}
+
+  \item{attr2force}{An optional lists of attributes that
+  you may want to force copy even if they already exist in
+  the new object}
+}
+\value{
+object The to object
+}
+\description{
+Skips the attributes that the to object already has to
+avoid overwriting dim and other important attributes
+}
+\examples{
+a <- "test"
+attr(a, 'wow') <- 1000
+b <- a
+b <- copyAllNewAttributes(a, b)
+print(attr(b, 'wow'))
+}
+\author{
+max
+}
+
