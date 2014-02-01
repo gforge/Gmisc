@@ -27,10 +27,6 @@
 #' @param order.addrows If there are ordered groups then often you want empty rows
 #'   that separate the different groups. Set this to true if you want to add these
 #'   empty rows between groups.
-#' @param legend.title The title of the legend
-#' @param legend.content Content of the legend
-#' @param legend.position Position of the legend
-#' @param legend.inset The inset of the legend
 #' @param box.default.size The size of the boxes indicating the 
 #'   estimate in the forestplot. Default is the p-value.
 #' @param rowname.fn A function that takes a rowname and sees if it needs
@@ -60,10 +56,6 @@ forestplotRegrObj <- function(
   insertEmptyRows  = NULL,
   order.regexps    = NULL,
   order.addrows    = FALSE,
-  legend.title     = "Type of analysis",
-  legend.content   = NULL,
-  legend.position  = "topright",
-  legend.inset     = .05,
   box.default.size = NULL,
   rowname.fn       = NULL,
   xlab             = NULL,
@@ -131,13 +123,7 @@ forestplotRegrObj <- function(
   # this function can handle
   for(i in 1:length(regr.obj))
     checkValidRegrObject(regr.obj[[i]])
-  
-  
-  # Reverse so the first doesn't end up last
-  regr.obj <- rev(regr.obj)
-  if (length(legend.content) > 1)
-    legend.content <- rev(legend.content)
-  
+    
   checkIfCompatibleFits <- function(sd1, sd2){
     checkEqualNames <- function(base_names, cmpr_names){
       # A function for checking that the labels/row names of 
@@ -410,13 +396,5 @@ forestplotRegrObj <- function(
   # Plot a titla
   if (is.null(title) == FALSE)
     title(main=list(title))
-  
-  # Plot the legend if specified
-  if (length(legend.content) > 1 || is.null(legend.content) == FALSE){
-    legend(legend.position, inset=legend.inset,
-      title=legend.title,
-      legend=rev(legend.content), 
-      fill=rev(t.clr$box), horiz=FALSE, text.width=.2)
-  }
   
 }

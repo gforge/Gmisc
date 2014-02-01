@@ -27,7 +27,7 @@
 #' @param y.offset If you have multiple lines they need an offset in
 #'  the y-direction.
 #' @param clr.line The color of the line.
-#' @param clr.marker The color of the box
+#' @param clr.marker The color of the estimate marker
 #' @param lwd Line width
 #' @param ... Allows additional parameters for sibling functions
 #' @return \code{void} The function outputs the line using grid compatible
@@ -209,8 +209,8 @@ fpDrawCircleCI <- function(lower_limit,
   
   # Convert size into 'snpc' and change to radius
   if(is.unit(size)){
-    size <- unit(convertUnit(size, unitTo="snpc", valueOnly=TRUE)/2,
-                 unitTo="snpc")
+    size <- convertUnit(size, unitTo="snpc", valueOnly=TRUE)
+    size <- unit(size/2, "snpc")
   }else{
     size <- unit(size/2, "snpc")
   }
@@ -307,7 +307,7 @@ fpDrawPointCI <- function(lower_limit,
                              length = unit(0.05, "inches")), 
                gp = gpar(col = clr.line, lwd=lwd))
     if (!skipbox)
-      grid.point(x = unit(estimate, "native"), 
+      grid.points(x = unit(estimate, "native"), 
                  y = unit(y.offset, "npc"), 
                  size = size,
                  pch = pch,
@@ -877,7 +877,7 @@ prFpGetLegendGrobs <- function(legend, legend.cex, legend.title=NULL){
 #' @param colgap The gap between the box and the text
 #' @param legend.gp The \code{\link[grid]{gpar}} options for background fill, border etc.
 #'  If NULL this is not used,
-#' @param legend.r The radius for the box if any (see \code{\link[grid]{grid.roundedrect}}
+#' @param legend.r The radius for the box if any (see \code{\link[grid]{grid.roundrect}})
 #' @param legend.padding The padding for the legend box, only used if box is drawn. This is 
 #'  the distance from the border to the text/boxes of the legend.
 #' @return \code{void} 

@@ -20,7 +20,11 @@
 #' @param vp A Grid viewport object (or NULL).
 #' @return A grob of the class polygonGrob with attributes that correspond to the bezier points.
 #' 
-#' @example examples/transitionPlot_example.R
+#' @examples
+#' grid.newpage()
+#' arrowGrob <- bezierArrowSmpl(x = c(.1,.3,.6,.9),
+#'                              y = c(0.2, 0.2, 0.9, 0.9))
+#'                              grid.draw(arrowGrob)
 #' @author max
 #' @export
 bezierArrowSmpl <- function(x = c(0.2, .7, .3, .9), y = c(0.2, .2, .9, .9), 

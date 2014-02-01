@@ -1,6 +1,14 @@
-#' A package for plotting, tables, etc. 
+#' A package for plotting, tables, and basic outputs. 
 #' 
-#' This is a collection of functions that I've found useful in my research. The package is inspired by Frank Harrel's Hmisc package. The functions that I often find crude or lacking are mostly related to conveying data to the common reader. As I work in orthopaedics I can't submit LaTeX files and the conversion between LaTeX and Word/OpenOffice is far from smooth. It also contains visualization tools that I've found useful when trying to convey my research.
+#' This is a collection of functions that I've found useful in my research.
+#'  The package is inspired by Frank Harrel's Hmisc package. The main focus
+#'  is on tables and plots. For tables you'll find the convenient htmlTable
+#'  that I have used for advanced table layout. A major focus has been to have
+#'  it compatible with LibreOffice (you can copy/past from there into word)
+#'  as I generally want to be able to send my documents to a journal in .doc/.docx
+#'  format. The three main plots are the transitionPlot, forestplot2, and
+#'  plotHR functions. Apart from those you will find a few handy functions for
+#'  formatting p-values, generating the basic stats for your table 1, etc.
 #' 
 #' @name Gmisc
 #' @docType package

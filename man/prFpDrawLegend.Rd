@@ -20,7 +20,7 @@ prFpDrawLegend(lGrobs, legend.pos, col, colgap, legend.gp, legend.r,
   background fill, border etc.  If NULL this is not used,}
 
   \item{legend.r}{The radius for the box if any (see
-  \code{\link[grid]{grid.roundedrect}}}
+  \code{\link[grid]{grid.roundrect}})}
 
   \item{legend.padding}{The padding for the legend box,
   only used if box is drawn. This is the distance from the

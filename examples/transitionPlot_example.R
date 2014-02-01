@@ -1,3 +1,5 @@
+# Currently not invoked due to that this neeed to be do not rung
+# for package compatibility
 par_org <- par(ask=TRUE) 
 # Settings
 no_boxes <- 3

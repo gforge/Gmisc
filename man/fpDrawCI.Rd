@@ -52,7 +52,7 @@ fpDrawSummaryCI(lower_limit, estimate, upper_limit, size, col, y.offset = 0.5,
 
   \item{clr.line}{The color of the line.}
 
-  \item{clr.marker}{The color of the box}
+  \item{clr.marker}{The color of the estimate marker}
 
   \item{lwd}{Line width}
 

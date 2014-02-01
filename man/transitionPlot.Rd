@@ -126,7 +126,12 @@ surgery but it can be used in any situation where you have
 a change from one state to another
 }
 \examples{
-par_org <- par(ask=TRUE) 
+\dontrun{
+# This example does not run since it
+# takes a little while to assemble the
+# arrows and RMD Check complains that this
+# is more than allowed for
+par_org <- par(ask=TRUE)
 # Settings
 no_boxes <- 3
 # Generate test setting
@@ -136,12 +141,12 @@ transition_matrix[2,] <- 540*c(.75, .10, .15)
 transition_matrix[3,] <- 340*c(0, .2, .80)
 
 grid.newpage()
-transitionPlot(transition_matrix,  
-  box_txt = c("First", "Second", "Third"),
-  type_of_arrow = "simple",
-  min_lwd = unit(1, "mm"),
-  max_lwd = unit(6, "mm"),
-  overlap_add_width = unit(1, "mm"))
+transitionPlot(transition_matrix,
+               box_txt = c("First", "Second", "Third"),
+               type_of_arrow = "simple",
+               min_lwd = unit(1, "mm"),
+               max_lwd = unit(6, "mm"),
+               overlap_add_width = unit(1, "mm"))
 
 
 # Setup proportions
@@ -150,18 +155,19 @@ box_prop <- cbind(c(1,0,0.5), c(.52,.2,.8))
 start_box_clr <- c("#8DA0CB", "#FC8D62")
 # Darken the colors slightly
 end_box_clr <- c(colorRampPalette(c(start_box_clr[1], "#000000"))(10)[2],
-  colorRampPalette(c(start_box_clr[2], "#000000"))(10)[2])
+                 colorRampPalette(c(start_box_clr[2], "#000000"))(10)[2])
 # Create a new grid
 grid.newpage()
 transitionPlot(transition_matrix, box_prop=box_prop,
-  fill_start_box=start_box_clr, fill_end_box=end_box_clr, 
-  txt_start_clr = c("#FFFFFF", "#000000"), txt_end_clr = c("#FFFFFF", "#000000"),
-  box_txt = c("First", "Second", "Third"),
-  type_of_arrow = "gradient",
-  min_lwd = unit(1, "mm"),
-  max_lwd = unit(10, "mm"),
-  overlap_add_width = unit(1, "mm"))
+               fill_start_box=start_box_clr, fill_end_box=end_box_clr,
+               txt_start_clr = c("#FFFFFF", "#000000"), txt_end_clr = c("#FFFFFF", "#000000"),
+               box_txt = c("First", "Second", "Third"),
+               type_of_arrow = "gradient",
+               min_lwd = unit(1, "mm"),
+               max_lwd = unit(10, "mm"),
+               overlap_add_width = unit(1, "mm"))
 par(par_org)
+}
 }
 \author{
 max

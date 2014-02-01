@@ -4,11 +4,9 @@
 \usage{
 forestplotRegrObj(regr.obj, title = NULL, clip = c(-Inf, Inf),
   col.zero = "lightgray", skip.variables = NULL, insertEmptyRows = NULL,
-  order.regexps = NULL, order.addrows = FALSE,
-  legend.title = "Type of analysis", legend.content = NULL,
-  legend.position = "topright", legend.inset = 0.05,
-  box.default.size = NULL, rowname.fn = NULL, xlab = NULL, xlog = NULL,
-  estimate.txt = NULL, zero = NULL, ...)
+  order.regexps = NULL, order.addrows = FALSE, box.default.size = NULL,
+  rowname.fn = NULL, xlab = NULL, xlog = NULL, estimate.txt = NULL,
+  zero = NULL, ...)
 }
 \arguments{
   \item{regr.obj}{A regression model object. It should be
@@ -46,14 +44,6 @@ forestplotRegrObj(regr.obj, title = NULL, clip = c(-Inf, Inf),
   often you want empty rows that separate the different
   groups. Set this to true if you want to add these empty
   rows between groups.}
-
-  \item{legend.title}{The title of the legend}
-
-  \item{legend.content}{Content of the legend}
-
-  \item{legend.position}{Position of the legend}
-
-  \item{legend.inset}{The inset of the legend}
 
   \item{box.default.size}{The size of the boxes indicating
   the estimate in the forestplot. Default is the p-value.}
@@ -107,11 +97,11 @@ fit2 <- cph(Surv(ftime, fstatus == 2) ~ x1 + x2 + x3, data=cov)
 
 forestplotRegrObj (regr.obj = fit1, new_page=TRUE)
 
-forestplotRegrObj (
-		regr.obj = list(fit1, fit2),
-		legend.content = c("Status = 1", "Status = 2"), new_page=TRUE)
+forestplotRegrObj (regr.obj = list(fit1, fit2),
+                   legend = c("Status = 1", "Status = 2"), 
+                   legend.title="Type of regression",
+                   new_page=TRUE)
   
-
 modifyNameFunction <- function(x){
   if (x == "x1")
     return ("Covariate A")
@@ -122,11 +112,10 @@ modifyNameFunction <- function(x){
   return (x)
 }
 
-forestplotRegrObj (
-  regr.obj = list(fit1, fit2),
-  variablesOfInterest.regexp = "(x2|x3)",
-  reference.names = c("First model", "Second model"),
-  rowname.fn = modifyNameFunction, new_page=TRUE)
+forestplotRegrObj (regr.obj = list(fit1, fit2),
+                   variablesOfInterest.regexp = "(x2|x3)",
+                   reference.names = c("First model", "Second model"),
+                   rowname.fn = modifyNameFunction, new_page=TRUE)
   
 par(org.par)
 }

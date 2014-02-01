@@ -27,7 +27,11 @@
 #' @param vp A Grid viewport object (or NULL).
 #' @return A grob of gList() type
 #' 
-#' @example examples/transitionPlot_example.R
+#' @examples
+#' grid.newpage()
+#' arrowGrob <- bezierArrowSmplGradient(x = c(.1,.3,.6,.9),
+#'                                      y = c(0.2, 0.2, 0.9, 0.9))
+#' grid.draw(arrowGrob)
 #' @author max
 #' @export
 bezierArrowSmplGradient <- function(
