@@ -2,7 +2,7 @@
 #' 
 #' This is a function for outputting a more advanced
 #' table than xtable allows. It's aim is to provide the Hmisc
-#' \code{\link{latex}()} colgroup and rowgroup functions in HTML. The
+#' \code{\link[Hmisc]{latex}()} colgroup and rowgroup functions in HTML. The
 #' code outputted is perhaps a little raw compared to fully
 #' CSS formatted HTML. The reason for this is that I've chosen
 #' maximum compatibility with LibreOffice/OpenOffice that lacks any more 
@@ -496,6 +496,17 @@ htmlTable <- function(x,
     table_id <- sprintf(" id='table_%d'", tc)
   }
   
+  # A column counter that is used for <td colspan="">
+  total_columns <- ncol(x)+set_rownames
+  if(length(cgroup) > 1){
+    if (!is.matrix(cgroup)){
+      total_columns <- total_columns + length(cgroup) - 1
+    }else{
+      # TODO: Check how to deal with multilevel cgroups and total column spans
+      total_columns <- total_columns + sum(!is.na(cgroup)) - 1
+    }
+  }
+
   ###############################
   # Start building table string #
   ###############################
@@ -515,24 +526,21 @@ htmlTable <- function(x,
   
   
   if (!is.null(caption) && nchar(caption) > 0){
-    if (compatibility == "LibreOffice"){
-      if (caption.loc == "bottom"){
-        table_str <- sprintf("%s\n\t<caption align='bottom' style='text-align: left;'>", table_str)
-      }else{
-        table_str <- sprintf("%s\n\t<caption align='top' style='text-align: left;'>", table_str)
-      }
-    }else{
-      if (caption.loc == "bottom"){
-        table_str <- sprintf("%s\n\t<caption style='caption-side: bottom'>", table_str)
-      }else{
-        table_str <- sprintf("%s\n\t<caption style='caption-side: top'>", table_str)
-      }
-      
-    }
-    
     # Combine a table counter if provided
     caption <- sprintf("\n\t%s%s", tc_string, caption)
-    
+  }else{
+    caption <- NULL
+  }
+
+  # Add caption according to standard HTML
+  if (!is.null(caption) & 
+        compatibility != "LibreOffice"){
+    if (caption.loc == "bottom"){
+      table_str <- sprintf("%s\n\t<caption style='caption-side: bottom'>", table_str)
+    }else{
+      table_str <- sprintf("%s\n\t<caption style='caption-side: top'>", table_str)
+    }
+      
     table_str <- sprintf("%s%s</caption>", table_str, caption)
   }
   
@@ -545,6 +553,16 @@ htmlTable <- function(x,
   # Start the head
   table_str <- sprintf("%s\n\t<thead>", table_str)
   
+  if (!is.null(caption) & 
+        compatibility == "LibreOffice" &
+        caption.loc != "bottom"){
+    
+    table_str <- sprintf("%s\n\t<tr><td colspan='%d' style='text-align: left;'>%s</td></tr>",
+                         table_str,
+                         total_columns,
+                         caption)
+  }
+    
   # Add the cgroup table header
   if (length(cgroup) > 0){
     
@@ -585,10 +603,6 @@ htmlTable <- function(x,
   
   # close head and start the body
   table_str <- sprintf("%s\n\t</thead><tbody>", table_str)
-  # A column counter that is used for <td colspan="">
-  total_columns <- ncol(x)+set_rownames
-  if(length(cgroup) > 1)
-    total_columns <- total_columns + length(cgroup) - 1
   
   rgroup_iterator <- 0
   for (row_nr in 1:nrow(x)){
@@ -653,6 +667,16 @@ htmlTable <- function(x,
   # Close body
   table_str <- sprintf("%s\n\t</tbody>", table_str)
   
+  if (!is.null(caption) & 
+        compatibility == "LibreOffice" &
+        caption.loc == "bottom"){
+    
+    table_str <- sprintf("%s\n\t<tr><td colspan='%d' style='text-align: left;'>%s</td></tr>",
+                         table_str,
+                         total_columns,
+                         caption)
+  }
+
   # Add footer
   if (!is.null(tfoot) && nchar(tfoot) > 0){
     # Initiate the tfoot
