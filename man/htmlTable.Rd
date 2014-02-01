@@ -142,10 +142,10 @@ Returns a string with the output table if output is not set
 \description{
 This is a function for outputting a more advanced table
 than xtable allows. It's aim is to provide the Hmisc
-\code{\link{latex}()} colgroup and rowgroup functions in
-HTML. The code outputted is perhaps a little raw compared
-to fully CSS formatted HTML. The reason for this is that
-I've chosen maximum compatibility with
+\code{\link[Hmisc]{latex}()} colgroup and rowgroup
+functions in HTML. The code outputted is perhaps a little
+raw compared to fully CSS formatted HTML. The reason for
+this is that I've chosen maximum compatibility with
 LibreOffice/OpenOffice that lacks any more advanced
 understanding of HTML & CSS.
 }

@@ -1,28 +1,24 @@
 Package: Gmisc
-Version: 0.5.8.2
-Date: 2014-01-26
-Title: A few handy functions of mine
+Version: 0.6.0.0
+Date: 2014-02-01
+Title: A few plot, table, and misc functions
 Author: Max Gordon <max@gforge.se>
 Maintainer: Max Gordon <max@gforge.se>
-Description: This is a collection of functions that I've found useful in my
-    research. The package is inspired by Frank Harrel's Hmisc package. The
-    functions that I often find crude or lacking are mostly related to
-    conveying data to the common reader. As I work in orthopaedics I can't
-    submit LaTeX files and the conversion between LaTeX and Word/OpenOffice is
-    far from smooth. It also contains visualization tools that I've found
-    useful when trying to convey my research.
+Description: This is a collection of functions that I've found useful in my is
+    on tables and plots. For tables you'll find the convenient htmlTable that I
+    have used for advanced table layout. A major focus has been to have it
+    compatible with LibreOffice (you can copy/past from there into word) as I
+    generally want to be able to send my documents to a journal in .doc/.docx
+    format. The plots are transitionPlot and forestplot2. Apart from those you
+    will find a few handy functions for formatting p-values, generating the
+    basic stats for your table 1, etc.
 License: GPL (>= 3)
 URL: http://gforge.se
 Biarch: yes
 Depends:
-    rms,
-    sandwich,
     grid,
     stringr,
     Hmisc,
     lattice
 Suggests:
-    boot,
-    testthat,
-    cmprsk,
-    survival
+    testthat

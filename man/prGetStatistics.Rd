@@ -51,9 +51,6 @@ A matrix or a vector depending on the settings
 \description{
 A simple function applied by the
 \code{\link{getDescriptionStatsBy}} for the total column.
-This function is also used by
-\code{\link{printCrudeAndAdjustedModel}} in case of a basic
-linear regression is asked for a raw stat column
 }
 \author{
 max
