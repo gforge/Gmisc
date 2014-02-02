@@ -102,7 +102,7 @@
 #' @param output Set to false if you don't want an immediate print
 #' @return Returns a string with the output table if output is not set
 #' 
-#' @example examples/htmlTable_example.R
+#' @example inst/examples/htmlTable_example.R
 #' 
 #' @seealso \code{\link{latex}}, \code{\link{getDescriptionStatsBy}}, \code{\link{splitLines4Table}}
 #' 

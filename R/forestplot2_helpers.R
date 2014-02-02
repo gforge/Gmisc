@@ -35,7 +35,7 @@
 #'
 #' @seealso \code{\link{forestplot2}}
 #' 
-#' @example examples/forestplot2_alt_ci_example.R
+#' @example inst/examples/forestplot2_alt_ci_example.R
 #' @rdname fpDrawCI
 #' @author Max
 #' @export

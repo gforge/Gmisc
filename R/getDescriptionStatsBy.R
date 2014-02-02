@@ -56,7 +56,7 @@
 #'  appends the result to the end of that matrix. If the x variable
 #'  is a factor then it does not append and you get a warning.
 #' 
-#' @example examples/getDescriptionStatsBy_example.R
+#' @example inst/examples/getDescriptionStatsBy_example.R
 #' 
 #' @seealso \code{\link{describeMean}}, \code{\link{describeProp}}, \code{\link{describeFactors}}, \code{\link{htmlTable}}
 #' 

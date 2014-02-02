@@ -10,7 +10,7 @@
 #'  of lists and this is for specifically merging all of those.
 #' @return Returns a list with all the given lists.
 #' 
-#' @example  examples/mergeLists_example.R
+#' @example  inst/examples/mergeLists_example.R
 #' @author Max
 #' @export
 mergeLists <- function(..., lapplyOutput = NULL){

@@ -32,7 +32,7 @@
 #'  that were picked in the "most_influential" variable and the 
 #'  svd caluclation in the "svd"
 #' 
-#' @example examples/getSvdMostInfluential_example.R
+#' @example inst/examples/getSvdMostInfluential_example.R
 #' 
 #' @import lattice
 #' @author max

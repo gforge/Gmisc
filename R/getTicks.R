@@ -12,7 +12,7 @@
 #' @param digits Number of digits - used in exp mode
 #' @return Returns a vector with the ticks appropriate
 #' 
-#' @example examples/getTicks_example.R
+#' @example inst/examples/getTicks_example.R
 #' 
 #' @export 
 #' 
