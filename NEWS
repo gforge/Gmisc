@@ -1,5 +1,9 @@
 NEWS for the Gmisc package
 
+Changes for 0.6.0.1
+--------------------
+* Changed depends and imports for the package
+
 Changes for 0.6.0.0
 --------------------
 * For LibreOffice compatibility htmlTable now includes caption inside the table when compatibility='LibreOffice'
