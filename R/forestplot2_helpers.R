@@ -21,9 +21,10 @@
 #'  \code{lower_limit}.
 #' @param upper_limit The upper limit of the confidence line. See
 #'  lower_limit for details.
-#' @param size The actual size of the box/diamond/marker. This provided in the 'snpc'
-#'  format to generate a perfect marker. If you provide anything else 
-#'  it will be converted prior to that.
+#' @param size The actual size of the box/diamond/marker. 
+#'  This provided in the 'snpc' format to generate a perfect 
+#'  marker. Although you can provide it alternative units as well,
+#'  this is useful for the legends to work nicely.
 #' @param y.offset If you have multiple lines they need an offset in
 #'  the y-direction.
 #' @param clr.line The color of the line.
@@ -47,61 +48,61 @@ fpDrawNormalCI <- function(lower_limit,
                            clr.line, clr.marker,
                            lwd,
                            ...) {
-  # If the limit is outside the 0-1 range in npc-units
-  # then that part is outside the box and it should 
-  # be clipped (this function adds an arrow to the end
-  # of the line)
-  clipupper <- 
-    convertX(unit(upper_limit, "native"), 
-             "npc", 
-             valueOnly = TRUE) > 1
-  cliplower <- 
-    convertX(unit(lower_limit, "native"), 
-             "npc", 
-             valueOnly = TRUE) < 0
+  # Draw the lines if the lower limit is
+  # actually below the upper limit
+  if (lower_limit < upper_limit){
+    # If the limit is outside the 0-1 range in npc-units
+    # then that part is outside the box and it should 
+    # be clipped (this function adds an arrow to the end
+    # of the line)
+    clipupper <- 
+      convertX(unit(upper_limit, "native"), 
+               "npc", 
+               valueOnly = TRUE) > 1
+    cliplower <- 
+      convertX(unit(lower_limit, "native"), 
+               "npc", 
+               valueOnly = TRUE) < 0
+    
+    if (clipupper || cliplower) {
+      # A version where arrows are added to the part outside 
+      # the limits of the graph
+      ends <- "both"
+      lims <- unit(c(0, 1), c("npc", "npc"))
+      if (!clipupper) {
+        ends <- "first"
+        lims <- unit(c(0, upper_limit), c("npc", "native"))
+      }
+      if (!cliplower) {
+        ends <- "last"
+        lims <- unit(c(lower_limit, 1), c("native", "npc"))
+      }
+      grid.lines(x = lims, 
+                 y = y.offset, 
+                 arrow = arrow(ends = ends, 
+                               length = unit(0.05, "inches")), 
+                 gp = gpar(col = clr.line, lwd=lwd))
+    } else {
+      # Don't draw the line if it's no line to draw
+      grid.lines(x = unit(c(lower_limit, upper_limit), "native"), y = y.offset, 
+                 gp = gpar(col = clr.line, lwd=lwd))
+    }
+  }
   
   # If the box is outside the plot the it shouldn't be plotted
   box <- convertX(unit(estimate, "native"), "npc", valueOnly = TRUE)
   skipbox <- box < 0 || box > 1
   
-  # Convert size into 'snpc'
-  if(is.unit(size)){
-    size <- convertUnit(size, unitTo="snpc")
-  }else{
-    size <- unit(size, "snpc")
-  }
-  
-  # A version where arrows are added to the part outside 
-  # the limits of the graph
-  if (clipupper || cliplower) {
-    ends <- "both"
-    lims <- unit(c(0, 1), c("npc", "npc"))
-    if (!clipupper) {
-      ends <- "first"
-      lims <- unit(c(0, upper_limit), c("npc", "native"))
+  # Lastly draw the box if it is still there
+  if (!skipbox){
+    # Convert size into 'snpc'
+    if(!is.unit(size)){
+      size <- unit(size, "snpc")
     }
-    if (!cliplower) {
-      ends <- "last"
-      lims <- unit(c(lower_limit, 1), c("native", "npc"))
-    }
-    grid.lines(x = lims, 
-               y = y.offset, 
-               arrow = arrow(ends = ends, 
-                             length = unit(0.05, "inches")), 
-               gp = gpar(col = clr.line, lwd=lwd))
-    if (!skipbox)
-      grid.rect(x = unit(estimate, "native"), 
-                y = y.offset, 
-                width = size, 
-                height = size, 
-                gp = gpar(fill = clr.marker, 
-                          col = clr.marker))
-  } else {
-    # Don't draw the line if it's no line to draw
-    if (lower_limit != upper_limit)
-      grid.lines(x = unit(c(lower_limit, upper_limit), "native"), y = y.offset, 
-                 gp = gpar(col = clr.line, lwd=lwd))
-    grid.rect(x = unit(estimate, "native"), y=y.offset, 
+
+    # Draw the actual box
+    grid.rect(x = unit(estimate, "native"), 
+              y = y.offset, 
               width = size, 
               height = size, 
               gp = gpar(fill = clr.marker, 
@@ -119,64 +120,66 @@ fpDrawDiamondCI <- function(lower_limit,
                             clr.line, clr.marker,
                             lwd,
                             ...) {
-  # If the limit is outside the 0-1 range in npc-units
-  # then that part is outside the box and it should 
-  # be clipped (this function adds an arrow to the end
-  # of the line)
-  clipupper <- 
-    convertX(unit(upper_limit, "native"), 
-             "npc", 
-             valueOnly = TRUE) > 1
-  cliplower <- 
-    convertX(unit(lower_limit, "native"), 
-             "npc", 
-             valueOnly = TRUE) < 0
   
+  # Don't draw the line if it's no line to draw
+  if (lower_limit < upper_limit){
+    # If the limit is outside the 0-1 range in npc-units
+    # then that part is outside the box and it should 
+    # be clipped (this function adds an arrow to the end
+    # of the line)
+    clipupper <- 
+      convertX(unit(upper_limit, "native"), 
+               "npc", 
+               valueOnly = TRUE) > 1
+    cliplower <- 
+      convertX(unit(lower_limit, "native"), 
+               "npc", 
+               valueOnly = TRUE) < 0
+
+    # A version where arrows are added to the part outside 
+    # the limits of the graph
+    if (clipupper || cliplower) {
+      ends <- "both"
+      lims <- unit(c(0, 1), c("npc", "npc"))
+      if (!clipupper) {
+        ends <- "first"
+        lims <- unit(c(0, upper_limit), c("npc", "native"))
+      }
+      if (!cliplower) {
+        ends <- "last"
+        lims <- unit(c(lower_limit, 1), c("native", "npc"))
+      }
+      grid.lines(x = lims, 
+                 y = y.offset, 
+                 arrow = arrow(ends = ends, 
+                               length = unit(0.05, "inches")), 
+                 gp = gpar(col = clr.line, lwd=lwd))
+    } else {
+      grid.lines(x = unit(c(lower_limit, upper_limit), "native"), y = y.offset, 
+                 gp = gpar(col = clr.line, lwd=lwd))
+    }
+    
+  }
+
   # If the box is outside the plot the it shouldn't be plotted
   box <- convertX(unit(estimate, "native"), "npc", valueOnly = TRUE)
   skipbox <- box < 0 || box > 1
   
-  # Convert size into 'snpc'
-  if(is.unit(size)){
-    size <- convertUnit(size, unitTo="snpc", valueOnly=TRUE)
-  }
-  
-  # A version where arrows are added to the part outside 
-  # the limits of the graph
-  if (clipupper || cliplower) {
-    ends <- "both"
-    lims <- unit(c(0, 1), c("npc", "npc"))
-    if (!clipupper) {
-      ends <- "first"
-      lims <- unit(c(0, upper_limit), c("npc", "native"))
+  if (!skipbox){
+    # Convert size if needed
+    default.size.unit = "snpc"
+    if(is.unit(size)){
+      size <- convertUnit(size, unitTo="mm", valueOnly=TRUE)
+      default.size.unit = "mm"
     }
-    if (!cliplower) {
-      ends <- "last"
-      lims <- unit(c(lower_limit, 1), c("native", "npc"))
-    }
-    grid.lines(x = lims, 
-               y = y.offset, 
-               arrow = arrow(ends = ends, 
-                             length = unit(0.05, "inches")), 
-               gp = gpar(col = clr.line, lwd=lwd))
-    if (!skipbox)
-      grid.polygon(x = unit(estimate, "native") + 
-                     unit(c(-size/2, 0, +size/2, 0), "snpc"), 
-                   y = unit(y.offset, "npc") +
-                     unit(c(0, size/2, 0, -size/2), "snpc"), 
-                   gp = gpar(fill = clr.marker, 
-                             col = clr.marker))
-  } else {
-    # Don't draw the line if it's no line to draw
-    if (lower_limit != upper_limit)
-      grid.lines(x = unit(c(lower_limit, upper_limit), "native"), y = y.offset, 
-                 gp = gpar(col = clr.line, lwd=lwd))
+    
     grid.polygon(x = unit(estimate, "native") + 
-                   unit(c(-size/2, 0, +size/2, 0), "snpc"), 
+                   unit(c(-size/2, 0, +size/2, 0), default.size.unit), 
                  y = unit(y.offset, "npc") +
-                   unit(c(0, size/2, 0, -size/2), "snpc"), 
+                   unit(c(0, size/2, 0, -size/2), default.size.unit), 
                  gp = gpar(fill = clr.marker, 
                            col = clr.marker))
+    
   }
 }
 
@@ -190,60 +193,58 @@ fpDrawCircleCI <- function(lower_limit,
                            clr.line, clr.marker,
                            lwd,
                            ...) {
-  # If the limit is outside the 0-1 range in npc-units
-  # then that part is outside the box and it should 
-  # be clipped (this function adds an arrow to the end
-  # of the line)
-  clipupper <- 
-    convertX(unit(upper_limit, "native"), 
-             "npc", 
-             valueOnly = TRUE) > 1
-  cliplower <- 
-    convertX(unit(lower_limit, "native"), 
-             "npc", 
-             valueOnly = TRUE) < 0
-  
+  # Don't draw the line if it's no line to draw
+  if (lower_limit != upper_limit){
+    # If the limit is outside the 0-1 range in npc-units
+    # then that part is outside the box and it should 
+    # be clipped (this function adds an arrow to the end
+    # of the line)
+    clipupper <- 
+      convertX(unit(upper_limit, "native"), 
+               "npc", 
+               valueOnly = TRUE) > 1
+    cliplower <- 
+      convertX(unit(lower_limit, "native"), 
+               "npc", 
+               valueOnly = TRUE) < 0
+    
+    # A version where arrows are added to the part outside 
+    # the limits of the graph
+    if (clipupper || cliplower) {
+      ends <- "both"
+      lims <- unit(c(0, 1), c("npc", "npc"))
+      if (!clipupper) {
+        ends <- "first"
+        lims <- unit(c(0, upper_limit), c("npc", "native"))
+      }
+      if (!cliplower) {
+        ends <- "last"
+        lims <- unit(c(lower_limit, 1), c("native", "npc"))
+      }
+      grid.lines(x = lims, 
+                 y = y.offset, 
+                 arrow = arrow(ends = ends, 
+                               length = unit(0.05, "inches")), 
+                 gp = gpar(col = clr.line, lwd=lwd))
+    } else {
+      grid.lines(x = unit(c(lower_limit, upper_limit), "native"), y = y.offset, 
+                 gp = gpar(col = clr.line, lwd=lwd))
+    }
+  }
+
   # If the box is outside the plot the it shouldn't be plotted
   box <- convertX(unit(estimate, "native"), "npc", valueOnly = TRUE)
   skipbox <- box < 0 || box > 1
   
-  # Convert size into 'snpc' and change to radius
-  if(is.unit(size)){
-    size <- convertUnit(size, unitTo="snpc", valueOnly=TRUE)
-    size <- unit(size/2, "snpc")
-  }else{
-    size <- unit(size/2, "snpc")
-  }
-  
-  # A version where arrows are added to the part outside 
-  # the limits of the graph
-  if (clipupper || cliplower) {
-    ends <- "both"
-    lims <- unit(c(0, 1), c("npc", "npc"))
-    if (!clipupper) {
-      ends <- "first"
-      lims <- unit(c(0, upper_limit), c("npc", "native"))
+  if (!skipbox){
+    # Convert size into 'mm' and switch to radius
+    if(is.unit(size)){
+      size <- convertUnit(size, unitTo="mm", valueOnly=TRUE)
+      size <- unit(size/2, "mm")
+    }else{
+      size <- unit(size/2, "snpc")
     }
-    if (!cliplower) {
-      ends <- "last"
-      lims <- unit(c(lower_limit, 1), c("native", "npc"))
-    }
-    grid.lines(x = lims, 
-               y = y.offset, 
-               arrow = arrow(ends = ends, 
-                             length = unit(0.05, "inches")), 
-               gp = gpar(col = clr.line, lwd=lwd))
-    if (!skipbox)
-      grid.circle(x = unit(estimate, "native"), 
-                  y = unit(y.offset, "npc"), 
-                  r = size,
-                  gp = gpar(fill = clr.marker, 
-                            col = clr.marker))
-  } else {
-    # Don't draw the line if it's no line to draw
-    if (lower_limit != upper_limit)
-      grid.lines(x = unit(c(lower_limit, upper_limit), "native"), y = y.offset, 
-                 gp = gpar(col = clr.line, lwd=lwd))
+    
     grid.circle(x = unit(estimate, "native"), 
                 y = unit(y.offset, "npc"), 
                 r = size,
@@ -264,66 +265,62 @@ fpDrawPointCI <- function(lower_limit,
                           lwd,
                           pch = 1,
                           ...) {
-  # If the limit is outside the 0-1 range in npc-units
-  # then that part is outside the box and it should 
-  # be clipped (this function adds an arrow to the end
-  # of the line)
-  clipupper <- 
-    convertX(unit(upper_limit, "native"), 
-             "npc", 
-             valueOnly = TRUE) > 1
-  cliplower <- 
-    convertX(unit(lower_limit, "native"), 
-             "npc", 
-             valueOnly = TRUE) < 0
+  # Don't draw the line if it's no line to draw
+  if (lower_limit < upper_limit){
+    # If the limit is outside the 0-1 range in npc-units
+    # then that part is outside the box and it should 
+    # be clipped (this function adds an arrow to the end
+    # of the line)
+    clipupper <- 
+      convertX(unit(upper_limit, "native"), 
+               "npc", 
+               valueOnly = TRUE) > 1
+    cliplower <- 
+      convertX(unit(lower_limit, "native"), 
+               "npc", 
+               valueOnly = TRUE) < 0
+    
+    # A version where arrows are added to the part outside 
+    # the limits of the graph
+    if (clipupper || cliplower) {
+      ends <- "both"
+      lims <- unit(c(0, 1), c("npc", "npc"))
+      if (!clipupper) {
+        ends <- "first"
+        lims <- unit(c(0, upper_limit), c("npc", "native"))
+      }
+      if (!cliplower) {
+        ends <- "last"
+        lims <- unit(c(lower_limit, 1), c("native", "npc"))
+      }
+      grid.lines(x = lims, 
+                 y = y.offset, 
+                 arrow = arrow(ends = ends, 
+                               length = unit(0.05, "inches")), 
+                 gp = gpar(col = clr.line, lwd=lwd))
+    } else {
+      grid.lines(x = unit(c(lower_limit, upper_limit), "native"), y = y.offset, 
+                 gp = gpar(col = clr.line, lwd=lwd))
+    }
+  }
   
   # If the box is outside the plot the it shouldn't be plotted
   box <- convertX(unit(estimate, "native"), "npc", valueOnly = TRUE)
   skipbox <- box < 0 || box > 1
   
-  # Convert size into 'snpc'
-  if(is.unit(size)){
-    size <- convertUnit(size, unitTo="snpc")
-  }else{
-    size <- unit(size, "snpc")
-  }
-  
-  # A version where arrows are added to the part outside 
-  # the limits of the graph
-  if (clipupper || cliplower) {
-    ends <- "both"
-    lims <- unit(c(0, 1), c("npc", "npc"))
-    if (!clipupper) {
-      ends <- "first"
-      lims <- unit(c(0, upper_limit), c("npc", "native"))
+  if (!skipbox){
+    # Convert size into 'snpc' if not given
+    if(!is.unit(size)){
+      size <- unit(size, "snpc")
     }
-    if (!cliplower) {
-      ends <- "last"
-      lims <- unit(c(lower_limit, 1), c("native", "npc"))
-    }
-    grid.lines(x = lims, 
-               y = y.offset, 
-               arrow = arrow(ends = ends, 
-                             length = unit(0.05, "inches")), 
-               gp = gpar(col = clr.line, lwd=lwd))
-    if (!skipbox)
-      grid.points(x = unit(estimate, "native"), 
-                 y = unit(y.offset, "npc"), 
-                 size = size,
-                 pch = pch,
-                 gp = gpar(fill = clr.marker, 
-                           col = clr.marker))
-  } else {
-    # Don't draw the line if it's no line to draw
-    if (lower_limit != upper_limit)
-      grid.lines(x = unit(c(lower_limit, upper_limit), "native"), y = y.offset, 
-                 gp = gpar(col = clr.line, lwd=lwd))
+    
     grid.points(x = unit(estimate, "native"), 
                 y = unit(y.offset, "npc"), 
                 size = size,
                 pch = pch,
                 gp = gpar(fill = clr.marker, 
                           col = clr.marker))
+    
   }
 }
 
@@ -690,11 +687,11 @@ prFpGetGraphTicksAndClips <- function(xticks,
       # it's not already there
       if (is.infinite(clip[1]) == FALSE &&
             min(ticks, na.rm = TRUE) < clip[1]) 
-        ticks <- unique(c(exp(clip[1]), ticks))
+        ticks <- unique(c(clip[1], ticks))
       
       if (is.infinite(clip[2]) == FALSE &&
             max(ticks, na.rm = TRUE) > clip[2]) 
-        ticks <- unique(c(ticks, exp(clip[2])))
+        ticks <- unique(c(ticks, clip[2]))
       
       ticklabels <- TRUE
       
@@ -880,6 +877,7 @@ prFpGetLegendGrobs <- function(legend, legend.cex, legend.title=NULL){
 #' @param legend.r The radius for the box if any (see \code{\link[grid]{grid.roundrect}})
 #' @param legend.padding The padding for the legend box, only used if box is drawn. This is 
 #'  the distance from the border to the text/boxes of the legend.
+#' @param legendMarkerFn The function for drawing the marker
 #' @return \code{void} 
 #' 
 #' @author max
@@ -888,7 +886,8 @@ prFpDrawLegend <- function (lGrobs, legend.pos,
                             colgap,
                             legend.gp,
                             legend.r,
-                            legend.padding) {
+                            legend.padding,
+                            legendMarkerFn) {
   if (!inherits(lGrobs, "Legend"))
     stop("The lGrobs object should be created by the internal Gmisc:::prFpGetLegendGrobs and be of class 'Legend'.")
 
@@ -913,10 +912,24 @@ prFpDrawLegend <- function (lGrobs, legend.pos,
 
   drawBox <- function(vp, i, col, lGrobs){
     pushViewport(vp)
-    grid.rect(gp=gpar(fill = col$box[i], 
-                      col = col$lines[i]),
-              width=attr(lGrobs, "max_height"),
-              height=attr(lGrobs, "max_height"))
+#     grid.rect(gp=gpar(),
+#               width=attr(lGrobs, "max_height"),
+#               height=attr(lGrobs, "max_height"))
+
+    call_list <- 
+      list(legendMarkerFn[[i]],
+           lower_limit=.5, 
+           estimate=.5, 
+           upper_limit=.5, 
+           size=attr(lGrobs, "max_height"), 
+           y.offset = .5,
+           clr.marker = col$box[i], 
+           clr.line = col$lines[i],
+           lwd=1)
+    
+    # Do the actual drawing of the object
+    eval(as.call(call_list))
+    
     upViewport()
   }
   
@@ -955,7 +968,8 @@ prFpDrawLegend <- function (lGrobs, legend.pos,
     for (i in 1:length(lGrobs)){
       offset <- 4*(i-1)
       vp <- viewport(layout.pos.row = row, 
-                     layout.pos.col = 1 + offset)
+                     layout.pos.col = 1 + offset,
+                     xscale=c(0, 1))
       drawBox(vp, i, col, lGrobs)
       vp <- viewport(layout.pos.row = row, 
                      layout.pos.col = 3 + offset)
@@ -997,7 +1011,8 @@ prFpDrawLegend <- function (lGrobs, legend.pos,
     
     for (i in 1:length(lGrobs)){
       vp <- viewport(layout.pos.row = row_start + (i-1)*2, 
-                     layout.pos.col = 1)
+                     layout.pos.col = 1,
+                     xscale=c(0,1))
       drawBox(vp, i, col, lGrobs)
       
       vp <- viewport(layout.pos.row = row_start + (i-1)*2, 
@@ -1356,4 +1371,48 @@ prFpGetLegendBoxPosition <- function (legend.pos) {
     legend.pos[["just"]] <- c("center", "center")
   }
   return (legend.pos)
+}
+
+#' Prepares the legend marker function
+#' 
+#' @param legendMarkerFn The unknown parameter
+#' @param col_no The number of columns
+#' @param confintNormalFn The original confintNormalFn input
+#' @return \code{list}
+#' @author Max
+prFpPrepareLegendMarker <- function (legendMarkerFn, col_no, confintNormalFn) {
+  if (is.function(legendMarkerFn)){
+    legendMarkerFn <- lapply(1:col_no, function(x) legendMarkerFn)
+  }else if (is.character(legendMarkerFn)){
+    if (length(legendMarkerFn) == 1){
+      legendMarkerFn <- rep(legendMarkerFn, times=col_no)
+    }else if (length(legendMarkerFn) != col_no){
+      stop("The number of legend markers, ", length(legendMarkerFn), 
+           ", should be the same as the number of columns for the mean, ", col_no)
+    }
+    
+    tmp <- list()
+    for (i in 1:length(legendMarkerFn)){
+      tmp[[i]] <- get(legendMarkerFn[i])
+    }
+    
+    legendMarkerFn <- tmp
+  }else if(is.list(legendMarkerFn) && 
+             length(legendMarkerFn) != col_no){
+    stop("The number of legend markers, ", length(legendMarkerFn), 
+         ", should be the same as the number of columns for the mean, ", col_no)
+  }else if(is.list(legendMarkerFn) && 
+             !all(sapply(legendMarkerFn, function(x) is.function(x)))){
+    stop("If you provide a list for legendMarkerFn then each element should be a function")
+  }else if(is.null(legendMarkerFn)){
+    if (length(confintNormalFn) == col_no){
+      legendMarkerFn <- 
+        prFpGetConfintFnList(fn = confintNormalFn, 
+                             no_rows = NROW(mean), 
+                             no_cols = col_no)[[1]]
+    }else{
+      legendMarkerFn <- lapply(1:col_no, function(x) fpDrawNormalCI)
+    }
+  }
+  return(legendMarkerFn)
 }

@@ -12,7 +12,7 @@ forestplot2(labeltext, mean, lower, upper, align = NULL, is.summary = FALSE,
   legend.cex = cex * 0.8, legend.gp = NULL, legend.r = unit(0, "snpc"),
   legend.padding = unit(ifelse(length(legend.gp) > 0, 3, 0), "mm"),
   legend.title = NULL, new_page = FALSE, confintNormalFn = fpDrawNormalCI,
-  confintSummaryFn = fpDrawSummaryCI, ...)
+  confintSummaryFn = fpDrawSummaryCI, legendMarkerFn = NULL, ...)
 }
 \arguments{
   \item{labeltext}{A list, matrix, vector or expression
@@ -167,6 +167,12 @@ forestplot2(labeltext, mean, lower, upper, align = NULL, is.summary = FALSE,
   \item{confintSummaryFn}{Same as previous argument but for
   the summary outputs and it defaults to
   \code{\link{fpDrawSummaryCI}}.}
+
+  \item{legendMarkerFn}{What type of function should be
+  used for drawing the legends, this can be a list if you
+  want different functions. It defaults to a box if you
+  have anything else than a single function or the number
+  of columns in the \code{mean} argument.}
 
   \item{...}{Passed on to the \code{confintNormalFn} and
   \code{confintSummaryFn} arguments}

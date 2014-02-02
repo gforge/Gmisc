@@ -95,6 +95,10 @@
 #'  It defaults to the box function \code{\link{fpDrawNormalCI}}.
 #' @param confintSummaryFn Same as previous argument but for the summary outputs
 #'  and it defaults to \code{\link{fpDrawSummaryCI}}.
+#' @param legendMarkerFn What type of function should be used for drawing the
+#'  legends, this can be a list if you want different functions. It defaults to 
+#'  a box if you have anything else than a single function or the number of columns 
+#'  in the \code{mean} argument.
 #' @param ... Passed on to the \code{confintNormalFn} and
 #'  \code{confintSummaryFn} arguments
 #' @return void 
@@ -138,6 +142,7 @@ forestplot2 <- function (labeltext,
                          new_page             = FALSE,
                          confintNormalFn      = fpDrawNormalCI,
                          confintSummaryFn     = fpDrawSummaryCI,
+                         legendMarkerFn      = NULL,
                          ...) 
 {
 
@@ -149,6 +154,13 @@ forestplot2 <- function (labeltext,
          " Lower bound columns:", ncol(lower),
          " Upper bound columns:", ncol(upper))
 
+  # Prepare the legend marker
+  if (!is.null(legend)){
+    legendMarkerFn <- prFpPrepareLegendMarker(legendMarkerFn = legendMarkerFn, 
+                                              col_no = NCOL(mean), 
+                                              confintNormalFn = confintNormalFn)
+  }
+  
   confintNormalFn <- 
     prFpGetConfintFnList(fn = confintNormalFn, 
                          no_rows = NROW(mean), 
@@ -426,7 +438,8 @@ forestplot2 <- function (labeltext,
                    colgap = convertUnit(colgap, unitTo="mm"),
                    legend.gp = legend.gp,
                    legend.r = legend.r,
-                   legend.padding = legend.padding)
+                   legend.padding = legend.padding,
+                   legendMarkerFn = legendMarkerFn)
     upViewport()
 
     # Reset to the main plot
@@ -659,12 +672,13 @@ forestplot2 <- function (labeltext,
         just=legend.pos[["just"]]))
     # Draw the legend
     prFpDrawLegend(lGrobs = lGrobs, 
-      legend.pos = legend.pos, 
-      col = col, 
-      colgap = colgap,
-      legend.gp = legend.gp,
-      legend.r = legend.r,
-      legend.padding = legend.padding)
+                   legend.pos = legend.pos, 
+                   col = col, 
+                   colgap = colgap,
+                   legend.gp = legend.gp,
+                   legend.r = legend.r,
+                   legend.padding = legend.padding,
+                   legendMarkerFn = legendMarkerFn)
     upViewport(2)
   }
   upViewport(2)

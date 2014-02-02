@@ -1,5 +1,11 @@
 NEWS for the Gmisc package
 
+Changes for 0.6.0.2
+--------------------
+* Fixed ticks for forestplot2 - the prFpGetGraphTicksAndClips used the exp() for regular values.
+* Cleaned up some of the code for the fpDrawXXXCI functions
+
+
 Changes for 0.6.0.1
 --------------------
 * Changed depends and imports for the package

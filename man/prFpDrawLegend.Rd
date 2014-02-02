@@ -3,7 +3,7 @@
 \title{Draw the forestplot legend}
 \usage{
 prFpDrawLegend(lGrobs, legend.pos, col, colgap, legend.gp, legend.r,
-  legend.padding)
+  legend.padding, legendMarkerFn)
 }
 \arguments{
   \item{lGrobs}{A list with all the grobs, see
@@ -25,6 +25,9 @@ prFpDrawLegend(lGrobs, legend.pos, col, colgap, legend.gp, legend.r,
   \item{legend.padding}{The padding for the legend box,
   only used if box is drawn. This is the distance from the
   border to the text/boxes of the legend.}
+
+  \item{legendMarkerFn}{The function for drawing the
+  marker}
 }
 \value{
 \code{void}
