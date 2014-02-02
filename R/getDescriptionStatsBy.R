@@ -61,6 +61,8 @@
 #' @seealso \code{\link{describeMean}}, \code{\link{describeProp}}, \code{\link{describeFactors}}, \code{\link{htmlTable}}
 #' 
 #' @importFrom Hmisc label
+#' @importFrom Hmisc capitalize
+#' 
 #' @author max
 #' @export
 getDescriptionStatsBy <- 

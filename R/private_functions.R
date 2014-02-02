@@ -110,7 +110,7 @@ prConvertShowMissing <- function(show_missing){
   else if (show_missing == TRUE)
     show_missing <- "ifany"
   
-  if (show_missing %nin% c("no", "ifany", "always"))
+  if (!show_missing %in% c("no", "ifany", "always"))
     stop(sprintf("You have set an invalid option for show_missing variable, '%s' ,it should be boolean or one of the options: no, ifany or always.", show_missing))
   
   return(show_missing)

@@ -108,6 +108,8 @@
 #' 
 #' @importFrom stringr str_trim
 #' @importFrom stringr str_replace
+#' @importFrom Hmisc first.word
+#' @importFrom Hmisc format.df
 #' @author max
 #' @export
 htmlTable <- function(x,

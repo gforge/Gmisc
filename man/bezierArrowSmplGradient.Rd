@@ -65,6 +65,7 @@ gradient in the center of the arrow that fades.
 in the gradient.
 }
 \examples{
+library(grid)
 grid.newpage()
 arrowGrob <- bezierArrowSmplGradient(x = c(.1,.3,.6,.9),
                                      y = c(0.2, 0.2, 0.9, 0.9))

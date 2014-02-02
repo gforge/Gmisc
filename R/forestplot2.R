@@ -126,7 +126,7 @@ forestplot2 <- function (labeltext,
                          cex                  = 1,
                          cex.axis             = cex * 0.6,
                          boxsize              = NULL, 
-                         mar                  = unit(rep(.05, times=4), "npc"),
+                         mar                  = unit(rep(5, times=4), "mm"),
                          main                 = NULL,
                          legend               = NULL,
                          legend.pos           = "top",
@@ -332,14 +332,13 @@ forestplot2 <- function (labeltext,
   if (new_page) grid.newpage()
   
   # Adjust for the margins and the x-axis + label
-  mar <- convertUnit(mar, unitTo="npc", valueOnly=TRUE)
   marList <- list()
   
   # This breaks without separate variables
-  marList$bottom <- unit(mar[1], "npc")
-  marList$left <- unit(mar[2], "npc")
-  marList$top <- unit(mar[3], "npc")
-  marList$right <- unit(mar[4], "npc")
+  marList$bottom <- convertY(mar[1], "npc")
+  marList$left <- convertX(mar[2], "npc")
+  marList$top <- convertY(mar[3], "npc")
+  marList$right <- convertX(mar[4], "npc")
   
 #  if (is.grob(axisList$axisGrob)){
 #    marList$bottom <- marList$bottom + axisList$axisHeight

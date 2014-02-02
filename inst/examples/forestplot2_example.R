@@ -3,6 +3,7 @@
 ##############################################################
 
 ask <- par(ask=TRUE)
+library(grid)
 
 # A basic example, create some fake data
 row_names <- list(list("test = 1", expression(test >= 2)))

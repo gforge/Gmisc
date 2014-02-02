@@ -1,6 +1,6 @@
 #' A simple bezier arrow
 #' 
-#' This is an alternative to the grid packages \code{\link{bezierGrob}}
+#' This is an alternative to the grid packages \code{\link[grid]{bezierGrob}}
 #' with the advantage that it allows you to draw an arrow with a specific
 #' unit width. Note, it has only a end-arrow at this point. 
 #'  
@@ -21,10 +21,13 @@
 #' @return A grob of the class polygonGrob with attributes that correspond to the bezier points.
 #' 
 #' @examples
+#' library(grid)
 #' grid.newpage()
 #' arrowGrob <- bezierArrowSmpl(x = c(.1,.3,.6,.9),
 #'                              y = c(0.2, 0.2, 0.9, 0.9))
 #' grid.draw(arrowGrob)
+#' 
+#' @import grid
 #' @author max
 #' @export
 bezierArrowSmpl <- function(x = c(0.2, .7, .3, .9), y = c(0.2, .2, .9, .9), 

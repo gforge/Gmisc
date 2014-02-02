@@ -7,8 +7,8 @@ forestplot2(labeltext, mean, lower, upper, align = NULL, is.summary = FALSE,
   Inf), xlab = "", zero = 0, graphwidth = "auto", lineheight = "auto",
   col = fpColors(), xlog = FALSE, xticks = NULL, xticks.digits = 2,
   lwd.xaxis = NULL, lwd.zero = NULL, lwd.ci = NULL, cex = 1,
-  cex.axis = cex * 0.6, boxsize = NULL, mar = unit(rep(0.05, times = 4),
-  "npc"), main = NULL, legend = NULL, legend.pos = "top",
+  cex.axis = cex * 0.6, boxsize = NULL, mar = unit(rep(5, times = 4),
+  "mm"), main = NULL, legend = NULL, legend.pos = "top",
   legend.cex = cex * 0.8, legend.gp = NULL, legend.r = unit(0, "snpc"),
   legend.padding = unit(ifelse(length(legend.gp) > 0, 3, 0), "mm"),
   legend.title = NULL, new_page = FALSE, confintNormalFn = fpDrawNormalCI,
@@ -198,6 +198,7 @@ to set these manually as much as possible.
 ##############################################################
 
 ask <- par(ask=TRUE)
+library(grid)
 
 # A basic example, create some fake data
 row_names <- list(list("test = 1", expression(test >= 2)))

@@ -1,4 +1,5 @@
 par_org <- par(ask=TRUE) 
+library(grid)
 gl <- bezierArrowSmplGradient(x=c(.2, .5, .5, .8),
                               y=c(.2, .2, .8, .8),
                               width=unit(10, "mm"),

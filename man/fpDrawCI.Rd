@@ -76,7 +76,7 @@ make your own funky line + marker.
 }
 \examples{
 ask <- par(ask=TRUE)
-
+library(grid)
 test_data <- data.frame(coef1=c(1, 1.59, 1.3, 1.24),
                         coef2=c(1, 1.7, 1.4, 1.04))
 
