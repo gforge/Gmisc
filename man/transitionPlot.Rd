@@ -9,7 +9,9 @@ transitionPlot(transition_flow, type_of_arrow = c("grid", "simple",
   min_lwd = 1, max_lwd = 6, lwd_prop_total = TRUE,
   arrow_clr = "#000000", abs_arrow_width = FALSE,
   overlap_bg_clr = "#FFFFFF", overlap_order = 1:nrow(transition_flow),
-  overlap_add_width = 1.5, box_prop = NULL, new_page = FALSE)
+  overlap_add_width = 1.5, box_prop = NULL, mar = unit(rep(3, times = 4),
+  "mm"), main = NULL, box_label = NULL, box_label_pos = "top",
+  box_label_cex = cex, new_page = FALSE)
 }
 \arguments{
   \item{transition_flow}{This should be a matrix with the
@@ -111,6 +113,21 @@ transitionPlot(transition_flow, type_of_arrow = c("grid", "simple",
   indicating some other factors then input a matrix with
   quantiles for the proportions. Note the size mus be
   nrow(transition_flow) x 2.}
+
+  \item{mar}{A numerical vector of the form c(bottom, left,
+  top, right) of the type \code{unit()}}
+
+  \item{main}{The title of the plot if any, default
+  \code{NULL}}
+
+  \item{box_label}{A vector of length 2 if you want to
+  label each box column}
+
+  \item{box_label_pos}{The position of the label, either
+  \code{'top'} or \code{'bottom'}}
+
+  \item{box_label_cex}{The cex of the label, defaults to
+  the default cex}
 
   \item{new_page}{If you want the plot to appear on a new
   blank page then set this to \code{TRUE}, by default it is

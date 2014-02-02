@@ -59,6 +59,11 @@
 #'  as a unit which is recommended as it looks better. If the scalar is < 1 then the overlap is ignored.
 #' @param box_prop If you want the boxes to have proportions indicating some other factors then input
 #'  a matrix with quantiles for the proportions. Note the size mus be nrow(transition_flow) x 2.
+#' @param mar A numerical vector of the form c(bottom, left, top, right) of the type \code{unit()}
+#' @param main The title of the plot if any, default \code{NULL}
+#' @param box_label A vector of length 2 if you want to label each box column
+#' @param box_label_pos The position of the label, either \code{'top'} or \code{'bottom'}
+#' @param box_label_cex The cex of the label, defaults to the default cex
 #' @param new_page If you want the plot to appear on a new blank page then set this to \code{TRUE}, by
 #'  default it is \code{FALSE}.
 #' @return void 
@@ -127,6 +132,11 @@ transitionPlot <- function (transition_flow,
                             overlap_order = 1:nrow(transition_flow),
                             overlap_add_width = 1.5,
                             box_prop = NULL,
+                            mar = unit(rep(3, times=4), "mm"),
+                            main = NULL,
+                            box_label = NULL,
+                            box_label_pos = "top",
+                            box_label_cex = cex,
                             new_page = FALSE) {
   # Just for convenience
   no_boxes <- nrow(transition_flow)
@@ -151,7 +161,8 @@ transitionPlot <- function (transition_flow,
   
   type_of_arrow <- match.arg(type_of_arrow)
   if (type_of_arrow != "grid"){
-    if ("unit" %nin% class(min_lwd) || "unit" %nin% class(max_lwd))
+    if (!"unit" %in% class(min_lwd) ||
+          !"unit" %in% class(max_lwd))
       stop("Your line widths must be in units when you specify the alternative arrows, e.g. unit(10, 'pt')")
     
     # We need to convert these into regular values in order to use
@@ -383,9 +394,100 @@ transitionPlot <- function (transition_flow,
   
   if (new_page) grid.newpage()
     
+  # Add plot margin
+  prPushMarginViewport(bottom = convertY(mar[1], unitTo="npc"),
+                       left = convertX(mar[2], unitTo="npc"),
+                       top = convertY(mar[3], unitTo="npc"),
+                       right = convertX(mar[4], unitTo="npc"),
+                       "main_margins")
+  
+  if (!is.null(main) && nchar(main) > 0){
+    prGridPlotTitle(main, cex[1])
+  }
+
+  if (!is.null(box_label) && length(box_label) == 2){
+    left <- getBoxPositions(side="left", no=1)
+    right <- getBoxPositions(side="right", no=1)
+    left_label <- textGrob(box_label[1],
+                           gp=gpar(cex=box_label_cex))
+    right_label <- textGrob(box_label[2],
+                            gp=gpar(cex=box_label_cex))
+    label_height <- convertY(max(grobHeight(left_label), grobHeight(right_label)), 
+                   unitTo="npc", valueOnly=TRUE)
+    # Add ygjp space and some margin
+    label_height <- unit(label_height * 2 + label_height * 0.1, "npc")
+    width <- list(left = unit(left$right - left$left, "npc"),
+                  right = unit(right$right - right$left, "npc"))
+    if (box_label_pos == "top"){
+      gl <- grid.layout(nrow=2, ncol=3,
+                        heights = unit.c(label_height, 
+                                         unit(1, "npc") - label_height),
+                        widths = unit.c(width$left,
+                                        unit(1, "npc") - 
+                                          width$left - 
+                                          width$right, 
+                                        width$right))
+      label_row_no <- 1
+      main_row_no <- 2
+    }else{
+      gl <- grid.layout(nrow=2, ncol=3,
+                        heights = unit.c(unit(1, "npc") - label_height,
+                                         label_height),
+                        widths = unit.c(width$left,
+                                        unit(1, "npc") - 
+                                          width$left - 
+                                          width$right, 
+                                        width$right))
+      label_row_no <- 2
+      main_row_no <- 1
+    }
+    
+    pushViewport(viewport(layout=gl, name="Label_layout"))
+    
+    pushViewport(viewport(layout.pos.row=label_row_no, layout.pos.col=1, name="Left_label"))
+    grid.draw(left_label)
+    popViewport()
+    pushViewport(viewport(layout.pos.row=label_row_no, layout.pos.col=3, name="Right_label"))
+    grid.draw(right_label)
+    popViewport()
+  
+    pushViewport(viewport(layout.pos.row=main_row_no, layout.pos.col=1:3, name="Main_exc_label"))
+  }
+  
   plotBoxes <- function (no_boxes, width, txt, 
     fill_start_clr, fill_end_clr,
     lwd=2, line_col="#000000", plot_arrows = TRUE, proportion=FALSE) {
+    
+    getBoxSizedTextGrob <- function(txt, 
+                                    txt_clr, 
+                                    txt_cex,
+                                    force_cex = FALSE,
+                                    ...){
+      bx_grob <- textGrob(txt,
+                          gp=gpar(col=txt_clr, cex=txt_cex), 
+                          ...)
+      attr(bx_grob, "adjusted_cex") <- txt_cex
+      if (force_cex)
+        return(bx_grob)
+      
+      bx_height <- convertY(grobHeight(bx_grob), "npc", valueOnly=TRUE)
+      # The box height is by definition 1 npc
+      # We want to avoid anything that is bigger that
+      # 95 % and that is includingt he yjp (the 1.5)
+      if (.95 < bx_height*1.5){
+        new_cex <- txt_cex * .95 / (bx_height * 1.5)
+        if (new_cex < .25){
+          bx_grob <- nullGrob()
+        }else{
+          bx_grob <- textGrob(txt,
+                              gp=gpar(col=txt_clr, cex=new_cex),
+                              ...)
+        }
+        attr(bx_grob, "adjusted_cex") <- new_cex
+      }
+      
+      return(bx_grob)
+    }
     
     plotBox <- function(bx, bx_txt, fill, txt_clr, proportion=FALSE){
       pushViewport(viewport(y=bx$y, x=bx$x, 
@@ -394,25 +496,35 @@ transitionPlot <- function (transition_flow,
         grid.roundrect(gp = gpar(lwd=lwd, fill=fill, col=line_col))
         
         if (bx_txt != ""){
-          grid.text(bx_txt,
-            gp=gpar(col=txt_clr, cex=cex))
+          bx_grob <- getBoxSizedTextGrob(txt=bx_txt, 
+                                         txt_clr = txt_clr, 
+                                         txt_cex = cex)
+          grid.draw(bx_grob)
         }
       }else{
         # Adapted from Paul Murray's example http://www.stat.auckland.ac.nz/~paul/RG2e/customgrid-nestedlay.R
         pushViewport(viewport(layout=grid.layout(nrow=2, ncol=1, heights=c(proportion, 1-proportion))))
         grid.roundrect(gp = gpar(lwd=lwd, fill=fill[1], col=NA))
         if (bx_txt != ""){
-          grid.text(bx_txt, y=0.5,
-            gp=gpar(col=txt_clr[1], cex=cex))
+          bx_grob <- getBoxSizedTextGrob(txt=bx_txt, 
+                                         txt_clr = txt_clr[1], 
+                                         txt_cex = cex)
+          grid.draw(bx_grob)
         }
         
         pushViewport(viewport(layout.pos.row=2, clip="on"))
         if ((1-proportion) > 0){
           grid.roundrect(y=.5/(1-proportion), height=1/(1-proportion), gp = gpar(lwd=lwd, fill=fill[2], col=NA))
           if (bx_txt != ""){
-            grid.text(bx_txt,y=0.5/(1-proportion), 
-              gp=gpar(col=txt_clr[2], cex=cex))
-          }  
+            # Should not autoadjust the cex but keep the previous one
+            prev_cex <- attr(bx_grob, "adjusted_cex")
+            bx_grob <- getBoxSizedTextGrob(txt=bx_txt, 
+                                           txt_clr = txt_clr[2], 
+                                           txt_cex = prev_cex,
+                                           force_cex = TRUE,
+                                           y=0.5/(1-proportion))
+            grid.draw(bx_grob)
+          }
         }
         popViewport(2)
         grid.roundrect(gp = gpar(lwd=lwd, fill=NA, col=line_col))
@@ -488,8 +600,9 @@ transitionPlot <- function (transition_flow,
   }
   
   # Do the plot
+  # Plot shadow boxes a little shifted
   shift <- .01
-  vp1 <- viewport(x = 0.5+shift, y = 0.5-shift, height=.95, width=.95, name="shadow_boxes")
+  vp1 <- viewport(x = 0.5+shift, y = 0.5-shift, height=1-shift*2, width=1-shift*2, name="shadow_boxes")
   pushViewport(vp1)
   
   shadow_clr <- rep(grey(.8), length.out=no_boxes)
@@ -503,7 +616,8 @@ transitionPlot <- function (transition_flow,
             proportion = FALSE)
   popViewport()
 
-  vp1 <- viewport(x = 0.5, y = 0.5, height=.95, width=.95)
+  # Plot real boxes
+  vp1 <- viewport(x = 0.5, y = 0.5, height=1, width=1)
   pushViewport(vp1)
   plotBoxes(no_boxes, box_width, 
             txt = box_txt,
@@ -513,4 +627,12 @@ transitionPlot <- function (transition_flow,
             proportion = TRUE)
   
   popViewport()
+
+  if (!is.null(main) && nchar(main) > 0){
+    popViewport()
+  }
+  
+  if (!is.null(box_label) && length(box_label) == 2){
+    popViewport()
+  }
 }

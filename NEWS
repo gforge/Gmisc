@@ -4,6 +4,8 @@ Changes for 0.6.0.0
 --------------------
 * For LibreOffice compatibility htmlTable now includes caption inside the table when compatibility='LibreOffice'
 * Split the package to exclude regression functions, these are now in the Greg package
+* Added title and label options to transitionPlot
+* Added a size-autofit for the transitionPlot text 
 
 Changes for 0.5.8.2
 --------------------
