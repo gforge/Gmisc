@@ -45,7 +45,7 @@ fpDrawSummaryCI(lower_limit, estimate, upper_limit, size, col, y.offset = 0.5,
   \item{size}{The actual size of the box/diamond/marker.
   This provided in the 'snpc' format to generate a perfect
   marker. Although you can provide it alternative units as
-  well.}
+  well, this is useful for the legends to work nicely.}
 
   \item{y.offset}{If you have multiple lines they need an
   offset in the y-direction.}

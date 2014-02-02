@@ -1,5 +1,9 @@
 NEWS for the Gmisc package
 
+Changes for 0.6.1.0
+--------------------
+* Added legend markers option for the forestplot2 function
+
 Changes for 0.6.0.2
 --------------------
 * Fixed ticks for forestplot2 - the prFpGetGraphTicksAndClips used the exp() for regular values.
