@@ -30,7 +30,8 @@
 #' @import grid
 #' @author max
 #' @export
-bezierArrowSmpl <- function(x = c(0.2, .7, .3, .9), y = c(0.2, .2, .9, .9), 
+bezierArrowSmpl <- function(x = c(0.2, .7, .3, .9),
+                            y = c(0.2, .2, .9, .9), 
                             width = .05,
                             clr = "#000000",
                             default.units = "npc", 
@@ -39,10 +40,18 @@ bezierArrowSmpl <- function(x = c(0.2, .7, .3, .9), y = c(0.2, .2, .9, .9),
                             align_2_axis = TRUE,
                             name = NULL, 
                             gp = gpar(), vp = NULL){
-  if (class(x) == "unit")
-    x <- convertX(x, unitTo=default.units, valueOnly=TRUE)
-  if (class(y) == "unit")
-    y <- convertY(y, unitTo=default.units, valueOnly=TRUE)
+  if (class(x) != "unit")
+    x <- unit(x, default.units)
+  if (class(y) != "unit")
+    y <- unit(y, default.units)
+  
+  # Internally we want to avoid using the "npc" and we therefore
+  # switch to mm that is consistent among the axes. This compromises
+  # the portability of the grob but it is a price worth paying
+  internal.units <- "mm"
+  x <- convertX(x, unitTo=internal.units, valueOnly=TRUE)
+  y <- convertY(y, unitTo=internal.units, valueOnly=TRUE)
+  
   
   if (length(y) != length(x))
     stop("You have provided unequal lengths to y and x - thus uninterpretable:",
@@ -68,11 +77,11 @@ bezierArrowSmpl <- function(x = c(0.2, .7, .3, .9), y = c(0.2, .2, .9, .9),
   # TODO: extend to multiple ctrl points as regular bezier curves as they do for instance in Inkscape 
   bz_grob <- bezierGrob(x=c(end_points$start$x, spline_ctrl$x, end_points$end$x), 
                         y=c(end_points$start$y, spline_ctrl$y, end_points$end$y), 
-                        default.units=default.units, vp=vp)
+                        default.units=internal.units, vp=vp)
   bp <- bezierPoints(bz_grob)
   # Change to values that we can work with arithmetically
-  bp$y <- convertY(bp$y, unitTo=default.units, valueOnly=TRUE)
-  bp$x <- convertX(bp$x, unitTo=default.units, valueOnly=TRUE)
+  bp$y <- convertY(bp$y, unitTo=internal.units, valueOnly=TRUE)
+  bp$x <- convertX(bp$x, unitTo=internal.units, valueOnly=TRUE)
   getBzLength <- function(x, y){
     m <- rbind(y, x)
     # Map the change between coordinates
@@ -83,9 +92,10 @@ bezierArrowSmpl <- function(x = c(0.2, .7, .3, .9), y = c(0.2, .2, .9, .9),
     return(sqrt(colSums(m^2)))
   }
   
-  getBestMatchForArrowLengthAlongCurve <- function (bp, arrow_length) {
+  getBestMatchForArrowLengthAlongCurve <- function (bp, arrow_length,
+                                                    internal.units) {
 
-    arrow_length <- getGridVal(arrow_length, "npc")
+    arrow_length <- getGridVal(arrow_length, internal.units)
     
     dist2end <- sqrt((bp$x-tail(bp$x, 1))^2+
             (bp$y-tail(bp$y, 1))^2)
@@ -93,20 +103,51 @@ bezierArrowSmpl <- function(x = c(0.2, .7, .3, .9), y = c(0.2, .2, .9, .9),
     
     return(best_point)
   }
-  bp$cut_point <- getBestMatchForArrowLengthAlongCurve(bp, arrow$length)
+  bp$cut_point <- getBestMatchForArrowLengthAlongCurve(bp, arrow$length, internal.units)
     
   # Set the arrow details according to this new information
   arrow$x <- end_points$end$x - bp$x[bp$cut_point]
   arrow$y <- end_points$end$y - bp$y[bp$cut_point]
   #arrow$length <- sqrt(arrow$x^2+arrow$y^2)
   
-  getBezierAdjustedForArrow <- function(bp, end_points, spline_ctrl, arrow){
-    a_l <- getGridVal(arrow$length, "npc")
+  getBezierAdjustedForArrow <- function(bp, end_points, 
+                                        spline_ctrl, arrow, 
+                                        internal.units){
+    a_l <- getGridVal(arrow$length, internal.units)
     multiplier <- (spline_ctrl$end$length-a_l*1.1)/a_l
     # Use the arrow's vector in the opposite direction as the new ctrl point
-    spline_ctrl$x[length(spline_ctrl$x)] <- -arrow$x*multiplier + bp$x[bp$cut_point]
-    spline_ctrl$y[length(spline_ctrl$y)] <- -arrow$y*multiplier + bp$y[bp$cut_point]
-    
+    adjust_ctr <- function(spl_point, org_endpoint, new_endpoint, arrow, multiplier){
+      new_sppoint <- new_endpoint - arrow*multiplier
+      # Check if this adjustment breaks the original direction
+      if ((new_sppoint < new_endpoint &&
+            spl_point > org_endpoint) ||
+            (new_sppoint > new_endpoint &&
+            spl_point < org_endpoint)){
+        # Remove 50 % of the adjustment
+        new_sppoint <- new_endpoint - arrow*multiplier*.5
+        
+        # Give up if this didn't work
+        if ((new_sppoint < new_endpoint &&
+               spl_point > org_endpoint) ||
+              (new_sppoint > new_endpoint &&
+                 spl_point < org_endpoint)){
+          new_sppoint <- new_endpoint
+        }
+      }
+      
+      return(new_sppoint)
+    }
+    spline_ctrl$x[length(spline_ctrl$x)] <- 
+      adjust_ctr(spline_ctrl$x, 
+                 tail(bp$x, 1), 
+                 bp$x[bp$cut_point], 
+                 arrow$x, multiplier)
+    spline_ctrl$y[length(spline_ctrl$y)] <- 
+      adjust_ctr(spline_ctrl$y, 
+                 tail(bp$y, 1), 
+                 bp$y[bp$cut_point], 
+                 arrow$y, multiplier)
+
     # Relate to full length
     tot_line_length <- sum(getBzLength(x = bp$x, y= bp$y))
     simple_start_adjustment <- 1-a_l/tot_line_length/3
@@ -114,22 +155,25 @@ bezierArrowSmpl <- function(x = c(0.2, .7, .3, .9), y = c(0.2, .2, .9, .9),
     spline_ctrl$x[1] <- end_points$start$x + (spline_ctrl$x[1]-end_points$start$x)*simple_start_adjustment
     spline_ctrl$y[1] <- end_points$start$y + (spline_ctrl$y[1]-end_points$start$y)*simple_start_adjustment
     
-    return(bezierGrob(x=c(end_points$start$x, spline_ctrl$x, bp$x[bp$cut_point]), 
+    return(bezierGrob(x=c(end_points$start$x, spline_ctrl$x, 
+                          bp$x[bp$cut_point]), 
                       y=c(end_points$start$y, spline_ctrl$y, bp$y[bp$cut_point]), 
-                      default.units=default.units,
+                      default.units=internal.units,
                       vp=vp))
   }
   
-  new_bz_grob <- getBezierAdjustedForArrow(bp, end_points, spline_ctrl, arrow)
+  new_bz_grob <- getBezierAdjustedForArrow(bp, end_points, 
+                                           spline_ctrl, arrow,
+                                           internal.units)
   
   
   # Get the bezier points that are adjusted for the arrow
   new_bp <- bezierPoints(new_bz_grob)
-  new_bp$y <- convertY(new_bp$y, unitTo=default.units, valueOnly=TRUE)
-  new_bp$x <- convertX(new_bp$x, unitTo=default.units, valueOnly=TRUE)
+  new_bp$y <- convertY(new_bp$y, unitTo=internal.units, valueOnly=TRUE)
+  new_bp$x <- convertX(new_bp$x, unitTo=internal.units, valueOnly=TRUE)
 
-  extendBp2MatchArrowLength <- function (bp, end, arrow_length){
-    arrow_length <- getGridVal(arrow_length, "npc")
+  extendBp2MatchArrowLength <- function (bp, end, arrow_length, internal.units){
+    arrow_length <- getGridVal(arrow_length, internal.units)
     bp_last_x <- tail(bp$x, 1)
     bp_last_y <- tail(bp$y, 1)
     dist2end <- sqrt((bp_last_x-end$x)^2+
@@ -150,19 +194,20 @@ bezierArrowSmpl <- function(x = c(0.2, .7, .3, .9), y = c(0.2, .2, .9, .9),
   }
   new_bp <- extendBp2MatchArrowLength(new_bp, 
       end = end_points$end, 
-      arrow_length = arrow$length)
+      arrow_length = arrow$length,
+      internal.units = internal.units)
   
   # Get lengths
   new_bp$lengths <- getBzLength(new_bp$x, new_bp$y)
   
   # Add the arrow length to the last element
   new_bp$lengths[length(new_bp$lengths)] <- tail(new_bp$lengths, 1) + 
-    getGridVal(arrow$length, "npc")
+    getGridVal(arrow$length, internal.units)
   lines <- getLinesWithArrow(bp = new_bp, 
       arrow = arrow, 
       width = width, 
       end_points = end_points,
-      default.units = default.units,
+      default.units = internal.units,
       align_2_axis = align_2_axis)
   
   pg <- polygonGrob(x=unit.c(lines$left$x,

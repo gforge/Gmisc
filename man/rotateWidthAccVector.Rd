@@ -2,7 +2,7 @@
 \alias{rotateWidthAccVector}
 \title{Rotates a width to match a vector}
 \usage{
-rotateWidthAccVector(x, y, x_origo = NA, y_origo = NA, ...)
+rotateWidthAccVector(x, y, x_origo = NA, y_origo = NA, default.units, ...)
 }
 \arguments{
   \item{x}{The x point of the vector}
@@ -12,6 +12,8 @@ rotateWidthAccVector(x, y, x_origo = NA, y_origo = NA, ...)
   \item{x_origo}{The x origin if other than 0}
 
   \item{y_origo}{The y origin if other than 0}
+
+  \item{default.units}{The \code{\link[grid]{unit}} type}
 
   \item{...}{Passed on to \code{\link{rotateWidthAccAngle}}
   after calculating the angle from the vector.}

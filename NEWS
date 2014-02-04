@@ -1,5 +1,9 @@
 NEWS for the Gmisc package
 
+Changes for 0.6.1.1
+-------------------
+* The bezierArrowSmpl now uses "mm" internally instead of the default "npc" - this improves the rendering as the "npc" is dependent on the axis. A few adjustments to arrow functions were also added.
+
 Changes for 0.6.1.0
 --------------------
 * Added legend markers option for the forestplot2 function

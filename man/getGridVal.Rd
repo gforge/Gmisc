@@ -2,12 +2,15 @@
 \alias{getGridVal}
 \title{Gets grid value}
 \usage{
-getGridVal(x, default.units)
+getGridVal(x, default.units, axisTo = "x")
 }
 \arguments{
   \item{x}{Value}
 
   \item{default.units}{The unit type}
+
+  \item{axisTo}{The axis that is used, useful for "npc"
+  where there is a big difference in height and width}
 }
 \value{
 float

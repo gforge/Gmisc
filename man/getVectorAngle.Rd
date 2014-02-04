@@ -2,7 +2,7 @@
 \alias{getVectorAngle}
 \title{Gets an angle}
 \usage{
-getVectorAngle(x, y, x_origo = NA, y_origo = NA, default.units = "npc")
+getVectorAngle(x, y, x_origo = NA, y_origo = NA, default.units = "mm")
 }
 \arguments{
   \item{x}{The x point of the vector}

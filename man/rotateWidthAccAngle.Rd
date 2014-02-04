@@ -3,7 +3,7 @@
 \title{Rotates a width to match a vector}
 \usage{
 rotateWidthAccAngle(angle, x_origo = NA, y_origo = NA, width = 0,
-  default.units = "npc", perpendicular = TRUE, prev_angle = NA)
+  default.units, perpendicular = TRUE, prev_angle = NA)
 }
 \arguments{
   \item{angle}{Angle to rotate according to}
