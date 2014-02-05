@@ -44,6 +44,12 @@ bezierArrowSmpl <- function(x = c(0.2, .7, .3, .9),
     x <- unit(x, default.units)
   if (class(y) != "unit")
     y <- unit(y, default.units)
+  if (class(arrow$base) != "unit")
+    arrow$base <- unit(arrow$base, default.units)
+  if (class(arrow$length) != "unit")
+    arrow$length <- unit(arrow$length, default.units)
+  if (class(width) != "unit")
+    width <- unit(width, default.units)
   
   # Internally we want to avoid using the "npc" and we therefore
   # switch to mm that is consistent among the axes. This compromises
@@ -69,6 +75,7 @@ bezierArrowSmpl <- function(x = c(0.2, .7, .3, .9),
   spline_ctrl <- list(x=x[2:(length(x)-1)],
                       y=y[2:(length(y)-1)])
                           
+  # Get the length of the spline control through sqrt(a^2+b^2)
   spline_ctrl$start$length <- sqrt((spline_ctrl$x[1] - end_points$start$x)^2+
       (spline_ctrl$y[1] - end_points$start$y)^2)
   spline_ctrl$end$length <- sqrt((tail(spline_ctrl$x,1) - end_points$end$x)^2+
@@ -114,7 +121,7 @@ bezierArrowSmpl <- function(x = c(0.2, .7, .3, .9),
                                         spline_ctrl, arrow, 
                                         internal.units){
     a_l <- getGridVal(arrow$length, internal.units)
-    multiplier <- (spline_ctrl$end$length-a_l*1.1)/a_l
+    multiplier <- (spline_ctrl$end$length-a_l*1.1)/spline_ctrl$end$length
     # Use the arrow's vector in the opposite direction as the new ctrl point
     adjust_ctr <- function(spl_point, org_endpoint, new_endpoint, arrow, multiplier){
       new_sppoint <- new_endpoint - arrow*multiplier
@@ -210,10 +217,33 @@ bezierArrowSmpl <- function(x = c(0.2, .7, .3, .9),
       default.units = internal.units,
       align_2_axis = align_2_axis)
   
-  pg <- polygonGrob(x=unit.c(lines$left$x,
-                             rev(lines$right$x)),
-                    y=unit.c(lines$left$y,
-                             rev(lines$right$y)),
+  # Change evrything to default.units from internal
+  lines$left$x <- convertX(lines$left$x, unitTo=default.units)
+  lines$right$x <- convertX(lines$right$x, unitTo=default.units)
+  
+  lines$left$y <- convertY(lines$left$y, unitTo=default.units)
+  lines$right$y <- convertY(lines$right$y, unitTo=default.units)
+  
+  new_bp$x <- convertX(unit(new_bp$x, internal.units), unitTo=default.units)
+  new_bp$y <- convertY(unit(new_bp$y, internal.units), unitTo=default.units)
+  # The length cannot be converted into npc
+  new_bp$length <- unit(new_bp$length, internal.units)
+  
+  end_points$start$x <- convertX(unit(end_points$start$x, internal.units),
+                                 unitTo=default.units)
+  end_points$start$y <- convertY(unit(end_points$start$y, internal.units),
+                                 unitTo=default.units)
+  end_points$end$x <- convertX(unit(end_points$end$x, internal.units),
+                                 unitTo=default.units)
+  end_points$end$y <- convertY(unit(end_points$end$y, internal.units),
+                               unitTo=default.units)
+
+  poly_x <- unit.c(lines$left$x,
+                   rev(lines$right$x))
+  poly_y <- unit.c(lines$left$y, 
+                   rev(lines$right$y))
+  pg <- polygonGrob(x=poly_x,
+                    y=poly_y,
                     gp=gpar(fill=clr, col=clr), # col=NA, - messes up the anti-aliasing
                     name = name,
                     vp = vp)
