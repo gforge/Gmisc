@@ -49,8 +49,12 @@ bezierArrowSmplGradient <- function(
   vp = NULL,
   gp = gpar(),
   ...){
+  
   # Get initial values
   grdt_type <- match.arg(grdt_type)
+  
+  if (class(width) != "unit")
+    width <- unit(width, default.units)
   
   if (is.na(grdt_line_width))
     grdt_line_width <- getGridVal(width, default.units)*.2
@@ -168,6 +172,7 @@ bezierArrowSmplGradient <- function(
         y_origo=bp$y[i-1],
         width=max_gradient_width*g_factor[end_point - i],
         perpendicular=TRUE,
+        default.units=default.units,
         prev_angle=top$angle)
       
       current_clr <- ifelse(end_point - i < length(g_clrs),
@@ -212,15 +217,25 @@ bezierArrowSmplGradient <- function(
   
   if (start_decrease > 1){
     # Select the beginning
-    if (bp$x[1] < bp$x[2])
-      x_start_selection <- bp$x[1:start_decrease] > end_points$start$x + getGridVal(grdt_line_width, default.units)
-    else if (bp$x[1] > bp$x[2])
-      x_start_selection <- bp$x[1:start_decrease] < end_points$start$x - getGridVal(grdt_line_width, default.units)
+    if (getGridVal(bp$x[1], "mm") < getGridVal(bp$x[2], "mm")){
+      x_start_selection <- 
+        getGridVal(bp$x[1:start_decrease], default.units) > 
+        getGridVal(end_points$start$x, default.units) + getGridVal(grdt_line_width, default.units)
+    }else if (getGridVal(bp$x[1], "mm") > getGridVal(bp$x[2], "mm")){
+      x_start_selection <- 
+        getGridVal(bp$x[1:start_decrease], default.units, axisTo="x") > 
+        getGridVal(end_points$start$x, default.units) - getGridVal(grdt_line_width, default.units)
+    }
     
-    if (bp$y[1] < bp$y[2])
-      y_start_selection <- bp$y[1:start_decrease] > end_points$start$y + getGridVal(grdt_line_width, default.units)
-    else
-      y_start_selection <- bp$y[1:start_decrease] < end_points$start$y - getGridVal(grdt_line_width, default.units)
+    if (getGridVal(bp$y[1], "mm", axisTo="y") < getGridVal(bp$y[2], "mm", axisTo="y")){
+      y_start_selection <- 
+        getGridVal(bp$y[1:start_decrease], default.units) > 
+        getGridVal(end_points$start$y, default.units) + getGridVal(grdt_line_width, default.units)
+    }else{
+      y_start_selection <- 
+        getGridVal(bp$y[1:start_decrease], default.units) > 
+        getGridVal(end_points$start$y, default.units) - getGridVal(grdt_line_width, default.units)
+    }
   
     # It can be either x or y that is closes to the starting point
     start_selection <- x_start_selection | y_start_selection
@@ -234,11 +249,14 @@ bezierArrowSmplGradient <- function(
       default.units = default.units)
 
     w <- getGridVal(grdt_line_width, default.units)
-    st_bp <- list(x=c(getGridVal(end_points$start$x, default.units) + w*cos(angle), 
-        bp$x[selection]),
-      y=c(end_points$start$y + w*sin(angle), 
-        bp$y[selection]))
-      
+    st_bp <- list(x=c(getGridVal(end_points$start$x, default.units) + 
+                        w*cos(angle), 
+                      getGridVal(bp$x[selection], default.units)),
+                  y=c(getGridVal(end_points$start$y, default.units) + 
+                        w*sin(angle), 
+                      getGridVal(bp$y[selection], default.units)))
+    st_bp <- lapply(st_bp, function(x) unit(x, default.units))
+    
     lines <- getLines(bp=st_bp, 
                       end_point=list(x=bp$x[start_decrease],
                                      y=bp$y[start_decrease]),
