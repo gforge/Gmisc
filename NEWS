@@ -3,6 +3,7 @@ NEWS for the Gmisc package
 Changes for 0.6.1.1
 -------------------
 * The bezierArrowSmpl now uses "mm" internally instead of the default "npc" - this improves the rendering as the "npc" is dependent on the axis. A few adjustments to arrow functions were also added.
+* Bugfixes have been added to the bezierArrowSmplGradient
 
 Changes for 0.6.1.0
 --------------------
