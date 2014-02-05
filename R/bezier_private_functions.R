@@ -36,12 +36,14 @@ validateAndConvertVectorInputs <- function(x, y,
   if (class(y_origo) != class(x_origo))
     stop("The x and y point for the origo point don't have the same class,",
       " should be either numeric or units.",
-      " Currently you have provided y=", class(y), " & x=", class(x))
+      " Currently you have provided y=", class(y_origo),
+      " & x=", class(x_origo))
   
   if (class(y) != class(y_origo))
     stop("The angle won't make any sense if your x and y point",
       " doesn't have the same unit as the origo x and y point.",
-      " Currently you have provided point class=", class(y), " & origo class=", class(x))
+      " Currently you have provided point class=", class(y), 
+      " & origo class=", class(y_origo))
   
   return (list(y=y, x=x,
       y_origo=y_origo, x_origo=x_origo))
@@ -153,8 +155,10 @@ rotateWidthAccAngle <- function (angle,
   default.units,
   perpendicular = TRUE,
   prev_angle = NA) {
-  v <- validateAndConvertVectorInputs(x=1, y=1, 
-    x_origo=x_origo, y_origo=y_origo)
+
+  if (class(x_origo) != class(y_origo))
+    stop("The two origo points should be of the same type:",
+         " y_origo=", class(y_origo), " x_origo=", class(x_origo))
 
   working_angle <- mean(c(angle, prev_angle), na.rm=TRUE)
   
@@ -191,12 +195,14 @@ rotateWidthAccAngle <- function (angle,
   left <- unit(left, w_unit)
   right <- unit(right, w_unit)
   
-  if ("unit" %in% class(v$x_origo)){
-    left <- left + unit.c(v$x_origo, v$y_origo)
-    right <- right + unit.c(v$x_origo, v$y_origo)
-  }else{
-    left <- left + unit(c(v$x_origo, v$y_origo), default.units)
-    right <- right + unit(c(v$x_origo, v$y_origo), default.units)
+  if (!is.na(x_origo)){
+    if ("unit" %in% class(x_origo)){
+      left <- left + unit.c(x_origo, y_origo)
+      right <- right + unit.c(x_origo, y_origo)
+    }else{
+      left <- left + unit(c(x_origo, y_origo), default.units)
+      right <- right + unit(c(x_origo, y_origo), default.units)
+    }
   }
   
   return (list(left=left,
@@ -204,6 +210,7 @@ rotateWidthAccAngle <- function (angle,
       angle=angle))
 }
 
+   
 #' Gets the lines shifted according to width
 #' 
 #' The lines are the upper and the lower lines that will make up the
@@ -309,14 +316,14 @@ getLines <- function(bp, end_point,
     
     if (shorten_by_x)
       if (x[1] < x[2]) 
-        keep <- which(x > ref_x)
+        keep <- which(x > ref_x)[1]:length(x)
       else
-        keep <- which(x < ref_x)
+        keep <- which(x < ref_x)[1]:length(x)
     else
       if (y[1] < y[2])
-        keep <- which(y > ref_y)
+        keep <- which(y > ref_y)[1]:length(y)
       else
-        keep <- which(y < ref_y)
+        keep <- which(y < ref_y)[1]:length(y)
     
     x <- unit(c(ref_x, x[keep]), default.units)
     y <- unit(c(ref_y, y[keep]), default.units)
@@ -410,19 +417,19 @@ getLines <- function(bp, end_point,
       return (lines)
     }
     
-    
+    numerical_bp <- lapply(bp, function(x) getGridVal(x, default.units))
     if (isHorizontal(angle)){
       # Get the original points of interest
-      if (bp$x[2] > bp$x[1]){
+      if (numerical_bp$x[2] > numerical_bp$x[1]){
         # Going right
         angle <- 0
-        if (bp$y[2] < bp$y[1])
+        if (numerical_bp$y[2] < numerical_bp$y[1])
           turn <- "right"
         else
           turn <- "left"
       }else{
         angle <- pi
-        if (bp$x[2] > bp$x[1])
+        if (numerical_bp$x[2] > numerical_bp$x[1])
           turn <- "right"
         else
           turn <- "left"
@@ -437,16 +444,16 @@ getLines <- function(bp, end_point,
     }else{
       # Vertical
       # Get the original points of interest
-      if (bp$y[2] > bp$y[1]){
+      if (numerical_bp$y[2] > numerical_bp$y[1]){
         # Going up
         angle <-pi/2
-        if (bp$x[2] > bp$x[1])
+        if (numerical_bp$x[2] > numerical_bp$x[1])
           turn <- "right"
         else
           turn <- "left"
       }else{
         angle <-pi*3/2
-        if (bp$x[2] < bp$x[1])
+        if (numerical_bp$x[2] < numerical_bp$x[1])
           turn <- "right"
         else
           turn <- "left"
