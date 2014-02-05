@@ -18,7 +18,8 @@ Biarch: yes
 Imports:
     grid,
     stringr,
-    lattice
+    lattice,
+    sp
 Depends:
     Hmisc
 Suggests:
