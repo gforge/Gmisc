@@ -19,7 +19,8 @@ Imports:
     grid,
     stringr,
     lattice,
-    sp
+    sp,
+    methods
 Depends:
     Hmisc
 Suggests:
