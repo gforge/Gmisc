@@ -150,6 +150,11 @@ LibreOffice/OpenOffice that lacks any more advanced
 understanding of HTML & CSS.
 }
 \details{
+Note that when you use knitr in markdown mode you need to
+specify: results="asis". It is also good to know that the
+function outputs raw html, this limits the compatibility
+with pandoc and similar tools.
+
 If you set the option table_counter you will get a Table
 1,2,3 etc before each table, just set
 \code{options(table_counter=TRUE)}. If you set it to a

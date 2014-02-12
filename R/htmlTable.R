@@ -8,6 +8,10 @@
 #' maximum compatibility with LibreOffice/OpenOffice that lacks any more 
 #' advanced understanding of HTML & CSS. 
 #' 
+#' Note that when you use knitr in markdown mode you need to specify: 
+#' results="asis". It is also good to know that the function outputs
+#' raw html, this limits the compatibility with pandoc and similar tools.
+#' 
 #' If you set the option table_counter you will get a Table 1,2,3
 #' etc before each table, just set \code{options(table_counter=TRUE)}. If
 #' you set it to a number then that number will correspond to the start of 
@@ -397,7 +401,8 @@ htmlTable <- function(x,
       }else if(sum(n.cgroup[i,], na.rm=TRUE) != ncol(x)){
         ncgroupFixFromBelowGroup <- function(nc, i){
           if (i+1 > nrow(nc))
-            stop("You have provided an invalid nc where it has fewer rows than the one of interest")
+            stop("You have provided an invalid nc",
+                 " where it has fewer rows than the one of interest")
           
           # Select those below that are not missing
           row_below <- nc[i + 1, !is.na(nc[i + 1, ])]
@@ -451,7 +456,10 @@ htmlTable <- function(x,
           "\n If the NA's don't occur at the same point",
           " the software can't decide what belongs where.",
           "\n The full cgroup row: ", paste(cgroup[i, ], collapse=", "),
-          "\n The full n.cgroup row: ", paste(n.cgroup[i, ], collapse=", "))
+          "\n The full n.cgroup row: ", paste(n.cgroup[i, ], collapse=", "),
+          "\n Example: for a two row cgroup it would be:",
+          " n.cgroup = rbind(c(1, NA), c(2, 1)) and",
+          " cgroup = rbind(c('a', NA), c('b', 'c'))")
       } 
       
       # Add a spacer cell for each cgroup. If two cgroups

@@ -23,4 +23,5 @@ Imports:
 Depends:
     Hmisc
 Suggests:
-    testthat
+    testthat,
+    XML
