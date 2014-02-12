@@ -107,4 +107,43 @@ test_that("Check that dimensions are correct with cgroup usage",
   parsed_table <- readHTMLTable(table_str)[[1]]
   expect_equal(ncol(parsed_table), ncol(mx) + 2, 
                info="Cols did not match for multilevel cgroup")
+  
+  table_str <- htmlTable(mx, 
+                         cgroup=c("a", "b"),
+                         n.cgroup=c(2, 1),
+                         output=FALSE, tspanner=c("First spanner",
+                                                  "Secon spanner"), 
+                         n.tspanner=c(1,1))
+  expect_true(grepl("td[^>]*colspan='4'[^>]*>First spanner", table_str), 
+              info="The expected number of columns should be 4")
+  expect_true(grepl("td[^>]*colspan='4'[^>]*>Secon spanner", table_str), 
+              info="The expected number of columns should be 4")
+  
+  table_str <- htmlTable(mx, 
+                         cgroup=rbind(c("aa", "bb"), 
+                                      c("a", "b")),
+                         n.cgroup=rbind(c(2, 1), 
+                                        c(1, 2)),
+                         rgroup=c("First rgroup",
+                                  "Second rgroup"),
+                         n.rgroup=c(1,1),
+                         tspanner=c("First tspanner",
+                                    "Second tspanner"),
+                         n.tspanner=c(1,1),
+                         output=FALSE)
+  
+  expect_true(grepl("td[^>]*colspan='5'[^>]*>First rgroup", table_str), 
+              info="The expected number of columns should be 5")
+  expect_true(grepl("td[^>]*colspan='5'[^>]*>Second rgroup", table_str), 
+              info="The expected number of columns should be 5")
+  
+  parsed_table <- readHTMLTable(table_str)[[1]]
+  expect_equal(as.character(parsed_table[1,1]),
+               "First tspanner")
+  expect_equal(as.character(parsed_table[2,1]),
+               "First rgroup")
+  expect_equal(as.character(parsed_table[4,1]),
+               "Second tspanner")
+  expect_equal(as.character(parsed_table[5,1]),
+               "Second rgroup")
 })

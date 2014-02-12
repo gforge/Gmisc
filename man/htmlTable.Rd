@@ -6,8 +6,10 @@ htmlTable(x, title = first.word(deparse(substitute(x))), headings = NA,
   align = paste(c("l", rep("c", ncol(x) - 1)), collapse = ""),
   halign = paste(rep("c", ncol(x)), collapse = ""), cgroup = NULL,
   n.cgroup = NULL, cgroup.just = NULL, rgroup = NULL, n.rgroup = NULL,
-  rgroupCSSstyle = "font-weight: 900;",
-  rgroupCSSseparator = "border-top: 1px solid grey;", rowlabel = title,
+  rgroupCSSstyle = "font-weight: 900;", rgroupCSSseparator = "",
+  tspanner = NULL, n.tspanner = NULL,
+  tspannerCSSstyle = "font-weight: 900; text-transform:capitalize; text-align: center;",
+  tspannerCSSseparator = "border-top: 1px solid grey;", rowlabel = title,
   rowlabel.pos = "bottom", ctable = FALSE, compatibility = "LibreOffice",
   rowname = NA, caption = NULL, caption.loc = "top", tfoot = NULL,
   label = NULL, output = TRUE, ...)
@@ -72,7 +74,7 @@ htmlTable(x, title = first.word(deparse(substitute(x))), headings = NA,
   \code{n.rgroup} is omitted, \code{n.rgroup} will default
   so that each row group contains the same number of rows.}
 
-  \item{rgroupCSSstyle}{Css style for the rgorup, if
+  \item{rgroupCSSstyle}{CSS style for the rgorup, if
   different styles are wanted for each of the rgroups you
   can just specify a vector with the number of elements}
 
@@ -84,6 +86,19 @@ htmlTable(x, title = first.word(deparse(substitute(x))), headings = NA,
   different separators if you give a vector of rgroup - 1
   length (this is since the first rgroup doesn't have a
   separator).}
+
+  \item{tspanner}{The table spanner is somewhat of a table
+  header that you can use when you want to join different
+  tables with the same columns.}
+
+  \item{n.tspanner}{The number of rows in the original
+  matrix that the table spanner should span}
+
+  \item{tspannerCSSstyle}{The CSS style for the table
+  spanner}
+
+  \item{tspannerCSSseparator}{The line between different
+  spanners}
 
   \item{rowlabel}{If x has row dimnames, rowlabel is a
   character string containing the column heading for the
