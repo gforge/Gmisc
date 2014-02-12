@@ -48,6 +48,32 @@ test_that("Check that basic output are the same as the provided matrix",
               info="Some cells don't match the inputted cells")
 })
 
+test_that("Check that dimensions are correct with rgroup usage",
+{
+  table_str <- htmlTable(mx, output=FALSE, 
+                         rgroup=c("test1", "test2"), 
+                         n.rgroup=c(1,1))
+  parsed_table <- readHTMLTable(table_str)[[1]]
+  expect_equal(ncol(parsed_table), ncol(mx), info="Cols did not match")
+  expect_equal(nrow(parsed_table), nrow(mx) + 2, info="Rows did not match")
+  expect_equal(as.character(parsed_table[1,1]), 
+               "test1", info="The rgroup did not match")
+  expect_equal(as.character(parsed_table[3,1]), 
+               "test2", info="The rgroup did not match")
+  expect_equal(as.character(parsed_table[2,1]), 
+               as.character(mx[1,1]), info="The row values did not match")
+  expect_equal(as.character(parsed_table[4,1]), 
+               as.character(mx[2,1]), info="The row values did not match")
+
+  mx[2,1] <- "second row"
+  table_str <- htmlTable(mx, output=FALSE, 
+                         rgroup=c("test1", ""), 
+                         n.rgroup=c(1,1))
+  expect_true(grepl("<td[^>]*>second row", table_str), info="The second row should not have any spacers")
+
+  parsed_table <- readHTMLTable(table_str)[[1]]
+  expect_equal(nrow(parsed_table), nrow(mx) + 1, info="Rows did not match")
+})
 
 test_that("Check that dimensions are correct with cgroup usage",
 {
