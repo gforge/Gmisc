@@ -1,18 +1,19 @@
 \name{htmlTable}
 \alias{htmlTable}
+\alias{print.htmlTable}
 \title{Outputting HTML tables}
 \usage{
-htmlTable(x, title = first.word(deparse(substitute(x))), headings = NA,
+htmlTable(x, title = first.word(deparse(substitute(x))), headings,
   align = paste(c("l", rep("c", ncol(x) - 1)), collapse = ""),
-  halign = paste(rep("c", ncol(x)), collapse = ""), cgroup = NULL,
-  n.cgroup = NULL, cgroup.just = NULL, rgroup = NULL, n.rgroup = NULL,
-  rgroupCSSstyle = "font-weight: 900;", rgroupCSSseparator = "",
-  tspanner = NULL, n.tspanner = NULL,
+  halign = paste(rep("c", ncol(x)), collapse = ""), cgroup, n.cgroup,
+  cgroup.just, rgroup, n.rgroup, rgroupCSSstyle = "font-weight: 900;",
+  rgroupCSSseparator = "", tspanner, n.tspanner,
   tspannerCSSstyle = "font-weight: 900; text-transform:capitalize; text-align: center;",
   tspannerCSSseparator = "border-top: 1px solid grey;", rowlabel = title,
   rowlabel.pos = "bottom", ctable = FALSE, compatibility = "LibreOffice",
-  rowname = NA, caption = NULL, caption.loc = "top", tfoot = NULL,
-  label = NULL, output = TRUE, ...)
+  rowname, caption, caption.loc = "top", tfoot, label, ...)
+
+\method{print}{htmlTable}(x, ...)
 }
 \arguments{
   \item{x}{The matrix/data.frame with the data}

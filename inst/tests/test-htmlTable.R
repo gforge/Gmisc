@@ -8,19 +8,19 @@ colnames(mx) <- sprintf("Col %s", LETTERS[1:NCOL(mx)])
 
 test_that("With empty rownames(mx) it should skip those", 
 { 
-  table_str <- htmlTable(mx, output=FALSE)
+  table_str <- htmlTable(mx)
   expect_false(grepl("<tr>[^>]+>NA</td>", table_str))
 })
 
 test_that("The variable name should not be in the tables first row if no rownames(mx)", 
 { 
-  table_str <- htmlTable(mx, output=FALSE)
+  table_str <- htmlTable(mx)
   expect_false(grepl("<thead>[^<]*<tr>[^>]+>mx</th>", table_str))
 })
 
 test_that("The rowname should be ignored if no row names", 
 { 
-  table_str <- htmlTable(mx, output=FALSE, rowlabel="not_mx")
+  table_str <- htmlTable(mx, rowlabel="not_mx")
   expect_false(grepl("<thead>[^<]*<tr>[^>]+>not_mx</th>", table_str))
 })
 
@@ -28,7 +28,7 @@ test_that("The rowname should be ignored if no row names",
 test_that("The rowname should appear", 
 { 
   rownames(mx) <- LETTERS[1:NROW(mx)] 
-  table_str <- htmlTable(mx, output=FALSE)
+  table_str <- htmlTable(mx)
   parsed_table <- readHTMLTable(table_str)[[1]]
   expect_equal(ncol(parsed_table), ncol(mx) + 1)
   expect_true(grepl("<tr>[^>]+>A</td>", table_str))
@@ -37,7 +37,7 @@ test_that("The rowname should appear",
 
 test_that("Check that basic output are the same as the provided matrix",
 {
-  table_str <- htmlTable(mx, output=FALSE)
+  table_str <- htmlTable(mx)
   parsed_table <- readHTMLTable(table_str)[[1]]
   expect_equal(ncol(parsed_table), ncol(mx), info="Cols did not match")
   expect_equal(nrow(parsed_table), nrow(mx), info="Rows did not match")
@@ -47,7 +47,7 @@ test_that("Check that basic output are the same as the provided matrix",
 
 test_that("Check that dimensions are correct with rgroup usage",
 {
-  table_str <- htmlTable(mx, output=FALSE, 
+  table_str <- htmlTable(mx, 
                          rgroup=c("test1", "test2"), 
                          n.rgroup=c(1,1))
   parsed_table <- readHTMLTable(table_str)[[1]]
@@ -63,7 +63,7 @@ test_that("Check that dimensions are correct with rgroup usage",
                as.character(mx[2,1]), info="The row values did not match")
 
   mx[2,1] <- "second row"
-  table_str <- htmlTable(mx, output=FALSE, 
+  table_str <- htmlTable(mx, 
                          rgroup=c("test1", ""), 
                          n.rgroup=c(1,1))
   expect_true(grepl("<td[^>]*>second row", table_str), 

@@ -122,39 +122,38 @@
 #' @importFrom Hmisc format.df
 #' @author max
 #' @export
+#' @rdname htmlTable
+#' @import methods
 htmlTable <- function(x,
   title=first.word(deparse(substitute(x))),
-  headings=NA, 
+  headings, 
   align =paste(c("l", rep('c',ncol(x)-1)),collapse=''),
   halign=paste(rep('c',ncol(x)),collapse=''),
-  cgroup=NULL, n.cgroup=NULL,
-  cgroup.just = NULL,
-  rgroup=NULL, n.rgroup=NULL,
+  cgroup, n.cgroup,
+  cgroup.just,
+  rgroup, n.rgroup,
   rgroupCSSstyle = "font-weight: 900;",
   rgroupCSSseparator = "",
-  tspanner=NULL, n.tspanner=NULL,
+  tspanner, n.tspanner,
   tspannerCSSstyle = "font-weight: 900; text-transform:capitalize; text-align: center;",
   tspannerCSSseparator = "border-top: 1px solid grey;",
   rowlabel = title,
   rowlabel.pos = "bottom",
   ctable = FALSE,
   compatibility = "LibreOffice",
-  rowname=NA,
-  caption=NULL,
+  rowname,
+  caption,
   caption.loc='top',
-  tfoot=NULL,
-  label=NULL,
-  output = TRUE,
+  tfoot,
+  label,
   ...)
 {
   # Unfortunately in knitr there seems to be some issue when the
   # rowname is specified immediately as: rowname=rownames(x) 
-  if (length(rowname) == 1 && is.na(rowname)){
+  if (missing(rowname)){
     if (any(is.null(rownames(x)) == FALSE))
       rowname <- rownames(x)
-    else
-      rowname <- NULL
-  }else if (any(is.null(rownames(x))) && is.null(rgroup) == FALSE)
+  }else if (any(is.null(rownames(x))) && !missing(rgroup))
     warning("You have not specified rownames but you seem to have rgroups.",
         "If you have the first column as rowname but you want the rgroups",
         "to result in subhedings with indentation below then",
@@ -162,12 +161,12 @@ htmlTable <- function(x,
         "remove it from the table matrix (the x argument object).")
   
   # This variable is just an indicator if rownames should be set
-  if (length(rowname) > 0)
+  if (!missing(rowname))
     set_rownames <- TRUE
   else
     set_rownames <- FALSE
   
-  if (length(headings) == 1 && is.na(headings))
+  if (missing(headings))
     headings=colnames(x)
   
   if (length(dim(x)) != 2)
@@ -326,81 +325,94 @@ htmlTable <- function(x,
     return(header_str)
   }
   
-  
-  # Sanity checks rgroupCSSstyle and prepares the style
-  if (length(rgroupCSSstyle) > 1 &&
-        length(rgroupCSSstyle) != length(rgroup))
-    stop(sprintf("You must provide the same number of styles as the rgroups, %d != %d",
-                 length(rgroupCSSstyle), length(rgroup)))
-  else if(length(rgroupCSSstyle) == 1){
-    rgroupCSSstyle <- addSemicolon2StrEnd(rgroupCSSstyle)
+
+  if (!missing(rgroup)){
+    if (missing(n.rgroup))
+      stop("You need to specify the argument n.rgroup if you want to use rgroups")
     
-    if (length(rgroup) > 0)
-      rgroupCSSstyle <- rep(rgroupCSSstyle, length.out=length(rgroup))
-  } else {
-    for (i in 1:length(rgroupCSSstyle))
-      rgroupCSSstyle[i] <- addSemicolon2StrEnd(rgroupCSSstyle[i])
+    # Sanity check for rgroup
+    if (sum(n.rgroup) !=  nrow(x))
+      stop(sprintf("Your rows don't match in the n.rgroup, i.e. %d != %d", 
+                   sum(n.rgroup), nrow(x)))
+    
+    # Sanity checks rgroupCSSstyle and prepares the style
+    if (length(rgroupCSSstyle) > 1 &&
+          length(rgroupCSSstyle) != length(rgroup))
+      stop(sprintf("You must provide the same number of styles as the rgroups, %d != %d",
+                   length(rgroupCSSstyle), length(rgroup)))
+    else if(length(rgroupCSSstyle) == 1){
+      rgroupCSSstyle <- addSemicolon2StrEnd(rgroupCSSstyle)
+      
+      if (length(rgroup) > 0)
+        rgroupCSSstyle <- rep(rgroupCSSstyle, length.out=length(rgroup))
+    } else {
+      for (i in 1:length(rgroupCSSstyle))
+        rgroupCSSstyle[i] <- addSemicolon2StrEnd(rgroupCSSstyle[i])
+    }
+    
+    # Sanity checks rgroupCSSseparator and prepares the style
+    if (length(rgroupCSSseparator) > 1 &&
+          length(rgroupCSSseparator) != length(rgroup)-1)
+      stop(sprintf("You must provide the same number of separators as the rgroups - 1, %d != %d",
+                   length(rgroupCSSseparator), length(rgroup)-1))
+    else if(length(rgroupCSSseparator) == 1){
+      rgroupCSSseparator <- addSemicolon2StrEnd(rgroupCSSseparator)
+      
+      if (length(rgroup) > 0)
+        rgroupCSSseparator <- rep(rgroupCSSseparator, length.out=length(rgroup))
+    } else {
+      for (i in 1:length(rgroupCSSseparator))
+        rgroupCSSseparator[i] <- addSemicolon2StrEnd(rgroupCSSseparator[i])
+    }
   }
 
-  # Sanity checks tspannerCSSstyle and prepares the style
-  if (length(tspannerCSSstyle) > 1 &&
-        length(tspannerCSSstyle) != length(tspanner))
-    stop(sprintf("You must provide the same number of styles as the tspanners, %d != %d",
-                 length(tspannerCSSstyle), length(tspanner)))
-  else if(length(tspannerCSSstyle) == 1){
-    tspannerCSSstyle <- addSemicolon2StrEnd(tspannerCSSstyle)
+  if (!missing(tspanner)){
     
-    if (length(tspanner) > 0)
-      tspannerCSSstyle <- rep(tspannerCSSstyle, length.out=length(tspanner))
-  } else {
-    for (i in 1:length(tspannerCSSstyle))
-      tspannerCSSstyle[i] <- addSemicolon2StrEnd(tspannerCSSstyle[i])
+    # Sanity checks tspannerCSSstyle and prepares the style
+    if (length(tspannerCSSstyle) > 1 &&
+          length(tspannerCSSstyle) != length(tspanner))
+      stop(sprintf("You must provide the same number of styles as the tspanners, %d != %d",
+                   length(tspannerCSSstyle), length(tspanner)))
+    else if(length(tspannerCSSstyle) == 1){
+      tspannerCSSstyle <- addSemicolon2StrEnd(tspannerCSSstyle)
+      
+      if (length(tspanner) > 0)
+        tspannerCSSstyle <- rep(tspannerCSSstyle, length.out=length(tspanner))
+    } else {
+      for (i in 1:length(tspannerCSSstyle))
+        tspannerCSSstyle[i] <- addSemicolon2StrEnd(tspannerCSSstyle[i])
+    }
+    
+    
+    # Sanity checks tspannerCSSseparator and prepares the style
+    if (length(tspannerCSSseparator) > 1 &&
+          length(tspannerCSSseparator) != length(tspanner)-1)
+      stop(sprintf("You must provide the same number of separators as the tspanners - 1, %d != %d",
+                   length(tspannerCSSseparator), length(tspanner)-1))
+    else if(length(tspannerCSSseparator) == 1){
+      tspannerCSSseparator <- addSemicolon2StrEnd(tspannerCSSseparator)
+      
+      if (length(tspanner) > 0)
+        tspannerCSSseparator <- rep(tspannerCSSseparator, length.out=length(tspanner))
+    } else {
+      for (i in 1:length(tspannerCSSseparator))
+        tspannerCSSseparator[i] <- addSemicolon2StrEnd(tspannerCSSseparator[i])
+    }
+    
   }
   
-  # Sanity checks rgroupCSSseparator and prepares the style
-  if (length(rgroupCSSseparator) > 1 &&
-        length(rgroupCSSseparator) != length(rgroup)-1)
-    stop(sprintf("You must provide the same number of separators as the rgroups - 1, %d != %d",
-                 length(rgroupCSSseparator), length(rgroup)-1))
-  else if(length(rgroupCSSseparator) == 1){
-    rgroupCSSseparator <- addSemicolon2StrEnd(rgroupCSSseparator)
-    
-    if (length(rgroup) > 0)
-      rgroupCSSseparator <- rep(rgroupCSSseparator, length.out=length(rgroup))
-  } else {
-    for (i in 1:length(rgroupCSSseparator))
-      rgroupCSSseparator[i] <- addSemicolon2StrEnd(rgroupCSSseparator[i])
-  }
-  
-  # Sanity checks tspannerCSSseparator and prepares the style
-  if (length(tspannerCSSseparator) > 1 &&
-        length(tspannerCSSseparator) != length(tspanner)-1)
-    stop(sprintf("You must provide the same number of separators as the tspanners - 1, %d != %d",
-                 length(tspannerCSSseparator), length(tspanner)-1))
-  else if(length(tspannerCSSseparator) == 1){
-    tspannerCSSseparator <- addSemicolon2StrEnd(tspannerCSSseparator)
-    
-    if (length(tspanner) > 0)
-      tspannerCSSseparator <- rep(tspannerCSSseparator, length.out=length(tspanner))
-  } else {
-    for (i in 1:length(tspannerCSSseparator))
-      tspannerCSSseparator[i] <- addSemicolon2StrEnd(tspannerCSSseparator[i])
-  }
-
-  # Sanity check for rgroup
-  if (length(rgroup) > 0 &&
-    sum(n.rgroup) !=  nrow(x))
-    stop(sprintf("Your rows don't match in the n.rgroup, i.e. %d != %d", 
-        sum(n.rgroup), nrow(x)))
   
   # Sanity check for tspanner
-  if (length(tspanner) > 0){
+  if (!missing(tspanner)){
+    if (missing(n.tspanner))
+      stop("You need to specify the argument n.tspanner if you want to use table spanners")
+    
     if(sum(n.tspanner) !=  nrow(x))
       stop(sprintf("Your rows don't match in the n.tspanner, i.e. %d != %d", 
                    sum(n.rgroup), nrow(x)))
     
     # Make sure there are no collisions with rgrou
-    if (length(n.rgroup) > 0){
+    if (!missing(n.rgroup)){
       for (i in 1:length(n.tspanner)){
         rows <- sum(n.tspanner[1:i])
         if (!rows %in% cumsum(n.rgroup))
@@ -412,7 +424,6 @@ htmlTable <- function(x,
                " note, it should match the cumulative sum n.rgroup", paste(cumsum(n.rgroup), collapse=", "))
       }
     }
-
   }
 
   # With multiple rows in cgroup we need to keep track of
@@ -420,12 +431,12 @@ htmlTable <- function(x,
   cgroup_spacer_cells <- rep(0, times=(ncol(x)-1))
   
   # Sanity check for cgroup
-  if (length(cgroup) > 0){
+  if (!missing(cgroup)){
     
     # The cgroup is by for compatibility reasons handled as a matrix
     if (!is.matrix(cgroup)){
       cgroup <- matrix(cgroup, nrow=1)
-      if (is.null(n.cgroup))
+      if (missing(n.cgroup))
         n.cgroup <- matrix(NA, nrow=1)
       else{
         if (ncol(cgroup) != length(n.cgroup)){
@@ -437,9 +448,12 @@ htmlTable <- function(x,
         }
         n.cgroup <- matrix(n.cgroup, nrow=1)
       }
+    }else if(missing(n.cgroup)){
+      stop("If you specify the cgroup argument as a matrix you have to",
+           " at the same time specify the n.cgroup argument.")
     }
     
-    if (length(cgroup.just) == 0){
+    if (missing(cgroup.just)){
       cgroup.just <- matrix(paste(rep("c", times=length(n.cgroup)), collapse=""), 
         nrow=nrow(n.cgroup))
     }else{
@@ -546,22 +560,23 @@ htmlTable <- function(x,
     }
   }
     
-  no_cgroup_rows <- ifelse(length(cgroup) > 0,
-    nrow(cgroup),
-    0)
+  no_cgroup_rows <-
+    ifelse(!missing(cgroup),
+           nrow(cgroup),
+           0)
   if (is.numeric(rowlabel.pos)){
     if(rowlabel.pos < 1)
       stop("You have specified a rowlabel.pos that is less than 1: ", rowlabel.pos)
-    else if (rowlabel.pos > no_cgroup_rows + (length(headings) > 0)*1)
+    else if (rowlabel.pos > no_cgroup_rows + (!missing(headings))*1)
       stop("You have specified a rowlabel.pos that more than the max limit, ",
-        no_cgroup_rows + (length(headings) > 0)*1,
+        no_cgroup_rows + (!missing(headings))*1,
         ", you have provided: ", rowlabel.pos)
   }else{
     rowlabel.pos <- tolower(rowlabel.pos)
     if (rowlabel.pos %in% c("top"))
       rowlabel.pos <- 1
     else if (rowlabel.pos %in% c("bottom", "header"))
-      rowlabel.pos <- no_cgroup_rows + (length(headings) > 0)*1
+      rowlabel.pos <- no_cgroup_rows + (!missing(headings))*1
     else
       stop("You have provided an invalid rowlabel.pos text, only 'top', 'bottom' or 'header' are allowed, can't interpret '", rowlabel.pos, "'")
   }
@@ -574,7 +589,7 @@ htmlTable <- function(x,
   
   # The id works just as well as any anchor 
   table_id <- ""
-  if (length(label) == 1){
+  if (!missing(label)){
     table_id <- sprintf(" id='%s'", label) 
   }else if(is.numeric(tc)){
     table_id <- sprintf(" id='table_%d'", tc)
@@ -582,7 +597,7 @@ htmlTable <- function(x,
   
   # A column counter that is used for <td colspan="">
   total_columns <- ncol(x)+set_rownames
-  if(length(cgroup) > 1){
+  if(!missing(cgroup)){
     if (!is.matrix(cgroup)){
       total_columns <- total_columns + length(cgroup) - 1
     }else{
@@ -608,15 +623,13 @@ htmlTable <- function(x,
   }
   
   
-  if (!is.null(caption) && nchar(caption) > 0){
+  if (!missing(caption)){
     # Combine a table counter if provided
     caption <- sprintf("\n\t%s%s", tc_string, caption)
-  }else{
-    caption <- NULL
   }
 
   # Add caption according to standard HTML
-  if (!is.null(caption) & 
+  if (!missing(caption) & 
         compatibility != "LibreOffice"){
     if (caption.loc == "bottom"){
       table_str <- sprintf("%s\n\t<caption style='caption-side: bottom'>", table_str)
@@ -636,7 +649,7 @@ htmlTable <- function(x,
   # Start the head
   table_str <- sprintf("%s\n\t<thead>", table_str)
   
-  if (!is.null(caption) & 
+  if (!missing(caption) & 
         compatibility == "LibreOffice" &
         caption.loc != "bottom"){
     
@@ -647,7 +660,7 @@ htmlTable <- function(x,
   }
     
   # Add the cgroup table header
-  if (length(cgroup) > 0){
+  if (!missing(cgroup)){
     
     for (i in 1:nrow(cgroup)){
       table_str <- sprintf("%s%s", table_str, getCgroupHeader(cgroup_vec = cgroup[i,], 
@@ -660,7 +673,7 @@ htmlTable <- function(x,
   
   
   # Add the headings
-  if (length(headings) > 0){
+  if (!missing(headings)){
     # The bottom border was ment to be here but it doesn't
     # work that well in the export
     table_str <- sprintf("%s\n\t<tr>", table_str)
@@ -693,8 +706,8 @@ htmlTable <- function(x,
   tspanner_iterator <- 0
   for (row_nr in 1:nrow(x)){
     # First check if there is a table spanner that should be applied
-    if (length(tspanner) > 0 & 
-          (row_nr == 1 | 
+    if (!missing(tspanner) && 
+          (row_nr == 1 ||
              row_nr > sum(n.tspanner[1:tspanner_iterator]))){
       tspanner_iterator = tspanner_iterator + 1
       
@@ -720,8 +733,8 @@ htmlTable <- function(x,
     # and it's:
     # - first row
     # - the row belongs to the next row group
-    if (length(rgroup) > 0 & 
-      (row_nr == 1 | 
+    if (!missing(rgroup) && 
+      (row_nr == 1 || 
         row_nr > sum(n.rgroup[1:rgroup_iterator]))){
       rgroup_iterator = rgroup_iterator + 1
       
@@ -755,9 +768,10 @@ htmlTable <- function(x,
     if (set_rownames){
       # Minor change from original function. If the group doesn't have 
       # a group name then there shouldn't be any indentation
-      if (rgroup_iterator > 0 && 
-        is.na(rgroup[rgroup_iterator]) == FALSE &&
-        rgroup[rgroup_iterator] != ""){
+      if (!missing(rgroup) && 
+            rgroup_iterator > 0 && 
+            is.na(rgroup[rgroup_iterator]) == FALSE &&
+            rgroup[rgroup_iterator] != ""){
         
         
         # The padding doesn't work well with the Word import - well nothing really works well with word...
@@ -777,7 +791,7 @@ htmlTable <- function(x,
   # Close body
   table_str <- sprintf("%s\n\t</tbody>", table_str)
   
-  if (!is.null(caption) & 
+  if (!missing(caption) & 
         compatibility == "LibreOffice" &
         caption.loc == "bottom"){
     
@@ -788,7 +802,7 @@ htmlTable <- function(x,
   }
 
   # Add footer
-  if (!is.null(tfoot) && nchar(tfoot) > 0){
+  if (!missing(tfoot)){
     # Initiate the tfoot
     table_str <- sprintf("%s\n\t<tfoot><tr><td colspan=%d>", table_str, total_columns)
     
@@ -801,11 +815,18 @@ htmlTable <- function(x,
   
   # Close table
   table_str <- sprintf("%s\n</table>", table_str)
-  if (output){
-    cat(table_str)
-  }else{
-    return(table_str)
-  }
+  
+  class(table_str) <- c("htmlTable", class(table_str))
+  return(table_str)
+}
+
+setClass("htmlTable", contains = "character")
+
+#' @rdname htmlTable
+#' @method print htmlTable
+#' @S3method print htmlTable
+print.htmlTable<- function(x, ...){
+  cat(x)
 }
 
 #' If you want a row to span two or more lines
