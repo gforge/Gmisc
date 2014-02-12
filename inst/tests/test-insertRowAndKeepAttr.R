@@ -7,6 +7,7 @@ test <- insertRowAndKeepAttr(test, 1)
 
 test_that("Keeps attributes", { 
   expect_equal(attr(test, 'wow'), 1000)
+  expect_equal(nrow(test), 3)
 })
 
 test <- matrix(1:4, ncol=2)
