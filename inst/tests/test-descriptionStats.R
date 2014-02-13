@@ -1,4 +1,6 @@
 library('testthat')
+library('stringr')
+library('Hmisc') # I need to include this for unknown reason or the test fails in R CMD check mode
 context('descriptionStats')
 
 data("Loblolly")
@@ -63,7 +65,9 @@ test_that("Check median function",
   
   # Check that it contains the sd
   stats <- by(Loblolly$height, Loblolly$young, 
-              function(x) paste(round(quantile(x, probs=c(.25, .75)), 2), collapse=" - "))
+              function(x) str_trim(paste(format(quantile(x, probs=c(.25, .75)), 
+                                       digits=2,
+                                       nsmall=2), collapse=" - ")))
   expect_true(grepl(stats[["No"]], a[1,"No"]),
               info="Expected the iqr range")
   expect_true(grepl(stats[["Yes"]], a[1,"Yes"]),
