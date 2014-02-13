@@ -109,7 +109,6 @@
 #'    Word ignores most settings and destroys all layout attempts 
 #'    (at least that is how my 2010 version behaves).
 #' @param ... Currently not used, here for compatibility reasons
-#' @param output Set to false if you don't want an immediate print
 #' @return Returns a string with the output table if output is not set
 #' 
 #' @example inst/examples/htmlTable_example.R
