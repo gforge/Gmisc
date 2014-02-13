@@ -5,6 +5,7 @@ Changes for 0.6.1.1
 * The bezierArrowSmpl now uses "mm" internally instead of the default "npc" - this improves the rendering as the "npc" is dependent on the axis. A few adjustments to arrow functions were also added.
 * Bugfixes have been added to the bezierArrowSmplGradient.
 * htmlTable added table spanner functionality, some man-page update, removed the default NULL arguments in favor of the missing() funciton, and a few minor bugfixes.
+* Bugfixed missing data for getDescriptionStats and generated a test-file in order to check most combinations that they work
 
 Changes for 0.6.1.0
 --------------------
