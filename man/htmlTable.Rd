@@ -148,9 +148,6 @@ htmlTable(x, title = first.word(deparse(substitute(x))), headings,
 
   \item{...}{Currently not used, here for compatibility
   reasons}
-
-  \item{output}{Set to false if you don't want an immediate
-  print}
 }
 \value{
 Returns a string with the output table if output is not set
