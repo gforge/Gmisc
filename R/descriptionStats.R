@@ -212,9 +212,10 @@ describeProp <- function(x,
   # If we're to use the horizontal proportions then
   # it's better to report the variable as a factor
   # instead of a single proportion
-  if(is.null(horizontal_proportions) == FALSE | 
-    show_missing == "ifany" & any(is.na(x)) |
-    show_missing == "always")
+  if(is.null(horizontal_proportions) == FALSE || 
+       show_missing == "ifany" && 
+       any(is.na(x)) ||
+       show_missing == "always")
     return(describeFactors(x=x, html=html, number_first = number_first, 
       show_missing = show_missing, horizontal_proportions = horizontal_proportions))
   
