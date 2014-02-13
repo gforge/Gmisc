@@ -61,6 +61,7 @@
 #' @seealso \code{\link{describeMean}}, \code{\link{describeProp}}, \code{\link{describeFactors}}, \code{\link{htmlTable}}
 #' 
 #' @importFrom Hmisc label
+#' @importFrom Hmisc units
 #' @importFrom Hmisc capitalize
 #' 
 #' @author max
@@ -91,11 +92,32 @@ getDescriptionStatsBy <-
       stop("You haven't provided an by-value to do the statistics by.",
            " This error is most frequently caused by referencing an old",
            " variable name that doesn't exist anymore")
-    # Just send a warning, since the user might be unaware of this
+    
+    # If there is a label for the variable
+    # that one should be used otherwise go
+    # with the name of the variable
+    if (label(x) == "")
+      name <- deparse(substitute(x))
+    else
+      name <- label(x)
+    
+    
+    # Check missing - 
+    # Send a warning, since the user might be unaware of this
     # potentially disturbing fact. The dataset should perhaps by 
     # subsetted by is.na(by) == FALSE
-    if (any(is.na(by)))
-      warning(sprintf("Your 'by' variable has %d missing values", sum(is.na(by))))
+    if (any(is.na(by))){
+      warning(sprintf("Your 'by' variable has %d missing values", sum(is.na(by))),
+              "\n   The corresponding 'x' and 'by' variables are automatically removed")
+      x <- x[!is.na(by)]
+      if (inherits(x, "factor")){
+        x <- factor(x)
+      }
+      by <- by[!is.na(by)]
+      if (inherits(by, "factor")){
+        by <- factor(by)
+      }
+    }
     
     show_missing <- prConvertShowMissing(show_missing)
     
@@ -153,13 +175,6 @@ getDescriptionStatsBy <-
     }
     
     
-    # If there is a label for the variable
-    # that one should be used otherwise go
-    # with the name of the variable
-    if (label(x) == "")
-      name <- deparse(substitute(x))
-    else
-      name <- label(x)
     
     if (!is.logical(x) && is.numeric(x)){
       # If the numeric has horizontal_proportions then it's only so in the 
@@ -227,15 +242,16 @@ getDescriptionStatsBy <-
       }
       
     }else{
-      if (hrzl_prop)
+      if (hrzl_prop){
         t <- by(x, by, FUN=factor_fn, html=html, digits=digits,
                 number_first=numbers_first, show_missing = show_missing, 
                 horizontal_proportions = table(x, useNA=show_missing),
                 percentage_sign = percentage_sign)
-      else
+      }else{
         t <- by(x, by, FUN=factor_fn, html=html, digits=digits,
                 number_first=numbers_first, show_missing = show_missing,
                 percentage_sign = percentage_sign)
+      }
       
       if (statistics){
         # This is a quick fix in case of large dataset
@@ -332,7 +348,7 @@ getDescriptionStatsBy <-
     # Even if one row has the same name this doesn't matter
     # at this stage as it is information that may or may 
     # not be used later on
-    label(results) <- name 
+    label(results) <- name
     
     return (results)
   }
