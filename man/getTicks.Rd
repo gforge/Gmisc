@@ -27,6 +27,10 @@ not always that fond of just pretty(1:10/5). In exponential
 form the ticks are determined from the 2-base, meaning that
 you get an intuitive feeling for when the value is doubled.
 }
+\details{
+This function is far from perfect and I recommend
+specifying yourself the ticks that you want.
+}
 \examples{
 test_data <- data.frame(coef=c(2, 0.5),
   low=c(1.5, 0.05),

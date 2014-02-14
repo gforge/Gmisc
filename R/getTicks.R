@@ -5,6 +5,9 @@
 #' determined from the 2-base, meaning that you get an intuitive feeling
 #' for when the value is doubled.
 #' 
+#' This function is far from perfect and I recommend specifying yourself
+#' the ticks that you want.
+#' 
 #' @param low lower bound, can be a single number or a vector
 #' @param high upper bound - optional, you can just have all data in the low variable 
 #' @param clip if the ci are clipped
@@ -34,20 +37,36 @@ getTicks <- function(low,
   roof <- ceiling(highest*2)/2
   if (exp == FALSE){
     resolution <- roof-bottom
-    if (resolution > 6){
+
+    if (resolution > 20){
+      bottom <- floor(bottom)
+      roof <- ceiling(roof)
+      xticks <- seq(from=bottom, to=roof, by=10^floor(log10(resolution))/4)
+    }else if (resolution > 6){
       bottom <- floor(bottom)
       roof <- ceiling(roof)
       xticks <- seq(from=bottom, to=roof, by=1)
-    }else if(highest - lowest < .5){
-      bottom <- floor(lowest*2*5)/2/5
-      roof <- ceiling(highest*2*5)/2/5
-      xticks <- seq(from=bottom, to=roof, by=.5/10)
+    }else if(resolution <= 1){
+      decimals <- -ceiling(log10(resolution))+1
+      bottom <- floor(lowest*2*10^decimals)/2/10^decimals
+      roof <- ceiling(highest*2*10^decimals)/2/10^decimals
+      xticks <- seq(from=bottom, to=roof, by=10^-decimals/4)
+      if (length(xticks) <= 3)
+        xticks <- seq(from=bottom, to=roof, by=10^-decimals/8)
     }else{
       bottom <- floor(bottom*2)/2
       roof <- ceiling(roof*2)/2
       xticks <- seq(from=bottom, to=roof, by=.5)
     }
+    
+    if (!bottom %in% xticks)
+      xticks <- c(bottom, xticks)
+    if (!roof %in% xticks)
+      xticks <- c(xticks, roof)
   }else{
+    if (bottom <= 0)
+      stop("You can't have an exponential scale that goes <= 0, bottom = '", bottom, "'")
+    
     xticks <- c()
     increase_by <- 1
     if (abs(bottom-roof) < 3){
