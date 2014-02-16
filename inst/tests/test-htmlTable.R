@@ -12,6 +12,14 @@ test_that("With empty rownames(mx) it should skip those",
   expect_false(grepl("<tr>[^>]+>NA</td>", table_str))
 })
 
+
+test_that("Empty cell names should be replaced with ''", 
+{
+  mx[1,1] <- NA
+  table_str <- htmlTable(mx)
+  expect_false(grepl("<tr>[^>]+>NA</td>", table_str))
+})
+
 test_that("The variable name should not be in the tables first row if no rownames(mx)", 
 { 
   table_str <- htmlTable(mx)

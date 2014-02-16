@@ -237,8 +237,13 @@ htmlTable <- function(x,
     style = addSemicolon2StrEnd(style)
     
     for (nr in 1:length(rowcells)){
+      cell_value <- rowcells[nr]
+      # We don't want missing to be NA in a table, it should be empty
+      if (is.na(cell_value))
+        cell_value <- ""
+      
       table_str <- sprintf("%s\n\t\t<%s style='%s'>%s</%s>", 
-        table_str, cellcode, addAlign2Style(style, align[nr]), rowcells[nr], cellcode)
+        table_str, cellcode, addAlign2Style(style, align[nr]), cell_value, cellcode)
       
       # Add empty cell if not last column
       if (nr != length(rowcells) && cgroup_spacer_cells[nr] > 0){
