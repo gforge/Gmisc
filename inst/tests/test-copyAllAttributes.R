@@ -10,7 +10,7 @@ test_that("Basic copy", {
                                  to=test_2)
   
   expect_equal(attributes(test_2), attributes(test_from))
-}
+})
 
 
 test_that("A little more advanced copy", { 
@@ -23,7 +23,7 @@ test_that("A little more advanced copy", {
   
   expect_equal(attributes(test_2)$t, attributes(test_from)$t)
   expect_false(all(attributes(test_2)$dim == attributes(test_from)$dim))
-}
+})
 
 test_that("An advanced copy", { 
   test_from <- matrix(1, ncol=2, nrow=2)
@@ -39,4 +39,4 @@ test_that("An advanced copy", {
                                  to=test_2,
                                  attr2force="t")
   expect_true(attributes(test_2)$t == attributes(test_from)$t)  
-}
+})

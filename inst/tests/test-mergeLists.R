@@ -36,7 +36,7 @@ test_that("Basic merge", {
                info="The vector merge should work with sublists as well")
   expect_true(all(is.na(merged$sublist$three[1,])), 
                info="The matrix should be empty at the row for the one without those elements")
-}
+})
 
 test_that("Tricky merge", { 
   v1 <- list(a=1)
@@ -64,4 +64,4 @@ test_that("Tricky merge", {
   merged <- mergeLists(v1, v2)
   expect_equal(merged$a[1:3,], v1$a)
   expect_equal(merged$a[4:5,], v2$a)
-}
+})
