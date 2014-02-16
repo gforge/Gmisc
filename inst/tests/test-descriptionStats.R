@@ -134,7 +134,7 @@ test_that("Check describeFactors",{
   }
 })
 
-test_that("Check describeProporions",{
+test_that("Check describeProp",{
   d_f <- describeProp(Loblolly$young, html=TRUE, digits=1)
   expect_equal(length(d_f), 1)
   
@@ -143,11 +143,11 @@ test_that("Check describeProporions",{
                sprintf("^%d", t_f["Yes"]))
   expect_match(d_f, 
                sprintf("\\(%.1f %%\\)", prop.table(t_f)["Yes"]*100))
-
+  
   # Should default to factor function if there are misssing
   d_f <- describeProp(Loblolly$young_w_missing, html=TRUE, digits=1, show_missing="ifany")
   expect_equal(length(d_f), 3)
-}
+})
 
 test_that("Check mean function", 
 { 
