@@ -121,36 +121,43 @@ bezierArrowSmpl <- function(x = c(0.2, .7, .3, .9),
                                         spline_ctrl, arrow, 
                                         internal.units){
     a_l <- getGridVal(arrow$length, internal.units)
-    multiplier <- (spline_ctrl$end$length-a_l*1.1)/spline_ctrl$end$length
+    
+    # Special case where the end spline control isn't used
+    if (spline_ctrl$end$length == 0){
+      multiplier <- 0
+    }else{
+      multiplier <- (spline_ctrl$end$length-a_l*1.1)/spline_ctrl$end$length
+    }
+    
     # Use the arrow's vector in the opposite direction as the new ctrl point
-    adjust_ctr <- function(spl_point, org_endpoint, new_endpoint, arrow, multiplier){
-      new_sppoint <- new_endpoint - arrow*multiplier
-      # Check if this adjustment breaks the original direction
-      if ((new_sppoint < new_endpoint &&
-            spl_point > org_endpoint) ||
-            (new_sppoint > new_endpoint &&
-            spl_point < org_endpoint)){
-        # Remove 50 % of the adjustment
-        new_sppoint <- new_endpoint - arrow*multiplier*.5
-        
-        # Give up if this didn't work
-        if ((new_sppoint < new_endpoint &&
-               spl_point > org_endpoint) ||
-              (new_sppoint > new_endpoint &&
-                 spl_point < org_endpoint)){
-          new_sppoint <- new_endpoint
-        }
+    adjust_ctr <- function(spl_point, org_endpoint, 
+                           new_endpoint, arrow, 
+                           multiplier){
+      
+      # Shorten/lengthen depending on the arrow direction
+      if (new_endpoint < org_endpoint){
+        direction <- 1
+      }else{
+        direction <- -1
       }
+      
+      # The minimum spline control is the arrow length
+      min_adjusted <- new_endpoint-(org_endpoint-new_endpoint)
+      
+      new_sppoint <- spl_point + direction*arrow*multiplier
+
+      if (direction*(min_adjusted - new_sppoint) < 0)
+        new_sppoint <- min_adjusted
       
       return(new_sppoint)
     }
     spline_ctrl$x[length(spline_ctrl$x)] <- 
-      adjust_ctr(spline_ctrl$x, 
+      adjust_ctr(tail(spline_ctrl$x, 1), 
                  tail(bp$x, 1), 
                  bp$x[bp$cut_point], 
                  arrow$x, multiplier)
     spline_ctrl$y[length(spline_ctrl$y)] <- 
-      adjust_ctr(spline_ctrl$y, 
+      adjust_ctr(tail(spline_ctrl$y, 1),
                  tail(bp$y, 1), 
                  bp$y[bp$cut_point], 
                  arrow$y, multiplier)
