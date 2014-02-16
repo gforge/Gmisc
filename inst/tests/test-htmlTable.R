@@ -39,8 +39,8 @@ test_that("The rowname should appear",
   table_str <- htmlTable(mx)
   parsed_table <- readHTMLTable(table_str)[[1]]
   expect_equal(ncol(parsed_table), ncol(mx) + 1)
-  expect_true(grepl("<tr>[^>]+>A</td>", table_str))
-  expect_true(grepl("<tr>[^>]+>B</td>", table_str))
+  expect_match(table_str, "<tr>[^>]+>A</td>")
+  expect_match(table_str, "<tr>[^>]+>B</td>")
 })
 
 test_that("Check that basic output are the same as the provided matrix",
@@ -74,7 +74,7 @@ test_that("Check that dimensions are correct with rgroup usage",
   table_str <- htmlTable(mx, 
                          rgroup=c("test1", ""), 
                          n.rgroup=c(1,1))
-  expect_true(grepl("<td[^>]*>second row", table_str), 
+  expect_match(table_str, "<td[^>]*>second row", 
               info="The second row should not have any spacers")
 
   parsed_table <- readHTMLTable(table_str)[[1]]
@@ -120,9 +120,9 @@ test_that("Check that dimensions are correct with cgroup usage",
                          output=FALSE, tspanner=c("First spanner",
                                                   "Secon spanner"), 
                          n.tspanner=c(1,1))
-  expect_true(grepl("td[^>]*colspan='4'[^>]*>First spanner", table_str), 
+  expect_match(table_str, "td[^>]*colspan='4'[^>]*>First spanner", 
               info="The expected number of columns should be 4")
-  expect_true(grepl("td[^>]*colspan='4'[^>]*>Secon spanner", table_str), 
+  expect_match(table_str, "td[^>]*colspan='4'[^>]*>Secon spanner", 
               info="The expected number of columns should be 4")
   
   table_str <- htmlTable(mx, 
@@ -138,9 +138,9 @@ test_that("Check that dimensions are correct with cgroup usage",
                          n.tspanner=c(1,1),
                          output=FALSE)
   
-  expect_true(grepl("td[^>]*colspan='5'[^>]*>First rgroup", table_str), 
+  expect_match(table_str, "td[^>]*colspan='5'[^>]*>First rgroup", 
               info="The expected number of columns should be 5")
-  expect_true(grepl("td[^>]*colspan='5'[^>]*>Second rgroup", table_str), 
+  expect_match(table_str, "td[^>]*colspan='5'[^>]*>Second rgroup",
               info="The expected number of columns should be 5")
   
   parsed_table <- readHTMLTable(table_str)[[1]]
