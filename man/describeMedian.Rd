@@ -4,7 +4,7 @@
 the interquartile range or the full range}
 \usage{
 describeMedian(x, iqr = TRUE, html = FALSE, digits = 1,
-  number_first = TRUE, show_missing = FALSE,
+  number_first = TRUE, show_missing = FALSE, show_missing_digits = digits,
   horizontal_proportions = NULL, percentage_sign = TRUE)
 }
 \arguments{
@@ -24,6 +24,10 @@ describeMedian(x, iqr = TRUE, html = FALSE, digits = 1,
 
   \item{show_missing}{This indicates if missing should be
   added as a separate row below all other.}
+
+  \item{show_missing_digits}{The number of digits to use
+  for the missing percentage, defaults to the overall
+  \code{digits}.}
 
   \item{horizontal_proportions}{Is only active if
   show_missing since this is the only case of a proportion

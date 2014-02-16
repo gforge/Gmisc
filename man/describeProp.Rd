@@ -4,8 +4,9 @@
 the number and the percentage}
 \usage{
 describeProp(x, html = FALSE, digits = 1, number_first = TRUE,
-  show_missing = FALSE, horizontal_proportions = NULL,
-  default_ref = "First", percentage_sign = TRUE)
+  show_missing = FALSE, show_missing_digits = digits,
+  horizontal_proportions = NULL, default_ref = "First",
+  percentage_sign = TRUE)
 }
 \arguments{
   \item{x}{The variable that you want the statistics for}
@@ -24,6 +25,10 @@ describeProp(x, html = FALSE, digits = 1, number_first = TRUE,
   added as a separate row below all other. This will always
   be converted into the describeFactor function if there is
   a missing row.}
+
+  \item{show_missing_digits}{The number of digits to use
+  for the missing percentage, defaults to the overall
+  \code{digits}.}
 
   \item{horizontal_proportions}{This is default NULL and
   indicates that the proportions are to be interpreted in a

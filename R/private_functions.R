@@ -17,6 +17,8 @@
 #' @param digits Number of decimal digits
 #' @param numbers_first If number is to be prior to the percentage
 #' @param show_missing If missing should be included 
+#' @param show_missing_digits The number of digits to use for the 
+#'  missing percentage, defaults to the overall \code{digits}.
 #' @param show_all_values This is by default false as for instance if there is
 #'  no missing and there is only one variable then it is most sane to only show 
 #'  one option as the other one will just be a complement to the first. For instance
@@ -40,6 +42,7 @@ prGetStatistics <- function(x,
   digits = 1, 
   numbers_first = TRUE, 
   show_missing = TRUE, 
+  show_missing_digits = digits, 
   show_all_values = FALSE,
   continuous_fn = describeMean, 
   factor_fn = describeFactors,

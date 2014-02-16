@@ -10,6 +10,8 @@
 #'  This is only used together with the show_missing variable.
 #' @param show_missing This indicates if missing should be added as a separate
 #'  row below all other.
+#' @param show_missing_digits The number of digits to use for the 
+#'  missing percentage, defaults to the overall \code{digits}.
 #' @param horizontal_proportions Is only active if show_missing since this is 
 #'  the only case of a proportion among continuous variables. This is default NULL and indicates
 #'  that the proportions are to be interpreted in a vertical manner.
@@ -40,6 +42,7 @@ describeMean <- function(x,
   digits=1, 
   number_first = TRUE, 
   show_missing = FALSE, 
+  show_missing_digits = digits,
   horizontal_proportions=NULL,
   percentage_sign = TRUE){
   show_missing <- prConvertShowMissing(show_missing)
@@ -57,8 +60,9 @@ describeMean <- function(x,
     ret <- sprintf("$%s$", ret)
   
   if (show_missing %in% c("ifany", "always") & sum(is.na(x))>0){
-    missing <- describeFactors(is.na(x), number_first = number_first, digits = digits, html = html,
-      horizontal_proportions = horizontal_proportions)
+    missing <- describeFactors(is.na(x), number_first = number_first, 
+                               digits = show_missing_digits, html = html,
+                               horizontal_proportions = horizontal_proportions)
     ret <- rbind(ret, missing["TRUE", ])
     rownames(ret) <- c("Mean (SD)", "Missing")
   } else if (show_missing == "always"){
@@ -90,6 +94,8 @@ describeMean <- function(x,
 #'  This is only used together with the show_missing variable.
 #' @param show_missing This indicates if missing should be added as a separate
 #'  row below all other.
+#' @param show_missing_digits The number of digits to use for the 
+#'  missing percentage, defaults to the overall \code{digits}.
 #' @param horizontal_proportions Is only active if show_missing since this is 
 #'  the only case of a proportion among continuous variables. This is default NULL and indicates
 #'  that the proportions are to be interpreted in a vertical manner.
@@ -121,6 +127,7 @@ describeMedian <- function(x,
   digits=1, 
   number_first = TRUE, 
   show_missing = FALSE, 
+  show_missing_digits = digits,
   horizontal_proportions=NULL,
   percentage_sign = TRUE){
   show_missing <- prConvertShowMissing(show_missing)
@@ -136,8 +143,9 @@ describeMedian <- function(x,
     quantile(x, probs=range_quantiles[2], na.rm=T)))
   
   if (show_missing %in% c("ifany", "always") & sum(is.na(x))>0){
-    missing <- describeFactors(is.na(x), number_first = number_first, digits = digits, html = html, 
-      horizontal_proportions = horizontal_proportions)
+    missing <- describeFactors(is.na(x), number_first = number_first, 
+                               digits = show_missing_digits, html = html, 
+                               horizontal_proportions = horizontal_proportions)
     ret <- rbind(ret, missing["TRUE", ])
     rownames(ret) <- c(
       ifelse(iqr, "Median (IQR)", "Median (range)"),
@@ -172,6 +180,8 @@ describeMedian <- function(x,
 #' @param show_missing This indicates if missing should be added as a separate
 #'  row below all other. This will always be converted into the describeFactor
 #'  function if there is a missing row.
+#' @param show_missing_digits The number of digits to use for the 
+#'  missing percentage, defaults to the overall \code{digits}.
 #' @param horizontal_proportions This is default NULL and indicates
 #'  that the proportions are to be interpreted in a vertical manner.
 #'  If we want the data to be horizontal, i.e. the total should be shown
@@ -202,6 +212,7 @@ describeProp <- function(x,
   digits=1, 
   number_first = TRUE, 
   show_missing = FALSE,
+  show_missing_digits = digits,
   horizontal_proportions = NULL,
   default_ref = "First",
   percentage_sign = TRUE){
@@ -211,13 +222,21 @@ describeProp <- function(x,
   
   # If we're to use the horizontal proportions then
   # it's better to report the variable as a factor
-  # instead of a single proportion
+  # instead of a single proportion.
+  # When we have missing it also gets more difficult
+  # to just report one percentage as it suddenly uncertain
+  # for what percentage the number applies to
   if(is.null(horizontal_proportions) == FALSE || 
-       show_missing == "ifany" && 
-       any(is.na(x)) ||
+       (show_missing == "ifany" && 
+          any(is.na(x))) ||
        show_missing == "always")
-    return(describeFactors(x=x, html=html, number_first = number_first, 
-      show_missing = show_missing, horizontal_proportions = horizontal_proportions))
+    return(describeFactors(x=x, 
+                           html=html, 
+                           number_first = number_first, 
+                           digits = digits,
+                           show_missing = show_missing, 
+                           show_missing_digits = show_missing_digits,
+                           horizontal_proportions = horizontal_proportions))
   
   if (is.factor(x) == FALSE)
     x <- factor(x)
@@ -254,6 +273,8 @@ describeProp <- function(x,
 #'  should be presented first. The second is encapsulated in parentheses ().
 #' @param show_missing This indicates if missing should be added as a separate
 #'  row below all other.
+#' @param show_missing_digits The number of digits to use for the 
+#'  missing percentage, defaults to the overall \code{digits}.
 #' @param horizontal_proportions This is default NULL and indicates
 #'  that the proportions are to be interpreted in a vertical manner.
 #'  If we want the data to be horizontal, i.e. the total should be shown
@@ -291,6 +312,7 @@ describeFactors <- function(x,
   digits=1, 
   number_first = TRUE, 
   show_missing = FALSE, 
+  show_missing_digits = digits,
   horizontal_proportions = NULL,
   percentage_sign = TRUE,
   ...) {
@@ -370,18 +392,23 @@ describeFactors <- function(x,
   else if(is.character(percentage_sign) == FALSE)
     percentage_sign = ""
 
+  # The is.na(...) is a little overkill
   if (number_first)
     ret <- matrix(
-      sprintf(sprintf("%%s (%%.%df%%s)", digits), 
-        values, 
-        percentages, 
-        percentage_sign), ncol=1)
+      sprintf(ifelse(is.na(names(table_results)),
+                     sprintf("%%s (%%.%df%%s)", show_missing_digits), 
+                     sprintf("%%s (%%.%df%%s)", digits)),
+              values, 
+              percentages, 
+              percentage_sign), ncol=1)
   else
     ret <- matrix(
-      sprintf(sprintf("%%.%df%%s (%%s)", digits), 
-        percentages, 
-        percentage_sign, 
-        values), ncol=1)
+      sprintf(ifelse(is.na(names(table_results)),
+                     sprintf("%%.%df%%s (%%s)", show_missing_digits), 
+                     sprintf("%%.%df%%s (%%s)", digits)),
+              percentages, 
+              percentage_sign, 
+              values), ncol=1)
   
   rn <- names(table_results)
   rn[is.na(rn)] <- "Missing"

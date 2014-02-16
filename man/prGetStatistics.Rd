@@ -3,9 +3,10 @@
 \title{Get statistics according to the type}
 \usage{
 prGetStatistics(x, show_perc = FALSE, html = TRUE, digits = 1,
-  numbers_first = TRUE, show_missing = TRUE, show_all_values = FALSE,
-  continuous_fn = describeMean, factor_fn = describeFactors,
-  prop_fn = factor_fn, percentage_sign = percentage_sign)
+  numbers_first = TRUE, show_missing = TRUE, show_missing_digits = digits,
+  show_all_values = FALSE, continuous_fn = describeMean,
+  factor_fn = describeFactors, prop_fn = factor_fn,
+  percentage_sign = percentage_sign)
 }
 \arguments{
   \item{x}{The variable that we want the statistics for}
@@ -22,6 +23,10 @@ prGetStatistics(x, show_perc = FALSE, html = TRUE, digits = 1,
   percentage}
 
   \item{show_missing}{If missing should be included}
+
+  \item{show_missing_digits}{The number of digits to use
+  for the missing percentage, defaults to the overall
+  \code{digits}.}
 
   \item{show_all_values}{This is by default false as for
   instance if there is no missing and there is only one
