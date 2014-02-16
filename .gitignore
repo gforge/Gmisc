@@ -1,7 +1,7 @@
 # Can ignore specific files
 Gmisc.RProj
 .project
-.RBuildignore
+# .RBuildignore
 .Rhistory
 .Rproj.User/
 .settings/
