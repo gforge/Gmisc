@@ -5,10 +5,11 @@
 getDescriptionStatsBy(x, by, digits = 1, html = FALSE, NEJMstyle = FALSE,
   numbers_first = TRUE, statistics = FALSE, sig.limit = 10^-4,
   two_dec.limit = 10^-2, show_missing = FALSE,
-  continuous_fn = describeMean, prop_fn = describeProp,
-  factor_fn = describeFactors, show_all_values = FALSE, hrzl_prop = FALSE,
-  add_total_col = hrzl_prop, total_col_show_perc = TRUE,
-  use_units = FALSE, default_ref = "First", percentage_sign = TRUE)
+  show_missing_digits = digits, continuous_fn = describeMean,
+  prop_fn = describeProp, factor_fn = describeFactors,
+  show_all_values = FALSE, hrzl_prop = FALSE, add_total_col = hrzl_prop,
+  total_col_show_perc = TRUE, use_units = FALSE, default_ref = "First",
+  percentage_sign = TRUE)
 }
 \arguments{
   \item{x}{The variable that you want the statistics for}
@@ -30,6 +31,10 @@ getDescriptionStatsBy(x, by, digits = 1, html = FALSE, NEJMstyle = FALSE,
 
   \item{show_missing}{Show the missing values. This adds
   another row if there are any missing values.}
+
+  \item{show_missing_digits}{The number of digits to use
+  for the missing percentage, defaults to the overall
+  \code{digits}.}
 
   \item{continuous_fn}{The method to describe continuous
   variables. The default is \code{\link{describeMean}}.}

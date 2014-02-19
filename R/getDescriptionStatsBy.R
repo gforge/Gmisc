@@ -17,6 +17,8 @@
 #'  should be presented first. The second is encapsulated in parentheses ().
 #' @param show_missing Show the missing values. This adds another row if 
 #'  there are any missing values.
+#' @param show_missing_digits The number of digits to use for the 
+#'  missing percentage, defaults to the overall \code{digits}.
 #' @param continuous_fn The method to describe continuous variables. The
 #'  default is \code{\link{describeMean}}.
 #' @param prop_fn The method used to describe proportions, see \code{\link{describeProp}}.
@@ -73,6 +75,7 @@ getDescriptionStatsBy <-
            statistics=FALSE, 
            sig.limit=10^-4, two_dec.limit= 10^-2,
            show_missing = FALSE,
+           show_missing_digits = digits,
            continuous_fn = describeMean,
            prop_fn = describeProp,
            factor_fn = describeFactors,
@@ -181,12 +184,16 @@ getDescriptionStatsBy <-
       # missing category
       if (hrzl_prop)
         t <- by(x, by, FUN=continuous_fn, html=html, digits=digits,
-                number_first=numbers_first, show_missing = show_missing, 
+                number_first=numbers_first, 
+                show_missing = show_missing, 
+                show_missing_digits = show_missing_digits,
                 horizontal_proportions = table(is.na(x), useNA=show_missing),
                 percentage_sign = percentage_sign)
       else
         t <- by(x, by, FUN=continuous_fn, html=html, digits=digits,
-                number_first=numbers_first, show_missing = show_missing,
+                number_first=numbers_first, 
+                show_missing = show_missing,
+                show_missing_digits = show_missing_digits,
                 percentage_sign = percentage_sign)
       
       
@@ -209,7 +216,9 @@ getDescriptionStatsBy <-
       default_ref <- prGetAndValidateDefaultRef(x, default_ref)
       
       t <- by(x, by, FUN=prop_fn, html=html, digits=digits,
-              number_first=numbers_first, show_missing = show_missing,
+              number_first=numbers_first, 
+              show_missing = show_missing,
+              show_missing_digits = show_missing_digits,
               default_ref = default_ref, percentage_sign = percentage_sign)
       
       # Set the rowname to a special format
@@ -244,12 +253,16 @@ getDescriptionStatsBy <-
     }else{
       if (hrzl_prop){
         t <- by(x, by, FUN=factor_fn, html=html, digits=digits,
-                number_first=numbers_first, show_missing = show_missing, 
+                number_first=numbers_first, 
+                show_missing = show_missing, 
+                show_missing_digits = show_missing_digits,
                 horizontal_proportions = table(x, useNA=show_missing),
                 percentage_sign = percentage_sign)
       }else{
         t <- by(x, by, FUN=factor_fn, html=html, digits=digits,
-                number_first=numbers_first, show_missing = show_missing,
+                number_first=numbers_first, 
+                show_missing = show_missing,
+                show_missing_digits = show_missing_digits,
                 percentage_sign = percentage_sign)
       }
       
@@ -292,6 +305,7 @@ getDescriptionStatsBy <-
                                      show_perc=total_col_show_perc, 
                                      show_all_values = show_all_values,
                                      show_missing=show_missing, 
+                                     show_missing_digits = show_missing_digits,
                                      html=html, 
                                      digits=digits, 
                                      continuous_fn = continuous_fn, 
