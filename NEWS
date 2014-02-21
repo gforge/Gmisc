@@ -6,6 +6,7 @@ Changes for 0.6.1.1
 * Bugfixes for the bezierArrowSmplGradient.
 * htmlTable added table spanner functionality, some man-page update, removed the default NULL arguments in favor of the missing() funciton, and a few minor bugfixes.
 * Bugfixed missing data for getDescriptionStats and generated a test-file in order to check most combinations that they work
+* Fixed the legend-bug for forestplot2 when using points
 
 Changes for 0.6.1.0
 --------------------

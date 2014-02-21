@@ -425,7 +425,8 @@ forestplot2 <- function (labeltext,
   if (length(legend) > 0 && !is.list(legend.pos)){
     pushViewport(prFpGetLayoutVP(lineheight=lineheight,  
         labels = labels,
-        nr=nr, legend_layout=legend_layout))
+        nr=nr, 
+        legend_layout=legend_layout))
     vp <- viewport(layout.pos.row = legend_pos$row, 
                    layout.pos.col = legend_pos$col,
                    name = "legend")
@@ -439,7 +440,8 @@ forestplot2 <- function (labeltext,
                    legend.gp = legend.gp,
                    legend.r = legend.r,
                    legend.padding = legend.padding,
-                   legendMarkerFn = legendMarkerFn)
+                   legendMarkerFn = legendMarkerFn,
+                   ...)
     upViewport()
 
     # Reset to the main plot
@@ -678,7 +680,8 @@ forestplot2 <- function (labeltext,
                    legend.gp = legend.gp,
                    legend.r = legend.r,
                    legend.padding = legend.padding,
-                   legendMarkerFn = legendMarkerFn)
+                   legendMarkerFn = legendMarkerFn,
+                   ...)
     upViewport(2)
   }
   upViewport(2)

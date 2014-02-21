@@ -878,6 +878,7 @@ prFpGetLegendGrobs <- function(legend, legend.cex, legend.title=NULL){
 #' @param legend.padding The padding for the legend box, only used if box is drawn. This is 
 #'  the distance from the border to the text/boxes of the legend.
 #' @param legendMarkerFn The function for drawing the marker
+#' @param ... Passed to the legend \code{legendMarkerFn}
 #' @return \code{void} 
 #' 
 #' @author max
@@ -887,7 +888,8 @@ prFpDrawLegend <- function (lGrobs, legend.pos,
                             legend.gp,
                             legend.r,
                             legend.padding,
-                            legendMarkerFn) {
+                            legendMarkerFn,
+                            ...) {
   if (!inherits(lGrobs, "Legend"))
     stop("The lGrobs object should be created by the internal Gmisc:::prFpGetLegendGrobs and be of class 'Legend'.")
 
@@ -912,20 +914,18 @@ prFpDrawLegend <- function (lGrobs, legend.pos,
 
   drawBox <- function(vp, i, col, lGrobs){
     pushViewport(vp)
-#     grid.rect(gp=gpar(),
-#               width=attr(lGrobs, "max_height"),
-#               height=attr(lGrobs, "max_height"))
 
     call_list <- 
       list(legendMarkerFn[[i]],
-           lower_limit=.5, 
+           lower_limit=0, 
            estimate=.5, 
-           upper_limit=.5, 
+           upper_limit=1, 
            size=attr(lGrobs, "max_height"), 
            y.offset = .5,
            clr.marker = col$box[i], 
            clr.line = col$lines[i],
-           lwd=1)
+           lwd=1,
+           ... = ...)
     
     # Do the actual drawing of the object
     eval(as.call(call_list))
@@ -1411,7 +1411,12 @@ prFpPrepareLegendMarker <- function (legendMarkerFn, col_no, confintNormalFn) {
                              no_rows = NROW(mean), 
                              no_cols = col_no)[[1]]
     }else{
-      legendMarkerFn <- lapply(1:col_no, function(x) fpDrawNormalCI)
+      # Not sure what to do if the number don't match the number of legends
+      # and it ain't 1
+      if (length(confintNormalFn) != 1)
+        confintNormalFn <- fpDrawNormalCI
+      
+      legendMarkerFn <- lapply(1:col_no, function(x) confintNormalFn)
     }
   }
   return(legendMarkerFn)

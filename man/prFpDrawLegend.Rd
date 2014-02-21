@@ -3,7 +3,7 @@
 \title{Draw the forestplot legend}
 \usage{
 prFpDrawLegend(lGrobs, legend.pos, col, colgap, legend.gp, legend.r,
-  legend.padding, legendMarkerFn)
+  legend.padding, legendMarkerFn, ...)
 }
 \arguments{
   \item{lGrobs}{A list with all the grobs, see
@@ -28,6 +28,8 @@ prFpDrawLegend(lGrobs, legend.pos, col, colgap, legend.gp, legend.r,
 
   \item{legendMarkerFn}{The function for drawing the
   marker}
+
+  \item{...}{Passed to the legend \code{legendMarkerFn}}
 }
 \value{
 \code{void}
