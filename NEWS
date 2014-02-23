@@ -2,7 +2,7 @@ NEWS for the Gmisc package
 
 Changes for 0.6.2.0
 -------------------
-* Added the viewer for htmlTable allowing for direct visualisation in RStudio of the tables
+* Added the viewer for htmlTable allowing for direct visualisation in RStudio of the tables. Outside RStudio the utils::browseURL is used.
 * htmlTable added table spanner functionality, some man-page update, removed the default NULL arguments in favor of the missing() funciton, and a few minor bugfixes.
 
 Changes for 0.6.1.1
