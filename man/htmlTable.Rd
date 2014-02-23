@@ -13,7 +13,7 @@ htmlTable(x, title = first.word(deparse(substitute(x))), headings,
   rowlabel.pos = "bottom", ctable = FALSE, compatibility = "LibreOffice",
   rowname, caption, caption.loc = "top", tfoot, label, ...)
 
-\method{print}{htmlTable}(x, ...)
+\method{print}{htmlTable}(x, useViewer = TRUE, ...)
 }
 \arguments{
   \item{x}{The matrix/data.frame with the data}
@@ -148,6 +148,12 @@ htmlTable(x, title = first.word(deparse(substitute(x))), headings,
 
   \item{...}{Currently not used, here for compatibility
   reasons}
+
+  \item{useViewer}{If you are using RStudio there is a
+  viewer thar can render the table within that is
+  automatically envoced unless you have the knitr package
+  loaded. Set this to \code{FALSE} if you want to remove
+  that functionality.}
 }
 \value{
 Returns a string with the output table if output is not set

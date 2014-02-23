@@ -829,8 +829,33 @@ setClass("htmlTable", contains = "character")
 #' @rdname htmlTable
 #' @method print htmlTable
 #' @S3method print htmlTable
-print.htmlTable<- function(x, ...){
-  cat(x)
+#' @param useViewer If you are using RStudio there is a viewer thar can render 
+#'  the table within that is automatically envoced unless you have the knitr 
+#'  package loaded. Set this to \code{FALSE} if you want to remove that 
+#'  functionality. 
+print.htmlTable<- function(x, useViewer = TRUE, ...){
+  # Don't use viewer if in knitr
+  if (useViewer &&
+        !"package:knitr" %in% search() &&
+        !is.null(getOption("viewer"))){
+    htmlFile <- tempfile(fileext=".html")
+    htmlPage <- paste("<html>",
+                      "<head>",
+                      "<meta http-equiv=\"Content-type\" content=\"text/html;charset=UTF-8\">",
+                      "</head>",
+                      "<body>",
+                      "<div style=\"margin: 0 auto; display: table; margin-top: 1em;\">",
+                      x,
+                      "</div>",
+                      "</body>",
+                      "</html>", sep="\n")   
+    cat(htmlPage, file=htmlFile)
+
+    # (code to write some content to the file)
+    getOption("viewer")(htmlFile)
+  }else{
+    cat(x)
+  }
 }
 
 #' If you want a row to span two or more lines
