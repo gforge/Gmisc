@@ -247,7 +247,7 @@ htmlTable(
   caption  = "Continuous & binary variables", 
   n.rgroup=c(2,1), rgroup=c("Gas", "Weight"),
   n.cgroup=c(2,1), 
-  cgroup=c(splitLines4Table("results", sprintf("n=\%d", NROW(mtcars)), html=TRUE),
+  cgroup=c(splitLines4Table("Results", sprintf("n=\%d", NROW(mtcars)), html=TRUE),
            ""),
   colheads = c(sprintf("\%s (SD)", levels(mtcars$am)), "units"),
   rowlabel = "Variable",
