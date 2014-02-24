@@ -1,4 +1,5 @@
 # A simple example
+# note that this won't show due to the second example
 mx <- matrix(1:6, ncol=3) 
 rownames(mx) <- LETTERS[1:NROW(mx)] 
 colnames(mx) <- sprintf("Col %s", LETTERS[1:NCOL(mx)])
