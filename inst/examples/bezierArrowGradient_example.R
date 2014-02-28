@@ -1,6 +1,6 @@
 par_org <- par(ask=TRUE) 
 library(grid)
-gl <- bezierArrowSmplGradient(x=c(.2, .5, .5, .8),
+gl <- bezierArrowGradient(x=c(.2, .5, .5, .8),
                               y=c(.2, .2, .8, .8),
                               width=unit(10, "mm"),
                               arrow = list(base=unit(.1, "npc"),
@@ -18,7 +18,7 @@ gl <- bezierArrowSmplGradient(x=c(.2, .5, .5, .8),
 plot.new()
 grid.draw(gl)
 
-pg <- bezierArrowSmplGradient(x=c(.3,.7,-.1,.25),
+pg <- bezierArrowGradient(x=c(.3,.7,-.1,.25),
   y=c(.5,.1,.1,.5),
   grdt_type = "triangle",
   grdt_decrease_prop = .3,

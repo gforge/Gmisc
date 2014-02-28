@@ -1,9 +1,9 @@
-\name{bezierArrowSmplGradient}
-\alias{bezierArrowSmplGradient}
+\name{bezierArrowGradient}
+\alias{bezierArrowGradient}
 \title{A bezier arrow with gradient}
 \usage{
-bezierArrowSmplGradient(width = 0.05, clr = "#000000",
-  default.units = "npc", align_2_axis = TRUE, grdt_type = c("triangle"),
+bezierArrowGradient(width = 0.05, clr = "#000000", default.units = "npc",
+  align_2_axis = TRUE, grdt_type = c("triangle"),
   grdt_decrease_prop = 0.4, grdt_start_prop = 0.4, grdt_clr_prop = 0.7,
   grdt_line_width = NA, grdt_clr = "#2F4F2F", vp = NULL, gp = gpar(),
   ...)
@@ -67,7 +67,7 @@ in the gradient.
 \examples{
 library(grid)
 grid.newpage()
-arrowGrob <- bezierArrowSmplGradient(x = c(.1,.3,.6,.9),
+arrowGrob <- bezierArrowGradient(x = c(.1,.3,.6,.9),
                                      y = c(0.2, 0.2, 0.9, 0.9))
 grid.draw(arrowGrob)
 }

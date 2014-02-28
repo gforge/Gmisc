@@ -30,12 +30,12 @@
 #' @examples
 #' library(grid)
 #' grid.newpage()
-#' arrowGrob <- bezierArrowSmplGradient(x = c(.1,.3,.6,.9),
+#' arrowGrob <- bezierArrowGradient(x = c(.1,.3,.6,.9),
 #'                                      y = c(0.2, 0.2, 0.9, 0.9))
 #' grid.draw(arrowGrob)
 #' @author max
 #' @export
-bezierArrowSmplGradient <- function(
+bezierArrowGradient <- function(
   width = .05,
   clr = "#000000",
   default.units = "npc",
@@ -85,7 +85,9 @@ bezierArrowSmplGradient <- function(
     gp = gp, vp = vp, ...)
 
   if (grdt_start_prop + grdt_decrease_prop == 0){
-    warning("You called the gradient function but did not specify any gradient, why not just use the bezierArrowSmpl function")
+    warning("You called the gradient function but did not",
+            " specify any gradient, why not just use",
+            " the bezierArrowSmpl function")
     return(pg)
   }
     
