@@ -14,4 +14,4 @@ ag <- bezierArrowGradient(x = c(0.25, 0.5, 0.5, 0.75),
                           grdt_decrease_prop = 0.3, 
                           grdt_clr = "#C49696")
 grid.newpage()
-grid.draw(eval(as.call(problematic_arrow)))
+grid.draw(ag)

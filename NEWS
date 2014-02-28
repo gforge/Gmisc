@@ -1,5 +1,12 @@
 NEWS for the Gmisc package
 
+Changes for 0.6.2.1
+-------------------
+* bezierArrowSmplGradient changed name to just bezierArrowGradient
+* Added visual tests and debugged the bezierArrowGradient/transitionPlots
+* Externalized all internal functions of the transitionplot
+* Added proportions for the transitionplot
+
 Changes for 0.6.2.0
 -------------------
 * Added the viewer for htmlTable allowing for direct visualisation in RStudio of the tables. Outside RStudio the utils::browseURL is used.

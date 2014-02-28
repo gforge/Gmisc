@@ -244,19 +244,60 @@ bezierArrowGradient <- function(
     
     selection <- which(start_selection)[1]:(start_decrease-1)
     
-    angle <- getVectorAngle(x = bp$x[2],
-      y = bp$y[2],
-      x_origo = bp$x[1],
-      y_origo = bp$y[1],
-      default.units = default.units)
+    # Catch the first turn
+    getDirection <- function(vals){
+      for (i in 2:length(vals)){
+        if (vals[1] != vals[i]){
+          if (vals[1] > vals[i]){
+            return(-1)
+          }else if (vals[1] < vals[i]){
+            return(1)
+          }
+        }
+      }
+      return(0)
+    }
 
+    # Remove those that are lower/higher than the point
+    removeVals <- function(vals, point){
+      direction <- getDirection(vals)
+      for (i in 1:length(vals)){
+        if ((point - vals[i])*direction > 0){
+          return(vals[-(1:(i-1))])
+        }
+      }
+      return(c())
+    }
+
+    angle <- getVectorAngle(x = bp$x[2],
+                            y = bp$y[2],
+                            x_origo = bp$x[1],
+                            y_origo = bp$y[1])
+    
     w <- getGridVal(grdt_line_width, default.units)
-    st_bp <- list(x=c(getGridVal(end_points$start$x, default.units) + 
-                        w*cos(angle), 
-                      getGridVal(bp$x[selection], default.units)),
-                  y=c(getGridVal(end_points$start$y, default.units) + 
-                        w*sin(angle), 
-                      getGridVal(bp$y[selection], default.units)))
+    st_bp <- list(start_x=getGridVal(end_points$start$x, default.units) + 
+                    w*cos(angle),
+                  start_y=getGridVal(end_points$start$y, default.units) + 
+                    w*sin(angle))
+    
+    
+    # Add the remaining points
+    st_bp$add_x <- removeVals(vals=getGridVal(bp$x[selection], default.units), 
+                            point=st_bp$start_x)
+    st_bp$add_y <- removeVals(vals=getGridVal(bp$y[selection], default.units), 
+                              point=st_bp$start_y)
+    
+    # The two vectors need to be the same - make the larger smaller
+    if (length(st_bp$add_x) < length(st_bp$add_y)){
+      st_bp$add_y <- tail(st_bp$add_y, n=length(st_bp$add_x))
+    }else if (length(st_bp$add_x) > length(st_bp$add_y)){
+      st_bp$add_x <- tail(st_bp$add_x, n=length(st_bp$add_y))
+    }
+    
+    # Now merge into one x and y
+    st_bp$x <- c(st_bp$start_x, st_bp$add_x)
+    st_bp$y <- c(st_bp$start_y, st_bp$add_y)
+    
     st_bp <- lapply(st_bp, function(x) unit(x, default.units))
     
     lines <- getLines(bp=st_bp, 
