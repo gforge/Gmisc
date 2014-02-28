@@ -57,18 +57,17 @@ validateAndConvertVectorInputs <- function(x, y,
 #' @param y The y point of the vector
 #' @param x_origo The x origin if other than 0
 #' @param y_origo The y origin if other than 0
-#' @param default.units As defined by the grid package
 #' @return angle in radians (see \code{\link{atan2}})
 #' 
 #' @author max
 getVectorAngle <- function(x, y, 
-  x_origo=NA, y_origo=NA, default.units = "mm"){
+                           x_origo=NA, y_origo=NA){
   v <- validateAndConvertVectorInputs(x=x, y=y, 
     x_origo=x_origo, y_origo=y_origo)
   
   if ("unit" %in% class(v$y)){
-    y_diff <- convertY(v$y-v$y_origo, unitTo=default.units, valueOnly=TRUE)
-    x_diff <- convertX(v$x-v$x_origo, unitTo=default.units, valueOnly=TRUE)
+    y_diff <- convertY(v$y-v$y_origo, unitTo="mm", valueOnly=TRUE)
+    x_diff <- convertX(v$x-v$x_origo, unitTo="mm", valueOnly=TRUE)
   }else{
     y_diff <- v$y-v$y_origo
     x_diff <- v$x-v$x_origo
@@ -116,9 +115,9 @@ rotateWidthAccVector <-
             default.units,
             ...) {
   v <- validateAndConvertVectorInputs(x=x, y=y, 
-    x_origo=x_origo, y_origo=y_origo)
+                                      x_origo=x_origo, y_origo=y_origo)
   angle <- getVectorAngle(x=x, y=y, 
-    x_origo=x_origo, y_origo=y_origo)
+                          x_origo=x_origo, y_origo=y_origo)
   
   return (rotateWidthAccAngle(angle = angle, 
       x_origo = x_origo,
@@ -382,9 +381,9 @@ getLines <- function(bp, end_point,
   # If vertical
   if (align_2_axis){
     angle <- getVectorAngle(x_origo=bp$x[1], 
-      y_origo=bp$y[1],
-      x=bp$x[2], 
-      y=bp$y[2])
+                            y_origo=bp$y[1],
+                            x=bp$x[2], 
+                            y=bp$y[2])
     
     adaptLine2LeftTurn <- function(lines, org_offset, default.units, horizontal){
       # left is shorter due to the left skew
