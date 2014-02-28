@@ -1,0 +1,43 @@
+\name{prTpPlotArrows}
+\alias{prTpPlotArrows}
+\title{Plots the arrows}
+\usage{
+prTpPlotArrows(type, box_row, transition_flow, max_flow, min_lwd, max_lwd, clr,
+  box_clr, prop_start_sizes, prop_end_sizes, tot_spacing, box_width,
+  abs_arrow_width, add_width = NA)
+}
+\arguments{
+  \item{type}{The type of arrow used}
+
+  \item{box_row}{Which box do the arrow originate from}
+
+  \item{max_flow}{The largest transition flow}
+
+  \item{min_lwd}{The minimum line width}
+
+  \item{max_lwd}{The maximum line width}
+
+  \item{clr}{The color of the line}
+
+  \item{box_clr}{The color of the box}
+
+  \item{prop_start_sizes}{The proportions to the left}
+
+  \item{prop_end_sizes}{The proportions to the right}
+
+  \item{tot_spacing}{Total spacing between boxes}
+
+  \item{box_width}{The box width}
+
+  \item{add_width}{Add a certain width}
+}
+\value{
+\code{NULL}
+}
+\description{
+Outputs all the arrows from a box row
+}
+\author{
+Max
+}
+

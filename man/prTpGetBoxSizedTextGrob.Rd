@@ -1,0 +1,24 @@
+\name{prTpGetBoxSizedTextGrob}
+\alias{prTpGetBoxSizedTextGrob}
+\title{Gets the text size for the box}
+\usage{
+prTpGetBoxSizedTextGrob(txt, txt_clr, txt_cex, force_cex = FALSE, ...)
+}
+\arguments{
+  \item{txt}{The text}
+
+  \item{txt_clr}{The color of the text}
+
+  \item{txt_cex}{The font size}
+
+  \item{force_cex}{If font size should be forced}
+
+  \item{...}{Other options}
+}
+\description{
+Gets the text size for the box
+}
+\author{
+Max
+}
+

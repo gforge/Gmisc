@@ -9,8 +9,8 @@ transitionPlot(transition_flow, type_of_arrow = c("grid", "simple",
   min_lwd = 1, max_lwd = 6, lwd_prop_total = TRUE,
   arrow_clr = "#000000", abs_arrow_width = FALSE,
   overlap_bg_clr = "#FFFFFF", overlap_order = 1:nrow(transition_flow),
-  overlap_add_width = 1.5, box_prop = NULL, mar = unit(rep(3, times = 4),
-  "mm"), main = NULL, box_label = NULL, box_label_pos = "top",
+  overlap_add_width = 1.5, box_prop, mar = unit(rep(3, times = 4), "mm"),
+  main = NULL, box_label = NULL, box_label_pos = "top",
   box_label_cex = cex, new_page = FALSE)
 }
 \arguments{
@@ -31,9 +31,9 @@ transitionPlot(transition_flow, type_of_arrow = c("grid", "simple",
   simple is the \code{\link{bezierArrowSmpl}} that I've
   created to get a more exact control of the arrow position
   and width, while gradient corresponds to
-  \code{\link{bezierArrowSmplGradient}} allowing the arrow
-  to have a fill color that slowly turns into the color of
-  the arrow.}
+  \code{\link{bezierArrowGradient}} allowing the arrow to
+  have a fill color that slowly turns into the color of the
+  arrow.}
 
   \item{box_txt}{The text to appear inside of the boxes. If
   you need line breaks then you need to manually add a \\n

@@ -1,0 +1,25 @@
+\name{prTpGetBoxPropClr}
+\alias{prTpGetBoxPropClr}
+\title{A gets the color for the given box}
+\usage{
+prTpGetBoxPropClr(clr, no_boxes, lengthOneOK = FALSE)
+}
+\arguments{
+  \item{clr}{The color of the boxes, either a matrix, a
+  vector of length two, or a single color}
+
+  \item{no_boxes}{The number of boxes}
+
+  \item{lengthOneOK}{If it is ok to have only one color}
+}
+\value{
+\code{matrix} With two columns and no_boxes rows.  If
+function fails then return \code{NULL}
+}
+\description{
+A gets the color for the given box
+}
+\author{
+Max
+}
+

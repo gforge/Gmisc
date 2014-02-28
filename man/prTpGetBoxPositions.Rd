@@ -1,0 +1,30 @@
+\name{prTpGetBoxPositions}
+\alias{prTpGetBoxPositions}
+\title{Gets the box position}
+\usage{
+prTpGetBoxPositions(no, side, prop_start_sizes, prop_end_sizes, tot_spacing,
+  box_width)
+}
+\arguments{
+  \item{no}{The box number}
+
+  \item{side}{The right or left side}
+
+  \item{prop_start_sizes}{The size of the start boxes}
+
+  \item{prop_end_sizes}{The size of the end boxes}
+
+  \item{tot_spacing}{The total space between the boxes}
+
+  \item{box_width}{The width of the box}
+}
+\value{
+\code{list(top, left, bottom, right, width, height)}
+}
+\description{
+Gets the box position
+}
+\author{
+Max
+}
+
