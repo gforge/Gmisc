@@ -2,7 +2,7 @@
 \alias{getVectorAngle}
 \title{Gets an angle}
 \usage{
-getVectorAngle(x, y, x_origo = NA, y_origo = NA, default.units = "mm")
+getVectorAngle(x, y, x_origo = NA, y_origo = NA)
 }
 \arguments{
   \item{x}{The x point of the vector}
@@ -12,8 +12,6 @@ getVectorAngle(x, y, x_origo = NA, y_origo = NA, default.units = "mm")
   \item{x_origo}{The x origin if other than 0}
 
   \item{y_origo}{The y origin if other than 0}
-
-  \item{default.units}{As defined by the grid package}
 }
 \value{
 angle in radians (see \code{\link{atan2}})
