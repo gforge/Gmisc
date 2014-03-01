@@ -262,7 +262,7 @@ bezierArrowGradient <- function(
     removeVals <- function(vals, point){
       direction <- getDirection(vals)
       for (i in 1:length(vals)){
-        if ((point - vals[i])*direction > 0){
+        if ((vals[i] - point)*direction > 0){
           return(vals[-(1:(i-1))])
         }
       }
@@ -283,7 +283,7 @@ bezierArrowGradient <- function(
     
     # Add the remaining points
     st_bp$add_x <- removeVals(vals=getGridVal(bp$x[selection], default.units), 
-                            point=st_bp$start_x)
+                              point=st_bp$start_x)
     st_bp$add_y <- removeVals(vals=getGridVal(bp$y[selection], default.units), 
                               point=st_bp$start_y)
     
