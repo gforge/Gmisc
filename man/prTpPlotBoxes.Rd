@@ -7,7 +7,8 @@ prTpPlotBoxes(overlap_order, transition_flow, no_boxes, box_width, tot_spacing,
   lwd_prop_total = lwd_prop_total, fill_start_clr, fill_end_clr,
   txt_start_clr, txt_end_clr, lwd = 2, line_col = "#000000", min_lwd,
   max_lwd, overlap_add_width, overlap_bg_clr, type_of_arrow, abs_arrow_width,
-  arrow_clr, transition_arrow_props, plot_arrows = TRUE, proportion = FALSE)
+  arrow_clr, transition_arrow_props, color_bar_subspace, plot_arrows = TRUE,
+  proportion = FALSE)
 }
 \arguments{
   \item{overlap_order}{The order in which the boxes are
@@ -58,6 +59,11 @@ prTpPlotBoxes(overlap_order, transition_flow, no_boxes, box_width, tot_spacing,
   \item{plot_arrows}{If we are plotting shadow boxes then
   arrows should not be plotted and this should be set to
   \code{FALSE}}
+
+  \item{color_bar_subspace}{If there is little or no
+  difference exists at the low/high proportions of the
+  spectrum then it can be of interest to focus the color
+  change to the center leaving the tails constant}
 
   \item{proportion}{It there is a proportion}
 }

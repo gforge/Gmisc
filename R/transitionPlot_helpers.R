@@ -148,6 +148,10 @@ prTpGetBoxSizedTextGrob <- function(txt,
 #' @param tot_spacing Total spacing between boxes
 #' @param box_width The box width
 #' @param add_width Add a certain width
+#' @param color_bar_subspace If there is little or no difference exists 
+#'  at the low/high proportions of the spectrum then it
+#'  can be of interest to focus the color change to the center
+#'  leaving the tails constant
 #' @return \code{NULL}
 #' @author Max
 prTpPlotArrows <- function(type, 
@@ -164,6 +168,7 @@ prTpPlotArrows <- function(type,
                            tot_spacing,
                            box_width,
                            abs_arrow_width,
+                           color_bar_subspace,
                            add_width = NA){
   no_boxes <- nrow(transition_flow)
   bx_left <- prTpGetBoxPositions(no=box_row, side="left",
@@ -240,8 +245,9 @@ prTpPlotArrows <- function(type,
         }else if (type=="gradient"){
           if (length(box_clr) > 1){
             # Invert order as that is the fill order
-            col_order <- 1+floor((1-transition_arrow_props[box_row, flow])*100)
-            current_grdt_clr <- colorRampPalette(box_clr, space="Lab")(101)[col_order]
+            current_grdt_clr <- prTpGetColors(colors = box_clr, 
+                                              proportion = 1-transition_arrow_props[box_row, flow],
+                                              space = color_bar_subspace)
           }else{
             current_grdt_clr <- box_clr
           }
@@ -294,6 +300,10 @@ prTpPlotArrows <- function(type,
 #'  available.
 #' @param plot_arrows If we are plotting shadow boxes then
 #'  arrows should not be plotted and this should be set to \code{FALSE}
+#' @param color_bar_subspace If there is little or no difference exists 
+#'  at the low/high proportions of the spectrum then it
+#'  can be of interest to focus the color change to the center
+#'  leaving the tails constant
 #' @param proportion It there is a proportion
 #' @return \code{NuLL}
 #' @author Max
@@ -318,6 +328,7 @@ prTpPlotBoxes <- function (overlap_order,
                            abs_arrow_width,
                            arrow_clr,
                            transition_arrow_props,
+                           color_bar_subspace,
                            plot_arrows = TRUE, proportion=FALSE) {
   
   for(i in overlap_order){
@@ -375,6 +386,7 @@ prTpPlotBoxes <- function (overlap_order,
                       tot_spacing = tot_spacing,
                       box_width = box_width,
                       abs_arrow_width = abs_arrow_width,
+                      color_bar_subspace = color_bar_subspace,
                       add_width = NA)
       }
       
@@ -482,3 +494,69 @@ prTpGetBoxPositions <- function (no, side,
     
   return(ret)
 }  
+
+#' Gets a set of colors or just one color
+#' 
+#' Used in order to illustrate the mixe between two
+#' proportions in the \code{\link{transitionPlot}}.
+#' 
+#' @param colors A set of min. two colors that is used
+#'  for \code{\link[grDevices]{colorRampPalette}}.
+#' @param proportion A proportion or a set of proportions
+#'  between 0 and 1. If you leave this out then the full color
+#'  span will be returned.
+#' @param space If there is little or no difference exists 
+#'  at the low/high proportions of the spectrum then it
+#'  can be of interest to focus the color change to the center
+#'  leaving the tails constant
+#' @return \code{character} The function can return both single colors
+#'  or multiple colors as character vector (see \code{\link[grDevices]{rgb}})
+#' @author Max
+prTpGetColors <- function(colors, proportion, space){
+  start <- c()
+  end <- c()
+  no <- 101
+  if (!missing(space)){
+    if(any(space > 1 | space < 0))
+      stop("Your color subspace that you define should be between 0 and 1")
+    
+    if (length(space) > 2)
+      stop("The color subspace has to be a length of either one or two",
+           " you have provided ", paste(space, collapse=", "), 
+           " of length", length(space))
+    
+    if (length(space) == 2){
+      start_no <- ceiling(space[1]*no)
+      end_no <- ceiling(space[2]*no)
+      start <- rep(colors[1], times=start_no)
+      end <- rep(tail(colors, 1), times=end_no)
+      no <- no - start_no - end_no
+      if (no < 0)
+        no <- 0
+    }else{
+      tails_no <- ceiling(space*no)
+      start <- rep(colors[1], times=tails_no)
+      end <- rep(tail(colors, 1), times=tails_no)
+      no <- no - 2 * tails_no
+      if (no < 0)
+        no <- 0
+    }
+  }
+  
+  if (no > 0){
+    clrs  <- c(start,
+               colorRampPalette(colors, space="Lab")(no),
+               end)
+  }else{
+    clrs <- c(start, end)
+  }
+    
+  if (missing(proportion))
+    return(clrs)
+  
+  if (any(proportion < 0 | proportion > 1))
+    stop("You color proportion of interest must lie between 0 and 1",
+         " you have provided: ", proportion)
+  
+  return(clrs[1+min(100, floor(length(clrs)*proportion))])
+}

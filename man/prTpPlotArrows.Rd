@@ -4,7 +4,7 @@
 \usage{
 prTpPlotArrows(type, box_row, transition_flow, max_flow, min_lwd, max_lwd, clr,
   box_clr, transition_arrow_props, prop_start_sizes, prop_end_sizes,
-  tot_spacing, box_width, abs_arrow_width, add_width = NA)
+  tot_spacing, box_width, abs_arrow_width, color_bar_subspace, add_width = NA)
 }
 \arguments{
   \item{type}{The type of arrow used}
@@ -33,6 +33,11 @@ prTpPlotArrows(type, box_row, transition_flow, max_flow, min_lwd, max_lwd, clr,
   \item{box_width}{The box width}
 
   \item{add_width}{Add a certain width}
+
+  \item{color_bar_subspace}{If there is little or no
+  difference exists at the low/high proportions of the
+  spectrum then it can be of interest to focus the color
+  change to the center leaving the tails constant}
 }
 \value{
 \code{NULL}

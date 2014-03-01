@@ -70,6 +70,10 @@
 #'  this to \code{FALSE}
 #' @param color_bar_cex The size of the tick labels for the color bar
 #' @param color_bar_labels The labels of the two proportions that make up the color bar
+#' @param color_bar_subspace If there is little or no difference exists 
+#'  at the low/high proportions of the spectrum then it
+#'  can be of interest to focus the color change to the center
+#'  leaving the tails constant
 #' @param new_page If you want the plot to appear on a new blank page then set this to \code{TRUE}, by
 #'  default it is \code{FALSE}.
 #' @return void 
@@ -146,6 +150,7 @@ transitionPlot <- function (transition_flow,
                             color_bar = TRUE,
                             color_bar_cex = cex * .33,
                             color_bar_labels,
+                            color_bar_subspace,
                             new_page = FALSE) {
   # Just for convenience
   no_boxes <- nrow(transition_flow)
@@ -382,7 +387,7 @@ transitionPlot <- function (transition_flow,
       pushViewport(viewport(layout.pos.row=3, 
                             layout.pos.col=2, 
                             name="Color_bar"))
-      bar_clrs <- colorRampPalette(fill_start_box[1,], space="Lab")(101)
+      bar_clrs <- prTpGetColors(fill_start_box[1,], space=color_bar_subspace)
       for (i in 1:length(bar_clrs)) {
         grid.rect(x=(i-1)/length(bar_clrs), just="left",
                   y=.5,
@@ -479,6 +484,7 @@ transitionPlot <- function (transition_flow,
                 abs_arrow_width = abs_arrow_width,
                 arrow_clr = arrow_clr,
                 transition_arrow_props = transition_arrow_props,
+                color_bar_subspace = color_bar_subspace,
                 plot_arrows = TRUE,
                 proportion = TRUE)
   
