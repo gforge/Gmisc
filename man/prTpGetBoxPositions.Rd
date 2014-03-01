@@ -10,6 +10,8 @@ prTpGetBoxPositions(no, side, prop_start_sizes, prop_end_sizes, tot_spacing,
 
   \item{side}{The right or left side}
 
+  \item{no_boxes}{The number of boxes}
+
   \item{prop_start_sizes}{The size of the start boxes}
 
   \item{prop_end_sizes}{The size of the end boxes}

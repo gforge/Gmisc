@@ -3,8 +3,8 @@
 \title{Plots the arrows}
 \usage{
 prTpPlotArrows(type, box_row, transition_flow, max_flow, min_lwd, max_lwd, clr,
-  box_clr, prop_start_sizes, prop_end_sizes, tot_spacing, box_width,
-  abs_arrow_width, add_width = NA)
+  box_clr, transition_arrow_props, prop_start_sizes, prop_end_sizes,
+  tot_spacing, box_width, abs_arrow_width, add_width = NA)
 }
 \arguments{
   \item{type}{The type of arrow used}
@@ -20,6 +20,9 @@ prTpPlotArrows(type, box_row, transition_flow, max_flow, min_lwd, max_lwd, clr,
   \item{clr}{The color of the line}
 
   \item{box_clr}{The color of the box}
+
+  \item{transition_arrow_props}{The proportions of the
+  different transitions if available.}
 
   \item{prop_start_sizes}{The proportions to the left}
 
