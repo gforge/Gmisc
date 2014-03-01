@@ -1,0 +1,32 @@
+\name{prTpGetColors}
+\alias{prTpGetColors}
+\title{Gets a set of colors or just one color}
+\usage{
+prTpGetColors(colors, proportion, space)
+}
+\arguments{
+  \item{colors}{A set of min. two colors that is used for
+  \code{\link[grDevices]{colorRampPalette}}.}
+
+  \item{proportion}{A proportion or a set of proportions
+  between 0 and 1. If you leave this out then the full
+  color span will be returned.}
+
+  \item{space}{If there is little or no difference exists
+  at the low/high proportions of the spectrum then it can
+  be of interest to focus the color change to the center
+  leaving the tails constant}
+}
+\value{
+\code{character} The function can return both single colors
+or multiple colors as character vector (see
+\code{\link[grDevices]{rgb}})
+}
+\description{
+Used in order to illustrate the mixe between two
+proportions in the \code{\link{transitionPlot}}.
+}
+\author{
+Max
+}
+

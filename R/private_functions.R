@@ -223,3 +223,30 @@ prGridPlotTitle <- function(title,
   
   pushViewport(viewport(layout.pos.row=3, name="main"))
 }
+
+#' Gets the height for an x-axis object
+#' 
+#' A hidden function that gets the height. It is for some
+#' reason not included by default in the \code{grid}-package.
+#' 
+#' @param x The \code{\link[grid]{xaxisGrob}} object
+#' @return A unit object
+#' @author Max
+heightDetails.xaxis <- function(x) {
+  cex <- prGetTextGrobCex(x$children$labels)
+  
+  grobHeight(x$children$ticks) + 
+    unit(1.5*cex, "line")
+}
+
+#' Just a simple acces to the gp$cex parameter
+#' 
+#' @param x The text-grob of interest
+#' @return \code{numeric} The cex value, 1 if no cex was present
+prGetTextGrobCex <-  function(x) {
+  cex <- 1
+  if (!is.null(x$gp$cex))
+    cex <- x$gp$cex
+  
+  return(cex)
+}

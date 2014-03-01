@@ -352,16 +352,6 @@ forestplot2 <- function (labeltext,
   marList$top <- convertY(mar[3], "npc")
   marList$right <- convertX(mar[4], "npc")
   
-#  if (is.grob(axisList$axisGrob)){
-#    marList$bottom <- marList$bottom + axisList$axisHeight
-#  }
-#  
- if (is.grob(axisList$labGrob)){
-   marList$bottom <- marList$bottom + 
-     grobHeight(axisList$labGrob) + 
-     unit(1*cex, "lines")
- }
-  
   prPushMarginViewport(bottom = marList$bottom,
     left = marList$left,
     top = marList$top,
@@ -477,16 +467,35 @@ forestplot2 <- function (labeltext,
       " If you want to have exact mm width then use graphwidth = unit(34, 'mm').")
   }
   
+  # Add space for the axis and the label
+  axis_height <- unit(0, "npc")
+  if (is.grob(axisList$axisGrob))
+    axis_height <- axis_height  + grobHeight(axisList$axisGrob)
+  if (is.grob(axisList$labGrob)){
+    gp_lab_cex <- prGetTextGrobCex(axisList$labGrob)
+    
+    # The lab grob y actually includes the axis (note negative)
+    axis_height <-  axis_height + 
+      unit(gp_lab_cex+.5, "line")
+  }
+  
+  axis_layout <- grid.layout(nrow=2,
+                             ncol=1,
+                             heights=unit.c(unit(1, "npc") - axis_height,
+                                            axis_height))
+  pushViewport(viewport(layout=axis_layout, 
+                        name="axis_margin"))
+  pushViewport(viewport(layout.pos.row=1, layout.pos.col=1))
+
   # The base viewport, set the increase.line_height paremeter if it seems a little
   # crowded between the lines that might happen when having multiple comparisons
-  main_grid_layout <- grid.layout(nrow   = nr + 1, 
+  main_grid_layout <- grid.layout(nrow   = nr, 
                                   ncol   = length(colwidths),
                                   widths = colwidths,
-                                  heights = unit(c(rep(1, nr), .5)/(nr+.5), "npc"),
+                                  heights = unit(rep(1/nr, nr), "npc"),
                                   respect = TRUE)
   pushViewport(viewport(layout = main_grid_layout,
                         name="BaseGrid"))
-  
   
   # Create the fourth argument 4 the fpDrawNormalCI() function 
   if (!is.null(boxsize)){
@@ -638,7 +647,7 @@ forestplot2 <- function (labeltext,
   
   # Output the legend if it is inside the main plot
   if (length(legend) > 0 && is.list(legend.pos)){
-    plot_vp <- viewport(layout.pos.row = 1:(nr+1),
+    plot_vp <- viewport(layout.pos.row = 1:nr,
       layout.pos.col = 2 * nc + 1, 
       name = "main_plot_area")
     pushViewport(plot_vp)
@@ -684,7 +693,7 @@ forestplot2 <- function (labeltext,
                    ...)
     upViewport(2)
   }
-  upViewport(2)
+  upViewport(3)
 
   if (is.character(main)){
     upViewport()

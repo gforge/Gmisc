@@ -102,7 +102,7 @@ transitionPlot(table(pre, post, split), new_page= TRUE,
                overlap_add_width = unit(1, "mm"))
 
 # Check with color label
-transitionPlot(table(pre, post, split), new_page= TRUE,
+transitionPlot(table(pre, post, split), new_page= TRUE, 
                fill_start_box=start_box_clr, fill_end_box=end_box_clr,
                txt_start_clr = c("#FFFFFF", "#000000"), txt_end_clr = c("#FFFFFF", "#000000"),
                box_txt = c("First", "Second", "Third"),
@@ -110,4 +110,6 @@ transitionPlot(table(pre, post, split), new_page= TRUE,
                min_lwd = unit(1, "mm"),
                max_lwd = unit(10, "mm"),
                overlap_add_width = unit(1, "mm"),
-               color_bar_lab = c("Females", "Males"))
+               color_bar_subspace=.3, 
+               color_bar_cex=1,
+               color_bar_lab = c(" Males", "Females "))

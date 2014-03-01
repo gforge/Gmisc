@@ -369,8 +369,13 @@ transitionPlot <- function (transition_flow,
   
   if (color_bar != "none"){
     if (color_bar == "bottom"){
-      axis_height <- unit(1.2+1*color_bar_cex, "lines")
       bar_height <- unit(.05, "npc")
+      colorAxis <- xaxisGrob(at=c(0,.25,.5,.75, 1),
+                             label= sprintf("%d %%", c(0,.25,.5,.75, 1)*100),
+                             main=FALSE, gp=gpar(cex=color_bar_cex))
+      
+      # Add a little space to the actual height
+      axis_height <- grobHeight(colorAxis) + unit(.01, "npc")
       bar_layout <- grid.layout(nrow=3, ncol=3,
                                 heights = unit.c(unit(1, "npc") - 
                                                    axis_height -
@@ -388,18 +393,10 @@ transitionPlot <- function (transition_flow,
                             layout.pos.col=2, 
                             name="Color_bar"))
       bar_clrs <- prTpGetColors(fill_start_box[1,], space=color_bar_subspace)
-      for (i in 1:length(bar_clrs)) {
-        grid.rect(x=(i-1)/length(bar_clrs), just="left",
-                  y=.5,
-                  width=1/length(bar_clrs),
-                  height=1, 
-                  gp=gpar(fill=bar_clrs[i], 
-                          col=NA))
-      }
-      grid.xaxis(at=c(0,.25,.5,.75, 1),
-                 label= sprintf("%d %%", c(0,.25,.5,.75, 1)*100),
-                 main=FALSE, gp=gpar(cex=color_bar_cex))
+      grid.raster(t(as.raster(bar_clrs)), width=1, height=1, interpolate=FALSE)
+      grid.draw(colorAxis)
       if (!missing(color_bar_labels)){
+        # The height is actually oblivious to upper case and lower case letters
         lab_height <- convertY(grobHeight(textGrob("Ij")), "npc", valueOnly=TRUE)
         lab_cex_adjusted <- 1/(lab_height*2)
         

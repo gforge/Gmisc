@@ -719,26 +719,22 @@ prFpGetGraphTicksAndClips <- function(xticks,
                     gp    = gpar(cex = cex.axis, 
                                  col = col$axes, 
                                  lwd=lwd.xaxis))
-    dg_height <- 
-      convertUnit(grobHeight(textGrob("I", gp=gpar(cex=cex.axis))), "npc") + 
-      unit(1, "lines")
   }else{
     dg <- FALSE
-    dg_height <- 0 
   }
 
   if (length(xlab) == 1 && nchar(xlab) > 0){
     # Write the label for the x-axis
     labGrob <- textGrob(xlab, 
-                        y = unit(-2, "lines"), 
                         gp = gpar(col = col$axes, cex=cex))
     
-  }else
+  }else{
     labGrob <- FALSE
+  }
+    
   
   return(list(axis_vp = axis_vp,
               axisGrob = dg,
-              axisHeight = dg_height,
               labGrob = labGrob,
               zero = zero,
               clip = clip,
@@ -767,13 +763,18 @@ prFpPrintXaxis <- function(axisList,
              y  = 0:1, 
              gp = gpar(col = col$zero, lwd=lwd.zero))
   
+  lab_y <- unit(2, "mm")
   # Omit the axis if specified as 0
   if (is.grob(axisList$axisGrob)){
     # Plot the actual x-axis
     grid.draw(axisList$axisGrob)
+    lab_y <- lab_y - grobHeight(axisList$axisGrob)
   }
   
   if (is.grob(axisList$labGrob)){
+    axisList$labGrob <- editGrob(axisList$labGrob,
+                                 y=lab_y - unit(.5, "line"),
+                                 vjust = 1)
     grid.draw(axisList$labGrob)
   }
   upViewport()

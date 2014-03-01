@@ -12,7 +12,7 @@ transitionPlot(transition_flow, type_of_arrow = c("grid", "simple",
   overlap_add_width = 1.5, box_prop, mar = unit(rep(3, times = 4), "mm"),
   main = NULL, box_label = NULL, box_label_pos = "top",
   box_label_cex = cex, color_bar = TRUE, color_bar_cex = cex * 0.33,
-  color_bar_labels, new_page = FALSE)
+  color_bar_labels, color_bar_subspace, new_page = FALSE)
 }
 \arguments{
   \item{transition_flow}{This should be a matrix with the
@@ -140,6 +140,11 @@ transitionPlot(transition_flow, type_of_arrow = c("grid", "simple",
 
   \item{color_bar_labels}{The labels of the two proportions
   that make up the color bar}
+
+  \item{color_bar_subspace}{If there is little or no
+  difference exists at the low/high proportions of the
+  spectrum then it can be of interest to focus the color
+  change to the center leaving the tails constant}
 
   \item{new_page}{If you want the plot to appear on a new
   blank page then set this to \code{TRUE}, by default it is
