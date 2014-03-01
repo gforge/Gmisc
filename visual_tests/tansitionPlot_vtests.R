@@ -81,3 +81,33 @@ transitionPlot(transition_matrix, box_prop=box_prop, new_page= TRUE,
                min_lwd = unit(1, "mm"),
                max_lwd = unit(10, "mm"),
                overlap_add_width = unit(1, "mm"))
+
+# Test 3D table
+set.seed(1)
+pre <- sample(LETTERS[c(1:3, 1, 1)], size=100, replace=TRUE)
+post <- sample(LETTERS[c(1:3, 2, 3, 3)], size=100, replace=TRUE)
+split <- sample(c("Male", "Female"), size=100, replace=TRUE)
+start_box_clr <- c("#8DA0CB", "#FC8D62")
+# Darken the colors slightly
+end_box_clr <- c(colorRampPalette(c(start_box_clr[1], "#000000"))(10)[2],
+                 colorRampPalette(c(start_box_clr[2], "#000000"))(10)[2])
+
+transitionPlot(table(pre, post, split), new_page= TRUE,
+               fill_start_box=start_box_clr, fill_end_box=end_box_clr,
+               txt_start_clr = c("#FFFFFF", "#000000"), txt_end_clr = c("#FFFFFF", "#000000"),
+               box_txt = c("First", "Second", "Third"),
+               type_of_arrow = "gradient",
+               min_lwd = unit(1, "mm"),
+               max_lwd = unit(10, "mm"),
+               overlap_add_width = unit(1, "mm"))
+
+# Check with color label
+transitionPlot(table(pre, post, split), new_page= TRUE,
+               fill_start_box=start_box_clr, fill_end_box=end_box_clr,
+               txt_start_clr = c("#FFFFFF", "#000000"), txt_end_clr = c("#FFFFFF", "#000000"),
+               box_txt = c("First", "Second", "Third"),
+               type_of_arrow = "gradient",
+               min_lwd = unit(1, "mm"),
+               max_lwd = unit(10, "mm"),
+               overlap_add_width = unit(1, "mm"),
+               color_bar_lab = c("Females", "Males"))

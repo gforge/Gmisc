@@ -65,6 +65,11 @@
 #' @param box_label A vector of length 2 if you want to label each box column
 #' @param box_label_pos The position of the label, either \code{'top'} or \code{'bottom'}
 #' @param box_label_cex The cex of the label, defaults to the default cex
+#' @param color_bar If you have proportions inside the transition_flow variable
+#'  then the color_bar will automatically appear at the bottom unless you set
+#'  this to \code{FALSE}
+#' @param color_bar_cex The size of the tick labels for the color bar
+#' @param color_bar_labels The labels of the two proportions that make up the color bar
 #' @param new_page If you want the plot to appear on a new blank page then set this to \code{TRUE}, by
 #'  default it is \code{FALSE}.
 #' @return void 
@@ -138,6 +143,9 @@ transitionPlot <- function (transition_flow,
                             box_label = NULL,
                             box_label_pos = "top",
                             box_label_cex = cex,
+                            color_bar = TRUE,
+                            color_bar_cex = cex * .33,
+                            color_bar_labels,
                             new_page = FALSE) {
   # Just for convenience
   no_boxes <- nrow(transition_flow)
@@ -161,10 +169,17 @@ transitionPlot <- function (transition_flow,
     
     # Remove the third dimension
     transition_flow <- transition_flow[,,1] + transition_flow[,,2]
+    if (color_bar == FALSE){
+      color_bar <- "none"
+    } else if(!is.character(color_bar)){
+      color_bar <- "bottom"
+    }
   }else if(!missing(box_prop)){
-    transition_arrow_props <- t(sapply(box_prop, function(x) rep(x, no_boxes)))
+    transition_arrow_props <- t(sapply(box_prop[,1], function(x) rep(x, no_boxes)))
+    color_bar <- "none"
   }else{
     transition_arrow_props <- matrix(1, ncol=no_boxes, nrow=no_boxes)
+    color_bar <- "none"
   }
   
   if (length(arrow_clr) == no_boxes){
@@ -347,7 +362,69 @@ transitionPlot <- function (transition_flow,
     pushViewport(viewport(layout.pos.row=main_row_no, layout.pos.col=1:3, name="Main_exc_label"))
   }
   
-  
+  if (color_bar != "none"){
+    if (color_bar == "bottom"){
+      axis_height <- unit(1.2+1*color_bar_cex, "lines")
+      bar_height <- unit(.05, "npc")
+      bar_layout <- grid.layout(nrow=3, ncol=3,
+                                heights = unit.c(unit(1, "npc") - 
+                                                   axis_height -
+                                                   bar_height,
+                                                 axis_height,
+                                                 bar_height),
+                                widths = unit.c(unit(box_width, "npc"),
+                                                unit(1, "npc") - 
+                                                  unit(box_width*2, "npc"),
+                                                unit(box_width, "npc")))
+      
+      pushViewport(viewport(layout=bar_layout, name="Bar_layout"))
+      
+      pushViewport(viewport(layout.pos.row=3, 
+                            layout.pos.col=2, 
+                            name="Color_bar"))
+      bar_clrs <- colorRampPalette(fill_start_box[1,], space="Lab")(101)
+      for (i in 1:length(bar_clrs)) {
+        grid.rect(x=(i-1)/length(bar_clrs), just="left",
+                  y=.5,
+                  width=1/length(bar_clrs),
+                  height=1, 
+                  gp=gpar(fill=bar_clrs[i], 
+                          col=NA))
+      }
+      grid.xaxis(at=c(0,.25,.5,.75, 1),
+                 label= sprintf("%d %%", c(0,.25,.5,.75, 1)*100),
+                 main=FALSE, gp=gpar(cex=color_bar_cex))
+      if (!missing(color_bar_labels)){
+        lab_height <- convertY(grobHeight(textGrob("Ij")), "npc", valueOnly=TRUE)
+        lab_cex_adjusted <- 1/(lab_height*2)
+        
+        if (missing(txt_start_clr)){
+          color_bar_txt_clr <- c("black", "black")
+        }else if (ncol(txt_start_clr) == 1){
+          color_bar_txt_clr <- rep(txt_start_clr[1], 2)
+        }else{
+          color_bar_txt_clr <- txt_start_clr[1,]
+        }
+        
+        left <- textGrob(color_bar_labels[1], x=0, y=.5, just="left",
+                         gp=gpar(cex=lab_cex_adjusted, 
+                                 col=color_bar_txt_clr[1]))
+        right <- textGrob(color_bar_labels[2], x=1, y=.5, just="right",
+                          gp=gpar(cex=lab_cex_adjusted,
+                                  col=color_bar_txt_clr[2]))
+        grid.draw(left)
+        grid.draw(right)
+      }
+      popViewport()
+      
+      pushViewport(viewport(layout.pos.row=1, 
+                            layout.pos.col=1:3, 
+                            name="Main_exc_bar"))
+    
+    }else{
+      stop("The color bar position you want, '", color_bar, "', is not yet supported")
+    }
+  }
   # Do the plot
   # Plot shadow boxes 2 % shifted of the box width
   shift <- box_width*.02
@@ -401,12 +478,17 @@ transitionPlot <- function (transition_flow,
                 type_of_arrow = type_of_arrow,
                 abs_arrow_width = abs_arrow_width,
                 arrow_clr = arrow_clr,
+                transition_arrow_props = transition_arrow_props,
                 plot_arrows = TRUE,
                 proportion = TRUE)
   
   popViewport()
 
   if (!is.null(main) && nchar(main) > 0){
+    popViewport()
+  }
+
+  if (color_bar != "none"){
     popViewport()
   }
   

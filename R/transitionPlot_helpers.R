@@ -141,6 +141,8 @@ prTpGetBoxSizedTextGrob <- function(txt,
 #' @param max_lwd The maximum line width
 #' @param clr The color of the line
 #' @param box_clr The color of the box
+#' @param transition_arrow_props The proportions of the different transitions if
+#'  available.
 #' @param prop_start_sizes The proportions to the left
 #' @param prop_end_sizes The proportions to the right
 #' @param tot_spacing Total spacing between boxes
@@ -149,24 +151,26 @@ prTpGetBoxSizedTextGrob <- function(txt,
 #' @return \code{NULL}
 #' @author Max
 prTpPlotArrows <- function(type, 
-                       box_row, 
-                       transition_flow,
-                       max_flow, 
-                       min_lwd, 
-                       max_lwd, 
-                       clr, 
-                       box_clr, 
-                       prop_start_sizes, 
-                       prop_end_sizes,
-                       tot_spacing,
-                       box_width,
-                       abs_arrow_width,
-                       add_width = NA){
+                           box_row, 
+                           transition_flow,
+                           max_flow, 
+                           min_lwd, 
+                           max_lwd, 
+                           clr, 
+                           box_clr, 
+                           transition_arrow_props,
+                           prop_start_sizes, 
+                           prop_end_sizes,
+                           tot_spacing,
+                           box_width,
+                           abs_arrow_width,
+                           add_width = NA){
+  no_boxes <- nrow(transition_flow)
   bx_left <- prTpGetBoxPositions(no=box_row, side="left",
-                      prop_start_sizes = prop_start_sizes, 
-                      prop_end_sizes = prop_end_sizes,
-                      tot_spacing=tot_spacing,
-                      box_width=box_width)
+                                 prop_start_sizes = prop_start_sizes, 
+                                 prop_end_sizes = prop_end_sizes,
+                                 tot_spacing=tot_spacing,
+                                 box_width=box_width)
   # Plot the widest arrow last
   for (flow in order(transition_flow[box_row,])){
     if (transition_flow[box_row,flow] > 0){
@@ -234,16 +238,23 @@ prTpPlotArrows <- function(type,
                                 clr=current_arrow_clr)
           grid.draw(bz)
         }else if (type=="gradient"){
+          if (length(box_clr) > 1){
+            # Invert order as that is the fill order
+            col_order <- 1+floor((1-transition_arrow_props[box_row, flow])*100)
+            current_grdt_clr <- colorRampPalette(box_clr, space="Lab")(101)[col_order]
+          }else{
+            current_grdt_clr <- box_clr
+          }
           bz <- bezierArrowGradient(x=x_ctrl_points, 
-                                        y=y_ctrl_points, 
-                                        width=adjusted_lwd,
-                                        arrow=list(length=a_l, base=a_width),
-                                        clr=current_arrow_clr,
-                                        grdt_type = "triangle",
-                                        grdt_clr_prop = 0.5,
-                                        grdt_start_prop = .3,
-                                        grdt_decrease_prop = .3,
-                                        grdt_clr = box_clr)
+                                    y=y_ctrl_points, 
+                                    width=adjusted_lwd,
+                                    arrow=list(length=a_l, base=a_width),
+                                    clr=current_arrow_clr,
+                                    grdt_type = "triangle",
+                                    grdt_clr_prop = 0.5,
+                                    grdt_start_prop = .3,
+                                    grdt_decrease_prop = .3,
+                                    grdt_clr = current_grdt_clr)
           grid.draw(bz)
           
         }else{
@@ -278,6 +289,9 @@ prTpPlotArrows <- function(type,
 #' @param overlap_bg_clr The color of the overlap
 #' @param type_of_arrow The type of arrow to be used
 #' @param abs_arrow_width The absolute width of the arrow
+#' @param arrow_clr The color of the arrow
+#' @param transition_arrow_props The proportions of the different transitions if
+#'  available.
 #' @param plot_arrows If we are plotting shadow boxes then
 #'  arrows should not be plotted and this should be set to \code{FALSE}
 #' @param proportion It there is a proportion
@@ -303,6 +317,7 @@ prTpPlotBoxes <- function (overlap_order,
                            type_of_arrow,
                            abs_arrow_width,
                            arrow_clr,
+                           transition_arrow_props,
                            plot_arrows = TRUE, proportion=FALSE) {
   
   for(i in overlap_order){
@@ -314,15 +329,11 @@ prTpPlotBoxes <- function (overlap_order,
                                      box_width=box_width)
       if(!missing(box_prop) & proportion){
         fill_clr = fill_start_clr[i,]
-        # Get a color in between using colorRampPalette
-        # The color is a mix of the two colors
-        transition_clr = rev(colorRampPalette(fill_clr)(101))[1+ceiling(box_prop[i,1]*100)]
         txt_clr = txt_start_clr[i,]
         prop = box_prop[i, 1]
       }else{
         prop = NA
         fill_clr = fill_start_clr[i]
-        transition_clr = fill_clr
         txt_clr = txt_start_clr[i]
       }
       
@@ -357,7 +368,8 @@ prTpPlotBoxes <- function (overlap_order,
                       min_lwd = min_lwd,
                       max_lwd = max_lwd,
                       clr = arrow_clr,
-                      box_clr = transition_clr,
+                      box_clr = fill_clr,
+                      transition_arrow_props = transition_arrow_props,
                       prop_start_sizes = prop_start_sizes, 
                       prop_end_sizes = prop_end_sizes,
                       tot_spacing = tot_spacing,
@@ -410,6 +422,7 @@ prTpPlotBoxes <- function (overlap_order,
 #' 
 #' @param no The box number
 #' @param side The right or left side
+#' @param no_boxes The number of boxes
 #' @param prop_start_sizes The size of the start boxes
 #' @param prop_end_sizes The size of the end boxes
 #' @param tot_spacing The total space between the boxes
@@ -420,6 +433,7 @@ prTpGetBoxPositions <- function (no, side,
                                  prop_start_sizes, prop_end_sizes,
                                  tot_spacing,
                                  box_width){
+  no_boxes <- max(length(prop_start_sizes), length(prop_end_sizes))
   empty_boxes <- ifelse(side == "left", 
                         sum(prop_start_sizes==0), 
                         sum(prop_end_sizes==0))
