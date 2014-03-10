@@ -764,16 +764,20 @@ prFpPrintXaxis <- function(axisList,
              gp = gpar(col = col$zero, lwd=lwd.zero))
   
   lab_y <- unit(2, "mm")
+  lab_grob_height <- unit(2, "mm")
   # Omit the axis if specified as 0
   if (is.grob(axisList$axisGrob)){
     # Plot the actual x-axis
     grid.draw(axisList$axisGrob)
-    lab_y <- lab_y - grobHeight(axisList$axisGrob)
+    lab_grob_height <- grobHeight(axisList$axisGrob)
+    lab_y <- lab_y - lab_grob_height
   }
   
   if (is.grob(axisList$labGrob)){
     axisList$labGrob <- editGrob(axisList$labGrob,
-                                 y=lab_y - unit(.5, "line"),
+                                 y=lab_y - unit(convertY(lab_grob_height, 
+                                                         "lines", valueOnly=TRUE)*.25, 
+                                                "lines"),
                                  vjust = 1)
     grid.draw(axisList$labGrob)
   }
@@ -1175,7 +1179,7 @@ prFpGetLabels <- function(label_type, labeltext, align,
   }
   attr(labels, "max_height") <- max_height
   attr(labels, "max_width") <- max_width
-  
+  attr(labels, "cex") <- ifelse(any(is.summary), cex*1.1, cex)
   return(labels)
 }
 
@@ -1227,10 +1231,7 @@ prFpGetLayoutVP <- function (lineheight, labels, nr, legend_layout = NULL) {
     if (lineheight == "auto"){
       lvp_height <- unit(1, "npc")
     }else if (lineheight == "lines"){
-      # Use the height of a grob + 50 %
-      lvp_height <- unit(convertUnit(attr(labels, "max_height"), 
-          unitTo="mm", 
-          valueOnly=TRUE)*(nr+.5)*1.5, "mm")
+      lvp_height <- unit(nr*attr(labels, "cex")*1.5, "lines")
     }else{
       stop("The lineheight option '", lineheight, "'is yet not implemented")
     }
@@ -1238,9 +1239,16 @@ prFpGetLayoutVP <- function (lineheight, labels, nr, legend_layout = NULL) {
     lvp_height <- unit(convertUnit(lineheight, unitTo="npc", valueOnly=TRUE)*(nr+.5), "npc")
   }
   
+  # If there is a legend on top then the size should be adjusted
+  if (!is.null(legend_layout) && 
+        legend_layout$nrow == 3 &&
+        convertY(lvp_height, "npc", valueOnly=TRUE) < 1){
+    lvp_height <- sum(lvp_height, legend_layout$heights[1:2])
+  }
+  
   lvp <- viewport(height=lvp_height,
-    layout = legend_layout,
-    name = ifelse(is.null(legend_layout), "main", "main_and_legend"))
+                  layout = legend_layout,
+                  name = ifelse(is.null(legend_layout), "main", "main_and_legend"))
   return (lvp)
 }
 

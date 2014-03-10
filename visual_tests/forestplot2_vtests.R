@@ -115,3 +115,51 @@ forestplot2(row_names, coef, low, high,
             legend.pos=list("topright"),
             legend.r = unit(.1, "snpc"),
             legend.gp = gpar(col="#CCCCCC", lwd=1.5))
+
+# Check line-height
+forestplot2(row_names, coef, low, high, 
+            lineheight="lines",
+            cex=1, # Base cex height
+            confintNormalFn=fpDrawDiamondCI,
+            main="Cool study",
+            zero = 1, boxsize=0.5,
+            col=fpColors(box=c("royalblue", "gold"),
+                         line=c("darkblue", "orange"),
+                         summary=c("darkblue", "red")),
+            xlab="The estimates",
+            new_page = TRUE, 
+            legend.title="Group",
+            legend=c("Treatment", "Placebo"),
+            legend.pos="top")
+
+forestplot2(row_names, coef, low, high, 
+            lineheight="lines",
+            cex=1.5, # Larger line height
+            confintNormalFn=fpDrawDiamondCI,
+            main="Cool study",
+            zero = 1, boxsize=0.5,
+            col=fpColors(box=c("royalblue", "gold"),
+                         line=c("darkblue", "orange"),
+                         summary=c("darkblue", "red")),
+            xlab="The estimates",
+            new_page = TRUE, 
+            legend.title="Group",
+            legend=c("Treatment", "Placebo"),
+            legend.pos="top")
+
+
+my_cex <- 1.4
+forestplot2(row_names, coef, low, high, 
+            lineheight=unit(1.5*my_cex, "lines"),
+            cex=my_cex, # Larger line height
+            confintNormalFn=fpDrawDiamondCI,
+            main="Cool study",
+            zero = 1, boxsize=0.5,
+            col=fpColors(box=c("royalblue", "gold"),
+                         line=c("darkblue", "orange"),
+                         summary=c("darkblue", "red")),
+            xlab="The estimates",
+            new_page = TRUE, 
+            legend.title="Group",
+            legend=c("Treatment", "Placebo"),
+            legend.pos="top")
