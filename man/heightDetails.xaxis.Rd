@@ -11,8 +11,14 @@
 A unit object
 }
 \description{
-A hidden function that gets the height. It is for some
-reason not included by default in the \code{grid}-package.
+A function that gets the height of an axisGrob. It is for
+some reason not included by default in the
+\code{grid}-package.
+}
+\examples{
+grid.newpage()
+xg <- xaxisGrob(c(1:3))
+convertY(grobHeight(xg), "lines")
 }
 \author{
 Max

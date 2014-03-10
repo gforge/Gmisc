@@ -1,3 +1,4 @@
+S3method(heightDetails,xaxis)
 S3method(print,htmlTable)
 export(bezierArrowGradient)
 export(bezierArrowSmpl)
