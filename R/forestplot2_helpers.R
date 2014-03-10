@@ -777,13 +777,12 @@ prFpPrintXaxis <- function(axisList,
     # Add some padding between text and ticks proportional to the ticks height
     padding <- 
       unit(convertY(lab_grob_height, "lines", valueOnly=TRUE)*0.1,
-         "lines"), just="top")
+           "lines")
 
     # The text is strangely messy
     # and needs its own viewport
     pushViewport(viewport(height=grobHeight(axisList$labGrob), 
-                          y=lab_y - padding)
-    grid.rect()
+                          y=lab_y - padding, just="top"))
     grid.draw(axisList$labGrob)
     upViewport()
   }
