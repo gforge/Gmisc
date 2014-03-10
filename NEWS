@@ -7,8 +7,7 @@ Changes for 0.6.2.1
 * Externalized all internal functions of the transitionplot
 * Added proportions for the transitionplot
 * Managed thanks to Baptiste Auguié help on Stack Overflow I know now how to calculate the height of axisGrobs - useful both in the forestplot2 and the transitionPlot functions
-* Fixed the adjustment of the xlabel for the forestplot2 function
-* Fixed the lineheight argument for the forestplot2 function
+* Fixed the adjustment of the xlabel, the lineheight argument, the viewports for the forestplot2 function
 
 Changes for 0.6.2.0
 -------------------

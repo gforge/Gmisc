@@ -163,3 +163,52 @@ forestplot2(row_names, coef, low, high,
             legend.title="Group",
             legend=c("Treatment", "Placebo"),
             legend.pos="top")
+
+
+my_cex <- 1.4
+forestplot2(row_names, coef, low, high, 
+            lineheight=unit(1.5*my_cex, "lines"),
+            cex=my_cex, # Larger line height
+            confintNormalFn=fpDrawDiamondCI,
+            main="Cool study",
+            zero = 1, boxsize=0.5,
+            col=fpColors(box=c("royalblue", "gold"),
+                         line=c("darkblue", "orange"),
+                         summary=c("darkblue", "red")),
+            xlab="The estimates",
+            new_page = TRUE)
+
+
+# Check if you can stack the plots in a grid
+grid.newpage()
+lv <- grid.layout(nrow=2, heights=unit(c(.6,.4), "npc"))
+pushViewport(viewport(layout=lv))
+pushViewport(viewport(layout.pos.row=1))
+grid.rect(gp=gpar(col="blue", fill=NA, lwd=4))
+forestplot2(row_names, coef, low, high, 
+            lineheight=unit(1.5*my_cex, "lines"),
+            cex=my_cex, # Larger line height
+            confintNormalFn=fpDrawDiamondCI,
+            zero = 1, boxsize=0.5,
+            col=fpColors(box=c("royalblue", "gold"),
+                         line=c("darkblue", "orange"),
+                         summary=c("darkblue", "red")),
+            xlab="The estimates",
+            legend.title="Group",
+            legend=c("Treatment", "Placebo"),
+            legend.pos="top")
+grid.rect(gp=gpar(col="red", fill=NA, lwd=2))
+popViewport()
+pushViewport(viewport(layout.pos.row=2))
+grid.rect(gp=gpar(col="blue", fill=NA, lwd=4))
+forestplot2(row_names, coef, low, high, 
+            lineheight=unit(1.5*my_cex, "lines"),
+            cex=my_cex, # Larger line height
+            confintNormalFn=fpDrawDiamondCI,
+            zero = 1, boxsize=0.5,
+            col=fpColors(box=c("royalblue", "gold"),
+                         line=c("darkblue", "orange"),
+                         summary=c("darkblue", "red")),
+            xlab="The estimates")
+grid.rect(gp=gpar(col="red", fill=NA, lwd=2))
+popViewport()

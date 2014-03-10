@@ -1236,7 +1236,10 @@ prFpGetLayoutVP <- function (lineheight, labels, nr, legend_layout = NULL) {
       stop("The lineheight option '", lineheight, "'is yet not implemented")
     }
   }else{
-    lvp_height <- unit(convertUnit(lineheight, unitTo="npc", valueOnly=TRUE)*(nr+.5), "npc")
+    lvp_height <- unit(convertY(lineheight, 
+                                unitTo="lines",
+                                valueOnly=TRUE)*nr, 
+                       "lines")
   }
   
   # If there is a legend on top then the size should be adjusted

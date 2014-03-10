@@ -356,7 +356,7 @@ forestplot2 <- function (labeltext,
     left = marList$left,
     top = marList$top,
     right = marList$right,
-    "main_margins")
+    name="forestplot_margins")
   
   if (is.character(main)){
     prGridPlotTitle(title=main, base_cex = cex)
@@ -677,10 +677,10 @@ forestplot2 <- function (labeltext,
       width <- legend_vertical_width
     }
     pushViewport(viewport(x=legend.pos[["x"]],
-        y=legend.pos[["y"]],
-        width=width,
-        height=height, 
-        just=legend.pos[["just"]]))
+                          y=legend.pos[["y"]],
+                          width=width,
+                          height=height, 
+                          just=legend.pos[["just"]]))
     # Draw the legend
     prFpDrawLegend(lGrobs = lGrobs, 
                    legend.pos = legend.pos, 
@@ -693,9 +693,8 @@ forestplot2 <- function (labeltext,
                    ...)
     upViewport(2)
   }
-  upViewport(3)
-
-  if (is.character(main)){
-    upViewport()
-  }
+  
+  # Go back to the original viewport
+  seekViewport("forestplot_margins")
+  upViewport(2)
 }
