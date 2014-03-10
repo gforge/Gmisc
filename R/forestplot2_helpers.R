@@ -763,8 +763,8 @@ prFpPrintXaxis <- function(axisList,
              y  = 0:1, 
              gp = gpar(col = col$zero, lwd=lwd.zero))
   
-  lab_y <- unit(2, "mm")
-  lab_grob_height <- unit(2, "mm")
+  lab_y <- unit(0, "mm")
+  lab_grob_height <- unit(-2, "mm")
   # Omit the axis if specified as 0
   if (is.grob(axisList$axisGrob)){
     # Plot the actual x-axis
@@ -774,12 +774,18 @@ prFpPrintXaxis <- function(axisList,
   }
   
   if (is.grob(axisList$labGrob)){
-    axisList$labGrob <- editGrob(axisList$labGrob,
-                                 y=lab_y - unit(convertY(lab_grob_height, 
-                                                         "lines", valueOnly=TRUE)*.25, 
-                                                "lines"),
-                                 vjust = 1)
+    # Add some padding between text and ticks proportional to the ticks height
+    padding <- 
+      unit(convertY(lab_grob_height, "lines", valueOnly=TRUE)*0.1,
+         "lines"), just="top")
+
+    # The text is strangely messy
+    # and needs its own viewport
+    pushViewport(viewport(height=grobHeight(axisList$labGrob), 
+                          y=lab_y - padding)
+    grid.rect()
     grid.draw(axisList$labGrob)
+    upViewport()
   }
   upViewport()
 }
