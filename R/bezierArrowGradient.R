@@ -98,7 +98,8 @@ bezierArrowGradient <- function(
   end_point <- which(cumsum(bp$lengths) >= sum(bp$lengths)*(grdt_start_prop + grdt_decrease_prop))[1]-2
   start_decrease <- which(cumsum(bp$lengths) >= sum(bp$lengths)*(grdt_start_prop))[1]
   
-  max_gradient_width <- getGridVal(width, default.units) - 2*getGridVal(grdt_line_width, default.units)
+  max_gradient_width <- getGridVal(width, default.units) - 
+    2*getGridVal(grdt_line_width, default.units)
   
   clr_length <- which(cumsum(bp$lengths[end_point:1])/sum(bp$lengths[1:end_point]) >= grdt_clr_prop)[1]
   g_clrs <- colorRampPalette(colors=c(clr, grdt_clr))(clr_length)
@@ -141,7 +142,7 @@ bezierArrowGradient <- function(
   # then there is no decrease
   if (end_point != start_decrease){
     getTriangleGrowth <- function(l){
-      f <- (1-rev(cumsum(l)/sum(l)))
+      f <- (1-rev(cumsum(l)/sum(l)))[-1]
       return(f/max(f))
     }
     g_factor <- getTriangleGrowth(bp$lengths[start_decrease:end_point])
@@ -154,7 +155,7 @@ bezierArrowGradient <- function(
       default.units=default.units,
       perpendicular=TRUE)
     
-    # Draw the left of the triangle
+    # Draw the end of the triangle
     gradient_pg <- polygonGrob(y=unit.c(unit(bp$y[end_point], default.units), 
         base$left[2], 
         base$right[2]),
@@ -309,12 +310,12 @@ bezierArrowGradient <- function(
     
     if (length(g_clrs) > end_point-start_decrease){
       # Continue with gradient polygons if needed
-      for (i in 1:(length(g_clrs) - (end_point-start_decrease))){
+      for (i in 2:(length(g_clrs) - (end_point-start_decrease))){
         top <- base
         base <- list(left = unit.c(tail(lines$left$x, i)[1],
-              tail(lines$left$y, i)[1]),
-          right = unit.c(tail(lines$right$x, i)[1],
-              tail(lines$right$y, i)[1]))
+                                   tail(lines$left$y, i)[1]),
+                     right = unit.c(tail(lines$right$x, i)[1],
+                                    tail(lines$right$y, i)[1]))
         
         current_clr <- g_clrs[end_point - start_decrease + i]
         gradient_pg <- polygonGrob(y=unit.c(top$left[2],

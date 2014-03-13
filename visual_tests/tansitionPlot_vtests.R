@@ -113,3 +113,10 @@ transitionPlot(table(pre, post, split), new_page= TRUE,
                color_bar_subspace=.3, 
                color_bar_cex=1,
                color_bar_lab = c(" Males", "Females "))
+
+rm(list=ls())
+start <- sample(LETTERS[c(1,1,1,2)], size=20, replace=TRUE)
+end <- sample(LETTERS[c(1,2,2,2,2)], size=20, replace=TRUE)
+transitionPlot(table(start, end), new_page= TRUE, 
+               type_of_arrow = "gradient", max_lwd=unit(20, "mm"),
+               overlap_add_width = unit(1, "mm"))

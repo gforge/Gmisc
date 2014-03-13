@@ -130,17 +130,17 @@ transitionPlot <- function (transition_flow,
                             box_width = 1/4, 
                             fill_start_box = "darkgreen",
                             txt_start_clr = "white",
-                            fill_end_box = "steelblue",
-                            txt_end_clr = "white",
+                            fill_end_box = fill_start_box,
+                            txt_end_clr = txt_start_clr,
                             cex=2,
-                            min_lwd = 1,
-                            max_lwd = 6,
+                            min_lwd = if(type_of_arrow == "grid") 1 else unit(1, "mm"),
+                            max_lwd = if(type_of_arrow == "grid") 6 else unit(5, "mm"),
                             lwd_prop_total = TRUE,
                             arrow_clr = "#000000",
                             abs_arrow_width = FALSE, 
                             overlap_bg_clr = "#FFFFFF",
                             overlap_order = 1:nrow(transition_flow),
-                            overlap_add_width = 1.5,
+                            overlap_add_width = if(type_of_arrow == "grid") 1.5 else unit(1, "mm"),
                             box_prop,
                             mar = unit(rep(3, times=4), "mm"),
                             main = NULL,
@@ -154,6 +154,7 @@ transitionPlot <- function (transition_flow,
                             new_page = FALSE) {
   # Just for convenience
   no_boxes <- nrow(transition_flow)
+  
 
   # If the matrix is a 3D matrix then the third dimension gives the proportion
   if (length(dim(transition_flow)) > 2){

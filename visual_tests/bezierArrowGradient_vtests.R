@@ -15,3 +15,18 @@ ag <- bezierArrowGradient(x = c(0.25, 0.5, 0.5, 0.75),
                           grdt_clr = "#C49696")
 grid.newpage()
 grid.draw(ag)
+
+# Step off bug
+ag <- bezierArrowGradient(x = c(0.25, 0.5, 0.5, 0.75), 
+                          y = rep(.5, 4),
+                          width = 0.4, 
+                          arrow = list(length = 0.2, 
+                                       base = .5), 
+                          clr = "#000000", 
+                          grdt_type = "triangle", 
+                          grdt_clr_prop = 0.5, 
+                          grdt_start_prop = 0.3, 
+                          grdt_decrease_prop = 0.3, 
+                          grdt_clr = "#C49696")
+grid.newpage()
+grid.draw(ag)
