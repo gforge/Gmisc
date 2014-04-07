@@ -1,5 +1,9 @@
 NEWS for the Gmisc package
 
+Changes for 0.6.2.2
+-------------------
+* transitionPlot - fixed arrow size and empty boxes
+
 Changes for 0.6.2.1
 -------------------
 * bezierArrowSmplGradient changed name to just bezierArrowGradient

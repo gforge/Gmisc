@@ -169,8 +169,19 @@ transitionPlot <- function (transition_flow,
            " i.e. a variable with two alternatives.",
            " You have provided a variable with ", dim(transition_flow)[3], " alternatives")
     
-    box_prop <- cbind(rowSums(transition_flow[,,1])/rowSums(transition_flow[,,1:2]), 
-                      colSums(transition_flow[,,1])/rowSums(colSums(transition_flow[,,1:2])))
+    prop_fn <- function(x){
+      if (x[1] == 0)
+        return(0)
+      if (x[2] == 0)
+        return(1)
+      return(x[1]/x[2])
+    }
+    no_1_start <- rowSums(transition_flow[,,1])
+    no_tot_start <- rowSums(transition_flow)
+    no_1_end <- colSums(transition_flow[,,1])
+    no_tot_end <- rowSums(colSums(transition_flow[,,1:2]))
+    box_prop <- cbind(apply(cbind(no_1_start, no_tot_start), 1, prop_fn),
+                      apply(cbind(no_1_end, no_tot_end), 1, prop_fn))
     transition_arrow_props <- transition_flow[,,1]/(transition_flow[,,1]+transition_flow[,,2])
     
     # Remove the third dimension
@@ -313,11 +324,13 @@ transitionPlot <- function (transition_flow,
 
   if (!is.null(box_label) && length(box_label) == 2){
     left <- prTpGetBoxPositions(side="left", no=1, 
+                                transitions=transition_flow[1,],
                                 prop_start_sizes = prop_start_sizes, 
                                 prop_end_sizes = prop_end_sizes,
                                 tot_spacing = tot_spacing,
                                 box_width = box_width)
     right <- prTpGetBoxPositions(side="right", no=1, 
+                                 transitions=transition_flow[,1],
                                  prop_start_sizes = prop_start_sizes, 
                                  prop_end_sizes = prop_end_sizes,
                                  tot_spacing = tot_spacing,

@@ -2,8 +2,8 @@
 \alias{prTpGetBoxPositions}
 \title{Gets the box position}
 \usage{
-prTpGetBoxPositions(no, side, prop_start_sizes, prop_end_sizes, tot_spacing,
-  box_width)
+prTpGetBoxPositions(no, side, transitions, prop_start_sizes, prop_end_sizes,
+  tot_spacing, box_width)
 }
 \arguments{
   \item{no}{The box number}
@@ -11,6 +11,8 @@ prTpGetBoxPositions(no, side, prop_start_sizes, prop_end_sizes, tot_spacing,
   \item{side}{The right or left side}
 
   \item{no_boxes}{The number of boxes}
+
+  \item{transitions}{The flows to or from}
 
   \item{prop_start_sizes}{The size of the start boxes}
 

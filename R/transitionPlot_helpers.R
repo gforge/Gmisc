@@ -172,6 +172,7 @@ prTpPlotArrows <- function(type,
                            add_width = NA){
   no_boxes <- nrow(transition_flow)
   bx_left <- prTpGetBoxPositions(no=box_row, side="left",
+                                 transitions = transition_flow[box_row,],
                                  prop_start_sizes = prop_start_sizes, 
                                  prop_end_sizes = prop_end_sizes,
                                  tot_spacing=tot_spacing,
@@ -180,6 +181,7 @@ prTpPlotArrows <- function(type,
   for (flow in order(transition_flow[box_row,])){
     if (transition_flow[box_row,flow] > 0){
       bx_right <- prTpGetBoxPositions(no=flow, side="right",
+                                      transitions = transition_flow[,box_row],
                                       prop_start_sizes = prop_start_sizes, 
                                       prop_end_sizes = prop_end_sizes,
                                       tot_spacing=tot_spacing,
@@ -212,6 +214,16 @@ prTpPlotArrows <- function(type,
           a_width <- getGridVal(unit(lwd, "pt"), "npc")+
             bx_right$y_entry_height/(no_boxes+1)
         }
+        
+        # Add line width addition if it is a background line
+        if (!is.na(add_width)){
+          if (is.unit(add_width)){
+            a_width <- a_width + convertY(add_width, unitTo="npc", valueOnly=TRUE)
+          }else{
+            a_width <- a_width * add_width
+          }
+        }
+        
         a_angle <- atan(a_width/2/a_l)*180/pi
         # Need to adjust the end of the arrow as it otherwise overwrites part of the box
         # if it is thick
@@ -226,14 +238,32 @@ prTpPlotArrows <- function(type,
         if (abs_arrow_width){
           a_width <- bx_right$y_entry_height*1.5/no_boxes
         }else{
-          a_width <- getGridVal(lwd, "npc") + 
-            bx_right$y_entry_height/(no_boxes+1)
+          a_width <- # getGridVal(lwd, "npc") + 
+            bx_right$y_entry_height*transition_flow[box_row,flow]/max_flow*2.2
+          # Set a maximum size in proportion to the line
+          if (getGridVal(lwd, "npc", axisTo="y")*1.66 < a_width)
+            a_width <- getGridVal(lwd, "npc", axisTo="y")*1.66
         }
+
+        # Add line width addition if it is a background line
+        if (!is.na(add_width)){
+          if (is.unit(add_width)){
+            a_width <- a_width + convertY(add_width, unitTo="npc", valueOnly=TRUE)
+          }else{
+            a_width <- a_width * add_width
+          }
+        }
+          
         
-        if (a_width < adjusted_lwd)
+        if (a_width < adjusted_lwd){
+          sp_float_string <- sprintf("%%.%df", -floor(log10(adjusted_lwd-a_width))+1)
           warning("The arrow width is smaller than the width of the line,",
                   "thus not appearing as a regular arrow: ", 
-                  a_width, " < ", adjusted_lwd)
+                  sprintf(sp_float_string, a_width), 
+                  " < ", 
+                  sprintf(sp_float_string, adjusted_lwd))
+          
+        }
         
         if (type=="simple"){
           bz <- bezierArrowSmpl(x=x_ctrl_points, 
@@ -334,6 +364,7 @@ prTpPlotBoxes <- function (overlap_order,
   for(i in overlap_order){
     if (prop_start_sizes[i] > 0){
       bx_left <- prTpGetBoxPositions(no=i, side="left",
+                                     transitions=transition_flow[i,],
                                      prop_start_sizes = prop_start_sizes, 
                                      prop_end_sizes = prop_end_sizes,
                                      tot_spacing=tot_spacing,
@@ -403,6 +434,7 @@ prTpPlotBoxes <- function (overlap_order,
     
     if (prop_end_sizes[i] > 0){
       bx_right <- prTpGetBoxPositions(no=i, side="right",
+                                      transitions=transition_flow[,i],
                                       prop_start_sizes = prop_start_sizes, 
                                       prop_end_sizes = prop_end_sizes,
                                       tot_spacing=tot_spacing,
@@ -435,6 +467,7 @@ prTpPlotBoxes <- function (overlap_order,
 #' @param no The box number
 #' @param side The right or left side
 #' @param no_boxes The number of boxes
+#' @param transitions The flows to or from
 #' @param prop_start_sizes The size of the start boxes
 #' @param prop_end_sizes The size of the end boxes
 #' @param tot_spacing The total space between the boxes
@@ -442,6 +475,7 @@ prTpPlotBoxes <- function (overlap_order,
 #' @return \code{list(top, left, bottom, right, width, height)}
 #' @author Max
 prTpGetBoxPositions <- function (no, side, 
+                                 transitions,
                                  prop_start_sizes, prop_end_sizes,
                                  tot_spacing,
                                  box_width){
@@ -473,9 +507,45 @@ prTpGetBoxPositions <- function (no, side,
   
   ret$y_exit <- rep(ret$y, times=no_boxes)
   ret$y_entry_height <- ret$height/3
-  ret$y_entry <- seq(to=ret$y-ret$height/6,
-                     from=ret$y+ret$height/6,
-                     length.out=no_boxes)
+  ret$y_entry <- rep(NA, times=no_boxes)
+  if (is.na(transitions) || sum(transitions[-1]) == 0){
+    # There are invalid transitions or it seems that
+    # only one arrow exists
+    if (is.na(transitions)){
+      ret$y_entry <- seq(to=ret$y - ret$height/6,
+                         from=ret$y + ret$height/6,
+                         length.out = no_boxes)
+    }else{
+      ret$y_entry <- rep(ret$y, times = no_boxes)
+    }
+  }else{
+    # The entry point should be distributed according to arrow width
+    # Unfortunately the arrow width also relates to the min_lwd and max_lwd
+    # there is therefore some need for adjustments
+    for (i in 1:no_boxes){
+      if (i == 1){
+        ret$y_entry[i] <- ret$y + ret$y_entry_height/2
+      }else if (sum(transitions[1:i]) == sum(transitions)){
+        ret$y_entry[i] <- ret$y - ret$y_entry_height/2
+      }else{
+        # Do a proportion and remove half of the top/bottom
+        # as these attach at the ends
+        arrow_proportion <- sum(transitions[2:i])/
+          (sum(transitions) - (head(transitions,1) + tail(transitions, 1))/2)
+        
+        # Narrow the space slightly
+        narrower <- (no_boxes+8)/(no_boxes + 10)
+        
+        ret$y_entry[i] <- ret$y + ret$height/6 - 
+          ret$y_entry_height/no_boxes/2-
+          ret$y_entry_height*narrower*arrow_proportion
+      }
+    }
+    ret$y_entry <- seq(to=ret$y - ret$height/6,
+                       from=ret$y + ret$height/6,
+                       length.out = no_boxes)
+    
+  }
   
   # Now the x-axis
   if (side == "right"){

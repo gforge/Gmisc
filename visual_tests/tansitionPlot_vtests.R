@@ -35,8 +35,6 @@ transitionPlot(transition_matrix, box_prop=box_prop,
                max_lwd = unit(10, "mm"),
                overlap_add_width = unit(1, "mm"))
 
-
-
 # Set one of the boxes below the printing threshold for the text
 
 # Settings
@@ -100,6 +98,52 @@ transitionPlot(table(pre, post, split), new_page= TRUE,
                min_lwd = unit(1, "mm"),
                max_lwd = unit(10, "mm"),
                overlap_add_width = unit(1, "mm"))
+
+pre <- sample(LETTERS[c(1:4, 1, 1, 2, 1, 1)], size=100, replace=TRUE)
+post <- sample(LETTERS[c(1:4, 2, 3, 3)], size=100, replace=TRUE)
+split <- sample(c("Male", "Female"), size=100, replace=TRUE)
+
+tp <- table(pre, post, split)
+# A new category is generated hence there is no starter
+tp["D",,] <- 0
+transitionPlot(tp, new_page= TRUE,
+               fill_start_box=start_box_clr, 
+               fill_end_box=rbind(end_box_clr, 
+                                  end_box_clr,
+                                  end_box_clr,
+                                  c("#AAAAAA", "#AAAAAA")),
+               txt_start_clr = c("#FFFFFF", "#000000"),
+               txt_end_clr = rbind(c("#FFFFFF", "#000000"),
+                                   c("#FFFFFF", "#000000"),
+                                   c("#FFFFFF", "#000000"),
+                                   c("#000000", "#000000")),
+               box_txt = c("First", "Second", "Third", "Missing"),
+               type_of_arrow = "gradient",
+               min_lwd = unit(.25, "mm"),
+               max_lwd = unit(10, "mm"),
+               overlap_add_width = unit(1, "mm"),
+               arrow_clr = c("#000000", "#000000","#000000", "#555555"))
+
+transitionPlot(tp, new_page= TRUE,
+               fill_start_box=start_box_clr, 
+               fill_end_box=rbind(end_box_clr, 
+                                  end_box_clr,
+                                  end_box_clr,
+                                  c("#AAAAAA", "#AAAAAA")),
+               txt_start_clr = c("#FFFFFF", "#000000"),
+               txt_end_clr = rbind(c("#FFFFFF", "#000000"),
+                                   c("#FFFFFF", "#000000"),
+                                   c("#FFFFFF", "#000000"),
+                                   c("#000000", "#000000")),
+               box_txt = c("First", "Second", "Third", "Missing"),
+               type_of_arrow = "simple",
+               min_lwd = unit(1, "mm"),
+               max_lwd = unit(10, "mm"),
+               overlap_add_width = unit(1, "mm"),
+               arrow_clr = cbind(c("#000000", "#490b0b","#490b0b", "#555555"),
+                                 c("#193b19", "#000000","#490b0b", "#555555"),
+                                 c("#193b19", "#193b19","#000000", "#555555"),
+                                 c("#555555", "#555555","#555555", "#555555")))
 
 # Check with color label
 transitionPlot(table(pre, post, split), new_page= TRUE, 
