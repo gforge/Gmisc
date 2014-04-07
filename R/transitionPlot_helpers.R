@@ -263,6 +263,9 @@ prTpPlotArrows <- function(type,
                   " < ", 
                   sprintf(sp_float_string, adjusted_lwd))
           
+          # Looks really weird if this is allowed
+          a_width <- adjusted_lwd
+          
         }
         
         if (type=="simple"){
