@@ -27,6 +27,13 @@
 #'  can set this variable to FALSE. You can also choose something else that
 #'  the default % if you so wish by setting this variable. Note, this is 
 #'  only used when combined with the missing information.
+#' @param plusmin_str Provide if you want anything other than the plus minus sign
+#'  suited for the given output format.
+#' @param language The ISO-639-1 two-letter code for the language of
+#'  interest. Currently only english is distinguished from the ISO
+#'  format using a ',' as the separator in the \code{\link{outputInt}}
+#'  function.
+#' @param ... Passed on to \code{\link{describeFactors}}
 #' @return A string formatted for printing either latex by  HTML
 #' 
 #' @seealso \code{\link{getDescriptionStatsBy}}
@@ -44,15 +51,19 @@ describeMean <- function(x,
   show_missing = FALSE, 
   show_missing_digits = digits,
   horizontal_proportions=NULL,
-  percentage_sign = TRUE){
+  percentage_sign = TRUE,
+  plusmin_str,
+  languge = "en",
+  ...){
   show_missing <- prConvertShowMissing(show_missing)
 
-  if (html)
-    plusmin_str <- "&plusmn;"
-  else
-    plusmin_str <- "\\pm"
+  if (missing(plusmin_str))
+    if (html)
+      plusmin_str <- "&plusmn; "
+    else
+      plusmin_str <- "\\pm "
   
-  ret <- c(sprintf(sprintf("%%.%df (%s %%3.%df)", digits, plusmin_str, digits), 
+  ret <- c(sprintf(sprintf("%%.%df (%s%%3.%df)", digits, plusmin_str, digits), 
     mean(x, na.rm=T), sd(x, na.rm=T)))
   
   # LaTeX complains if any formula isn't encapsulated within $ signs
@@ -61,13 +72,16 @@ describeMean <- function(x,
   
   if (show_missing %in% c("ifany", "always") & sum(is.na(x))>0){
     missing <- describeFactors(is.na(x), number_first = number_first, 
+                               percentage_sign=percentage_sign, 
+                               languge = languge,
                                digits = show_missing_digits, html = html,
-                               horizontal_proportions = horizontal_proportions)
+                               horizontal_proportions = horizontal_proportions,
+                               ...)
     ret <- rbind(ret, missing["TRUE", ])
     rownames(ret) <- c("Mean (SD)", "Missing")
   } else if (show_missing == "always"){
     if(percentage_sign == TRUE)
-      percentage_sign <- ifelse (html, " %", " \\%")
+      percentage_sign <- ifelse (html, "%", "\\%")
     else if(is.character(percentage_sign) == FALSE)
       percentage_sign = ""
 
@@ -111,6 +125,11 @@ describeMean <- function(x,
 #'  can set this variable to FALSE. You can also choose something else that
 #'  the default % if you so wish by setting this variable. Note, this is 
 #'  only used when combined with the missing information.
+#' @param language The ISO-639-1 two-letter code for the language of
+#'  interest. Currently only english is distinguished from the ISO
+#'  format using a ',' as the separator in the \code{\link{outputInt}}
+#'  function.
+#' @param ... Passed on to \code{\link{describeFactors}}
 #' @return A string formatted for printing either latex by  HTML
 #' 
 #' @seealso \code{\link{getDescriptionStatsBy}}
@@ -129,7 +148,9 @@ describeMedian <- function(x,
   show_missing = FALSE, 
   show_missing_digits = digits,
   horizontal_proportions=NULL,
-  percentage_sign = TRUE){
+  percentage_sign = TRUE,
+  languge = "en",
+  ...){
   show_missing <- prConvertShowMissing(show_missing)
   
   if (iqr)
@@ -144,15 +165,18 @@ describeMedian <- function(x,
   
   if (show_missing %in% c("ifany", "always") & sum(is.na(x))>0){
     missing <- describeFactors(is.na(x), number_first = number_first, 
+                               percentage_sign=percentage_sign,
+                               languge = languge,
                                digits = show_missing_digits, html = html, 
-                               horizontal_proportions = horizontal_proportions)
+                               horizontal_proportions = horizontal_proportions,
+                               ...)
     ret <- rbind(ret, missing["TRUE", ])
     rownames(ret) <- c(
       ifelse(iqr, "Median (IQR)", "Median (range)"),
       "Missing")
   } else if (show_missing == "always"){
     if(percentage_sign == TRUE)
-      percentage_sign <- ifelse (html, " %", " \\%")
+      percentage_sign <- ifelse (html, "%", "\\%")
     else if(is.character(percentage_sign) == FALSE)
       percentage_sign = ""
     
@@ -198,6 +222,11 @@ describeMedian <- function(x,
 #' @param percentage_sign If you want to suppress the percentage sign you
 #'  can set this variable to FALSE. You can also choose something else that
 #'  the default % if you so wish by setting this variable.
+#' @param language The ISO-639-1 two-letter code for the language of
+#'  interest. Currently only english is distinguished from the ISO
+#'  format using a ',' as the separator in the \code{\link{outputInt}}
+#'  function.
+#' @param ... Passed on to \code{\link{outputInt}}
 #' @return A string formatted for printing either latex by  HTML
 #' 
 #' @seealso \code{\link{getDescriptionStatsBy}}, \code{\link{describeFactors}} 
@@ -215,7 +244,8 @@ describeProp <- function(x,
   show_missing_digits = digits,
   horizontal_proportions = NULL,
   default_ref = "First",
-  percentage_sign = TRUE){
+  percentage_sign = TRUE,
+  languge = "en"){
   show_missing <- prConvertShowMissing(show_missing)
   
   default_ref <- prGetAndValidateDefaultRef(x, default_ref)
@@ -234,9 +264,12 @@ describeProp <- function(x,
                            html=html, 
                            number_first = number_first, 
                            digits = digits,
+                           percentage_sign=percentage_sign,
+                           languge = languge,
                            show_missing = show_missing, 
                            show_missing_digits = show_missing_digits,
-                           horizontal_proportions = horizontal_proportions))
+                           horizontal_proportions = horizontal_proportions,
+                           ...))
   
   if (is.factor(x) == FALSE)
     x <- factor(x)
@@ -246,10 +279,11 @@ describeProp <- function(x,
   # Don't count missing since those are treated as factors if any
   percent <- 100*no/length(x[is.na(x)==FALSE])
   
-  no <- ifelse(no >= 10^4, format(no, big.mark=" "), format(no))
+  no <- outputInt(no, languge=languge, html=html, ...=...)
+  
   # The LaTeX treats % as comments unless it's properly escaped
   if(percentage_sign == TRUE)
-    percentage_sign <- ifelse (html, " %", " \\%")
+    percentage_sign <- ifelse (html, "%", "\\%")
   else if(is.character(percentage_sign) == FALSE)
     percentage_sign = ""
   
@@ -285,7 +319,11 @@ describeProp <- function(x,
 #' @param percentage_sign If you want to suppress the percentage sign you
 #'  can set this variable to FALSE. You can also choose something else that
 #'  the default % if you so wish by setting this variable.
-#' @param ... Discarded
+#' @param language The ISO-639-1 two-letter code for the language of
+#'  interest. Currently only english is distinguished from the ISO
+#'  format using a ',' as the separator in the \code{\link{outputInt}}
+#'  function.
+#' @param ... Passed on to \code{\link{outputInt}}
 #' @return A string formatted for printing either latex by  HTML
 #' 
 #' @seealso \code{\link{getDescriptionStatsBy}}
@@ -315,14 +353,13 @@ describeFactors <- function(x,
   show_missing_digits = digits,
   horizontal_proportions = NULL,
   percentage_sign = TRUE,
+  languge = "en",
   ...) {
   
   show_missing <- prConvertShowMissing(show_missing)
   
   # Get basic data
   table_results <- table(x, useNA= show_missing)
-  values <- ifelse(table_results >= 10^4, format(table_results, big.mark=" ", trim=TRUE), 
-    format(table_results, trim=TRUE))
   
   # Check if we should relate to an external total
   if (is.null(horizontal_proportions) == FALSE){
@@ -363,9 +400,6 @@ describeFactors <- function(x,
       # Reset the table_results to our new array
       table_results <- tmp
       class(tmp) <- "table"
-      # Redo the values variable
-      values <- ifelse(table_results >= 10^4, format(table_results, big.mark=" ", trim=TRUE), 
-        format(table_results, trim=TRUE))
     }
     
     # Initiate an empty array
@@ -386,9 +420,12 @@ describeFactors <- function(x,
     percentages <- table_results/sum(table_results)*100
   }
   
+  # Format the values
+  values <- sapply(table_results, outputInt, languge=languge, html=html, ...=...)
+  
   # The LaTeX treats %% as comments unless it's properly escaped
   if(percentage_sign == TRUE)
-    percentage_sign <- ifelse (html, " %", " \\%")
+    percentage_sign <- ifelse (html, "%", "\\%")
   else if(is.character(percentage_sign) == FALSE)
     percentage_sign = ""
 

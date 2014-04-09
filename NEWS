@@ -3,6 +3,9 @@ NEWS for the Gmisc package
 Changes for 0.6.2.2
 -------------------
 * transitionPlot - fixed arrow size and empty boxes
+* outputInt now defaults to the ',' formatting according to the English language. It also has no-breaking space if html option is set. It can also handle complex vector/matrix input.
+* describeMean now allows for custom plus minus sign
+* describe* now use the outputInt with the default english settings
 
 Changes for 0.6.2.1
 -------------------
