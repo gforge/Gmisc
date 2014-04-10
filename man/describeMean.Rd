@@ -5,7 +5,8 @@ the standard deviation}
 \usage{
 describeMean(x, html = FALSE, digits = 1, number_first = TRUE,
   show_missing = FALSE, show_missing_digits = digits,
-  horizontal_proportions = NULL, percentage_sign = TRUE)
+  horizontal_proportions = NULL, percentage_sign = TRUE, plusmin_str,
+  languge = "en", ...)
 }
 \arguments{
   \item{x}{The variable that you want the statistics for}
@@ -47,6 +48,17 @@ describeMean(x, html = FALSE, digits = 1, number_first = TRUE,
   can also choose something else that the default % if you
   so wish by setting this variable. Note, this is only used
   when combined with the missing information.}
+
+  \item{plusmin_str}{Provide if you want anything other
+  than the plus minus sign suited for the given output
+  format.}
+
+  \item{language}{The ISO-639-1 two-letter code for the
+  language of interest. Currently only english is
+  distinguished from the ISO format using a ',' as the
+  separator in the \code{\link{outputInt}} function.}
+
+  \item{...}{Passed on to \code{\link{describeFactors}}}
 }
 \value{
 A string formatted for printing either latex by HTML

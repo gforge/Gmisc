@@ -6,7 +6,7 @@ the number and the percentage}
 describeProp(x, html = FALSE, digits = 1, number_first = TRUE,
   show_missing = FALSE, show_missing_digits = digits,
   horizontal_proportions = NULL, default_ref = "First",
-  percentage_sign = TRUE)
+  percentage_sign = TRUE, languge = "en")
 }
 \arguments{
   \item{x}{The variable that you want the statistics for}
@@ -52,6 +52,13 @@ describeProp(x, html = FALSE, digits = 1, number_first = TRUE,
   percentage sign you can set this variable to FALSE. You
   can also choose something else that the default % if you
   so wish by setting this variable.}
+
+  \item{language}{The ISO-639-1 two-letter code for the
+  language of interest. Currently only english is
+  distinguished from the ISO format using a ',' as the
+  separator in the \code{\link{outputInt}} function.}
+
+  \item{...}{Passed on to \code{\link{outputInt}}}
 }
 \value{
 A string formatted for printing either latex by HTML
