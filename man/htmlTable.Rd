@@ -13,7 +13,7 @@ htmlTable(x, title = first.word(deparse(substitute(x))), headings,
   rowlabel.pos = "bottom", ctable = FALSE, compatibility = "LibreOffice",
   rowname, caption, caption.loc = "top", tfoot, label, ...)
 
-\method{print}{htmlTable}(x, useViewer = TRUE, ...)
+\method{print}{htmlTable}(x, useViewer, ...)
 }
 \arguments{
   \item{x}{The matrix/data.frame with the data}

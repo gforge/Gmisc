@@ -6,6 +6,7 @@ Changes for 0.6.2.2
 * outputInt now defaults to the ',' formatting according to the English language. It also has no-breaking space if html option is set. It can also handle complex vector/matrix input.
 * describeMean now allows for custom plus minus sign
 * describe* now use the outputInt with the default english settings
+* Minor fix for the print.htmlTable
 
 Changes for 0.6.2.1
 -------------------
