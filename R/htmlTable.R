@@ -828,7 +828,6 @@ setClass("htmlTable", contains = "character")
 
 #' @rdname htmlTable
 #' @method print htmlTable
-#' @S3method print htmlTable
 #' @param useViewer If you are using RStudio there is a viewer thar can render 
 #'  the table within that is automatically envoced unless you have the knitr 
 #'  package loaded. Set this to \code{FALSE} if you want to remove that 

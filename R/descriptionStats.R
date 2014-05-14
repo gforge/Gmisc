@@ -25,7 +25,7 @@
 #'  interpreted as a whole.
 #' @param percentage_sign If you want to suppress the percentage sign you
 #'  can set this variable to FALSE. You can also choose something else that
-#'  the default % if you so wish by setting this variable. Note, this is 
+#'  the default \% if you so wish by setting this variable. Note, this is 
 #'  only used when combined with the missing information.
 #' @param plusmin_str Provide if you want anything other than the plus minus sign
 #'  suited for the given output format.
@@ -43,6 +43,7 @@
 #' describeMean(c(1:10, NA), show_missing=TRUE)
 #' 
 #' @author max
+#' @family description functions
 #' @export
 describeMean <- function(x, 
   html=FALSE, 
@@ -53,7 +54,7 @@ describeMean <- function(x,
   horizontal_proportions=NULL,
   percentage_sign = TRUE,
   plusmin_str,
-  languge = "en",
+  language = "en",
   ...){
   show_missing <- prConvertShowMissing(show_missing)
 
@@ -73,7 +74,7 @@ describeMean <- function(x,
   if (show_missing %in% c("ifany", "always") & sum(is.na(x))>0){
     missing <- describeFactors(is.na(x), number_first = number_first, 
                                percentage_sign=percentage_sign, 
-                               languge = languge,
+                               language = language,
                                digits = show_missing_digits, html = html,
                                horizontal_proportions = horizontal_proportions,
                                ...)
@@ -123,7 +124,7 @@ describeMean <- function(x,
 #'  interpreted as a whole.
 #' @param percentage_sign If you want to suppress the percentage sign you
 #'  can set this variable to FALSE. You can also choose something else that
-#'  the default % if you so wish by setting this variable. Note, this is 
+#'  the default \% if you so wish by setting this variable. Note, this is 
 #'  only used when combined with the missing information.
 #' @param language The ISO-639-1 two-letter code for the language of
 #'  interest. Currently only english is distinguished from the ISO
@@ -139,6 +140,7 @@ describeMean <- function(x,
 #' describeMedian(c(1:10, NA), show_missing=TRUE)
 #' 
 #' @author max
+#' @family description functions
 #' @export
 describeMedian <- function(x, 
   iqr=TRUE, 
@@ -149,7 +151,7 @@ describeMedian <- function(x,
   show_missing_digits = digits,
   horizontal_proportions=NULL,
   percentage_sign = TRUE,
-  languge = "en",
+  language = "en",
   ...){
   show_missing <- prConvertShowMissing(show_missing)
   
@@ -166,7 +168,7 @@ describeMedian <- function(x,
   if (show_missing %in% c("ifany", "always") & sum(is.na(x))>0){
     missing <- describeFactors(is.na(x), number_first = number_first, 
                                percentage_sign=percentage_sign,
-                               languge = languge,
+                               language = language,
                                digits = show_missing_digits, html = html, 
                                horizontal_proportions = horizontal_proportions,
                                ...)
@@ -221,7 +223,7 @@ describeMedian <- function(x,
 #'  wither be "First", level name or level number.  
 #' @param percentage_sign If you want to suppress the percentage sign you
 #'  can set this variable to FALSE. You can also choose something else that
-#'  the default % if you so wish by setting this variable.
+#'  the default \% if you so wish by setting this variable.
 #' @param language The ISO-639-1 two-letter code for the language of
 #'  interest. Currently only english is distinguished from the ISO
 #'  format using a ',' as the separator in the \code{\link{outputInt}}
@@ -235,6 +237,7 @@ describeMedian <- function(x,
 #' describeProp(factor(sample(50, x=c("A","B", NA), replace=TRUE)), show_missing=TRUE)
 #'  
 #' @author max
+#' @family description functions
 #' @export
 describeProp <- function(x, 
   html=FALSE, 
@@ -245,7 +248,8 @@ describeProp <- function(x,
   horizontal_proportions = NULL,
   default_ref = "First",
   percentage_sign = TRUE,
-  languge = "en"){
+  language = "en",
+  ...){
   show_missing <- prConvertShowMissing(show_missing)
   
   default_ref <- prGetAndValidateDefaultRef(x, default_ref)
@@ -265,7 +269,7 @@ describeProp <- function(x,
                            number_first = number_first, 
                            digits = digits,
                            percentage_sign=percentage_sign,
-                           languge = languge,
+                           language = language,
                            show_missing = show_missing, 
                            show_missing_digits = show_missing_digits,
                            horizontal_proportions = horizontal_proportions,
@@ -279,7 +283,7 @@ describeProp <- function(x,
   # Don't count missing since those are treated as factors if any
   percent <- 100*no/length(x[is.na(x)==FALSE])
   
-  no <- outputInt(no, languge=languge, html=html, ...=...)
+  no <- outputInt(no, language=language, html=html, ...)
   
   # The LaTeX treats % as comments unless it's properly escaped
   if(percentage_sign == TRUE)
@@ -318,7 +322,7 @@ describeProp <- function(x,
 #'  the number before the by() command.
 #' @param percentage_sign If you want to suppress the percentage sign you
 #'  can set this variable to FALSE. You can also choose something else that
-#'  the default % if you so wish by setting this variable.
+#'  the default \% if you so wish by setting this variable.
 #' @param language The ISO-639-1 two-letter code for the language of
 #'  interest. Currently only english is distinguished from the ISO
 #'  format using a ',' as the separator in the \code{\link{outputInt}}
@@ -327,6 +331,7 @@ describeProp <- function(x,
 #' @return A string formatted for printing either latex by  HTML
 #' 
 #' @seealso \code{\link{getDescriptionStatsBy}}
+#' @family description functions
 #' 
 #' @examples
 #' set.seed(1)
@@ -353,7 +358,7 @@ describeFactors <- function(x,
   show_missing_digits = digits,
   horizontal_proportions = NULL,
   percentage_sign = TRUE,
-  languge = "en",
+  language = "en",
   ...) {
   
   show_missing <- prConvertShowMissing(show_missing)
@@ -421,9 +426,9 @@ describeFactors <- function(x,
   }
   
   # Format the values
-  values <- sapply(table_results, outputInt, languge=languge, html=html, ...=...)
+  values <- sapply(table_results, outputInt, language=language, html=html, ...=...)
   
-  # The LaTeX treats %% as comments unless it's properly escaped
+  # The LaTeX treats % as comments unless it's properly escaped
   if(percentage_sign == TRUE)
     percentage_sign <- ifelse (html, "%", "\\%")
   else if(is.character(percentage_sign) == FALSE)

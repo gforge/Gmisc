@@ -12,6 +12,7 @@
 #' xg <- xaxisGrob(c(1:3))
 #' convertY(grobHeight(xg), "lines")
 #' @export
+#' @keywords internal
 heightDetails.xaxis <- function(x) {
   cex <- prGetTextGrobCex(x$children$labels)
   

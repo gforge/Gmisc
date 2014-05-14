@@ -40,6 +40,7 @@
 #' @rdname fpDrawCI
 #' @author Max
 #' @export
+#' @family forestplot functions
 fpDrawNormalCI <- function(lower_limit, 
                            estimate, 
                            upper_limit, 
@@ -371,6 +372,7 @@ fpDrawSummaryCI <- function(lower_limit, estimate, upper_limit,
 #' @importFrom grDevices colorRampPalette
 #' 
 #' @export
+#' @family forestplot functions
 fpColors <- function (all.elements, 
                       box        = "black", 
                       lines      = "gray", 
@@ -430,6 +432,7 @@ fpColors <- function (all.elements,
 #' and \code{\link[base]{eval}} functions: \code{eval(as.call(list(fn[[row]][[col]], arg_1=1, arg_2=2)))}
 #' 
 #' @author Max
+#' @keywords internal
 prFpGetConfintFnList <- function(fn, no_rows, no_cols){
   # Return a list that has
   # a two dim structure of [[row]][[col]]
@@ -596,6 +599,7 @@ prFpGetConfintFnList <- function(fn, no_rows, no_cols){
 #' @return list Returns a list with axis_vp, axisGrob, labGrob, zero and clip
 #' 
 #' @author Max
+#' @keywords internal
 prFpGetGraphTicksAndClips <- function(xticks, 
                                       xticks.digits, 
                                       xlog, 
@@ -752,6 +756,7 @@ prFpGetGraphTicksAndClips <- function(xticks,
 #' @return void 
 #' 
 #' @author Max
+#' @keywords internal
 prFpPrintXaxis <- function(axisList, 
                            col, 
                            lwd.zero){
@@ -801,6 +806,7 @@ prFpPrintXaxis <- function(axisList,
 #' @return void
 #' 
 #' @author Max
+#' @keywords internal
 prFpPrintLabels <- function(labels, nc, nr){
   # Output the labels
   # The column
@@ -832,6 +838,7 @@ prFpPrintLabels <- function(labels, nc, nr){
 #'  legend is saved inside \code{attr("title")}
 #' 
 #' @author max
+#' @keywords internal
 prFpGetLegendGrobs <- function(legend, legend.cex, legend.title=NULL){
   lGrobs <- list()
   max_width <- 0
@@ -892,6 +899,7 @@ prFpGetLegendGrobs <- function(legend, legend.cex, legend.title=NULL){
 #' @return \code{void} 
 #' 
 #' @author max
+#' @keywords internal
 prFpDrawLegend <- function (lGrobs, legend.pos, 
                             col, 
                             colgap,
@@ -1056,6 +1064,7 @@ prFpDrawLegend <- function (lGrobs, legend.pos,
 #' @return \code{vector} Contains a min and max value
 #' 
 #' @author Max
+#' @keywords internal
 prFpXrange <- function(upper, lower, clip, zero, xticks, xlog){
   top <- min(max(upper, na.rm = TRUE), clip[2])
   bottom <- max(min(lower, na.rm = TRUE), clip[1])
@@ -1114,6 +1123,7 @@ prFpXrange <- function(upper, lower, clip, zero, xticks, xlog){
 #'  element and max_width/max_height for the total
 #' 
 #' @author max
+#' @keywords internal
 prFpGetLabels <- function(label_type, labeltext, align, 
   nc, nr, 
   is.summary,
@@ -1200,6 +1210,7 @@ prFpGetLabels <- function(label_type, labeltext, align,
 #' @return An expression or a text
 #' 
 #' @author max
+#' @keywords internal
 prFpFetchRowLabel <- function(label_type, labeltext, i, j){
   if (label_type=="expression"){
     # Haven't figured out it this is possible with 
@@ -1231,6 +1242,7 @@ prFpFetchRowLabel <- function(label_type, labeltext, i, j){
 #' @return \code{viewport} Returns the viewport needed 
 #' 
 #' @author max
+#' @keywords internal
 prFpGetLayoutVP <- function (lineheight, labels, nr, legend_layout = NULL) {
   if (!is.unit(lineheight)){
     if (lineheight == "auto"){
@@ -1269,6 +1281,7 @@ prFpGetLayoutVP <- function (lineheight, labels, nr, legend_layout = NULL) {
 #' @return \code{boolean} TRUE or FALSE
 #' 
 #' @author max
+#' @keywords internal
 prFpValidateLabelList <- function(labelList){
   l = length(labelList[[1]])
   if (length(labelList) == 1)
@@ -1315,6 +1328,7 @@ prFpFindWidestGrob <- function (grob.list, return_unit="mm"){
 #'  the correct x/y/adjust values
 #'
 #' @author max
+#' @keywords internal
 prFpGetLegendBoxPosition <- function (legend.pos) {
   valid_txt_pos <- c("bottomright", "bottom", "bottomleft", "left", "topleft", "top", "topright", "right", "center")
   if (!all(c("x", "y") %in% names(legend.pos)) &&
@@ -1397,6 +1411,7 @@ prFpGetLegendBoxPosition <- function (legend.pos) {
 #' @param confintNormalFn The original confintNormalFn input
 #' @return \code{list}
 #' @author Max
+#' @keywords internal
 prFpPrepareLegendMarker <- function (legendMarkerFn, col_no, confintNormalFn) {
   if (is.function(legendMarkerFn)){
     legendMarkerFn <- lapply(1:col_no, function(x) legendMarkerFn)

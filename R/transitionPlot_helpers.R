@@ -7,6 +7,7 @@
 #' @return \code{matrix} With two columns and no_boxes rows.
 #'  If function fails then return \code{NULL}
 #' @author Max
+#' @keywords internal
 prTpGetBoxPropClr <- function(clr, no_boxes, lengthOneOK = FALSE){
   if (is.matrix(clr)){
     if (nrow(clr) == no_boxes &&
@@ -33,6 +34,7 @@ prTpGetBoxPropClr <- function(clr, no_boxes, lengthOneOK = FALSE){
 #' @param prop Provide a proportion if the box should be split (0-1)
 #' @return \code{NULL}
 #' @author Max
+#' @keywords internal
 prTpPlotBox <- function(bx, bx_txt, fill, txt_clr, 
                         cex, line_col, lwd,
                         prop = NA){
@@ -97,6 +99,7 @@ prTpPlotBox <- function(bx, bx_txt, fill, txt_clr,
 #' @param force_cex If font size should be forced
 #' @param ... Other options
 #' @author Max
+#' @keywords internal
 prTpGetBoxSizedTextGrob <- function(txt, 
                                     txt_clr, 
                                     txt_cex,
@@ -154,6 +157,7 @@ prTpGetBoxSizedTextGrob <- function(txt,
 #'  leaving the tails constant
 #' @return \code{NULL}
 #' @author Max
+#' @keywords internal
 prTpPlotArrows <- function(type, 
                            box_row, 
                            transition_flow,
@@ -338,8 +342,9 @@ prTpPlotArrows <- function(type,
 #'  can be of interest to focus the color change to the center
 #'  leaving the tails constant
 #' @param proportion It there is a proportion
-#' @return \code{NuLL}
+#' @return \code{NULL}
 #' @author Max
+#' @keywords internal
 prTpPlotBoxes <- function (overlap_order,
                            transition_flow,
                            no_boxes, 
@@ -477,6 +482,7 @@ prTpPlotBoxes <- function (overlap_order,
 #' @param box_width The width of the box
 #' @return \code{list(top, left, bottom, right, width, height)}
 #' @author Max
+#' @keywords internal
 prTpGetBoxPositions <- function (no, side, 
                                  transitions,
                                  prop_start_sizes, prop_end_sizes,
@@ -585,6 +591,7 @@ prTpGetBoxPositions <- function (no, side,
 #' @return \code{character} The function can return both single colors
 #'  or multiple colors as character vector (see \code{\link[grDevices]{rgb}})
 #' @author Max
+#' @keywords internal
 prTpGetColors <- function(colors, proportion, space){
   start <- c()
   end <- c()

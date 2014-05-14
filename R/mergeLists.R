@@ -39,6 +39,7 @@ mergeLists <- function(..., lapplyOutput = NULL){
 #' @return list with the two merged
 #'  
 #' @author Max
+#' @keywords internal
 mergeLists_internal <- function(o_element, n_element){
   if (is.list(n_element)){
     # Fill in non-existant element with NA elements

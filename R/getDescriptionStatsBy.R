@@ -52,7 +52,7 @@
 #'  wither be "First", level name or level number.  
 #' @param percentage_sign If you want to surpress the percentage sign you
 #'  can set this variable to FALSE. You can also choose something else that
-#'  the default % if you so wish by setting this variable.
+#'  the default \% if you so wish by setting this variable.
 #' @return Returns a vector if vars wasn't specified and it's a
 #'  continuous or binary statistic. If vars was a matrix then it
 #'  appends the result to the end of that matrix. If the x variable

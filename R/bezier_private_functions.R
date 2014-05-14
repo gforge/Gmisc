@@ -12,6 +12,7 @@
 #'  converted if necessary. 
 #' 
 #' @author max
+#' @keywords internal
 validateAndConvertVectorInputs <- function(x, y, 
   x_origo=NA, y_origo=NA){
   # Just som sanity input check
@@ -60,6 +61,7 @@ validateAndConvertVectorInputs <- function(x, y,
 #' @return angle in radians (see \code{\link{atan2}})
 #' 
 #' @author max
+#' @keywords internal
 getVectorAngle <- function(x, y, 
                            x_origo=NA, y_origo=NA){
   v <- validateAndConvertVectorInputs(x=x, y=y, 
@@ -82,6 +84,7 @@ getVectorAngle <- function(x, y,
 #' @return boolean 
 #' 
 #' @author max
+#' @keywords internal
 isHorizontal <- function(angle_radian){
   if ((angle_radian < pi/4 && angle_radian > -pi/4) ||
       (angle_radian < pi-pi/4 && angle_radian > pi+pi/4))
@@ -109,6 +112,7 @@ isHorizontal <- function(angle_radian){
 #'  and a angle element
 #' 
 #' @author max
+#' @keywords internal
 rotateWidthAccVector <- 
   function (x, y, 
             x_origo=NA, y_origo=NA, 
@@ -148,6 +152,7 @@ rotateWidthAccVector <-
 #'  and a angle element
 #' 
 #' @author max
+#' @keywords internal
 rotateWidthAccAngle <- function (angle, 
   x_origo=NA, y_origo=NA, 
   width = 0, 
@@ -229,6 +234,7 @@ rotateWidthAccAngle <- function (angle,
 #' 
 #' @importFrom sp point.in.polygon
 #' @author max
+#' @keywords internal
 getLines <- function(bp, end_point, 
                      width, default.units, 
                      align_2_axis = TRUE){
@@ -506,6 +512,7 @@ getLines <- function(bp, end_point,
 #' @return A list with left and right elements indicating the two lines 
 #' 
 #' @author max
+#' @keywords internal
 getLinesWithArrow <- function(bp, arrow, end_points, width, default.units, align_2_axis){
   lines <- getLines(bp = bp,
     end_point=end_points$end, 
@@ -554,6 +561,7 @@ getLinesWithArrow <- function(bp, arrow, end_points, width, default.units, align
 #' @return float 
 #' 
 #' @author Max
+#' @keywords internal
 getGridVal <- function(x, default.units, axisTo="x"){
   if("unit" %in% class(x))
     return(convertUnit(x, unitTo=default.units, valueOnly=TRUE, axisTo=axisTo))

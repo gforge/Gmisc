@@ -32,10 +32,11 @@
 #'  \code{\link{describeFactors}}
 #' @param percentage_sign If you want to suppress the percentage sign you
 #'  can set this variable to FALSE. You can also choose something else that
-#'  the default % if you so wish by setting this variable.
+#'  the default \% if you so wish by setting this variable.
 #' @return A matrix or a vector depending on the settings
 #' 
 #' @author max
+#' @keywords internal
 prGetStatistics <- function(x, 
   show_perc = FALSE, 
   html = TRUE, 
@@ -107,6 +108,7 @@ prGetStatistics <- function(x,
 #' @return string 
 #' 
 #' @author max
+#' @keywords internal
 prConvertShowMissing <- function(show_missing){
   if (show_missing == FALSE || show_missing == "no")
     show_missing <- "no"
@@ -127,6 +129,7 @@ prConvertShowMissing <- function(show_missing){
 #' @return integer The level number of interest 
 #' 
 #' @author max
+#' @keywords internal
 prGetAndValidateDefaultRef <- function(x, default_ref){
   if (default_ref == "First"){
     default_ref <- 1
@@ -158,6 +161,7 @@ prGetAndValidateDefaultRef <- function(x, default_ref){
 #' @return \code{NULL} 
 #' 
 #' @author max
+#' @keywords internal
 prPushMarginViewport <- function(bottom, left, top, right, name=NULL){
   if (!is.unit(bottom))
     bottom <- unit(bottom, "npc")
@@ -197,6 +201,7 @@ prPushMarginViewport <- function(bottom, left, top, right, name=NULL){
 #' @return \code{NULL} The function does not return a value 
 #' 
 #' @author max
+#' @keywords internal
 prGridPlotTitle <- function(title, 
   base_cex, cex_mult = 1.2,
   fontface = "bold",
@@ -228,6 +233,7 @@ prGridPlotTitle <- function(title,
 #' 
 #' @param x The text-grob of interest
 #' @return \code{numeric} The cex value, 1 if no cex was present
+#' @keywords internal
 prGetTextGrobCex <-  function(x) {
   cex <- 1
   if (!is.null(x$gp$cex))

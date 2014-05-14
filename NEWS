@@ -1,5 +1,9 @@
 NEWS for the Gmisc package
 
+Changes for 0.6.2.3
+-------------------
+* Roxygen2 v 4.0.0 upgrade + other doc upgrades
+
 Changes for 0.6.2.2
 -------------------
 * transitionPlot - fixed arrow size and empty boxes
