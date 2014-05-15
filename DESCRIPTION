@@ -1,6 +1,6 @@
 Package: Gmisc
 Version: 0.6.2.3
-Date: 2014-05-14
+Date: 2014-05-15
 Title: A few plots, tables, and misc functions
 Author: Max Gordon <max@gforge.se>
 Maintainer: Max Gordon <max@gforge.se>
@@ -26,6 +26,6 @@ Depends:
 Suggests:
     testthat,
     XML
-Roxygen: list(wrap = TRuE)
+Roxygen: list(wrap = TRUE)
 Encoding: UTF-8
 NeedsCompilation: no

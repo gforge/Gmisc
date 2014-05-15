@@ -30,7 +30,7 @@ test_that("Check describeMean",{
                sprintf("^%d", 
                        sum(is.na(Loblolly$height_w_missing))))
   expect_match(dm[2], 
-               sprintf("\\(%.2f %%\\)", 
+               sprintf("\\(%.2f%%\\)", 
                        mean(is.na(Loblolly$height_w_missing))*100))
   
   dm <- describeMean(Loblolly$height_w_missing, html=TRUE, 
@@ -41,7 +41,7 @@ test_that("Check describeMean",{
                sprintf("^%d", 
                        sum(is.na(Loblolly$height_w_missing))))
   expect_match(dm[2], 
-               sprintf("\\(%.1f %%\\)", 
+               sprintf("\\(%.1f%%\\)", 
                        mean(is.na(Loblolly$height_w_missing))*100))
 })
 
@@ -61,7 +61,7 @@ test_that("Check describeMedian",{
                sprintf("^%d", 
                        sum(is.na(Loblolly$height_w_missing))))
   expect_match(dm[2], 
-               sprintf("\\(%.2f %%\\)", 
+               sprintf("\\(%.2f%%\\)", 
                        mean(is.na(Loblolly$height_w_missing))*100))
   
   dm <- describeMedian(Loblolly$height_w_missing, html=TRUE, 
@@ -72,7 +72,7 @@ test_that("Check describeMedian",{
                sprintf("^%d", 
                        sum(is.na(Loblolly$height_w_missing))))
   expect_match(dm[2], 
-               sprintf("\\(%.1f %%\\)", 
+               sprintf("\\(%.1f%%\\)", 
                        mean(is.na(Loblolly$height_w_missing))*100))
   
 })
@@ -84,7 +84,7 @@ test_that("Check describeFactors",{
     expect_match(d_f[n,], 
                  sprintf("^%d", t_f[n]))
     expect_match(d_f[n,], 
-                 sprintf("\\(%.1f %%\\)", prop.table(t_f)[n]*100))
+                 sprintf("\\(%.1f%%\\)", prop.table(t_f)[n]*100))
   }
   
   d_f <- describeFactors(Loblolly$fvar, html=TRUE, digits=1, number_first=FALSE)
@@ -92,7 +92,7 @@ test_that("Check describeFactors",{
     expect_match(d_f[n,], 
                  sprintf("\\(%d\\)", t_f[n]))
     expect_match(d_f[n,], 
-                 sprintf("^%.1f %%", prop.table(t_f)[n]*100))
+                 sprintf("^%.1f%%", prop.table(t_f)[n]*100))
   }
 
   d_f <- describeFactors(Loblolly$fvar_w_missing, html=TRUE, digits=1,
@@ -109,7 +109,7 @@ test_that("Check describeFactors",{
     expect_match(d_f[row_no_df,], 
                  sprintf("^%d", t_f[row_no_tf]))
     expect_match(d_f[row_no_df,], 
-                 sprintf("\\(%.1f %%\\)", prop.table(t_f)[row_no_tf]*100))
+                 sprintf("\\(%.1f%%\\)", prop.table(t_f)[row_no_tf]*100))
   }
   
   d_f <- describeFactors(Loblolly$fvar_w_missing, html=TRUE, digits=2,
@@ -129,7 +129,7 @@ test_that("Check describeFactors",{
     expect_match(d_f[row_no_df,], 
                  sprintf("^%d", t_f[row_no_tf]))
     expect_match(d_f[row_no_df,], 
-                 sprintf("\\(%s %%\\)", prop))
+                 sprintf("\\(%s%%\\)", prop))
   }
 })
 
@@ -141,7 +141,7 @@ test_that("Check describeProp",{
   expect_match(d_f, 
                sprintf("^%d", t_f["Yes"]))
   expect_match(d_f, 
-               sprintf("\\(%.1f %%\\)", prop.table(t_f)["Yes"]*100))
+               sprintf("\\(%.1f%%\\)", prop.table(t_f)["Yes"]*100))
   
   # Should default to factor function if there are misssing
   d_f <- describeProp(Loblolly$young_w_missing, html=TRUE, digits=1, show_missing="ifany")

@@ -103,8 +103,8 @@ test_that("Check factor function",
   # Check that it contains the true mean
   for (rn in rownames(a)){
     for (cn in levels(Loblolly$young))
-      expect_true(grepl(stats[rn, cn], a[rn, cn]),
-                  info="Factor count don't match")
+      expect_match(a[rn, cn], as.character(stats[rn, cn]),
+                   info="Factor count don't match")
   }
   
   vertical_perc_stats <- format(apply(stats, 2, function(x){
@@ -115,7 +115,7 @@ test_that("Check factor function",
   }), nsmall=2, digits=2))
   for (rn in rownames(a)){
     for (cn in levels(Loblolly$young))
-      expect_true(grepl(sprintf("%s %%", vertical_perc_stats[rn, cn]), a[rn, cn]),
+      expect_match(a[rn, cn], sprintf("%s%%", vertical_perc_stats[rn, cn]),
                   info="Factor percentagess don't match in vertical mode")
   }
   
@@ -125,29 +125,29 @@ test_that("Check factor function",
                              html=TRUE, digits=2, sig.limit=10^-4)
   for (rn in rownames(a)){
     for (cn in levels(Loblolly$young))
-      expect_true(grepl(sprintf("%s %%", horizontal_perc_stats[rn, cn]), a[rn, cn]),
+      expect_match(a[rn, cn], sprintf("%s%%", horizontal_perc_stats[rn, cn]),
                   info="Factor percentagess don't match in horizontal mode")
   }
   
   true_fisher_pval <-pvalueFormatter(fisher.test(Loblolly$fvar, Loblolly$young)$p.value, 
                                      sig.limit=10^-4)
   
-  expect_equal(as.character(a[1, "p-value"]), 
-               true_fisher_pval)
+  expect_equivalent(as.character(a[1, "p-value"]), 
+                    true_fisher_pval)
   
 })
 
 test_that("Check factor function with missing", 
 { 
   stats <- table(Loblolly$fvar, Loblolly$young_w_missing, useNA="ifany")
-  a <- getDescriptionStatsBy(Loblolly$fvar, Loblolly$young_w_missing, 
-                             statistics=TRUE,
-                             html=TRUE, digits=2, sig.limit=10^-4)
+  expect_warning(a <- getDescriptionStatsBy(Loblolly$fvar, Loblolly$young_w_missing, 
+                                            statistics=TRUE,
+                                            html=TRUE, digits=2, sig.limit=10^-4))
   
   for (rn in rownames(a)){
     for (cn in levels(Loblolly$young))
-      expect_true(grepl(stats[rn, cn], a[rn, cn]),
-                  info="Factor count don't match")
+      expect_match(a[rn, cn], as.character(stats[rn, cn]),
+                   info="Factor count don't match")
   }
   
   
@@ -161,7 +161,7 @@ test_that("Check factor function with missing",
   
   for (rn in rownames(a)){
     for (cn in levels(Loblolly$young))
-      expect_true(grepl(sprintf("%s %%", vertical_perc_stats[rn, cn]), a[rn, cn]),
+      expect_match(a[rn, cn], sprintf("%s%%", vertical_perc_stats[rn, cn]),
                   info="Factor vertical percentages don't match")
   }
   
@@ -172,7 +172,7 @@ test_that("Check factor function with missing",
   
   for (rn in rownames(a)){
     for (cn in levels(Loblolly$young))
-      expect_true(grepl(sprintf("%s %%", horizontal_perc_stats[rn, cn]), a[rn, cn]),
+      expect_match(a[rn, cn], sprintf("%s%%", horizontal_perc_stats[rn, cn]),
                   info="Factor percentages don't match in horizontal mode")
   }
   
@@ -185,9 +185,9 @@ test_that("Check factor function with missing",
   
   for (rn in rownames(a)){
     for (cn in levels(Loblolly$young)){
-      expect_true(grepl(stats[rn, cn], a[rn, cn]),
+      expect_match(a[rn, cn], as.character(stats[rn, cn]),
                   info="Factor count don't match")
-      expect_true(grepl(sprintf("%s %%", vertical_perc_stats[rn, cn]), a[rn, cn]),
+      expect_match(a[rn, cn], sprintf("%s%%", vertical_perc_stats[rn, cn]),
                   info="Factor vertical percentages don't match")
     }
   }
@@ -203,9 +203,9 @@ test_that("Check factor function with missing",
   }), nsmall=2, digits=2)
   for (rn in rownames(a)){
     for (cn in levels(Loblolly$young)){
-      expect_true(grepl(stats[rn, cn], a[rn, cn]),
+      expect_match(a[rn, cn], as.character(stats[rn, cn]),
                   info="Factor count don't match")
-      expect_true(grepl(sprintf("%s %%", str_trim(vertical_perc_stats[rn, cn])), a[rn, cn]),
+      expect_match(a[rn, cn], sprintf("%s%%", str_trim(vertical_perc_stats[rn, cn])),
                   info="Factor vertical percentages don't match")
     }
   }
@@ -220,7 +220,7 @@ test_that("Check factor function with missing",
   
   for (rn in rownames(a)){
     for (cn in levels(Loblolly$young)){
-      expect_true(grepl(sprintf("%s %%", str_trim(horizontal_perc_stats[rn, cn])), a[rn, cn]),
+      expect_match(a[rn, cn], sprintf("%s%%", str_trim(horizontal_perc_stats[rn, cn])),
                   info="Factor vertical percentages don't match")
     }
   }

@@ -160,10 +160,10 @@ describeMedian <- function(x,
   else
     range_quantiles = c(0, 1)
   
-  ret <- c(sprintf(sprintf("%%.%df (%%3.%df - %%3.%df)", digits, digits, digits),
-    median(x, na.rm=T), 
-    quantile(x, probs=range_quantiles[1], na.rm=T),
-    quantile(x, probs=range_quantiles[2], na.rm=T)))
+  ret <- sprintf(sprintf("%%.%df (%%3.%df - %%3.%df)", digits, digits, digits),
+                   median(x, na.rm=TRUE), 
+                   quantile(x, probs=range_quantiles[1], na.rm=TRUE),
+                   quantile(x, probs=range_quantiles[2], na.rm=TRUE))
   
   if (show_missing %in% c("ifany", "always") & sum(is.na(x))>0){
     missing <- describeFactors(is.na(x), number_first = number_first, 
