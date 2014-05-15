@@ -109,6 +109,9 @@
 #'    Word ignores most settings and destroys all layout attempts 
 #'    (at least that is how my 2010 version behaves).
 #' @param ... Currently not used, here for compatibility reasons
+#' @param altcol alternating colors for each \code{rgroup}; one or two colors
+#' is recommended and will be recycled (will throw warning if the number of
+#' \code{rgroup}s is not a multiple of \code{length(altcol)})
 #' @return Returns a string with the output table if output is not set
 #' 
 #' @example inst/examples/htmlTable_example.R
@@ -145,8 +148,17 @@ htmlTable <- function(x,
   caption.loc='top',
   tfoot,
   label,
-  ...)
+  ...,
+  altcol = 'white')
 {
+  ## this will convert color names to hexadecimal (easier for user)
+  ## but also leaves hex format unchanged 
+  num2hex <- function(x) {
+    hex <- unlist(strsplit('0123456789ABCDEF', split = ''))
+    paste0(hex[(x - x %% 16) / 16 + 1], hex[x %% 16 + 1])
+  }
+  altcol <- paste0('#', apply(apply(rbind(col2rgb(altcol)), 2, num2hex), 2, paste, collapse = ''))
+  
   # Unfortunately in knitr there seems to be some issue when the
   # rowname is specified immediately as: rowname=rownames(x) 
   if (missing(rowname)){
@@ -705,6 +717,8 @@ htmlTable <- function(x,
   # Close head and start the body #
   #################################
   table_str <- sprintf("%s\n\t</thead><tbody>", table_str)
+  ## background colors for rows, by rgroup
+  rs2 <- unlist(Map(rep, altcol, n.rgroup))
   
   rgroup_iterator <- 0
   tspanner_iterator <- 0
@@ -755,16 +769,20 @@ htmlTable <- function(x,
       
       # Only add if there is anything in the group
       if (is.na(rgroup[rgroup_iterator]) == FALSE &&
-        rgroup[rgroup_iterator] != ""){
+            rgroup[rgroup_iterator] != ""){
         
-        table_str <- sprintf("%s\n\t<tr><td colspan='%d' style='%s'>%s</td></tr>", table_str, 
-          total_columns, 
-          rs,
-          rgroup[rgroup_iterator])
+        ## this will allow either rgroupCSSstyle or altcol to 
+        ## color the rgroup label rows
+        table_str <- sprintf("%s\n\t<tr bgcolor=%s><td colspan='%d' style='%s'>%s</td></tr>", table_str, 
+                             rep(unique(rs2), length(rgroup))[rgroup_iterator],
+                             total_columns, 
+                             rs,
+                             rgroup[rgroup_iterator])
       }
     }
     
-    table_str <- sprintf("%s\n\t<tr>", table_str)
+    ## this will change the bgcolor of the rows, by rgroup
+    table_str <- sprintf("%s\n\t<tr bgcolor=%s>", table_str, rs2[row_nr])
     cell_style = "";
     if (row_nr == nrow(x))
       cell_style = bottom_row_style
