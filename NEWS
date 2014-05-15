@@ -1,5 +1,9 @@
 NEWS for the Gmisc package
 
+Changes for 0.6.3
+-------------------
+* Dropped the last versioning number
+
 Changes for 0.6.2.3
 -------------------
 * Roxygen2 v 4.0.0 upgrade + other doc upgrades

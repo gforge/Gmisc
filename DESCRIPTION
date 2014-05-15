@@ -11,7 +11,7 @@ Description: This is a collection of functions for tables, plots, and more. For
     your document from the viewer. The main plots in the package are the
     transitionPlot() and forestplot2(), see the examples for demo. Apart from
     those it is worth mentioning the getDescriptionStatsBy() and its associated
-    function that help you genereate a descriptive table (i.e. the Table 1 in
+    function that help you generate a descriptive table (i.e. the Table 1 in
     most journals), the pvalueFormatter() that formats p-values, and
     mergeLists() that provides a complex recursive list merge.
 License: GPL (>= 3)
