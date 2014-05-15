@@ -60,9 +60,9 @@ describeMean <- function(x,
 
   if (missing(plusmin_str))
     if (html)
-      plusmin_str <- "&plusmn; "
+      plusmin_str <- "&plusmn;"
     else
-      plusmin_str <- "\\pm "
+      plusmin_str <- "\\pm"
   
   ret <- c(sprintf(sprintf("%%.%df (%s%%3.%df)", digits, plusmin_str, digits), 
     mean(x, na.rm=T), sd(x, na.rm=T)))
