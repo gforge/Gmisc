@@ -11,23 +11,27 @@
 #' journal in .doc/.docx format. \bold{Note:} it is now often possible
 #' to copy->paste directly from the viewer into a MS Word document without
 #' any layout loss.
+#' 
+#' To accompany the \code{\link{htmlTable}} function is the 
+#' \code{\link{getDescriptionStatsBy}} it is a straight forward function that 
+#' aims at helping you to generate descriptive table stratified by different
+#' variables. In other words, the function returns everything you need for generating
+#' a \emph{Table 1} ready for publication.
 #'  
-#' The plots are forestplot2 and transitionPlot. The forestplot is a more
-#' general version of the original \code{\link[rmeta]{forestplot}}() function
-#' aimed at using the forestplot for more than just meta-analyses. 
+#' The main plots are \code{\link{forestplot2}} and \code{\link{transitionPlot}}. 
+#' The forest plot is a more general version of the original 
+#' \code{\link[rmeta]{forestplot}} function aimed at using the forest 
+#' plot for more than just meta-analyses. 
 #' 
 #' The \code{\link{transitionPlot}} is for descriptive purposes in order to illustrate 
-#' the size of change between one state and the next. This is basically a 
-#' graph of \code{table(var1, var2)}. It uses the \code{\link{bezierArrowSmpl}}
-#' alternatives for showing off elegant arrows that should nicely bend into 
-#' each box.
+#' the size of change between one state and the next, i.e. a transition. This is
+#' basically a graph of \code{table(var1, var2)}. It uses the 
+#' \code{\link{bezierArrowSmpl}} alternatives for showing off elegant arrows 
+#' that should nicely bend into each box.
 #' 
 #' Additionally there is the \code{\link{getSvdMostInfluential}} function
-#' that tries to illustrate and use the Svd in order to select the ones having
+#' that tries to illustrate and use the SVD in order to select the ones having
 #' most influence on the V-matrix. 
-#' 
-#' Apart from those you will find a few handy functions for formatting 
-#' p-values, generating the basic stats for your table 1, etc.
 #' 
 #' @name Gmisc
 #' @docType package

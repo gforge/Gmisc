@@ -1,16 +1,19 @@
 Package: Gmisc
 Version: 0.6.2.3
 Date: 2014-05-15
-Title: A few plots, tables, and misc functions
+Title: A few handy misc functions for plots, tables, and more
 Author: Max Gordon <max@gforge.se>
 Maintainer: Max Gordon <max@gforge.se>
-Description: This is a collection of functions for tables, plots, and more.
-    For tables you'll find the convenient htmlTable that I have used for
-    advanced markdown-compatible table layout. A major focus has been to
-    have it compatible with LibreOffice (you can copy/past from there
-    into word). The plots are transitionPlot and forestplot2. Apart from
-    those you will find a few handy functions for formatting p-values,
-    generating the basic stats for your table 1, etc.
+Description: This is a collection of functions for tables, plots, and more. For
+    tables you'll find the convenient htmlTable() that I use for advanced
+    markdown table layout. A major focus has been to have it compatible with
+    LibreOffice and MS Word - you can now copy-paste most tables directly into
+    your document from the viewer. The main plots in the package are the
+    transitionPlot() and forestplot2(), see the examples for demo. Apart from
+    those it is worth mentioning the getDescriptionStatsBy() and its associated
+    function that help you genereate a descriptive table (i.e. the Table 1 in
+    most journals), the pvalueFormatter() that formats p-values, and
+    mergeLists() that provides a complex recursive list merge.
 License: GPL (>= 3)
 URL: http://gforge.se
 BugReports: https://github.com/gforge/Gmisc/issues
