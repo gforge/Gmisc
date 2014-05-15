@@ -3,6 +3,7 @@ NEWS for the Gmisc package
 Changes for 0.6.2.3
 -------------------
 * Roxygen2 v 4.0.0 upgrade + other doc upgrades
+* Percentages are now default without space between the number and the %-sign in order to better comply with English language standards
 
 Changes for 0.6.2.2
 -------------------
