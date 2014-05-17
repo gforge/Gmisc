@@ -108,10 +108,10 @@
 #'    at Libre Office compatibility. Word-compatibility is difficult as
 #'    Word ignores most settings and destroys all layout attempts 
 #'    (at least that is how my 2010 version behaves).
-#' @param ... Currently not used, here for compatibility reasons
 #' @param altcol alternating colors for each \code{rgroup}; one or two colors
-#' is recommended and will be recycled (will throw warning if the number of
-#' \code{rgroup}s is not a multiple of \code{length(altcol)})
+#'    is recommended and will be recycled (will throw warning if the number of
+#'    \code{rgroup}s is not a multiple of \code{length(altcol)})
+#' @param ... Currently not used, here for compatibility reasons
 #' @return Returns a string with the output table if output is not set
 #' 
 #' @example inst/examples/htmlTable_example.R
@@ -148,16 +148,17 @@ htmlTable <- function(x,
   caption.loc='top',
   tfoot,
   label,
-  ...,
-  altcol = 'white')
+  altcol = 'white',
+  ...)
 {
   ## this will convert color names to hexadecimal (easier for user)
   ## but also leaves hex format unchanged 
-  num2hex <- function(x) {
-    hex <- unlist(strsplit('0123456789ABCDEF', split = ''))
-    paste0(hex[(x - x %% 16) / 16 + 1], hex[x %% 16 + 1])
-  }
-  altcol <- paste0('#', apply(apply(rbind(col2rgb(altcol)), 2, num2hex), 2, paste, collapse = ''))
+  altcol <- paste0('#', apply(apply(rbind(col2rgb(altcol)), 
+                                    2, 
+                                    function(x) as.character(as.hexmode(x))),
+                              2, 
+                              paste, collapse = '')
+                   )
   
   # Unfortunately in knitr there seems to be some issue when the
   # rowname is specified immediately as: rowname=rownames(x) 
@@ -845,7 +846,7 @@ htmlTable <- function(x,
 setClass("htmlTable", contains = "character")
 
 #' @rdname htmlTable
-#' @method print htmlTable
+#' @S3method print htmlTable
 #' @param useViewer If you are using RStudio there is a viewer thar can render 
 #'  the table within that is automatically envoced unless you have the knitr 
 #'  package loaded. Set this to \code{FALSE} if you want to remove that 

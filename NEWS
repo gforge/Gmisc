@@ -2,7 +2,8 @@ NEWS for the Gmisc package
 
 Changes for 0.6.3
 -------------------
-* Dropped the last versioning number
+* Changed versioning to a 3-digit system as suggested by Yihui Xie http://yihui.name/en/2013/06/r-package-versioning/
+* Added alt_col for coloring the rows of the htmlTable rgroups - thanks raredd 
 
 Changes for 0.6.2.3
 -------------------
