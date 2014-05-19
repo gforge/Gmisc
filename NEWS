@@ -1,5 +1,10 @@
 NEWS for the Gmisc package
 
+Changes for 0.6.4
+-------------------
+* Bug fix for alt_col not respecting missing rgroup - added also a simple matrix output test
+* Added visual tests for htmlTable and moved one of the examples there
+
 Changes for 0.6.3
 -------------------
 * Changed versioning to a 3-digit system as suggested by Yihui Xie http://yihui.name/en/2013/06/r-package-versioning/

@@ -719,7 +719,7 @@ htmlTable <- function(x,
   #################################
   table_str <- sprintf("%s\n\t</thead><tbody>", table_str)
   ## background colors for rows, by rgroup
-  rs2 <- unlist(Map(rep, altcol, n.rgroup))
+  if (!missing(rgroup)){ rs2 <- unlist(Map(rep, altcol, n.rgroup)) }
   
   rgroup_iterator <- 0
   tspanner_iterator <- 0
@@ -782,8 +782,12 @@ htmlTable <- function(x,
       }
     }
     
-    ## this will change the bgcolor of the rows, by rgroup
-    table_str <- sprintf("%s\n\t<tr bgcolor=%s>", table_str, rs2[row_nr])
+    if (!missing(rgroup)){
+      ## this will change the bgcolor of the rows, by rgroup
+      table_str <- sprintf("%s\n\t<tr bgcolor=%s>", table_str, rs2[row_nr])
+    }else{
+      table_str <- sprintf("%s\n\t<tr>", table_str)
+    }
     cell_style = "";
     if (row_nr == nrow(x))
       cell_style = bottom_row_style

@@ -217,13 +217,14 @@ need to do is simply set either the \code{title} or the
 mx <- matrix(1:6, ncol=3) 
 rownames(mx) <- LETTERS[1:NROW(mx)] 
 colnames(mx) <- sprintf("Col \%s", LETTERS[1:NCOL(mx)])
-htmlTable(mx, n.rgroup=c(2), rgroup=c("Nice!"),
-  n.cgroup=c(2,1), cgroup=c("First", "Second"))
 
-## altcol does not break rgroupCSSstyle
-htmlTable(mx, n.rgroup=c(2), rgroup=c("Nice!"),
-          n.cgroup=c(2,1), cgroup=c("First", "Second"),
-          rgroupCSSstyle = "font-weight:900; background-color:#f2f2f2;")
+# If you just want to output your matrix, this is all you need
+htmlTable(mx)
+
+# Now add more interesting options
+htmlTable(mx, 
+          n.rgroup=c(2), rgroup=c("Nice!"),
+          n.cgroup=c(2,1), cgroup=c("First", "Second"))
 
 
 # A slightly more advanced example
@@ -340,6 +341,9 @@ htmlTable(output_data, align = 'rccc',
           rgroupCSSseparator = '', 
           cgroup = cgroup,
           n.cgroup = n.cgroup,
+          tspanner=c("Base", "Other"),
+          n.tspanner=c(sum(sapply(table_data, nrow)[1:2]),
+                       sum(sapply(table_data, nrow)[3:4])),
           rowlabel = '', 
           ctable = TRUE, # latex-style table lines
           caption = "Table 1: Patient demographics", 
