@@ -410,7 +410,7 @@ htmlTable <- function(x,
       tspannerCSSseparator <- addSemicolon2StrEnd(tspannerCSSseparator)
       
       if (length(tspanner) > 0)
-        tspannerCSSseparator <- rep(tspannerCSSseparator, length.out=length(tspanner))
+        tspannerCSSseparator <- rep(tspannerCSSseparator, length.out=length(tspanner)-1)
     } else {
       for (i in 1:length(tspannerCSSseparator))
         tspannerCSSseparator[i] <- addSemicolon2StrEnd(tspannerCSSseparator[i])
