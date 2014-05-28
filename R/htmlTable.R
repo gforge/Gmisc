@@ -36,6 +36,14 @@
 #' All you need to do is simply set either the \code{title} or the \code{rowlabel}
 #' arguments to get rid of this "bug".
 #' 
+#' As the table uses html for rendering you need to be aware of that headers, 
+#' rownames, and cell values should try respect this for optimal display. Browsers
+#' try to compensate and frequently the tables still turn out OK but it is 
+#' not advized. Most importantly you should try to use 
+#' \code{&lt;} instead of \code{<} and 
+#' \code{&gt;} instead of \code{>}. You can find a complete list 
+#' of html characters \href{http://ascii.cl/htmlcodes.htm}{here}.
+#' 
 #' @param x The matrix/data.frame with the data
 #' @param title The title of the table. Used for labeling etc.
 #' @param headings a vector of character strings specifying column 

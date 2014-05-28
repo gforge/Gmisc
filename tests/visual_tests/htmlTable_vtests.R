@@ -7,6 +7,15 @@ htmlTable(mx, n.rgroup=c(2), rgroup=c("Nice!"),
           rgroupCSSstyle = "font-weight:900; background-color:#f2f2f2;")
 
 
+# This will cause the table to look strange
+# but forcing &gt;/&lt; is a bigger constraint
+# that may be undesirable for more advanced users.
+mx[1,1] <- "< = &lt;"
+mx[1,2] <- "2<sup>2</sup>"
+mx[1,3] <- "<span style=\"font-weight: 900\">3</span>"
+mx[2,1] <- "<td>"
+htmlTable(mx)
+
 mx <- matrix(1:9, ncol=3)
 colnames(mx) <- LETTERS[1:3]
 rownames(mx) <- letters[1:3]
