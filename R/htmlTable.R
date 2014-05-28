@@ -782,7 +782,7 @@ htmlTable <- function(x,
         
         ## this will allow either rgroupCSSstyle or altcol to 
         ## color the rgroup label rows
-        table_str <- sprintf("%s\n\t<tr bgcolor=%s><td colspan='%d' style='%s'>%s</td></tr>", table_str, 
+        table_str <- sprintf("%s\n\t<tr style='background-color:%s;'><td colspan='%d' style='%s'>%s</td></tr>", table_str, 
                              rep(unique(rs2), length(rgroup))[rgroup_iterator],
                              total_columns, 
                              rs,
@@ -792,7 +792,7 @@ htmlTable <- function(x,
     
     if (!missing(rgroup)){
       ## this will change the bgcolor of the rows, by rgroup
-      table_str <- sprintf("%s\n\t<tr bgcolor=%s>", table_str, rs2[row_nr])
+      table_str <- sprintf("%s\n\t<tr style='background-color:%s;'>", table_str, rs2[row_nr])
     }else{
       table_str <- sprintf("%s\n\t<tr>", table_str)
     }
