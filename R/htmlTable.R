@@ -119,6 +119,11 @@
 #' @param altcol alternating colors for each \code{rgroup}; one or two colors
 #'    is recommended and will be recycled (will throw warning if the number of
 #'    \code{rgroup}s is not a multiple of \code{length(altcol)})
+#' @param tableCSSclass The html CSS class for the table. This allows directing html
+#'    formatting through \href{http://www.w3schools.com/css/css_selectors.asp}{CSS}
+#'    directly at all instances of that class. \emph{Note:} unfortunately the
+#'    CSS is frequently ignored by word processors. This option
+#'    is mostly inteded for web-presentations.
 #' @param ... Currently not used, here for compatibility reasons
 #' @return Returns a string with the output table if output is not set
 #' 
@@ -157,6 +162,7 @@ htmlTable <- function(x,
   tfoot,
   label,
   altcol = 'white',
+  tableCSSclass = "gmisc_table",
   ...)
 {
   ## this will convert color names to hexadecimal (easier for user)
@@ -633,7 +639,9 @@ htmlTable <- function(x,
   ###############################
   # Start building table string #
   ###############################
-  table_str <- sprintf("<table class='gmisc_table' style='border-collapse: collapse;' %s>", table_id)
+  table_str <- sprintf("<table class='%s' style='border-collapse: collapse;' %s>", 
+                       paste(tableCSSclass, collapse=", "),
+                       table_id)
   
   # Theoretically this should be added to the table but the
   # import to word processors works then less well and therefore I've

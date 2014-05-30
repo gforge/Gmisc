@@ -4,6 +4,7 @@ Changes for 0.6.4
 -------------------
 * Bug fix for alt_col not respecting missing rgroup - added also a simple matrix output test
 * Added visual tests for htmlTable and moved one of the examples there
+* Added tableCSSclass option for htmlTable - thanks jphiplip
 
 Changes for 0.6.3
 -------------------

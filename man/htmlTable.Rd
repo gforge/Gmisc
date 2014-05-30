@@ -13,7 +13,7 @@ htmlTable(x, title = first.word(deparse(substitute(x))), headings,
   tspannerCSSseparator = "border-top: 1px solid grey;", rowlabel = title,
   rowlabel.pos = "bottom", ctable = FALSE, compatibility = "LibreOffice",
   rowname, caption, caption.loc = "top", tfoot, label, altcol = "white",
-  ...)
+  tableCSSclass = "gmisc_table", ...)
 
 \method{print}{htmlTable}(x, useViewer, ...)
 }
@@ -152,6 +152,14 @@ htmlTable(x, title = first.word(deparse(substitute(x))), headings,
   one or two colors is recommended and will be recycled
   (will throw warning if the number of \code{rgroup}s is
   not a multiple of \code{length(altcol)})}
+
+  \item{tableCSSclass}{The html CSS class for the table.
+  This allows directing html formatting through
+  \href{http://www.w3schools.com/css/css_selectors.asp}{CSS}
+  directly at all instances of that class. \emph{Note:}
+  unfortunately the CSS is frequently ignored by word
+  processors. This option is mostly inteded for
+  web-presentations.}
 
   \item{...}{Currently not used, here for compatibility
   reasons}
