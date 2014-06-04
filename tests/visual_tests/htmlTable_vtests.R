@@ -1,5 +1,5 @@
 mx <- matrix(1:6, ncol=3)
-colnames(mx) <- LETTERS[1:3]
+colnames(mx) <- c("A", "B", "C")
 rownames(mx) <- letters[1:2]
 ## altcol does not break rgroupCSSstyle
 htmlTable(mx, n.rgroup=c(2), rgroup=c("Nice!"),
