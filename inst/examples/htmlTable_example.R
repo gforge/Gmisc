@@ -135,6 +135,9 @@ htmlTable(output_data, align = 'rccc',
           caption = "Table 1: Patient demographics", 
           altcol = c('white','lightblue1'),
           tfoot = paste0(
-            '<font size=1>Abbreviations: ECOG, Eastern Cooperative Oncology Group; PS, performance score</font><br>',
-            "<font size=1><sup>&dagger;</sup>Note 1. Trial groups for a new wonder drug</font><br>",
-            "<font size = 1><sup>&Dagger;</sup>Note 2. Twice the dosage of treatment A</font>"))
+            '<font size=1>Abbreviations: ECOG, Eastern Cooperative Oncology Group;",
+              " PS, performance score</font><br>',
+            "<font size=1><sup>&dagger;</sup>",
+              "Note 1. Trial groups for a new wonder drug</font><br>",
+            "<font size = 1><sup>&Dagger;</sup>",
+              "Note 2. Twice the dosage of treatment A</font>"))

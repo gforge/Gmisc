@@ -396,7 +396,7 @@ htmlTable <- function(x,
         rgroupCSSseparator[i] <- addSemicolon2StrEnd(rgroupCSSseparator[i])
     }
   }
-
+  
   if (!missing(tspanner)){
     
     # Sanity checks tspannerCSSstyle and prepares the style
