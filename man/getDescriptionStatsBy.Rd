@@ -8,7 +8,7 @@ getDescriptionStatsBy(x, by, digits = 1, html = FALSE, NEJMstyle = FALSE,
   two_dec.limit = 10^-2, show_missing = FALSE,
   show_missing_digits = digits, continuous_fn = describeMean,
   prop_fn = describeProp, factor_fn = describeFactors,
-  show_all_values = FALSE, hrzl_prop = FALSE, add_total_col = hrzl_prop,
+  show_all_values = FALSE, hrzl_prop = FALSE, add_total_col,
   total_col_show_perc = TRUE, use_units = FALSE, default_ref = "First",
   percentage_sign = TRUE)
 }
@@ -116,7 +116,7 @@ label(mtcars$mpg) <- "Gas"
 units(mtcars$mpg) <- "Miles/(US) gallon"
 
 label(mtcars$wt) <- "Weight"
-units(mtcars$wt) <- "10^3 kg" # not sure the unit is correct 
+units(mtcars$wt) <- "10<sup>3</sup> kg" # not sure the unit is correct 
 
 mtcars$am <- factor(mtcars$am, levels=0:1, labels=c("Automatic", "Manual"))
 label(mtcars$am) <- "Transmission"
@@ -129,24 +129,24 @@ mtcars$col <- factor(sample(c("red", "black", "silver"),
                      size=NROW(mtcars), replace=TRUE))
 label(mtcars$col) <- "Car color"
 
-mpg_data <- getDescriptionStatsBy(mtcars$mpg, mtcars$am, use_units = TRUE)
-wt_data <- getDescriptionStatsBy(mtcars$wt, mtcars$am, use_units = TRUE)
-print(rbind(mpg_data, wt_data))
+mpg_data <- getDescriptionStatsBy(mtcars$mpg, mtcars$am, 
+                                  use_units = TRUE, 
+                                  html = TRUE)
+wt_data <- getDescriptionStatsBy(mtcars$wt, mtcars$am, 
+                                 use_units = TRUE, 
+                                 html = TRUE)
 
-latex(
-  object   = rbind(mpg_data, wt_data),
-  file     = "", # skip this if you want the latex to render
-  caption  = "Continuous \\\\& binary variables", 
-  colheads = c(sprintf("\%s (SD)", levels(mtcars$am)), "units"),
+htmlTable(
+  x   = rbind(mpg_data, wt_data),
+  caption  = "Continuous & binary variables", 
+  headings = c(sprintf("\%s (SD)", levels(mtcars$am)), "Units"),
   rowlabel = "Variable",
   ctable   = TRUE)
 
 gear_data <- getDescriptionStatsBy(mtcars$gear, mtcars$am)
 col_data <- getDescriptionStatsBy(mtcars$col, mtcars$am)
 
-# I use these together with latex to get a nice table
-latex(
-  object   = rbind(gear_data, col_data),
+htmlTable(rbind(gear_data, col_data),
   file     = "", # skip this if you want the latex to render
   caption  = "Factored variables",
   colheads = sprintf("\%s (\%\%)", levels(mtcars$am)),
