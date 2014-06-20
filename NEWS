@@ -4,6 +4,7 @@ Changes for 0.6.5
 -----------------
 * Changed the getDescriptionsBy example to work with the htmlTable() instead of the Hmisc::latex()
 * Fixed getDescriptionsBy bug - the Total column failed when specified to be last - thanks Alexandre Vivot
+* Added example for side-by side plotting for forestplot2
 
 Changes for 0.6.4
 -------------------

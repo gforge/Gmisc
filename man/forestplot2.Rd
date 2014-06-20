@@ -221,6 +221,32 @@ forestplot2(row_names,
             xlab = "Lab axis txt",
             new_page = TRUE)
 
+# Print two plots side by side using the grid 
+# package's layout option for viewports
+grid.newpage()
+pushViewport(viewport(layout = grid.layout(1, 2)))
+pushViewport(viewport(layout.pos.col = 1))
+forestplot2(row_names, 
+            test_data$coef, 
+            test_data$low, 
+            test_data$high, 
+            zero = 1, 
+            cex  = 2,
+            lineheight = "auto",
+            xlab = "Lab axis txt")
+popViewport()
+pushViewport(viewport(layout.pos.col = 2))
+forestplot2(row_names, 
+            test_data$coef, 
+            test_data$low, 
+            test_data$high, 
+            zero = 1, 
+            cex  = 2,
+            lineheight = "auto",
+            xlab = "Lab axis txt")
+popViewport()
+popViewport()
+
 
 # An advanced test
 test_data <- data.frame(coef1=c(1, 1.59, 1.3, 1.24),
@@ -278,6 +304,7 @@ forestplot2(labeltext = row_names,
             xlog      = TRUE,
             col = fpColors(lines="red", box="darkred"),
             new_page = TRUE)
+
 
 par(ask=ask)
 }
