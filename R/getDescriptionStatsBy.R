@@ -306,7 +306,8 @@ getDescriptionStatsBy <-
     if (is.null(rownames(results)) && nrow(results) == 1)
       rownames(results) <- name
     
-    if (!missing(add_total_col)){
+    if (!missing(add_total_col) && 
+          add_total_col != FALSE){
       total_table <- prGetStatistics(x[is.na(by) == FALSE], 
                                      numbers_first=numbers_first, 
                                      show_perc=total_col_show_perc, 
