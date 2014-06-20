@@ -1,6 +1,6 @@
 Package: Gmisc
-Version: 0.6.4
-Date: 2014-06-16
+Version: 0.6.5
+Date: 2014-06-20
 Title: A few handy misc functions for plots, tables, and more
 Author: Max Gordon <max@gforge.se>
 Maintainer: Max Gordon <max@gforge.se>

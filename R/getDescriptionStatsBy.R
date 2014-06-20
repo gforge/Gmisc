@@ -81,11 +81,18 @@ getDescriptionStatsBy <-
            factor_fn = describeFactors,
            show_all_values = FALSE,
            hrzl_prop = FALSE,
-           add_total_col = hrzl_prop,
+           add_total_col,
            total_col_show_perc = TRUE,
            use_units = FALSE,
            default_ref = "First",
            percentage_sign = TRUE){
+    
+    # Always have a total column if the description statistics
+    # are presented in a horizontal fashion
+    if (missing(add_total_col) && 
+          hrzl_prop){
+      add_total_col = TRUE
+    }
     
     if(is.null(x))
       stop("You haven't provided an x-value to do the statistics by.",
@@ -299,7 +306,7 @@ getDescriptionStatsBy <-
     if (is.null(rownames(results)) && nrow(results) == 1)
       rownames(results) <- name
     
-    if (add_total_col){
+    if (!missing(add_total_col)){
       total_table <- prGetStatistics(x[is.na(by) == FALSE], 
                                      numbers_first=numbers_first, 
                                      show_perc=total_col_show_perc, 

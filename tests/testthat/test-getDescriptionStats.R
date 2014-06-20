@@ -137,6 +137,33 @@ test_that("Check factor function",
   
 })
 
+test_that("Check total column position",{
+  a <- getDescriptionStatsBy(Loblolly$fvar, Loblolly$young, 
+                             hrzl_prop=TRUE,add_total_col = TRUE,
+                             continuous_fn=describeMedian,
+                             statistics=TRUE,
+                             html=TRUE, digits=2, sig.limit=10^-4)
+  expect_equivalent(colnames(a)[1], "Total")
+  expect_equivalent(ncol(a), 4)
+  
+  a <- getDescriptionStatsBy(Loblolly$fvar, Loblolly$young, 
+                             hrzl_prop=TRUE,
+                             add_total_col = "last",
+                             continuous_fn=describeMedian,
+                             html=TRUE, digits=2, sig.limit=10^-4)
+  expect_equivalent(tail(colnames(a),1), "Total", 
+                    info="The last column without statistics should be the total column when the add_total_col is set to last")
+  expect_equivalent(ncol(a), 3)
+  
+  a <- getDescriptionStatsBy(Loblolly$fvar, Loblolly$young, 
+                             statistics = TRUE,
+                             hrzl_prop=TRUE,
+                             add_total_col = "last")
+  expect_equivalent(tail(colnames(a),2)[1], "Total", 
+                    info = "The last should be the p-value if statistics is specified")
+  expect_equivalent(ncol(a), 3)
+})
+
 test_that("Check factor function with missing", 
 { 
   stats <- table(Loblolly$fvar, Loblolly$young_w_missing, useNA="ifany")
