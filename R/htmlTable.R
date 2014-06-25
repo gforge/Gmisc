@@ -885,8 +885,11 @@ print.htmlTable<- function(x, useViewer, ...){
   }
         
   # Don't use viewer if in knitr
+  # As of 0.98.932 the knitr package isn't loaded, instead the
+  # metadata element appears indicating that it is knitting
   if (useViewer &&
-        !"package:knitr" %in% search()){
+        (!"package:knitr" %in% search() ||
+           length(ls(pattern = "metadata")) == 1){
 
     htmlFile <- tempfile(fileext=".html")
     htmlPage <- paste("<html>",
