@@ -6,6 +6,7 @@ Changes for 0.6.5
 * Fixed getDescriptionsBy bug - the Total column failed when specified to be last - thanks Alexandre Vivot
 * Added example for side-by side plotting for forestplot2
 * As of 0.98.932 the knitr package isn't loaded, instead the metadata element appears indicating that it is knitting
+* htmlTable bug: The function can now handle matrices without column names
 
 Changes for 0.6.4
 -------------------

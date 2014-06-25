@@ -192,8 +192,9 @@ htmlTable <- function(x,
   else
     set_rownames <- FALSE
   
-  if (missing(headings))
-    headings=colnames(x)
+  if (missing(headings) &&
+        !is.null(colnames(x)))
+    headings<-colnames(x)
   
   if (length(dim(x)) != 2)
     stop("Your table variable seems to have the wrong dimension, length(dim(x)) = ", 
@@ -889,7 +890,7 @@ print.htmlTable<- function(x, useViewer, ...){
   # metadata element appears indicating that it is knitting
   if (useViewer &&
         (!"package:knitr" %in% search() ||
-           length(ls(pattern = "metadata")) == 1){
+           length(ls(pattern = "metadata")) == 1)){
 
     htmlFile <- tempfile(fileext=".html")
     htmlPage <- paste("<html>",

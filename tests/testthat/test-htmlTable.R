@@ -3,18 +3,23 @@ library('XML')
 context('htmlTable')
 
 # A simple example
-mx <- matrix(1:6, ncol=3) 
-colnames(mx) <- sprintf("Col %s", LETTERS[1:NCOL(mx)])
-
 test_that("With empty rownames(mx) it should skip those", 
 { 
+  mx <- matrix(1:6, ncol=3) 
   table_str <- htmlTable(mx)
+  expect_false(grepl("</th>", table_str))
+  expect_false(grepl("<tr>[^>]+>NA</td>", table_str))
+
+  colnames(mx) <- sprintf("Col %s", LETTERS[1:NCOL(mx)])
+  table_str <- htmlTable(mx)
+  expect_true(grepl("</th>", table_str))
   expect_false(grepl("<tr>[^>]+>NA</td>", table_str))
 })
 
 
 test_that("Empty cell names should be replaced with ''", 
 {
+  mx <- matrix(1:6, ncol=3) 
   mx[1,1] <- NA
   table_str <- htmlTable(mx)
   expect_false(grepl("<tr>[^>]+>NA</td>", table_str))
@@ -22,12 +27,16 @@ test_that("Empty cell names should be replaced with ''",
 
 test_that("The variable name should not be in the tables first row if no rownames(mx)", 
 { 
+  mx <- matrix(1:6, ncol=3) 
+  colnames(mx) <- sprintf("Col %s", LETTERS[1:NCOL(mx)])
   table_str <- htmlTable(mx)
   expect_false(grepl("<thead>[^<]*<tr>[^>]+>mx</th>", table_str))
 })
 
 test_that("The rowname should be ignored if no row names", 
 { 
+  mx <- matrix(1:6, ncol=3) 
+  colnames(mx) <- sprintf("Col %s", LETTERS[1:NCOL(mx)])
   table_str <- htmlTable(mx, rowlabel="not_mx")
   expect_false(grepl("<thead>[^<]*<tr>[^>]+>not_mx</th>", table_str))
 })
@@ -35,6 +44,8 @@ test_that("The rowname should be ignored if no row names",
 # Add rownames
 test_that("The rowname should appear", 
 { 
+  mx <- matrix(1:6, ncol=3) 
+  colnames(mx) <- sprintf("Col %s", LETTERS[1:NCOL(mx)])
   rownames(mx) <- LETTERS[1:NROW(mx)] 
   table_str <- htmlTable(mx)
   parsed_table <- readHTMLTable(table_str)[[1]]
@@ -45,6 +56,8 @@ test_that("The rowname should appear",
 
 test_that("Check that basic output are the same as the provided matrix",
 {
+  mx <- matrix(1:6, ncol=3) 
+  colnames(mx) <- sprintf("Col %s", LETTERS[1:NCOL(mx)])
   table_str <- htmlTable(mx)
   parsed_table <- readHTMLTable(table_str)[[1]]
   expect_equal(ncol(parsed_table), ncol(mx), info="Cols did not match")
@@ -55,6 +68,8 @@ test_that("Check that basic output are the same as the provided matrix",
 
 test_that("Check that dimensions are correct with rgroup usage",
 {
+  mx <- matrix(1:6, ncol=3) 
+  colnames(mx) <- sprintf("Col %s", LETTERS[1:NCOL(mx)])
   table_str <- htmlTable(mx, 
                          rgroup=c("test1", "test2"), 
                          n.rgroup=c(1,1))
@@ -83,6 +98,8 @@ test_that("Check that dimensions are correct with rgroup usage",
 
 test_that("Check that dimensions are correct with cgroup usage",
 {
+  mx <- matrix(1:6, ncol=3) 
+  colnames(mx) <- sprintf("Col %s", LETTERS[1:NCOL(mx)])
   table_str <- htmlTable(mx, 
                          cgroup=c("a", "b"),
                          n.cgroup=c(1, 2),
@@ -153,3 +170,4 @@ test_that("Check that dimensions are correct with cgroup usage",
   expect_equal(as.character(parsed_table[5,1]),
                "Second rgroup")
 })
+
