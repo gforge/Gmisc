@@ -85,6 +85,15 @@ test_that("Check that dimensions are correct with rgroup usage",
   expect_equal(as.character(parsed_table[4,1]), 
                as.character(mx[2,1]), info="The row values did not match")
 
+
+  expect_warning(htmlTable(mx, 
+                           rgroup=c("test1", "test2", "test3"), 
+                           n.rgroup=c(1,1, 0)))
+  
+  expect_error(htmlTable(mx, 
+                           rgroup=c("test1", "test2", "test3"), 
+                           n.rgroup=c(1,1, 10)))
+
   mx[2,1] <- "second row"
   table_str <- htmlTable(mx, 
                          rgroup=c("test1", ""), 
@@ -109,6 +118,15 @@ test_that("Check that dimensions are correct with cgroup usage",
                    info="Cols did not match")
   expect_equal(nrow(parsed_table), 
                nrow(mx), info="Rows did not match")
+  
+  expect_warning(htmlTable(mx, 
+                           cgroup=c("a", "b", "c"),
+                           n.cgroup=c(1, 2, 0)))
+  
+  expect_error(htmlTable(mx, 
+                         cgroup=c("a", "b", "c"),
+                         n.cgroup=c(1, 2, 10),
+                         output=FALSE))
   
   table_str <- htmlTable(mx, 
                          cgroup=rbind(c("aa", NA), 

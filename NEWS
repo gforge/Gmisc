@@ -7,6 +7,7 @@ Changes for 0.6.5
 * Added example for side-by side plotting for forestplot2
 * As of 0.98.932 the knitr package isn't loaded, instead the metadata element appears indicating that it is knitting
 * htmlTable bug: The function can now handle matrices without column names
+* htmlTable bug: The function deletes and warns when n.rgroup/n.cgroup < 1
 
 Changes for 0.6.4
 -------------------

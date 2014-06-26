@@ -361,7 +361,15 @@ htmlTable <- function(x,
   if (!missing(rgroup)){
     if (missing(n.rgroup))
       stop("You need to specify the argument n.rgroup if you want to use rgroups")
-    
+
+    if (any(n.rgroup < 1)){
+      warning("You have provided rgroups with less than 1 elements,",
+              " these will therefore be removed: ", 
+              paste(sprintf("'%s' = %d", rgroup, n.rgroup)[n.rgroup < 1],
+                    collapse=", "))
+      rgroup <- rgroup[n.rgroup >= 1]
+      n.rgroup <- n.rgroup[n.rgroup >= 1]
+    }
     # Sanity check for rgroup
     if (sum(n.rgroup) !=  nrow(x))
       stop(sprintf("Your rows don't match in the n.rgroup, i.e. %d != %d", 
@@ -467,10 +475,20 @@ htmlTable <- function(x,
     
     # The cgroup is by for compatibility reasons handled as a matrix
     if (!is.matrix(cgroup)){
+      
       cgroup <- matrix(cgroup, nrow=1)
       if (missing(n.cgroup))
         n.cgroup <- matrix(NA, nrow=1)
       else{
+        if (any(n.cgroup < 1)){
+          warning("You have provided cgroups with less than 1 element,",
+                  " these will therefore be removed: ", 
+                  paste(sprintf("'%s' = %d", cgroup, n.cgroup)[n.cgroup < 1],
+                        collapse=", "))
+          cgroup <- cgroup[,n.cgroup >= 1, drop=FALSE]
+          n.cgroup <- n.cgroup[n.cgroup >= 1]
+        }
+
         if (ncol(cgroup) != length(n.cgroup)){
           n.cgroup <- n.cgroup[n.cgroup > 0]
           if (ncol(cgroup) != length(n.cgroup))
@@ -518,6 +536,9 @@ htmlTable <- function(x,
         ncol(x) %% length(cgroup[i,]) == 0){
         # This generates the n.cgroup if this is missing
         n.cgroup[i,] <- rep(ncol(x)/length(cgroup[i,]), times=length(cgroup[i,]))
+      }else if(any(n.cgroup[i,!is.na(n.cgroup[i,])] < 1)){
+        stop("You have in n.cgroup row no ", i, " cell(s) with < 1")
+        
       }else if(sum(n.cgroup[i,], na.rm=TRUE) != ncol(x)){
         ncgroupFixFromBelowGroup <- function(nc, i){
           if (i+1 > nrow(nc))
