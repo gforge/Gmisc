@@ -906,13 +906,24 @@ print.htmlTable<- function(x, useViewer, ...){
     }
   }
         
-  # Don't use viewer if in knitr
+  # Don't use viewer if currently knitting
   # As of 0.98.932 the knitr package isn't loaded, instead the
   # metadata element appears indicating that it is knitting
-  if (useViewer &&
-        (!"package:knitr" %in% search() ||
-           length(ls(pattern = "metadata")) == 1)){
+  # or we can find the knitr environment through looking 
+  # at the device option
+  knitting <- FALSE
+  if (useViewer){
+    if ("package:knitr" %in% search() ||
+          length(ls(pattern = "metadata")) == 1){
+      knitting <- TRUE
+    }else if(is.function(options()$device)){
+      if (length(ls(envir = environment(options()$device), pattern="^knit$")) == 1){
+        knitting <- TRUE
+      }
+    }
+  }
 
+  if (useViewer && !knitting){
     htmlFile <- tempfile(fileext=".html")
     htmlPage <- paste("<html>",
                       "<head>",
