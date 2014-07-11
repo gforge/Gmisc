@@ -912,14 +912,12 @@ print.htmlTable<- function(x, useViewer, ...){
   # or we can find the knitr environment through looking 
   # at the device option
   knitting <- FALSE
-  if (useViewer){
+  if (useViewer != FALSE){
     if ("package:knitr" %in% search() ||
-          length(ls(pattern = "metadata")) == 1){
+          length(ls(pattern = "metadata")) == 1 ||
+          (is.function(options()$device) &&
+             length(ls(envir = environment(options()$device), pattern="^knit$")) == 1)){
       knitting <- TRUE
-    }else if(is.function(options()$device)){
-      if (length(ls(envir = environment(options()$device), pattern="^knit$")) == 1){
-        knitting <- TRUE
-      }
     }
   }
 

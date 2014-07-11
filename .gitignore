@@ -6,3 +6,5 @@ Gmisc.RProj
 .Rproj.User/
 .settings/
 .Rproj.user
+*.html
+*.md

@@ -1,5 +1,9 @@
 NEWS for the Gmisc package
 
+Changes for 0.6.6
+-----------------
+* Improved the htmlTable viewer handling (thanks Adam Smith)
+
 Changes for 0.6.5
 -----------------
 * Changed the getDescriptionsBy example to work with the htmlTable() instead of the Hmisc::latex()
