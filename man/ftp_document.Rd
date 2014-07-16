@@ -45,7 +45,7 @@ R Markdown output format to pass to
 \description{
 This function adds the option of having adaptations needed
 for seemless integration with word processor for importing
-html-documents. The advantage of html documents is the
+html-documents. The advantage of html documents is t he
 ability to create advanced formatting frequently needed in
 publications and that is available in the
 \code{\link{htmlTable}} function. You can view the series
