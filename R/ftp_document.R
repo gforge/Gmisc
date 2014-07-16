@@ -49,9 +49,22 @@ ftp_document <- function(...,
 
   if (css == "custom.css" &&
         !file.exists("custom.css")){
-    stop("You should have the custom.css in the same folder as you have your .Rmd-file",
-         " or this ftp won't work properly.",
-         " You can find the file here: https://raw.githubusercontent.com/gforge/ftp/master/custom.css")
+    alt_css <- list.files(pattern = ".css$")
+    if (length(alt_css) > 0){
+      alt_css <- paste0("\n You do have alternative file name(s) in current directory that you may intend to use.",
+                        " You may want to have a YAML section that looks something like:",
+                        "\n---",
+                        "\noutput:",
+                        "\n  Gmisc::ftp_document:",
+                        "\n    css: \"", paste(alt_css, collapse = "\", \""), "\"",
+                        "\n---")
+    }else{
+      alt_css <- ""
+    }
+    stop("You should have the custom.css in the same folder (", getwd(),") as you have your .Rmd-file",
+         " or this fast-track-publishing document formatter won't work properly.",
+         alt_css,
+         "\n - You can find the recommended file here: https://raw.githubusercontent.com/gforge/ftp/master/custom.css\n")
   }
 
   # call the base html_document function
@@ -87,23 +100,16 @@ ftp_document <- function(...,
         # style option that works. Perhaps not that pretty but
         # it works and can be tweaked for most things.
         output_str <-
-          gsub(
-            paste0('<h([0-9]+)',
-                   '(| ',
-                   '([ ]*class="[^"]+"',
-                   '|[ ]*id="[^"]+")+',
-                   ')[ ]*>'),
-            paste0('<h\\1\\2 style="', other_h_style, '">'),
-            gsub(
-              paste0('<h1+',
-                     '(| ',
-                     '([ ]*class="[^"]+"',
-                     '|[ ]*id="[^"]+")+',
-                     ')[ ]*>'),
-              paste0('<h1\\1 style="', h1_style, '">'),
-              output_str
-            )
-          )
+          prFtpHeaderStyle(output_str,
+                           h1_style=h1_style,
+                           other_h_style=h1_style)
+
+        output_str <-
+          prFtpScriptRemoval(output_str)
+
+
+        output_str <-
+          prFtpOtherRemoval(output_str)
 
         writeLines(output_str, output_file, useBytes = TRUE)
         return(output_file)
@@ -111,4 +117,66 @@ ftp_document <- function(...,
   }
 
   return(output_ret_val)
+}
+
+#' Helper to ftp_document
+#'
+#' @param output_str The output string from readLines()
+#' @param h1_style You can choose any css style formatting here that you
+#'  want to be applied to all h1 elements. Note: this is only applied
+#'  if LibreOffice_adapt is \code{TRUE}.
+#' @param other_h_style This is the formatting applied to any other
+#'  h elements not included to the first. Note: this is only applied
+#'  if LibreOffice_adapt is \code{TRUE}.
+#' @return string
+prFtpHeaderStyle <- function(output_str, h1_style, other_h_style){
+  gsub(
+    paste0('<h([0-9]+)',
+           '(| ',
+           '([ ]*class="[^"]+"',
+           '|[ ]*id="[^"]+")+',
+           ')[ ]*>'),
+    paste0('<h\\1\\2 style="', other_h_style, '">'),
+    gsub(
+      paste0('<h1+',
+             '(| ',
+             '([ ]*class="[^"]+"',
+             '|[ ]*id="[^"]+")+',
+             ')[ ]*>'),
+      paste0('<h1\\1 style="', h1_style, '">'),
+      output_str
+    )
+  )
+}
+
+#' Removes the <script>*</scrip>
+#'
+#' @param output_str The input from readLines()
+#' @return string Returns without the script elements
+prFtpScriptRemoval <- function(output_str){
+  start_scripts <- grep("<script", output_str)
+  end_scripts <- grep("</script", output_str)
+  rows_2_exclude <-
+    unlist(lapply(1:length(start_scripts), FUN = function(x) -1*start_scripts[x]:end_scripts[x]))
+  return(output_str[rows_2_exclude])
+}
+
+
+#' Removes other unwanted lines
+#'
+#' @param output_str The input from readLines()
+#' @return string Returns without the script elements
+prFtpOtherRemoval <- function(output_str){
+  lines_2_remove <-
+    c("<meta http-equiv=\"Content-Style-Type\" content=\"text/css\" />", # validator complains
+      "<!-- dynamically load mathjax for compatibility with --self-contained -->" # Invalid formatting --s
+      )
+  for (line in lines_2_remove){
+    rm_line <- grep(sprintf("^%s$", line),
+                    output_str)
+    if (length(rm_line) == 1)
+      output_str <- output_str[-rm_line]
+  }
+
+  return(output_str)
 }
