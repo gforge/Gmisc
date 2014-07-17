@@ -2,9 +2,10 @@
 #'
 #' This function adds the option of having adaptations needed for seemless integration with
 #' word processor for importing html-documents. The advantage of html documents is
-#' t he ability to create advanced formatting frequently needed in publications
+#' the ability to create advanced formatting frequently needed in publications
 #' and that is available in the \code{\link{htmlTable}} function. You can view
-#' the series on \url{http://gforge.se} for more details regarding how to achieve
+#' \url{http://gforge.se/2014-07/fast-track-publishing-using-rmarkdown}{the series}
+#' for more details regarding how to achieve
 #' fast-track-publishing (ftp) together with knitr.
 #'
 #' @param ... Passed onto \code{\link[rmarkdown]{html_document}}.
@@ -16,8 +17,6 @@
 #'  \code{\link[rmarkdown]{html_document}} to \code{FALSE} as
 #'  LibreOffice can't hangs on long lines such as the base64
 #'  images included in the self-contained version.
-#' @param LibreOffice_adapt \code{TRUE} if the function should adapt the html
-#'  for optimal compatibility with LibreOffice.
 #' @param h1_style You can choose any css style formatting here that you
 #'  want to be applied to all h1 elements. Note: this is only applied
 #'  if LibreOffice_adapt is \code{TRUE}.
@@ -43,7 +42,6 @@
 ftp_document <- function(...,
                          css = "custom.css",
                          self_contained = FALSE,
-                         LibreOffice_adapt = TRUE,
                          h1_style="margin: 24pt 0pt 0pt 0pt;",
                          other_h_style="margin: 10pt 0pt 0pt 0pt;") {
 
@@ -73,48 +71,46 @@ ftp_document <- function(...,
                              css = css,
                              self_contained=self_contained)
 
-  if (LibreOffice_adapt){
-    output_ret_val$post_processor_old <-
-      output_ret_val$post_processor
+  output_ret_val$post_processor_old <-
+    output_ret_val$post_processor
 
-    output_ret_val$post_processor <-
-      post_processor <- function(metadata, input_file, output_file, clean, verbose,
-                                 old_post_processor =  output_ret_val$post_processor_old) {
-        # Call the original post-processor in order to limit the changes that this function
-        # has on the original functionality
-        output_file <-
-          old_post_processor(
-            metadata = metadata,
-            input_file = input_file,
-            output_file = output_file,
-            clean = clean,
-            verbose = verbose
-          )
+  output_ret_val$post_processor <-
+    post_processor <- function(metadata, input_file, output_file, clean, verbose,
+                               old_post_processor =  output_ret_val$post_processor_old) {
+      # Call the original post-processor in order to limit the changes that this function
+      # has on the original functionality
+      output_file <-
+        old_post_processor(
+          metadata = metadata,
+          input_file = input_file,
+          output_file = output_file,
+          clean = clean,
+          verbose = verbose
+        )
 
-        # read the output file
-        output_str <- readLines(output_file, warn = FALSE, encoding = "UTF-8")
+      # read the output file
+      output_str <- readLines(output_file, warn = FALSE, encoding = "UTF-8")
 
-        # Annoyingly it seems that Libre Office currently
-        # 'forgets' the margin properties of the headers,
-        # we therefore substitute these with a element specific
-        # style option that works. Perhaps not that pretty but
-        # it works and can be tweaked for most things.
-        output_str <-
-          prFtpHeaderStyle(output_str,
-                           h1_style=h1_style,
-                           other_h_style=h1_style)
+      # Annoyingly it seems that Libre Office currently
+      # 'forgets' the margin properties of the headers,
+      # we therefore substitute these with a element specific
+      # style option that works. Perhaps not that pretty but
+      # it works and can be tweaked for most things.
+      output_str <-
+        prFtpHeaderStyle(output_str,
+                         h1_style=h1_style,
+                         other_h_style=h1_style)
 
-        output_str <-
-          prFtpScriptRemoval(output_str)
+      output_str <-
+        prFtpScriptRemoval(output_str)
 
 
-        output_str <-
-          prFtpOtherRemoval(output_str)
+      output_str <-
+        prFtpOtherRemoval(output_str)
 
-        writeLines(output_str, output_file, useBytes = TRUE)
-        return(output_file)
-      }
-  }
+      writeLines(output_str, output_file, useBytes = TRUE)
+      return(output_file)
+    }
 
   return(output_ret_val)
 }

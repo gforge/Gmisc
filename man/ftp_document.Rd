@@ -4,7 +4,7 @@
 \title{Formatter wrapper for \code{\link[rmarkdown]{html_document}} facilitate easier LibreOffice porting}
 \usage{
 ftp_document(..., css = "custom.css", self_contained = FALSE,
-  LibreOffice_adapt = TRUE, h1_style = "margin: 24pt 0pt 0pt 0pt;",
+  h1_style = "margin: 24pt 0pt 0pt 0pt;",
   other_h_style = "margin: 10pt 0pt 0pt 0pt;")
 }
 \arguments{
@@ -24,10 +24,6 @@ ftp_document(..., css = "custom.css", self_contained = FALSE,
   such as the base64 images included in the self-contained
   version.}
 
-  \item{LibreOffice_adapt}{\code{TRUE} if the function
-  should adapt the html for optimal compatibility with
-  LibreOffice.}
-
   \item{h1_style}{You can choose any css style formatting
   here that you want to be applied to all h1 elements.
   Note: this is only applied if LibreOffice_adapt is
@@ -45,12 +41,13 @@ R Markdown output format to pass to
 \description{
 This function adds the option of having adaptations needed
 for seemless integration with word processor for importing
-html-documents. The advantage of html documents is t he
+html-documents. The advantage of html documents is the
 ability to create advanced formatting frequently needed in
 publications and that is available in the
-\code{\link{htmlTable}} function. You can view the series
-on \url{http://gforge.se} for more details regarding how to
-achieve fast-track-publishing (ftp) together with knitr.
+\code{\link{htmlTable}} function. You can view
+\url{http://gforge.se/2014-07/fast-track-publishing-using-rmarkdown}{the
+series} for more details regarding how to achieve
+fast-track-publishing (ftp) together with knitr.
 }
 \examples{
 # Possible yaml configuration at the top of the Rmd doc
