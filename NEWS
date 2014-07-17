@@ -1,9 +1,13 @@
 NEWS for the Gmisc package
 
+Changes for 0.7.0
+-----------------
+* Added the ftp_document formatter as an adaptation of the fast-track-publishing concept together with the new rmarkdown
+* Added an R CMD check before using the viewer
+
 Changes for 0.6.6
 -----------------
 * Improved the htmlTable viewer handling (thanks Adam Smith)
-* Added the rmd_ftp in as an adaptation of the fast-track-publishing concept together with rmarkdown
 * Added the isKnitting() function that detects if the current environment is knitting or not
 
 Changes for 0.6.5
