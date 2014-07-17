@@ -736,7 +736,7 @@ htmlTable <- function(x,
       table_str <- sprintf("%s\n\t\t<th style='font-weight: 900; border-bottom: 1px solid grey; %s'>%s</th>",
         table_str, ts, rowlabel)
     }else if(set_rownames){
-      table_str <- sprintf("%s\n\t\t<th style='border-bottom: 1px solid grey; %s'>&nbsp;</th>",
+      table_str <- sprintf("%s\n\t\t<th style='border-bottom: 1px solid grey; %s'> </th>",
         table_str, ts)
     }
 
