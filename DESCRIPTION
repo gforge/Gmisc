@@ -24,7 +24,7 @@ Imports:
     lattice,
     sp,
     methods,
-    rmarkdown
+    utils
 Depends:
     Hmisc
 Suggests:

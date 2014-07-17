@@ -165,10 +165,9 @@ htmlTable(x, title = first.word(deparse(substitute(x))), headings,
   reasons}
 
   \item{useViewer}{If you are using RStudio there is a
-  viewer thar can render the table within that is
-  automatically envoced unless you have the knitr package
-  loaded. Set this to \code{FALSE} if you want to remove
-  that functionality.}
+  viewer thar can render the table within that is envoced
+  if in \code{\link[base]{interactive}} mode. Set this to
+  \code{FALSE} if you want to remove that functionality.}
 }
 \value{
 Returns a string with the output table if output is not set

@@ -138,7 +138,6 @@
 #' @author max
 #' @export
 #' @rdname htmlTable
-#' @import methods
 htmlTable <- function(x,
   title=first.word(deparse(substitute(x))),
   headings,
@@ -888,11 +887,11 @@ htmlTable <- function(x,
 setClass("htmlTable", contains = "character")
 
 #' @rdname htmlTable
-#' @param useViewer If you are using RStudio there is a viewer thar can render 
-#'  the table within that is automatically envoced unless you have the knitr 
-#'  package loaded. Set this to \code{FALSE} if you want to remove that 
-#'  functionality. 
-#'  @export
+#' @param useViewer If you are using RStudio there is a viewer thar can render
+#'  the table within that is envoced if in \code{\link[base]{interactive}} mode.
+#'  Set this to \code{FALSE} if you want to remove that  functionality.
+#' @export
+#' @importFrom utils browseURL
 print.htmlTable<- function(x, useViewer, ...){
   # Since the print may be called from another print function
   # it may be handy to allow functions to use attributes for the
@@ -906,7 +905,7 @@ print.htmlTable<- function(x, useViewer, ...){
     }
   }
 
-  if (useViewer &&
+  if (useViewer != FALSE &&
         interactive())
   {
     htmlFile <- tempfile(fileext=".html")
