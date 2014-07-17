@@ -161,7 +161,7 @@ test_that("Check total column position",{
                              add_total_col = "last")
   expect_equivalent(tail(colnames(a),2)[1], "Total", 
                     info = "The last should be the p-value if statistics is specified")
-  expect_equivalent(ncol(a), 3)
+  expect_equivalent(ncol(a), 4)
 })
 
 test_that("Check factor function with missing", 
