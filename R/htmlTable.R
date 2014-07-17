@@ -888,11 +888,11 @@ htmlTable <- function(x,
 setClass("htmlTable", contains = "character")
 
 #' @rdname htmlTable
-#' @export
-#' @param useViewer If you are using RStudio there is a viewer thar can render
-#'  the table within that is automatically envoced unless you have the knitr
-#'  package loaded. Set this to \code{FALSE} if you want to remove that
-#'  functionality.
+#' @param useViewer If you are using RStudio there is a viewer thar can render 
+#'  the table within that is automatically envoced unless you have the knitr 
+#'  package loaded. Set this to \code{FALSE} if you want to remove that 
+#'  functionality. 
+#'  @export
 print.htmlTable<- function(x, useViewer, ...){
   # Since the print may be called from another print function
   # it may be handy to allow functions to use attributes for the
@@ -906,23 +906,8 @@ print.htmlTable<- function(x, useViewer, ...){
     }
   }
 
-  # Don't use viewer if currently knitting
-  # As of 0.98.932 the knitr package isn't loaded, instead the
-  # metadata element appears indicating that it is knitting
-  # or we can find the knitr environment through looking
-  # at the device option
-  knitting <- FALSE
-  if (useViewer != FALSE){
-    if (isKnitting()){
-      knitting <- TRUE
-    }
-  }
-
-
   if (useViewer &&
-        !knitting &&
-        !"CheckExEnv" %in% search() # Avoid calling the viewer if running R CMD check
-      )
+        interactive())
   {
     htmlFile <- tempfile(fileext=".html")
     htmlPage <- paste("<html>",
