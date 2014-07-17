@@ -918,7 +918,12 @@ print.htmlTable<- function(x, useViewer, ...){
     }
   }
 
-  if (useViewer && !knitting){
+
+  if (useViewer &&
+        !knitting &&
+        !"CheckExEnv" %in% search() # Avoid calling the viewer if running R CMD check
+      )
+  {
     htmlFile <- tempfile(fileext=".html")
     htmlPage <- paste("<html>",
                       "<head>",
