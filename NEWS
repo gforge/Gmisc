@@ -3,6 +3,7 @@ NEWS for the Gmisc package
 Changes for 0.6.7
 -----------------
 * Added an interactive() check before using the viewer
+* Minor adjustments to the htmlTable handling of no-blank spaces (&nbsp;)
 
 Changes for 0.6.6
 -----------------
