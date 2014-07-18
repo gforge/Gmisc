@@ -118,7 +118,9 @@
 #'    (at least that is how my 2010 version behaves).
 #' @param altcol alternating colors for each \code{rgroup}; one or two colors
 #'    is recommended and will be recycled (will throw warning if the number of
-#'    \code{rgroup}s is not a multiple of \code{length(altcol)})
+#'    \code{rgroup}s is not a multiple of \code{length(altcol)}). Note that
+#'    the altcol currently only works when copy-pasting from the browser and
+#'    not when opening directly in LibreOffice.
 #' @param tableCSSclass The html CSS class for the table. This allows directing html
 #'    formatting through \href{http://www.w3schools.com/css/css_selectors.asp}{CSS}
 #'    directly at all instances of that class. \emph{Note:} unfortunately the
@@ -338,7 +340,7 @@ htmlTable <- function(x,
                 sum(cgroup_spacer_cells[start_column:((start_column-1) + (n.cgroup_vec[i]-1))]))))
 
         if (nchar(cgroup_vec[i]) == 0)# Removed as this may now be on purpose || is.na(cgroup_vec[i]))
-          header_str <- sprintf("%s\n\t\t<th colspan='%d' style='%s'>&nbsp;</th>",
+          header_str <- sprintf("%s\n\t\t<th colspan='%d' style='%s'></th>",
             header_str, colspan,
             addAlign2Style(sprintf("font-weight: 900; %s", ts), getAlign(strsplit(cgroup_vec.just, '')[[1]][i])))
         else

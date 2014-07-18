@@ -151,7 +151,9 @@ htmlTable(x, title = first.word(deparse(substitute(x))), headings,
   \item{altcol}{alternating colors for each \code{rgroup};
   one or two colors is recommended and will be recycled
   (will throw warning if the number of \code{rgroup}s is
-  not a multiple of \code{length(altcol)})}
+  not a multiple of \code{length(altcol)}). Note that the
+  altcol currently only works when copy-pasting from the
+  browser and not when opening directly in LibreOffice.}
 
   \item{tableCSSclass}{The html CSS class for the table.
   This allows directing html formatting through
@@ -230,15 +232,15 @@ it is not advized. Most importantly you should try to use
 \examples{
 # A simple example
 # note that this won't show due to the second example
-mx <- matrix(1:6, ncol=3) 
-rownames(mx) <- LETTERS[1:NROW(mx)] 
+mx <- matrix(1:6, ncol=3)
+rownames(mx) <- LETTERS[1:NROW(mx)]
 colnames(mx) <- sprintf("Col \%s", LETTERS[1:NCOL(mx)])
 
 # If you just want to output your matrix, this is all you need
 htmlTable(mx)
 
 # Now add more interesting options
-htmlTable(mx, 
+htmlTable(mx,
           n.rgroup=c(2), rgroup=c("Nice!"),
           n.cgroup=c(2,1), cgroup=c("First", "Second"))
 
@@ -250,7 +252,7 @@ label(mtcars$mpg) <- "Gas"
 units(mtcars$mpg) <- "Miles/(US) gallon"
 
 label(mtcars$wt) <- "Weight"
-units(mtcars$wt) <- "10^3 kg" # not sure the unit is correct 
+units(mtcars$wt) <- "10^3 kg" # not sure the unit is correct
 
 mtcars$am <- factor(mtcars$am, levels=0:1, labels=c("Automatic", "Manual"))
 label(mtcars$am) <- "Transmission"
@@ -259,26 +261,26 @@ mtcars$gear <- factor(mtcars$gear)
 label(mtcars$gear) <- "Gears"
 
 # Make up some data for making it slightly more interesting
-mtcars$col <- factor(sample(c("red", "black", "silver"), 
+mtcars$col <- factor(sample(c("red", "black", "silver"),
                             size=NROW(mtcars), replace=TRUE))
 label(mtcars$col) <- "Car color"
 
-mpg_data_mean <- getDescriptionStatsBy(mtcars$mpg, mtcars$am, 
+mpg_data_mean <- getDescriptionStatsBy(mtcars$mpg, mtcars$am,
                                        use_units = TRUE, html=TRUE)
-mpg_data_median <- getDescriptionStatsBy(mtcars$mpg, mtcars$am, 
-                                         use_units = TRUE, html=TRUE, 
+mpg_data_median <- getDescriptionStatsBy(mtcars$mpg, mtcars$am,
+                                         use_units = TRUE, html=TRUE,
                                          continuous_fn=describeMedian)
-wt_data <- getDescriptionStatsBy(mtcars$wt, mtcars$am, 
+wt_data <- getDescriptionStatsBy(mtcars$wt, mtcars$am,
                                  use_units = TRUE, html=TRUE)
 
 vars <- rbind(mpg_data_mean, mpg_data_median, wt_data)
 rownames(vars) <- c("Mean (SD)", "Median (IQR)", "Mean (SD)")
 htmlTable(
   vars,
-  caption  = "Continuous & binary variables", 
+  caption  = "Continuous & binary variables",
   n.rgroup = c(2,1), rgroup=c("Gas", "Weight"),
-  n.cgroup = c(2,1), 
-  cgroup   = c(splitLines4Table("Results", 
+  n.cgroup = c(2,1),
+  cgroup   = c(splitLines4Table("Results",
                                 sprintf("n=\%d", NROW(mtcars)), html=TRUE),
                ""),
   headings =c(sprintf("\%s (SD)", levels(mtcars$am)), "Units"),
@@ -288,10 +290,10 @@ htmlTable(
 ## again with altcol
 htmlTable(
   vars,
-  caption  = "Continuous & binary variables", 
+  caption  = "Continuous & binary variables",
   n.rgroup = c(2,1), rgroup=c("Gas", "Weight"),
-  n.cgroup = c(2,1), 
-  cgroup   = c(splitLines4Table("Results", 
+  n.cgroup = c(2,1),
+  cgroup   = c(splitLines4Table("Results",
                                 sprintf("n=\%d", NROW(mtcars)), html=TRUE),
                ""),
   headings =c(sprintf("\%s (SD)", levels(mtcars$am)), "Units"),
@@ -307,7 +309,7 @@ describeMedian_minmax <- function(...) describeMedian(..., iqr = FALSE)
 getT1stat <- function(varname, digits = 0) {
   getDescriptionStatsBy(data[ , varname],
                         data$treat,
-                        add_total_col = TRUE, 
+                        add_total_col = TRUE,
                         show_all_values = TRUE,
                         hrzl_prop = FALSE,
                         statistics = FALSE,
@@ -329,7 +331,7 @@ data <- data.frame(age = rpois(100, 50),
 ## table 1 stats
 table_data <- list()
 table_data[['Age']] <- getT1stat('age')
-table_data[['Some categorical<br>&nbsp&nbspvariable']] <- getT1stat('cat_var')
+table_data[['Some categorical<br>&nbsp;&nbsp;variable']] <- getT1stat('cat_var')
 table_data[['Sex']] <- getT1stat('sex')
 table_data[['Race']] <- getT1stat('race')
 
@@ -340,8 +342,8 @@ n.rgroup <- unname(sapply(rgroup, function(x) nrow(table_data[[x]])))
 
 # add a column spanner for the status columns
 cgroup <- c("", "Type of treatment<sup>&dagger;</sup>")
-n.cgroup <- c(1, 3) 
-colnames(output_data) <- 
+n.cgroup <- c(1, 3)
+colnames(output_data) <-
   c(paste0('Total<br><font weight = normal; size = 1>n = ',
            nrow(data), '</font>'),
     paste0('Treated A<br><font weight = normal; size = 1>n = ',
@@ -353,16 +355,16 @@ colnames(output_data) <-
 
 
 htmlTable(output_data, align = 'rccc',
-          rgroup = rgroup, n.rgroup = n.rgroup, 
-          rgroupCSSseparator = '', 
+          rgroup = rgroup, n.rgroup = n.rgroup,
+          rgroupCSSseparator = '',
           cgroup = cgroup,
           n.cgroup = n.cgroup,
           tspanner=c("Base", "Other"),
           n.tspanner=c(sum(sapply(table_data, nrow)[1:2]),
                        sum(sapply(table_data, nrow)[3:4])),
-          rowlabel = '', 
+          rowlabel = '',
           ctable = TRUE, # latex-style table lines
-          caption = "Table 1: Patient demographics", 
+          caption = "Table 1: Patient demographics",
           altcol = c('white','lightblue1'),
           tfoot = paste0(
             '<font size=1>Abbreviations: ECOG, Eastern Cooperative Oncology Group;",
