@@ -15,8 +15,5 @@ prFpValidateLabelList(labelList)
 Checks that all list elements have equal length, i.e. there
 is a m x n relation
 }
-\author{
-max
-}
 \keyword{internal}
 

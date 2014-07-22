@@ -72,9 +72,6 @@ the standard deviation
 describeMean(1:10)
 describeMean(c(1:10, NA), show_missing=TRUE)
 }
-\author{
-max
-}
 \seealso{
 \code{\link{getDescriptionStatsBy}}
 

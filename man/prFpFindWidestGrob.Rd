@@ -17,7 +17,4 @@ prFpFindWidestGrob(grob.list, return_unit = "mm")
 \description{
 Finds the widest grob in the current list of grobs
 }
-\author{
-max
-}
 

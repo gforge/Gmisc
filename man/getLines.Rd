@@ -33,8 +33,5 @@ arrow. These lines are separated from the points by a
 defined width. The width is perpendicular to the lines
 angle at that particular point.
 }
-\author{
-max
-}
 \keyword{internal}
 

@@ -22,8 +22,5 @@ inside \code{attr("title")}
 \description{
 Gets the forestplot legend grobs
 }
-\author{
-max
-}
 \keyword{internal}
 

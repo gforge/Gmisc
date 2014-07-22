@@ -19,8 +19,5 @@ prTpGetBoxSizedTextGrob(txt, txt_clr, txt_cex, force_cex = FALSE, ...)
 \description{
 Gets the text size for the box
 }
-\author{
-Max
-}
 \keyword{internal}
 

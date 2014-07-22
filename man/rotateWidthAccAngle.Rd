@@ -35,8 +35,5 @@ then creates a vector that uses the angle and the origo
 points to generate a width vector used in
 \code{\link{getLines}}, \code{\link{getLinesWithArrow}}
 }
-\author{
-max
-}
 \keyword{internal}
 

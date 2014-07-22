@@ -20,8 +20,5 @@ angle in radians (see \code{\link{atan2}})
 \description{
 Uses a vector to get an angle by \code{\link{atan2}}.
 }
-\author{
-max
-}
 \keyword{internal}
 

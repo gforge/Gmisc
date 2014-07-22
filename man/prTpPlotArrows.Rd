@@ -46,8 +46,5 @@ prTpPlotArrows(type, box_row, transition_flow, max_flow, min_lwd, max_lwd, clr,
 \description{
 Outputs all the arrows from a box row
 }
-\author{
-Max
-}
 \keyword{internal}
 

@@ -27,8 +27,5 @@ or multiple colors as character vector (see
 Used in order to illustrate the mixe between two
 proportions in the \code{\link{transitionPlot}}.
 }
-\author{
-Max
-}
 \keyword{internal}
 

@@ -1,12 +1,12 @@
 #' A gets the color for the given box
-#' 
+#'
 #' @param clr The color of the boxes, either
 #'  a matrix, a vector of length two, or a single color
 #' @param no_boxes The number of boxes
 #' @param lengthOneOK If it is ok to have only one color
 #' @return \code{matrix} With two columns and no_boxes rows.
 #'  If function fails then return \code{NULL}
-#' @author Max
+#'
 #' @keywords internal
 prTpGetBoxPropClr <- function(clr, no_boxes, lengthOneOK = FALSE){
   if (is.matrix(clr)){
@@ -18,12 +18,12 @@ prTpGetBoxPropClr <- function(clr, no_boxes, lengthOneOK = FALSE){
               (lengthOneOK && length(clr) == 1)){
     return (matrix(clr, ncol=2, nrow=no_boxes, byrow=TRUE))
   }
-  
+
   return (NULL)
 }
 
 #' Plots the box for the transition plot
-#' 
+#'
 #' @param bx A list with the x, y, height and width parameters
 #' @param bx_txt The box text
 #' @param fill The fill color
@@ -33,51 +33,51 @@ prTpGetBoxPropClr <- function(clr, no_boxes, lengthOneOK = FALSE){
 #' @param lwd The line width
 #' @param prop Provide a proportion if the box should be split (0-1)
 #' @return \code{NULL}
-#' @author Max
+#'
 #' @keywords internal
-prTpPlotBox <- function(bx, bx_txt, fill, txt_clr, 
+prTpPlotBox <- function(bx, bx_txt, fill, txt_clr,
                         cex, line_col, lwd,
                         prop = NA){
-  pushViewport(viewport(y=bx$y, x=bx$x, 
+  pushViewport(viewport(y=bx$y, x=bx$x,
                         height=bx$height, width=bx$width))
   if (is.na(prop)){
-    grid.roundrect(gp = gpar(lwd=lwd, 
-                             fill=fill, 
+    grid.roundrect(gp = gpar(lwd=lwd,
+                             fill=fill,
                              col=line_col))
-    
+
     if (bx_txt != ""){
-      bx_grob <- prTpGetBoxSizedTextGrob(txt=bx_txt, 
-                                     txt_clr = txt_clr, 
+      bx_grob <- prTpGetBoxSizedTextGrob(txt=bx_txt,
+                                     txt_clr = txt_clr,
                                      txt_cex = cex)
       if (!is.null(bx_grob))
         grid.draw(bx_grob)
     }
   }else{
     # Adapted from Paul Murray's example http://www.stat.auckland.ac.nz/~paul/RG2e/customgrid-nestedlay.R
-    pushViewport(viewport(layout=grid.layout(nrow=2, 
-                                             ncol=1, 
+    pushViewport(viewport(layout=grid.layout(nrow=2,
+                                             ncol=1,
                                              heights=c(prop, 1-prop))))
-    grid.roundrect(gp = gpar(lwd=lwd, 
-                             fill=fill[1], 
+    grid.roundrect(gp = gpar(lwd=lwd,
+                             fill=fill[1],
                              col=NA))
-    
+
     bx_grob <- NULL
     if (bx_txt != ""){
-      bx_grob <- prTpGetBoxSizedTextGrob(txt=bx_txt, 
-                                         txt_clr = txt_clr[1], 
+      bx_grob <- prTpGetBoxSizedTextGrob(txt=bx_txt,
+                                         txt_clr = txt_clr[1],
                                          txt_cex = cex)
       if (!is.null(bx_grob))
         grid.draw(bx_grob)
     }
-    
+
     pushViewport(viewport(layout.pos.row=2, clip="on"))
     if ((1-prop) > 0){
       grid.roundrect(y=.5/(1-prop), height=1/(1-prop), gp = gpar(lwd=lwd, fill=fill[2], col=NA))
       if (bx_txt != "" && !is.null(bx_grob)){
         # Should not autoadjust the cex but keep the previous one
         prev_cex <- attr(bx_grob, "adjusted_cex")
-        bx_grob <- prTpGetBoxSizedTextGrob(txt=bx_txt, 
-                                       txt_clr = txt_clr[2], 
+        bx_grob <- prTpGetBoxSizedTextGrob(txt=bx_txt,
+                                       txt_clr = txt_clr[2],
                                        txt_cex = prev_cex,
                                        force_cex = TRUE,
                                        y=0.5/(1-prop))
@@ -92,26 +92,26 @@ prTpPlotBox <- function(bx, bx_txt, fill, txt_clr,
 }
 
 #' Gets the text size for the box
-#' 
+#'
 #' @param txt The text
 #' @param txt_clr The color of the text
 #' @param txt_cex The font size
 #' @param force_cex If font size should be forced
 #' @param ... Other options
-#' @author Max
+#'
 #' @keywords internal
-prTpGetBoxSizedTextGrob <- function(txt, 
-                                    txt_clr, 
+prTpGetBoxSizedTextGrob <- function(txt,
+                                    txt_clr,
                                     txt_cex,
                                     force_cex = FALSE,
                                     ...){
   bx_grob <- textGrob(txt,
-                      gp=gpar(col=txt_clr, cex=txt_cex), 
+                      gp=gpar(col=txt_clr, cex=txt_cex),
                       ...)
   attr(bx_grob, "adjusted_cex") <- txt_cex
   if (force_cex)
     return(bx_grob)
-  
+
   bx_height <- convertY(grobHeight(bx_grob), "npc", valueOnly=TRUE)
   # The box height is by definition 1 npc
   # We want to avoid anything that is bigger that
@@ -128,15 +128,15 @@ prTpGetBoxSizedTextGrob <- function(txt,
     }
     attr(bx_grob, "adjusted_cex") <- new_cex
   }
-  
+
   return(bx_grob)
 }
 
 
 #' Plots the arrows
-#' 
+#'
 #' Outputs all the arrows from a box row
-#' 
+#'
 #' @param type The type of arrow used
 #' @param box_row Which box do the arrow originate from
 #' @param max_flow The largest transition flow
@@ -151,23 +151,23 @@ prTpGetBoxSizedTextGrob <- function(txt,
 #' @param tot_spacing Total spacing between boxes
 #' @param box_width The box width
 #' @param add_width Add a certain width
-#' @param color_bar_subspace If there is little or no difference exists 
+#' @param color_bar_subspace If there is little or no difference exists
 #'  at the low/high proportions of the spectrum then it
 #'  can be of interest to focus the color change to the center
 #'  leaving the tails constant
 #' @return \code{NULL}
-#' @author Max
+#'
 #' @keywords internal
-prTpPlotArrows <- function(type, 
-                           box_row, 
+prTpPlotArrows <- function(type,
+                           box_row,
                            transition_flow,
-                           max_flow, 
-                           min_lwd, 
-                           max_lwd, 
-                           clr, 
-                           box_clr, 
+                           max_flow,
+                           min_lwd,
+                           max_lwd,
+                           clr,
+                           box_clr,
                            transition_arrow_props,
-                           prop_start_sizes, 
+                           prop_start_sizes,
                            prop_end_sizes,
                            tot_spacing,
                            box_width,
@@ -177,7 +177,7 @@ prTpPlotArrows <- function(type,
   no_boxes <- nrow(transition_flow)
   bx_left <- prTpGetBoxPositions(no=box_row, side="left",
                                  transitions = transition_flow[box_row,],
-                                 prop_start_sizes = prop_start_sizes, 
+                                 prop_start_sizes = prop_start_sizes,
                                  prop_end_sizes = prop_end_sizes,
                                  tot_spacing=tot_spacing,
                                  box_width=box_width)
@@ -186,11 +186,11 @@ prTpPlotArrows <- function(type,
     if (transition_flow[box_row,flow] > 0){
       bx_right <- prTpGetBoxPositions(no=flow, side="right",
                                       transitions = transition_flow[,box_row],
-                                      prop_start_sizes = prop_start_sizes, 
+                                      prop_start_sizes = prop_start_sizes,
                                       prop_end_sizes = prop_end_sizes,
                                       tot_spacing=tot_spacing,
                                       box_width=box_width)
-      
+
       # Calculate line width
       lwd <- min_lwd + (max_lwd-min_lwd)*transition_flow[box_row,flow]/max_flow
       adjusted_lwd <- lwd
@@ -206,7 +206,7 @@ prTpPlotArrows <- function(type,
       }
       a_l <- (box_width/4)
       x_ctrl_points <- c(bx_left$right, .5, .5, bx_right$left)
-      y_ctrl_points <- c(bx_left$y_exit[flow], bx_left$y_exit[flow], 
+      y_ctrl_points <- c(bx_left$y_exit[flow], bx_left$y_exit[flow],
                          bx_right$y_entry[box_row], bx_right$y_entry[box_row])
       current_arrow_clr <- clr[(flow+(box_row-1)*no_boxes)]
       if (type=="grid"){
@@ -218,7 +218,7 @@ prTpPlotArrows <- function(type,
           a_width <- getGridVal(unit(lwd, "pt"), "npc")+
             bx_right$y_entry_height/(no_boxes+1)
         }
-        
+
         # Add line width addition if it is a background line
         if (!is.na(add_width)){
           if (is.unit(add_width)){
@@ -227,22 +227,22 @@ prTpPlotArrows <- function(type,
             a_width <- a_width * add_width
           }
         }
-        
+
         a_angle <- atan(a_width/2/a_l)*180/pi
         # Need to adjust the end of the arrow as it otherwise overwrites part of the box
         # if it is thick
         x_ctrl_points[4] <- x_ctrl_points[4]-.00075*adjusted_lwd
-        grid.bezier(x=x_ctrl_points, 
-                    y=y_ctrl_points, 
+        grid.bezier(x=x_ctrl_points,
+                    y=y_ctrl_points,
                     gp=gpar(lwd=adjusted_lwd, fill=current_arrow_clr),
                     arrow=arrow(type="closed", angle=a_angle, length=unit(a_l, "npc")))
-        
+
       }else{
         # The width can be wider using the special bezier arrows
         if (abs_arrow_width){
           a_width <- bx_right$y_entry_height*1.5/no_boxes
         }else{
-          a_width <- # getGridVal(lwd, "npc") + 
+          a_width <- # getGridVal(lwd, "npc") +
             bx_right$y_entry_height*transition_flow[box_row,flow]/max_flow*2.2
           # Set a maximum size in proportion to the line
           if (getGridVal(lwd, "npc", axisTo="y")*1.66 < a_width)
@@ -257,24 +257,24 @@ prTpPlotArrows <- function(type,
             a_width <- a_width * add_width
           }
         }
-          
-        
+
+
         if (a_width < adjusted_lwd){
           sp_float_string <- sprintf("%%.%df", -floor(log10(adjusted_lwd-a_width))+1)
           warning("The arrow width is smaller than the width of the line,",
-                  "thus not appearing as a regular arrow: ", 
-                  sprintf(sp_float_string, a_width), 
-                  " < ", 
+                  "thus not appearing as a regular arrow: ",
+                  sprintf(sp_float_string, a_width),
+                  " < ",
                   sprintf(sp_float_string, adjusted_lwd))
-          
+
           # Looks really weird if this is allowed
           a_width <- adjusted_lwd
-          
+
         }
-        
+
         if (type=="simple"){
-          bz <- bezierArrowSmpl(x=x_ctrl_points, 
-                                y=y_ctrl_points, 
+          bz <- bezierArrowSmpl(x=x_ctrl_points,
+                                y=y_ctrl_points,
                                 width=adjusted_lwd,
                                 arrow=list(length=a_l, base=a_width),
                                 clr=current_arrow_clr)
@@ -282,14 +282,14 @@ prTpPlotArrows <- function(type,
         }else if (type=="gradient"){
           if (length(box_clr) > 1){
             # Invert order as that is the fill order
-            current_grdt_clr <- prTpGetColors(colors = box_clr, 
+            current_grdt_clr <- prTpGetColors(colors = box_clr,
                                               proportion = 1-transition_arrow_props[box_row, flow],
                                               space = color_bar_subspace)
           }else{
             current_grdt_clr <- box_clr
           }
-          bz <- bezierArrowGradient(x=x_ctrl_points, 
-                                    y=y_ctrl_points, 
+          bz <- bezierArrowGradient(x=x_ctrl_points,
+                                    y=y_ctrl_points,
                                     width=adjusted_lwd,
                                     arrow=list(length=a_l, base=a_width),
                                     clr=current_arrow_clr,
@@ -299,19 +299,19 @@ prTpPlotArrows <- function(type,
                                     grdt_decrease_prop = .3,
                                     grdt_clr = current_grdt_clr)
           grid.draw(bz)
-          
+
         }else{
           stop("The arrow type ", type, " is not yet implemented, sorry.")
         }
-      } 
+      }
     }
   }
 }
 
 #' Plot boxes and arrows
-#' 
+#'
 #' Outputs all the boxes and arrow
-#' 
+#'
 #' @param overlap_order The order in which the boxes are plotted
 #' @param transition_flow The transition flow matrix
 #' @param no_boxes Number of boxes to plot
@@ -337,27 +337,27 @@ prTpPlotArrows <- function(type,
 #'  available.
 #' @param plot_arrows If we are plotting shadow boxes then
 #'  arrows should not be plotted and this should be set to \code{FALSE}
-#' @param color_bar_subspace If there is little or no difference exists 
+#' @param color_bar_subspace If there is little or no difference exists
 #'  at the low/high proportions of the spectrum then it
 #'  can be of interest to focus the color change to the center
 #'  leaving the tails constant
 #' @param proportion It there is a proportion
 #' @return \code{NULL}
-#' @author Max
+#'
 #' @keywords internal
 prTpPlotBoxes <- function (overlap_order,
                            transition_flow,
-                           no_boxes, 
-                           box_width, 
+                           no_boxes,
+                           box_width,
                            tot_spacing,
-                           txt, 
+                           txt,
                            cex,
                            prop_start_sizes, prop_end_sizes,
                            box_prop,
                            lwd_prop_total = lwd_prop_total,
                            fill_start_clr, fill_end_clr,
                            txt_start_clr, txt_end_clr,
-                           lwd=2, line_col="#000000", 
+                           lwd=2, line_col="#000000",
                            min_lwd,
                            max_lwd,
                            overlap_add_width,
@@ -368,12 +368,12 @@ prTpPlotBoxes <- function (overlap_order,
                            transition_arrow_props,
                            color_bar_subspace,
                            plot_arrows = TRUE, proportion=FALSE) {
-  
+
   for(i in overlap_order){
     if (prop_start_sizes[i] > 0){
       bx_left <- prTpGetBoxPositions(no=i, side="left",
                                      transitions=transition_flow[i,],
-                                     prop_start_sizes = prop_start_sizes, 
+                                     prop_start_sizes = prop_start_sizes,
                                      prop_end_sizes = prop_end_sizes,
                                      tot_spacing=tot_spacing,
                                      box_width=box_width)
@@ -386,14 +386,14 @@ prTpPlotBoxes <- function (overlap_order,
         fill_clr = fill_start_clr[i]
         txt_clr = txt_start_clr[i]
       }
-      
+
       if (plot_arrows){
         # Plot arrows
         if (lwd_prop_total)
           max_flow <- max(transition_flow)
         else
           max_flow <- sum(transition_flow[i,])
-        
+
         # Do the background arrows
         prTpPlotArrows(type = ifelse(type_of_arrow == "grid", "grid", "simple"),
                       box_row = i,
@@ -403,13 +403,13 @@ prTpPlotBoxes <- function (overlap_order,
                       max_lwd = max_lwd,
                       clr = rep(overlap_bg_clr, no_boxes*ncol(transition_flow)),
                       box_clr = overlap_bg_clr,
-                      prop_start_sizes = prop_start_sizes, 
+                      prop_start_sizes = prop_start_sizes,
                       prop_end_sizes = prop_end_sizes,
                       tot_spacing = tot_spacing,
                       box_width = box_width,
                       abs_arrow_width = abs_arrow_width,
                       add_width = overlap_add_width)
-        
+
         # The actual arrows
         prTpPlotArrows(type = type_of_arrow,
                       box_row = i,
@@ -420,7 +420,7 @@ prTpPlotBoxes <- function (overlap_order,
                       clr = arrow_clr,
                       box_clr = fill_clr,
                       transition_arrow_props = transition_arrow_props,
-                      prop_start_sizes = prop_start_sizes, 
+                      prop_start_sizes = prop_start_sizes,
                       prop_end_sizes = prop_end_sizes,
                       tot_spacing = tot_spacing,
                       box_width = box_width,
@@ -428,26 +428,26 @@ prTpPlotBoxes <- function (overlap_order,
                       color_bar_subspace = color_bar_subspace,
                       add_width = NA)
       }
-      
-      
-      prTpPlotBox(bx=bx_left, 
-                  bx_txt = txt[i, 1], 
-                  fill=fill_clr, 
-                  txt_clr = txt_clr, 
+
+
+      prTpPlotBox(bx=bx_left,
+                  bx_txt = txt[i, 1],
+                  fill=fill_clr,
+                  txt_clr = txt_clr,
                   cex = cex,
                   line_col = line_col,
                   lwd = lwd,
-                  prop = prop) 
+                  prop = prop)
     }
-    
+
     if (prop_end_sizes[i] > 0){
       bx_right <- prTpGetBoxPositions(no=i, side="right",
                                       transitions=transition_flow[,i],
-                                      prop_start_sizes = prop_start_sizes, 
+                                      prop_start_sizes = prop_start_sizes,
                                       prop_end_sizes = prop_end_sizes,
                                       tot_spacing=tot_spacing,
                                       box_width=box_width)
-      
+
       if(!missing(box_prop) & proportion){
         fill_clr = fill_end_clr[i,]
         txt_clr = txt_end_clr[i,]
@@ -457,11 +457,11 @@ prTpPlotBoxes <- function (overlap_order,
         fill_clr = fill_end_clr[i]
         txt_clr = txt_end_clr[i]
       }
-      
-      prTpPlotBox(bx=bx_right, 
-                  bx_txt = txt[i, 2], 
-                  fill=fill_clr, 
-                  txt_clr = txt_clr, 
+
+      prTpPlotBox(bx=bx_right,
+                  bx_txt = txt[i, 2],
+                  fill=fill_clr,
+                  txt_clr = txt_clr,
                   cex = cex,
                   line_col = line_col,
                   lwd = lwd,
@@ -471,7 +471,7 @@ prTpPlotBoxes <- function (overlap_order,
 }
 
 #' Gets the box position
-#' 
+#'
 #' @param no The box number
 #' @param side The right or left side
 #' @param no_boxes The number of boxes
@@ -481,39 +481,39 @@ prTpPlotBoxes <- function (overlap_order,
 #' @param tot_spacing The total space between the boxes
 #' @param box_width The width of the box
 #' @return \code{list(top, left, bottom, right, width, height)}
-#' @author Max
+#'
 #' @keywords internal
-prTpGetBoxPositions <- function (no, side, 
+prTpGetBoxPositions <- function (no, side,
                                  transitions,
                                  prop_start_sizes, prop_end_sizes,
                                  tot_spacing,
                                  box_width){
   no_boxes <- max(length(prop_start_sizes), length(prop_end_sizes))
-  empty_boxes <- ifelse(side == "left", 
-                        sum(prop_start_sizes==0), 
+  empty_boxes <- ifelse(side == "left",
+                        sum(prop_start_sizes==0),
                         sum(prop_end_sizes==0))
-  
+
   # Calculate basics
   space <- tot_spacing/(no_boxes-1-empty_boxes)
-  
+
   # Basic box vars
-  ret <- list(height = (1-tot_spacing)*ifelse(side == "left", 
-                                              prop_start_sizes[no], 
+  ret <- list(height = (1-tot_spacing)*ifelse(side == "left",
+                                              prop_start_sizes[no],
                                               prop_end_sizes[no]),
               width = box_width)
-  
+
   if (no == 1){
     ret$top <- 1
   }else{
-    ret$top <- 1 - 
-      ifelse(side == "left", 
-             sum(prop_start_sizes[1:(no-1)]), 
+    ret$top <- 1 -
+      ifelse(side == "left",
+             sum(prop_start_sizes[1:(no-1)]),
              sum(prop_end_sizes[1:(no-1)])) * (1-tot_spacing) -
       space*(no-1)
   }
   ret$bottom <- ret$top - ret$height
   ret$y <- mean(c(ret$top, ret$bottom))
-  
+
   ret$y_exit <- rep(ret$y, times=no_boxes)
   ret$y_entry_height <- ret$height/3
   ret$y_entry <- rep(NA, times=no_boxes)
@@ -541,11 +541,11 @@ prTpGetBoxPositions <- function (no, side,
         # as these attach at the ends
         arrow_proportion <- sum(transitions[2:i])/
           (sum(transitions) - (head(transitions,1) + tail(transitions, 1))/2)
-        
+
         # Narrow the space slightly
         narrower <- (no_boxes+8)/(no_boxes + 10)
-        
-        ret$y_entry[i] <- ret$y + ret$height/6 - 
+
+        ret$y_entry[i] <- ret$y + ret$height/6 -
           ret$y_entry_height/no_boxes/2-
           ret$y_entry_height*narrower*arrow_proportion
       }
@@ -553,9 +553,9 @@ prTpGetBoxPositions <- function (no, side,
     ret$y_entry <- seq(to=ret$y - ret$height/6,
                        from=ret$y + ret$height/6,
                        length.out = no_boxes)
-    
+
   }
-  
+
   # Now the x-axis
   if (side == "right"){
     ret$left <- 1-box_width
@@ -564,33 +564,33 @@ prTpGetBoxPositions <- function (no, side,
     ret$left <- 0
     ret$right <- box_width
   }
-  
+
   txt_margin <- box_width/10
   ret$txt_height <- ret$height - txt_margin*2
   ret$txt_width <- box_width - txt_margin*2
-  
+
   ret$x <- mean(c(ret$left, ret$right))
-    
+
   return(ret)
-}  
+}
 
 #' Gets a set of colors or just one color
-#' 
+#'
 #' Used in order to illustrate the mixe between two
 #' proportions in the \code{\link{transitionPlot}}.
-#' 
+#'
 #' @param colors A set of min. two colors that is used
 #'  for \code{\link[grDevices]{colorRampPalette}}.
 #' @param proportion A proportion or a set of proportions
 #'  between 0 and 1. If you leave this out then the full color
 #'  span will be returned.
-#' @param space If there is little or no difference exists 
+#' @param space If there is little or no difference exists
 #'  at the low/high proportions of the spectrum then it
 #'  can be of interest to focus the color change to the center
 #'  leaving the tails constant
 #' @return \code{character} The function can return both single colors
 #'  or multiple colors as character vector (see \code{\link[grDevices]{rgb}})
-#' @author Max
+#'
 #' @keywords internal
 prTpGetColors <- function(colors, proportion, space){
   start <- c()
@@ -599,12 +599,12 @@ prTpGetColors <- function(colors, proportion, space){
   if (!missing(space)){
     if(any(space > 1 | space < 0))
       stop("Your color subspace that you define should be between 0 and 1")
-    
+
     if (length(space) > 2)
       stop("The color subspace has to be a length of either one or two",
-           " you have provided ", paste(space, collapse=", "), 
+           " you have provided ", paste(space, collapse=", "),
            " of length", length(space))
-    
+
     if (length(space) == 2){
       start_no <- ceiling(space[1]*no)
       end_no <- ceiling(space[2]*no)
@@ -622,7 +622,7 @@ prTpGetColors <- function(colors, proportion, space){
         no <- 0
     }
   }
-  
+
   if (no > 0){
     clrs  <- c(start,
                colorRampPalette(colors, space="Lab")(no),
@@ -630,13 +630,13 @@ prTpGetColors <- function(colors, proportion, space){
   }else{
     clrs <- c(start, end)
   }
-    
+
   if (missing(proportion))
     return(clrs)
-  
+
   if (any(proportion < 0 | proportion > 1))
     stop("You color proportion of interest must lie between 0 and 1",
          " you have provided: ", proportion)
-  
+
   return(clrs[1+min(100, floor(length(clrs)*proportion))])
 }

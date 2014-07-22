@@ -29,7 +29,4 @@ format recommends a ' ' if x > 10^4. The scientific form
 \examples{
 outputInt(123456)
 }
-\author{
-max
-}
 

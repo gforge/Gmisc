@@ -40,8 +40,5 @@ and clip
 \description{
 Gets the x-label and zero-bar details
 }
-\author{
-Max
-}
 \keyword{internal}
 

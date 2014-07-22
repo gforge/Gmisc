@@ -29,7 +29,4 @@ ridiculous to report anything below that value.
 \examples{
 pvalueFormatter(c(0.10234,0.010234, 0.0010234, 0.000010234))
 }
-\author{
-Max
-}
 

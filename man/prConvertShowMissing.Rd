@@ -16,8 +16,5 @@ The variable is suppose to be directly compatible with
 table(..., useNA=show_missing). It throughs an error if not
 compatible
 }
-\author{
-max
-}
 \keyword{internal}
 

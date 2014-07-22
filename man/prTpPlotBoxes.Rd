@@ -74,8 +74,5 @@ prTpPlotBoxes(overlap_order, transition_flow, no_boxes, box_width, tot_spacing,
 \description{
 Outputs all the boxes and arrow
 }
-\author{
-Max
-}
 \keyword{internal}
 

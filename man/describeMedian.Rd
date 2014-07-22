@@ -70,9 +70,6 @@ the interquartile range or the full range
 describeMedian(1:10)
 describeMedian(c(1:10, NA), show_missing=TRUE)
 }
-\author{
-max
-}
 \seealso{
 \code{\link{getDescriptionStatsBy}}
 

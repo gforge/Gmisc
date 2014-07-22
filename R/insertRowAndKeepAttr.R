@@ -1,22 +1,22 @@
 #' Insert a row into a matrix
-#' 
+#'
 #' Inserts a row and keeps the attributes \code{\link{copyAllNewAttributes}}
-#' 
+#'
 #' @param m matrix.
 #' @param r row number where the new row should be inserted
 #' @param v optional values for the new row.
 #' @param rName optional character string: the name of the new row.
 #' @return a matrix with one more row than the provided matrix m.
-#' 
+#'
 #' @examples
 #' test <- matrix(1:4, ncol=2)
 #' attr(test, 'wow') <- 1000
 #' test <- insertRowAndKeepAttr(test, 2)
 #' print(attr(test, 'wow'))
-#' 
+#'
 #' @export
-#' @author max, Arne Henningsen
-insertRowAndKeepAttr <- function (m, r, v = NA, rName = "") 
+#' @author Max Gordon, Arne Henningsen
+insertRowAndKeepAttr <- function (m, r, v = NA, rName = "")
 {
   if (!inherits(m, "matrix")) {
     stop("argument 'm' must be a matrix")
@@ -34,7 +34,7 @@ insertRowAndKeepAttr <- function (m, r, v = NA, rName = "")
     stop("argument 'r' must be positive")
   }
   if (r > nrow(m) + 1) {
-    stop("argument 'r' must not be larger than the number of rows", 
+    stop("argument 'r' must not be larger than the number of rows",
          " of matrix 'm' plus one")
   }
   if (!is.character(rName)) {
@@ -62,12 +62,12 @@ insertRowAndKeepAttr <- function (m, r, v = NA, rName = "")
     }
   }
   else {
-    m2 <- rbind(m[1:(r - 1), , drop = FALSE], matrix(v, ncol = nc), 
+    m2 <- rbind(m[1:(r - 1), , drop = FALSE], matrix(v, ncol = nc),
                 m[r:nr, , drop = FALSE])
     if (!is.null(rNames)) {
       rownames(m2) <- c(rNames[1:(r - 1)], rName, rNames[r:nr])
     }
   }
-  
+
   return(copyAllNewAttributes(from = m, to = m2))
 }

@@ -22,8 +22,5 @@ necessary.
 It checks that a vector makes sense in its grid parameters.
 It also creates an origo at point 0 if none is provided.
 }
-\author{
-max
-}
 \keyword{internal}
 

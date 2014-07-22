@@ -15,8 +15,5 @@ x/y/adjust values
 \description{
 Used for the forestplot legend box.
 }
-\author{
-max
-}
 \keyword{internal}
 

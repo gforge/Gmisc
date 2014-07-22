@@ -38,8 +38,5 @@ max_width/max_height for the total
 \description{
 A function that gets all the labels
 }
-\author{
-max
-}
 \keyword{internal}
 

@@ -177,9 +177,6 @@ getDescriptionStatsBy(mtcars$col_with_missing, mtcars$am, statistics=TRUE,
                       show_missing=TRUE, hrzl_prop = TRUE, total_col_show_perc = FALSE)
 
 }
-\author{
-max
-}
 \seealso{
 \code{\link{describeMean}}, \code{\link{describeProp}},
 \code{\link{describeFactors}}, \code{\link{htmlTable}}

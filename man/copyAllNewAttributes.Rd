@@ -31,7 +31,4 @@ b <- a
 b <- copyAllNewAttributes(a, b)
 print(attr(b, 'wow'))
 }
-\author{
-max
-}
 

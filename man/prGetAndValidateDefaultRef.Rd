@@ -17,8 +17,5 @@ integer The level number of interest
 \description{
 A helper function for the description stats
 }
-\author{
-max
-}
 \keyword{internal}
 

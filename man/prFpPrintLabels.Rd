@@ -19,8 +19,5 @@ void
 This is a helper function to the \code{\link{forestplot2}}
 function.
 }
-\author{
-Max
-}
 \keyword{internal}
 

@@ -20,8 +20,5 @@ function fails then return \code{NULL}
 \description{
 A gets the color for the given box
 }
-\author{
-Max
-}
 \keyword{internal}
 

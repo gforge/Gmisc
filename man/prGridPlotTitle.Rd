@@ -28,8 +28,5 @@ prGridPlotTitle(title, base_cex, cex_mult = 1.2, fontface = "bold",
 Adds the title and generates a new main viewport below the
 title
 }
-\author{
-max
-}
 \keyword{internal}
 

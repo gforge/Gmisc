@@ -21,8 +21,5 @@ prFpGetLayoutVP(lineheight, labels, nr, legend_layout = NULL)
 \description{
 The layout makes space for a legend if needed
 }
-\author{
-max
-}
 \keyword{internal}
 

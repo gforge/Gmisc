@@ -26,7 +26,4 @@ splitLines4Table("hello", "world")
 splitLines4Table("hello", "world", html=TRUE)
 splitLines4Table("hello", "world", list("A list", "is OK"))
 }
-\author{
-max
-}
 

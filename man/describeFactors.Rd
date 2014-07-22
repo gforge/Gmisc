@@ -72,9 +72,6 @@ by(my_var,
    show_missing="ifany",
    horizontal_proportions = total)
 }
-\author{
-max
-}
 \seealso{
 \code{\link{getDescriptionStatsBy}}
 

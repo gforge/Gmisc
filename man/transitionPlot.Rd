@@ -206,7 +206,4 @@ transitionPlot(transition_matrix, box_prop=box_prop,
 par(par_org)
 }
 }
-\author{
-max
-}
 

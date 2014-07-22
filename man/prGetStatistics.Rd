@@ -58,8 +58,5 @@ A matrix or a vector depending on the settings
 A simple function applied by the
 \code{\link{getDescriptionStatsBy}} for the total column.
 }
-\author{
-max
-}
 \keyword{internal}
 

@@ -29,6 +29,6 @@ test <- insertRowAndKeepAttr(test, 2)
 print(attr(test, 'wow'))
 }
 \author{
-max, Arne Henningsen
+Max Gordon, Arne Henningsen
 }
 

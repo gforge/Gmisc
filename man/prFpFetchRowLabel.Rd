@@ -21,8 +21,5 @@ An expression or a text
 A function used for fetching the text or expression from
 the supplied labeltext.
 }
-\author{
-max
-}
 \keyword{internal}
 

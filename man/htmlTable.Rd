@@ -173,7 +173,7 @@ htmlTable(x, title = first.word(deparse(substitute(x))), headings,
   \code{FALSE} if you want to remove that functionality.}
 }
 \value{
-Returns a string with the output table if output is not set
+Returns a string of class htmlTable
 }
 \description{
 This is a function for outputting a more advanced table
@@ -390,9 +390,6 @@ htmlTable(output_data, align = 'rccc',
               '<sup>&Dagger;</sup>',
               ' Note 2. Twice the dosage of treatment A',
             '</span>'))
-}
-\author{
-max
 }
 \seealso{
 \code{\link{latex}}, \code{\link{getDescriptionStatsBy}},

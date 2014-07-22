@@ -14,8 +14,5 @@ boolean
 \description{
 Just a simple help with interpreting the radians
 }
-\author{
-max
-}
 \keyword{internal}
 

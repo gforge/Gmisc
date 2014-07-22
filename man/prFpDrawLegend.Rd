@@ -39,8 +39,5 @@ prFpDrawLegend(lGrobs, legend.pos, col, colgap, legend.gp, legend.r,
 Takes the grobs and outputs the legend inside the current
 viewport.
 }
-\author{
-max
-}
 \keyword{internal}
 

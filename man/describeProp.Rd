@@ -72,9 +72,6 @@ contains the number and the percentage
 describeProp(factor(sample(50, x=c("A","B"), replace=TRUE)))
 describeProp(factor(sample(50, x=c("A","B", NA), replace=TRUE)), show_missing=TRUE)
 }
-\author{
-max
-}
 \seealso{
 \code{\link{getDescriptionStatsBy}},
 \code{\link{describeFactors}}

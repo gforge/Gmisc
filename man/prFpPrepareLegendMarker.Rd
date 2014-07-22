@@ -19,8 +19,5 @@ prFpPrepareLegendMarker(legendMarkerFn, col_no, confintNormalFn)
 \description{
 Prepares the legend marker function
 }
-\author{
-Max
-}
 \keyword{internal}
 

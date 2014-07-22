@@ -162,9 +162,6 @@ forestplot2(row_names, coef, low, high,
 
 par(ask=ask)
 }
-\author{
-Max
-}
 \seealso{
 \code{\link{forestplot2}}
 

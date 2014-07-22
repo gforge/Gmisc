@@ -27,8 +27,5 @@ clip the graph. The line will have arrows indicating that
 it continues beyond the graph The zero bar has to be on the
 chart though!
 }
-\author{
-Max
-}
 \keyword{internal}
 

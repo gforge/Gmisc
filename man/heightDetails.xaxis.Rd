@@ -21,8 +21,5 @@ grid.newpage()
 xg <- xaxisGrob(c(1:3))
 convertY(grobHeight(xg), "lines")
 }
-\author{
-Max
-}
 \keyword{internal}
 

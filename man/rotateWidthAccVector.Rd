@@ -29,8 +29,5 @@ vector is for knowing the direction/direction and this is
 used for generating an angle. It then calls the subfunction
 \code{\link{rotateWidthAccAngle}}.
 }
-\author{
-max
-}
 \keyword{internal}
 

@@ -29,8 +29,5 @@ This function helps the \code{\link{forestplot2}} to deal
 with multiple drawing functions for the confidence
 intervals.
 }
-\author{
-Max
-}
 \keyword{internal}
 

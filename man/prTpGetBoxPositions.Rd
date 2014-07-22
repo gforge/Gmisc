@@ -29,8 +29,5 @@ prTpGetBoxPositions(no, side, transitions, prop_start_sizes, prop_end_sizes,
 \description{
 Gets the box position
 }
-\author{
-Max
-}
 \keyword{internal}
 

@@ -16,8 +16,5 @@ list with the two merged
 \description{
 A helper function for mergeLists that does the actual work.
 }
-\author{
-Max
-}
 \keyword{internal}
 

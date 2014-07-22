@@ -138,7 +138,6 @@
 #' @importFrom stringr str_replace
 #' @importFrom Hmisc first.word
 #' @importFrom Hmisc format.df
-#' @author max
 #' @export
 #' @rdname htmlTable
 htmlTable <- function(x,
@@ -972,7 +971,6 @@ print.htmlTable<- function(x, useViewer, ...){
 #' splitLines4Table("hello", "world", list("A list", "is OK"))
 #'
 #'
-#' @author max
 #' @export
 splitLines4Table <- function(..., html=FALSE){
   strings <- c()

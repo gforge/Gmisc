@@ -28,8 +28,5 @@ A \code{\link[grid]{grid.layout}} object is used to
 generate the margins. A second viewport selecting the
 mid-row/col is used to create the effect of margins
 }
-\author{
-max
-}
 \keyword{internal}
 
