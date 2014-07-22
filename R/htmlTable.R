@@ -870,7 +870,7 @@ htmlTable <- function(x,
   # Add footer
   if (!missing(tfoot)){
     # Initiate the tfoot
-    table_str <- sprintf("%s\n\t<tfoot><tr><td colspan=%d>", table_str, total_columns)
+    table_str <- sprintf("%s\n\t<tfoot><tr><td colspan='%d'>", table_str, total_columns)
 
     # Add the actual tfoot to a new row
     table_str<- sprintf("%s\n\t%s", table_str, tfoot)
