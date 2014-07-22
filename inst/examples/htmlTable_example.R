@@ -101,7 +101,7 @@ data <- data.frame(age = rpois(100, 50),
 ## table 1 stats
 table_data <- list()
 table_data[['Age']] <- getT1stat('age')
-table_data[['Some categorical<br>&nbsp;&nbsp;variable']] <- getT1stat('cat_var')
+table_data[['Some categorical<br />&nbsp;&nbsp;variable']] <- getT1stat('cat_var')
 table_data[['Sex']] <- getT1stat('sex')
 table_data[['Race']] <- getT1stat('race')
 
@@ -114,19 +114,19 @@ n.rgroup <- unname(sapply(rgroup, function(x) nrow(table_data[[x]])))
 cgroup <- c("", "Type of treatment<sup>&dagger;</sup>")
 n.cgroup <- c(1, 3)
 colnames(output_data) <-
-  c(paste0('Total<br>\n',
+  c(paste0('Total<br />\n',
            '<span style="weight = normal; font-size: .6em;">',
             'n = ', nrow(data),
            '</span>'),
-    paste0('Treated A<br>\n',
+    paste0('Treated A<br />\n',
            '<span style="weight = normal; font-size: .6em;">',
             'n = ', sum(data$treat == 'Treatment A'),
            '</span>'),
-    paste0('Treatment B&Dagger;<br>\n',
+    paste0('Treatment B&Dagger;<br />\n',
            '<span style="weight = normal; font-size: .6em;">',
             'n = ', sum(data$treat == 'Treatment B'),
            '</span>'),
-    paste0('Placebo<br>',
+    paste0('Placebo<br />',
            '<span style="weight = normal; font-size: .6em;">',
             'n = ', sum(data$treat == 'Placebo'),
            '</span>'))
@@ -149,10 +149,10 @@ htmlTable(output_data, align = 'rccc',
               'Abbreviations:',
               ' ECOG, Eastern Cooperative Oncology Group;',
               ' PS, performance score',
-            '</span><br>\n',
+            '</span><br />\n',
             '<span style="font-size: .6em;">',
               '<sup>&dagger;</sup>',
-              ' Note 1. Trial groups for a new wonder drug</span><br>\n',
+              ' Note 1. Trial groups for a new wonder drug</span><br />\n',
             '<span style="font-size: .6em;">',
               '<sup>&Dagger;</sup>',
               ' Note 2. Twice the dosage of treatment A',
