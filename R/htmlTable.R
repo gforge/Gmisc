@@ -126,8 +126,9 @@
 #'    directly at all instances of that class. \emph{Note:} unfortunately the
 #'    CSS is frequently ignored by word processors. This option
 #'    is mostly inteded for web-presentations.
-#' @param ... Currently not used, here for compatibility reasons
-#' @return Returns a string with the output table if output is not set
+#' @param ... Passed on to \code{print.htmlTable} function and any argument except the
+#'    \code{useViewer} will be passed on to the \code{\link[base]{cat}} function.
+#' @return Returns a string of class htmlTable
 #'
 #' @example inst/examples/htmlTable_example.R
 #'
@@ -883,6 +884,8 @@ htmlTable <- function(x,
   table_str <- sprintf("%s\n</table>", table_str)
 
   class(table_str) <- c("htmlTable", class(table_str))
+  attr(table_str, "...") <- list(...)
+
   return(table_str)
 }
 
@@ -895,13 +898,23 @@ setClass("htmlTable", contains = "character")
 #' @export
 #' @importFrom utils browseURL
 print.htmlTable<- function(x, useViewer, ...){
+  args <- attr(x, "...")
+  # Use the latest ... from the print call
+  # and override the original htmlTable call ...
+  # if there is a conflict
+  print_args <- list(...)
+  for (n in names(print_args)){
+    args[[n]] <- print_args[[n]]
+  }
+
   # Since the print may be called from another print function
   # it may be handy to allow functions to use attributes for the
   # useViewer parameter
   if (missing(useViewer)){
-    if ("useViewer" %in% names(attributes(x)) &&
-      is.logical(attr(x, "useViewer"))){
-        useViewer <- attr(x, "useViewer")
+    if ("useViewer" %in% names(args) &&
+      is.logical(args$useViewer)){
+        useViewer <- args$useViewer
+        args$useViewer <- NULL
     }else{
       useViewer <- TRUE
     }
@@ -910,10 +923,13 @@ print.htmlTable<- function(x, useViewer, ...){
   if (useViewer != FALSE &&
         interactive())
   {
-    htmlFile <- tempfile(fileext=".html")
+    if (is.null(args$file)){
+      args$file <- tempfile(fileext=".html")
+    }
+
     htmlPage <- paste("<html>",
                       "<head>",
-                      "<meta http-equiv=\"Content-type\" content=\"text/html;charset=UTF-8\">",
+                      "<meta http-equiv=\"Content-type\" content=\"text/html; charset=UTF-8\">",
                       "</head>",
                       "<body>",
                       "<div style=\"margin: 0 auto; display: table; margin-top: 1em;\">",
@@ -921,18 +937,18 @@ print.htmlTable<- function(x, useViewer, ...){
                       "</div>",
                       "</body>",
                       "</html>", sep="\n")
-    cat(htmlPage, file=htmlFile)
+    do.call(cat, c(htmlPage, args))
 
     viewer <- getOption("viewer")
     if (!is.null(viewer) &&
           is.function(viewer)){
       # (code to write some content to the file)
-      viewer(htmlFile)
+      viewer(args$file)
     }else{
-      utils::browseURL(htmlFile)
+      utils::browseURL(args$file)
     }
   }else{
-    cat(x)
+    do.call(cat, c(x, args))
   }
 }
 
@@ -970,7 +986,7 @@ splitLines4Table <- function(..., html=FALSE){
 
   }
   if (length(strings) < 2)
-    stop("You need to provide at least two valid strings to separate into multiple lines")
+    return(strings)
 
   ret <- ifelse(html, "", "\\vbox{")
   first <- TRUE

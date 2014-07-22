@@ -163,8 +163,9 @@ htmlTable(x, title = first.word(deparse(substitute(x))), headings,
   processors. This option is mostly inteded for
   web-presentations.}
 
-  \item{...}{Currently not used, here for compatibility
-  reasons}
+  \item{...}{Passed on to \code{print.htmlTable} function
+  and any argument except the \code{useViewer} will be
+  passed on to the \code{\link[base]{cat}} function.}
 
   \item{useViewer}{If you are using RStudio there is a
   viewer thar can render the table within that is envoced
@@ -237,7 +238,9 @@ rownames(mx) <- LETTERS[1:NROW(mx)]
 colnames(mx) <- sprintf("Col \%s", LETTERS[1:NCOL(mx)])
 
 # If you just want to output your matrix, this is all you need
-htmlTable(mx)
+# We also force the output to be printed to std_out instead of th
+# graphical viewer
+htmlTable(mx, useViewer=FALSE)
 
 # Now add more interesting options
 htmlTable(mx,
@@ -345,19 +348,19 @@ cgroup <- c("", "Type of treatment<sup>&dagger;</sup>")
 n.cgroup <- c(1, 3)
 colnames(output_data) <-
   c(paste0('Total<br>\\n',
-           '<span style="weight = normal; font-size: .4em;">',
+           '<span style="weight = normal; font-size: .6em;">',
             'n = ', nrow(data),
            '</span>'),
     paste0('Treated A<br>\\n',
-           '<span style="weight = normal; font-size: .4em;">',
+           '<span style="weight = normal; font-size: .6em;">',
             'n = ', sum(data$treat == 'Treatment A'),
            '</span>'),
     paste0('Treatment B&Dagger;<br>\\n',
-           '<span style="weight = normal; font-size: .4em;">',
+           '<span style="weight = normal; font-size: .6em;">',
             'n = ', sum(data$treat == 'Treatment B'),
            '</span>'),
     paste0('Placebo<br>',
-           '<span style="weight = normal; font-size: .4em;">',
+           '<span style="weight = normal; font-size: .6em;">',
             'n = ', sum(data$treat == 'Placebo'),
            '</span>'))
 
@@ -375,15 +378,15 @@ htmlTable(output_data, align = 'rccc',
           caption = "Table 1: Patient demographics",
           altcol = c('white','lightblue1'),
           tfoot = paste0(
-            '<span style="font-size: .4em;">',
+            '<span style="font-size: .6em;">',
               'Abbreviations:',
               ' ECOG, Eastern Cooperative Oncology Group;',
               ' PS, performance score',
             '</span><br>\\n',
-            '<span style="font-size: .4em;">',
+            '<span style="font-size: .6em;">',
               '<sup>&dagger;</sup>',
               ' Note 1. Trial groups for a new wonder drug</span><br>\\n',
-            '<span style="font-size: .4em;">',
+            '<span style="font-size: .6em;">',
               '<sup>&Dagger;</sup>',
               ' Note 2. Twice the dosage of treatment A',
             '</span>'))
