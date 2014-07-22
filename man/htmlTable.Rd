@@ -344,14 +344,22 @@ n.rgroup <- unname(sapply(rgroup, function(x) nrow(table_data[[x]])))
 cgroup <- c("", "Type of treatment<sup>&dagger;</sup>")
 n.cgroup <- c(1, 3)
 colnames(output_data) <-
-  c(paste0('Total<br><font weight = normal; size = 1>n = ',
-           nrow(data), '</font>'),
-    paste0('Treated A<br><font weight = normal; size = 1>n = ',
-           sum(data$treat == 'Treatment A'),'</font>'),
-    paste0('Treatment B&Dagger;<br><font weight = normal; size = 1>n = ',
-           sum(data$treat == 'Treatment B'),'</font>'),
-    paste0('Placebo<br><font weight = normal; size = 1>n = ',
-           sum(data$treat == 'Placebo'),'</font>'))
+  c(paste0('Total<br>\\n',
+           '<span style="weight = normal; font-size: .4em;">',
+            'n = ', nrow(data),
+           '</span>'),
+    paste0('Treated A<br>\\n',
+           '<span style="weight = normal; font-size: .4em;">',
+            'n = ', sum(data$treat == 'Treatment A'),
+           '</span>'),
+    paste0('Treatment B&Dagger;<br>\\n',
+           '<span style="weight = normal; font-size: .4em;">',
+            'n = ', sum(data$treat == 'Treatment B'),
+           '</span>'),
+    paste0('Placebo<br>',
+           '<span style="weight = normal; font-size: .4em;">',
+            'n = ', sum(data$treat == 'Placebo'),
+           '</span>'))
 
 
 htmlTable(output_data, align = 'rccc',
@@ -367,12 +375,18 @@ htmlTable(output_data, align = 'rccc',
           caption = "Table 1: Patient demographics",
           altcol = c('white','lightblue1'),
           tfoot = paste0(
-            '<font size=1>Abbreviations: ECOG, Eastern Cooperative Oncology Group;",
-              " PS, performance score</font><br>',
-            "<font size=1><sup>&dagger;</sup>",
-              "Note 1. Trial groups for a new wonder drug</font><br>",
-            "<font size = 1><sup>&Dagger;</sup>",
-              "Note 2. Twice the dosage of treatment A</font>"))
+            '<span style="font-size: .4em;">',
+              'Abbreviations:',
+              ' ECOG, Eastern Cooperative Oncology Group;',
+              ' PS, performance score',
+            '</span><br>\\n',
+            '<span style="font-size: .4em;">',
+              '<sup>&dagger;</sup>',
+              ' Note 1. Trial groups for a new wonder drug</span><br>\\n',
+            '<span style="font-size: .4em;">',
+              '<sup>&Dagger;</sup>',
+              ' Note 2. Twice the dosage of treatment A',
+            '</span>'))
 }
 \author{
 max
