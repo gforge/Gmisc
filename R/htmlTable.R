@@ -450,7 +450,7 @@ htmlTable <- function(x,
 
     if(sum(n.tspanner) !=  nrow(x))
       stop(sprintf("Your rows don't match in the n.tspanner, i.e. %d != %d",
-                   sum(n.rgroup), nrow(x)))
+                   sum(n.tspanner), nrow(x)))
 
     # Make sure there are no collisions with rgrou
     if (!missing(n.rgroup)){
