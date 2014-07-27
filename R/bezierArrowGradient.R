@@ -1,8 +1,10 @@
 #' A bezier arrow with gradient
 #'
 #' This is an experimental addition to the original \code{\link{bezierArrowSmpl}}
-#' with the addition of a gradient in the center of the arrow that fades. \strong{Note:}
-#' the arrow section is not currently included in the gradient.
+#' with the addition of a gradient in the center of the arrow that fades.
+#'
+#' @section Note:
+#' The triangle section of the arrow is not currently included in the gradient.
 #'
 #' @param width The width of the arrow, either a numeric single number or a unit. \strong{Note:}
 #'  The arrow does not rely on lwd but on actual width. Same as in the \code{\link{bezierArrowSmpl}}
@@ -24,8 +26,8 @@
 #' @param ... Passed on to \code{\link{bezierArrowSmpl}}
 #' @param gp An object of class gpar, typically the output from a call to the function gpar.
 #'  This is basically a list of graphical parameter settings.
-#' @param vp A Grid viewport object (or NULL).
-#' @return A grob of gList() type
+#' @param vp A \pkg{grid} \code{\link[grid]{viewport}} object (or NULL).
+#' @return A \code{\link[grid]{grob}} of  \code{\link[grid]{gList}}-type
 #'
 #' @examples
 #' library(grid)

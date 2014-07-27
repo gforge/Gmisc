@@ -24,7 +24,6 @@ Imports:
     stringr,
     lattice,
     sp,
-    methods,
     utils
 Depends:
     Hmisc

@@ -177,7 +177,7 @@ Returns a string of class htmlTable
 }
 \description{
 This is a function for outputting a more advanced table
-than xtable allows. It's aim is to provide the Hmisc
+than xtable allows. It's aim is to provide the \pkg{Hmisc}
 \code{\link[Hmisc]{latex}()} colgroup and rowgroup
 functions in HTML. The code outputted is perhaps a little
 raw compared to fully CSS formatted HTML. The reason for
@@ -185,50 +185,60 @@ this is that I've chosen maximum compatibility with
 LibreOffice/OpenOffice that lacks any more advanced
 understanding of HTML & CSS.
 }
-\details{
-Note that when you use knitr in markdown mode you need to
-specify: results="asis". It is also good to know that the
-function outputs raw html, this limits the compatibility
-with pandoc and similar tools.
+\section{Important \pkg{knitr}-note}{
+  This funciton will only work with \pkg{knitr} outputting
+  html, i.e. markdown mode. For each section where you want
+  a table to be outputted you need to specify:
+  \code{results="asis"}. As the function returns raw
+  html-code the compatibility with non-html formatting is
+  limited, even with
+  \href{http://johnmacfarlane.net/pandoc/}{pandoc}.
+}
 
-If you set the option table_counter you will get a Table
-1,2,3 etc before each table, just set
-\code{options(table_counter=TRUE)}. If you set it to a
-number then that number will correspond to the start of the
-table_counter. The table_counter option will also contain
-the number of the last table, this can be useful when
-referencing it in text. By setting the option
-\code{options(table_counter_str = "<b>Table \%s:</b> ")}
-you can manipulate the counter table text that is added
-prior to the actual caption. Note, you should use the
-\code{\link{sprintf}} \code{\%s} instead of \code{\%d} as
-the software converts all numbers to characters for
-compatibility reasons. If you set
-\code{options(table_counter_roman = TRUE)} then the table
-counter will use Roman numumerals instead of Arabic.
+\section{Table counter}{
+  If you set the option table_counter you will get a Table
+  1,2,3 etc before each table, just set
+  \code{options(table_counter=TRUE)}. If you set it to a
+  number then that number will correspond to the start of
+  the table_counter. The \code{table_counter} option will
+  also contain the number of the last table, this can be
+  useful when referencing it in text. By setting the option
+  \code{options(table_counter_str = "<b>Table \%s:</b> ")}
+  you can manipulate the counter table text that is added
+  prior to the actual caption. Note, you should use the
+  \code{\link{sprintf}} \code{\%s} instead of \code{\%d} as
+  the software converts all numbers to characters for
+  compatibility reasons. If you set
+  \code{options(table_counter_roman = TRUE)} then the table
+  counter will use Roman numumerals instead of Arabic.
+}
 
-Note that when using complex cgroup alignments with
-multiple levels not every browser is able to handle this.
-For instance the RStudio webkit browser seems to have
-issues with this and a bug has been filed:
-"http://code.google.com/p/chromium/issues/detail?id=305130"
+\section{Possible issues}{
+  Note that when using complex cgroup alignments with
+  multiple levels not every browser is able to handle this.
+  For instance the RStudio webkit browser seems to have
+  issues with this and a
+  \href{http://code.google.com/p/chromium/issues/detail?id=305130}{bug
+  has been filed}.
 
-If you in your knitr html-document get a "structure" noted
-under the rowlabel heading then this is an effect from the
-automated rowlabel name. It is copied from the title that
-in turn uses the \code{x} to find an apropriate name:
-\code{title=first.word(deparse(substitute(x)))}. All you
-need to do is simply set either the \code{title} or the
-\code{rowlabel} arguments to get rid of this "bug".
+  If you in your knitr html-document get a "structure"
+  noted under the rowlabel heading then this is an effect
+  from the automated rowlabel name. It is copied from the
+  title that in turn uses the
 
-As the table uses html for rendering you need to be aware
-of that headers, rownames, and cell values should try
-respect this for optimal display. Browsers try to
-compensate and frequently the tables still turn out OK but
-it is not advized. Most importantly you should try to use
-\code{&lt;} instead of \code{<} and \code{&gt;} instead of
-\code{>}. You can find a complete list of html characters
-\href{http://ascii.cl/htmlcodes.htm}{here}.
+  \code{x} to find an apropriate name:
+  \code{title=first.word(deparse(substitute(x)))}. All you
+  need to do is simply set either the \code{title} or the
+  \code{rowlabel} arguments to get rid of this "bug".
+
+  As the table uses html for rendering you need to be aware
+  of that headers, rownames, and cell values should try
+  respect this for optimal display. Browsers try to
+  compensate and frequently the tables still turn out OK
+  but it is not advized. Most importantly you should try to
+  use \code{&lt;} instead of \code{<} and \code{&gt;}
+  instead of \code{>}. You can find a complete list of html
+  characters \href{http://ascii.cl/htmlcodes.htm}{here}.
 }
 \examples{
 # A simple example
@@ -392,7 +402,8 @@ htmlTable(output_data, align = 'rccc',
             '</span>'))
 }
 \seealso{
-\code{\link{latex}}, \code{\link{getDescriptionStatsBy}},
+\code{\link[Hmisc]{latex}},
+\code{\link{getDescriptionStatsBy}},
 \code{\link{splitLines4Table}}
 }
 \keyword{internal}

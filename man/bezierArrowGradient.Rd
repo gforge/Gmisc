@@ -53,17 +53,21 @@ bezierArrowGradient(width = 0.05, clr = "#000000", default.units = "npc",
   from a call to the function gpar. This is basically a
   list of graphical parameter settings.}
 
-  \item{vp}{A Grid viewport object (or NULL).}
+  \item{vp}{A \pkg{grid} \code{\link[grid]{viewport}}
+  object (or NULL).}
 }
 \value{
-A grob of gList() type
+A \code{\link[grid]{grob}} of
+\code{\link[grid]{gList}}-type
 }
 \description{
 This is an experimental addition to the original
 \code{\link{bezierArrowSmpl}} with the addition of a
 gradient in the center of the arrow that fades.
-\strong{Note:} the arrow section is not currently included
-in the gradient.
+}
+\section{Note}{
+  The triangle section of the arrow is not currently
+  included in the gradient.
 }
 \examples{
 library(grid)

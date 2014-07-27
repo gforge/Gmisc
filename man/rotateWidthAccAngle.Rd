@@ -16,7 +16,8 @@ rotateWidthAccAngle(angle, x_origo = NA, y_origo = NA, width = 0,
   \item{width}{The width of the desired left & right
   vectors}
 
-  \item{default.units}{As defined by the grid package}
+  \item{default.units}{As defined by the \pkg{grid}
+  package}
 
   \item{perpendicular}{If the width is perpendicular to the
   provided vector the set this to true}

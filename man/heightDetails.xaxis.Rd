@@ -12,9 +12,9 @@
 A unit object
 }
 \description{
-A function that gets the height of an axisGrob. It is for
-some reason not included by default in the
-\code{grid}-package.
+A function that gets the height of an
+\code{\link[grid]{xaxisGrob}}. It is for some reason not
+included by default in the \pkg{grid}-package.
 }
 \examples{
 grid.newpage()

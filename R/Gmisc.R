@@ -26,7 +26,7 @@
 #'
 #' One of the main priorities of this package is to make the preparation of
 #' publication-ready manuscripts through the
-#' \code{\href{http://yihui.name/knitr/}{knitr}}-package. The \code{\link{figCapNo}}
+#' \pkg{\href{http://yihui.name/knitr/}{knitr}}-package. The \code{\link{figCapNo}}
 #' can be used for automated figure counting. The \code{\link{pvalueFormatter}}
 #' tries to simplify rounding of p-values, e.g. you may be ok with just
 #' 0.0005 as a p-value but when you come close to the "magic" 0.05 value

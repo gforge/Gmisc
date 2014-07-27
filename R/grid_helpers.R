@@ -1,7 +1,7 @@
 #' Gets the height for an x-axis object
 #'
-#' A function that gets the height of an axisGrob. It is for some
-#' reason not included by default in the \code{grid}-package.
+#' A function that gets the height of an \code{\link[grid]{xaxisGrob}}.
+#' It is for some reason not included by default in the \pkg{grid}-package.
 #'
 #' @param x The \code{\link[grid]{xaxisGrob}} object
 #' @return A unit object
