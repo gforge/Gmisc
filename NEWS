@@ -5,6 +5,7 @@ Changes for 0.6.7
 * Added an interactive() check before using the viewer
 * Minor adjustments to the htmlTable handling of no-blank spaces (&nbsp;)
 * htmlTable now remember the ... argument and passes it on to the print.htmlTable() and cat()
+* Added figCapNo and associated caption function for numbering figure captions
 
 Changes for 0.6.6
 -----------------
