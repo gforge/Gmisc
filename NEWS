@@ -6,6 +6,7 @@ Changes for 0.6.7
 * Minor adjustments to the htmlTable handling of no-blank spaces (&nbsp;)
 * htmlTable now remember the ... argument and passes it on to the print.htmlTable() and cat()
 * Added figCapNo and associated caption function for numbering figure captions
+* Improved documentation
 
 Changes for 0.6.6
 -----------------

@@ -896,6 +896,7 @@ setClass("htmlTable", contains = "character")
 #'  Set this to \code{FALSE} if you want to remove that  functionality.
 #' @export
 #' @importFrom utils browseURL
+#' @keywords internal
 print.htmlTable<- function(x, useViewer, ...){
   args <- attr(x, "...")
   # Use the latest ... from the print call
@@ -951,7 +952,7 @@ print.htmlTable<- function(x, useViewer, ...){
   }
 }
 
-#' If you want a row to span two or more lines
+#' A helper function for html/LaTeX line formatting
 #'
 #' This function helps you to do a multiline
 #' table header in both html and in LaTeX. In

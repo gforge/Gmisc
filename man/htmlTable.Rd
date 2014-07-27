@@ -395,4 +395,5 @@ htmlTable(output_data, align = 'rccc',
 \code{\link{latex}}, \code{\link{getDescriptionStatsBy}},
 \code{\link{splitLines4Table}}
 }
+\keyword{internal}
 
