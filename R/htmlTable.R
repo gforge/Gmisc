@@ -895,6 +895,7 @@ htmlTable <- function(x,
   return(table_str)
 }
 
+#' @importFrom methods setClass
 setClass("htmlTable", contains = "character")
 
 #' @rdname htmlTable
