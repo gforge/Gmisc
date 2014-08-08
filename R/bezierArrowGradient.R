@@ -1,8 +1,10 @@
 #' A bezier arrow with gradient
 #'
 #' This is an experimental addition to the original \code{\link{bezierArrowSmpl}}
-#' with the addition of a gradient in the center of the arrow that fades. \strong{Note:}
-#' the arrow section is not currently included in the gradient.
+#' with the addition of a gradient in the center of the arrow that fades.
+#'
+#' @section Note:
+#' The triangle section of the arrow is not currently included in the gradient.
 #'
 #' @inheritParams grid::bezierGrob
 #' @inheritParams bezierArrowSmpl
@@ -19,7 +21,7 @@
 #'  the original width, note the gradient's width is thus 90 \%.
 #' @param grdt_clr The color of the gradient. It is the color that transits into the clr of the arrow.
 #' @param ... Passed on to \code{\link{bezierArrowSmpl}}
-#' @return \code{grid::gList()} A grob of gList() type
+#' @return \code{grid::gList()} A grob of \code{\link[grid]{gList}}-type
 #'
 #' @examples
 #' library(grid)

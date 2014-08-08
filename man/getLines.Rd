@@ -12,11 +12,11 @@ getLines(bp, end_point, width, default.units, align_2_axis = TRUE)
   \item{end_point}{A list with x & y for the end, only used
   for the last element's angle.}
 
-  \item{width}{The width as a grid length
-  \code{\link{unit}}}
+  \item{width}{The width as a \pkg{grid} length
+  \code{\link[grid]{unit}}}
 
-  \item{default.units}{The default unit (see the grid
-  package for available units)}
+  \item{default.units}{The default unit (see the \pkg{grid}
+  package for available \code{\link[grid]{unit}}s)}
 
   \item{align_2_axis}{This indicates if the arrows origin
   should align it to an axis. Which is decided by which

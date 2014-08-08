@@ -1,41 +1,69 @@
-#' A package for plotting, tables, and basic outputs. 
-#' 
+#' Collection of functions for plotting relations, generating tables, and more.
+#'
 #' This is a collection of functions that I've found useful in my research.
-#' The package is inspired by Frank Harrel's Hmisc package. The main focus
-#' is on tables and plots. 
-#'  
-#' @section The htmlTable:
-#' For tables you'll find the convenient \code{\link{htmlTable}} that I have used 
+#' The package is inspired by Frank Harrell's \pkg{Hmisc} package. The main focus
+#' is on tables, plots, and \pkg{knitr}-integration.
+#'
+#' @section Awesome tables:
+#'
+#' For tables you'll find the convenient \code{\link{htmlTable}} that I have used
 #' for advanced table layout. A major focus has been to have
 #' it compatible with LibreOffice (you can copy/past from there into word)
-#' as I generally want to be able to send my documents to a 
-#' journal in .doc/.docx format. \bold{Note:} it is now often possible
-#' to copy->paste directly from the viewer into a MS Word document without
-#' any layout loss.
-#' 
-#' @section Description functions:
-#' To accompany the \code{\link{htmlTable}} function is the 
-#' \code{\link{getDescriptionStatsBy}} it is a straight forward function that 
+#' as I generally want to be able to send my documents to a
+#' journal in .doc/.docx format. \bold{Note:} it is now in
+#' \href{http://www.rstudio.com}{RStudio} possible to copy->paste
+#' directly from the viewer into a MS Word document with minimal
+#' layout loss.
+#'
+#' The \code{\link{getDescriptionStatsBy}} is a straight forward function that
 #' aims at helping you to generate descriptive table stratified by different
 #' variables. In other words, the function returns everything you need for generating
-#' a \emph{Table 1} ready for publication.
-#'  
-#' @section Plots:
-#' The main plots are \code{\link{forestplot2}} and \code{\link{transitionPlot}}. 
-#' The forest plot is a more general version of the original 
-#' \code{\link[rmeta]{forestplot}} function aimed at using the forest 
-#' plot for more than just meta-analyses. 
-#' 
-#' The \code{\link{transitionPlot}} is for descriptive purposes in order to illustrate 
-#' the size of change between one state and the next, i.e. a transition. This is
-#' basically a graph of \code{table(var1, var2)}. It uses the 
-#' \code{\link{bezierArrowSmpl}} alternatives for showing off elegant arrows 
-#' that should nicely bend into each box.
-#' 
-#' Additionally there is the \code{\link{getSvdMostInfluential}} function
-#' that tries to illustrate and use the SVD in order to select the ones having
-#' most influence on the V-matrix. 
-#' 
+#' a \emph{Table 1} ready for publication. This function is accompanied by the
+#' \code{\link{describeMean}}, \code{\link{describeMedian}}, \code{\link{describeProp}},
+#' and \code{\link{describeFactors}} functions.
+#'
+#' @section Convenient knitr-helpers:
+#'
+#' One of the main priorities of this package is to make the preparation of
+#' publication-ready manuscripts through the
+#' \pkg{\href{http://yihui.name/knitr/}{knitr}}-package. The \code{\link{figCapNo}}
+#' can be used for automated figure counting. The \code{\link{pvalueFormatter}}
+#' tries to simplify rounding of p-values, e.g. you may be ok with just
+#' 0.0005 as a p-value but when you come close to the "magic" 0.05 value
+#' you may want to have two significant digits, i.e. 0.048 instead of just 0.05.
+#' The \code{\link{outputInt}} simply transforms a large integer digit
+#' to proper formatting.
+#'
+#' @section Some fancy plots:
+#'
+#' The forest plot function, \code{\link{forestplot2}}, is a more general
+#' version of the original \pkg{rmeta}-packages \code{\link[rmeta]{forestplot}}
+#' implementation. The aim is at using forest plots for more than
+#' just meta-analyses.
+#'
+#' The transition plot function, \code{\link{transitionPlot}}, is for
+#' descriptive purposes. It tries to illustrate the size of change
+#' between one state and the next, i.e. a transition. This is
+#' basically a graph of based upon \code{table(var1, var2)}.
+#'
+#' The \href{http://en.wikipedia.org/wiki/Singular_value_decomposition}{Singular value decomposition}
+#' is a common method for reducing the number of variables. Unfortunately
+#' this compression can reduce the interpretability of the model. The \code{\link{getSvdMostInfluential}}
+#' function tries to remedy that by identifying the most influential
+#' elements from the \code{V}-matrix.
+#'
+#' The \code{\link{getTicks}} tries to format ticks for plots in a nicer way.
+#' The major use is for exponentials where ticks are generated using the
+#' \eqn{2^n}{2^n} since a doubling is a concept easy to grasp even for
+#' non-statisticians.
+#'
+#' @section Other stuff:
+#'
+#' The \code{\link{insertRowAndKeepAttr}} simply adds a row while remembering
+#' all the attributes previously set by using the \code{\link{copyAllNewAttributes}}.
+#' The \code{\link{mergeLists}} tries to merge lists that do not have identical
+#' elements.
+#'
 #' @name Gmisc-package
 #' @docType package
 NULL

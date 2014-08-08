@@ -339,15 +339,19 @@ fpDrawSummaryCI <- function(lower_limit, estimate, upper_limit,
                          col = col))
 }
 
-#' A copy of rmeta meta.colors.
+#' A function for the color elements used in the forestplot2()
 #'
-#' If you have several values per row in a
-#' plot then you can set the values to a vector where the first value
-#' represents the first line/box, second the second line/box etc. The
-#' vectors are only valid for the box & lines.
+#' This function encapsulates all the colors that are used in the
+#' \code{\link{forestplot2}} function. As there are plenty of color
+#' options this function gathers them all in one place.
 #'
-#' This function is a copy of the \code{\link[rmeta]{meta.colors}} function in the
-#' rmeta package.
+#' If you have several values per row in a forestplot you can set
+#' a color to a vector where the first value represents the first
+#' line/box, second the second line/box etc. The vectors are only
+#' valid for the \code{box} & \code{lines} options.
+#'
+#' This function is a copy of the \code{\link[rmeta]{meta.colors}}
+#' function in the \pkg{rmeta} package.
 #'
 #' @param all.elements A color for all the elements. If set to NULL then
 #'  it's set to the par("fg") color
@@ -1264,7 +1268,8 @@ prFpValidateLabelList <- function(labelList){
 #'
 #' @param grob.list A list of grobs
 #' @param return_unit A valid \code{\link[grid]{unit}} specifier
-#' @return \code{grid::unit} Returns the widest grob and its width
+#' @return \code{\link[grid]{unit}}
+#' @keywords internal
 prFpFindWidestGrob <- function (grob.list, return_unit="mm"){
   len <- c()
   for (i in seq(along.with=grob.list)){

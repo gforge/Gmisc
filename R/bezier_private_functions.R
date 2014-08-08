@@ -137,7 +137,7 @@ rotateWidthAccVector <-
 #' @param x_origo The x origin if other than 0
 #' @param y_origo The y origin if other than 0
 #' @param width The width of the desired left & right vectors
-#' @param default.units As defined by the grid package
+#' @param default.units As defined by the \pkg{grid} package
 #' @param perpendicular If the width is perpendicular to
 #'  the provided vector the set this to true
 #' @param prev_angle If you want an average from this and the
@@ -221,8 +221,8 @@ rotateWidthAccAngle <- function (angle,
 #'  a bezier grob.
 #' @param end_point A list with x & y for the end, only used for the last element's
 #'  angle.
-#' @param width The width as a grid length \code{\link{unit}}
-#' @param default.units The default unit (see the grid package for available units)
+#' @param width The width as a \pkg{grid} length \code{\link[grid]{unit}}
+#' @param default.units The default unit (see the \pkg{grid} package for available \code{\link[grid]{unit}}s)
 #' @param align_2_axis This indicates if the arrows origin should align it to an
 #'  axis. Which is decided by which axis is the closes one.
 #' @return A list with left and right elements indicating the two lines

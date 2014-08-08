@@ -16,6 +16,7 @@
 #' @return \code{vector} Returns a vector with the ticks
 #'
 #' @example inst/examples/getTicks_example.R
+#' @export
 getTicks <- function(low,
   high = low,
   clip = c(-Inf, Inf),

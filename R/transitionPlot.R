@@ -59,7 +59,7 @@
 #'  multiplication of the current line width. In case of non-grid arrows then you can also have this
 #'  as a unit which is recommended as it looks better. If the scalar is < 1 then the overlap is ignored.
 #' @param box_prop If you want the boxes to have proportions indicating some other factors then input
-#'  a matrix with quantiles for the proportions. Note the size mus be nrow(transition_flow) x 2.
+#'  a matrix with quantiles for the proportions. Note the size mus be \code{nrow(transition_flow) x 2}.
 #' @param mar A numerical vector of the form c(bottom, left, top, right) of the type \code{unit()}
 #' @param main The title of the plot if any, default \code{NULL}
 #' @param box_label A vector of length 2 if you want to label each box column

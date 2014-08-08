@@ -116,7 +116,7 @@ transitionPlot(transition_flow, type_of_arrow = c("grid", "simple",
   \item{box_prop}{If you want the boxes to have proportions
   indicating some other factors then input a matrix with
   quantiles for the proportions. Note the size mus be
-  nrow(transition_flow) x 2.}
+  \code{nrow(transition_flow) x 2}.}
 
   \item{mar}{A numerical vector of the form c(bottom, left,
   top, right) of the type \code{unit()}}
