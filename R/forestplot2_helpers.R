@@ -1268,7 +1268,8 @@ prFpValidateLabelList <- function(labelList){
 #'
 #' @param grob.list A list of grobs
 #' @param return_unit A valid \code{\link[grid]{unit}} specifier
-#' @return \code{\link[grid]{unit}}
+#' @return \code{grid::unit} Returns the width \code{\link[grid]{unit}}
+#'  for the widest grob
 #' @keywords internal
 prFpFindWidestGrob <- function (grob.list, return_unit="mm"){
   len <- c()
