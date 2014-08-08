@@ -218,9 +218,10 @@ prPushMarginViewport <- function(bottom, left, top, right, name=NULL){
 #'
 #' @keywords internal
 prGridPlotTitle <- function(title,
-  base_cex, cex_mult = 1.2,
-  fontface = "bold",
-  space_below = NULL){
+                            base_cex,
+                            cex_mult = 1.2,
+                            fontface = "bold",
+                            space_below = NULL){
   titleGrob <- textGrob(title, just="center",
     gp=gpar(fontface = fontface,
       cex = base_cex*cex_mult))
