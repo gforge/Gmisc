@@ -86,13 +86,23 @@ prGetStatistics <- function(x,
 #'
 #' @keywords internal
 prConvertShowMissing <- function(show_missing){
-  if (show_missing == FALSE || show_missing == "no")
-    show_missing <- "no"
-  else if (show_missing == TRUE)
-    show_missing <- "ifany"
+  if (missing(show_missing) ||
+        show_missing == FALSE ||
+        show_missing == "no"){
+    return("no")
+  }
+
+  if (show_missing == TRUE){
+    return("ifany")
+  }
 
   if (!show_missing %in% c("no", "ifany", "always"))
-    stop(sprintf("You have set an invalid option for show_missing variable, '%s' ,it should be boolean or one of the options: no, ifany or always.", show_missing))
+    stop("You have set an invalid option for show_missing variable",
+         " '", show_missing, "' - it should be TRUE/FALSE",
+         " or one of the options: no, ifany or always.")
+
+  if (length(show_missing) > 1)
+    stop("You have an invalid show_missing variable of more than one elements: ", length(show_missing))
 
   return(show_missing)
 }
