@@ -32,13 +32,14 @@ pvalueFormatter <- function(pvalues,
                             sig_lim = 10^-4,
                             html=TRUE, ...){
 
-  if ("sig.limit" %in% names(list(...))){
-    sig_lim <- sig.limit
+  dot_args <- list(...)
+  if ("sig.limit" %in% names(dot_args)){
+    sig_lim <- dot_args$sig.limit
     warning("Deprecated: sig.limit argument is now sig_lim as of ver. 1.0")
   }
 
-  if ("two_dec.limit" %in% names(list(...))){
-    two_dec_lim <- two_dec.limit
+  if ("two_dec.limit" %in% names(dot_args)){
+    two_dec_lim <- dot_args$two_dec.limit
     warning("Deprecated: two_dec.limit argument is now two_dec_lim as of ver. 1.0")
   }
 
