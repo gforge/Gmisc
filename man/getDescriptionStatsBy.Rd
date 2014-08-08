@@ -4,7 +4,7 @@
 \title{Creating of description statistics}
 \usage{
 getDescriptionStatsBy(x, by, digits = 1, html = FALSE, NEJMstyle = FALSE,
-  numbers_first = TRUE, statistics = FALSE, sig.limit = 10^-4,
+  numbers_first = TRUE, statistics = FALSE, statistics.sig_lim = 10^-4,
   two_dec.limit = 10^-2, show_missing, show_missing.digits = digits,
   continuous_fn = describeMean, prop_fn = describeProp,
   factor_fn = describeFactors, show_all_values = FALSE, hrzl_prop = FALSE,
@@ -48,12 +48,22 @@ getDescriptionStatsBy(x, by, digits = 1, html = FALSE, NEJMstyle = FALSE,
   \item{statistics}{Add statistics, fisher test for
   proportions and Wilcoxon for continuous variables}
 
-  \item{two_dec.limit}{The limit for showing two decimals
-  .}
+  \item{statistics.two_dec_lim}{The limit for showing two
+  decimals. E.g. the p-value may be 0.056 and we may want
+  to keep the two decimals in order to emphasize the
+  proximity to the all-mighty 0.05 p-value and set this to
+  \eqn{10^-2}. This allows that a value of 0.0056 is
+  rounded to 0.006 and this makes intuitive sense as the
+  0.0056 level as this is well below the 0.05 value and
+  thus not as interesting to know the exact proximity to
+  0.05. \emph{Disclaimer:} The 0.05-limit is really silly
+  and debated, unfortunately it remains a standard and this
+  package tries to adapt to the current standards in order
+  to limit publication associated issues.}
 
-  \item{sig.limit}{The significance limit for < sign, i.e.
-  p-value 0.0000312 should be < 0.0001 with the default
-  setting.}
+  \item{statistics.sig_lim}{The significance limit for <
+  sign, i.e. p-value 0.0000312 should be < 0.0001 with the
+  default setting.}
 
   \item{show_all_values}{This is by default false as for
   instance if there is no missing and there is only one
@@ -88,6 +98,9 @@ getDescriptionStatsBy(x, by, digits = 1, html = FALSE, NEJMstyle = FALSE,
   percentage sign you can set this variable to FALSE. You
   can also choose something else that the default \% if you
   so wish by setting this variable.}
+
+  \item{...}{Currently only used for generating warnings of
+  deprecated call parameters.}
 
   \item{default_ref}{The default reference, either first,
   the level name or a number within the levels. If left out

@@ -3,18 +3,32 @@
 \alias{pvalueFormatter}
 \title{Formats the p-values}
 \usage{
-pvalueFormatter(pvalues, two_dec.limit = 10^-2, sig.limit = 10^-4,
-  html = TRUE)
+pvalueFormatter(pvalues, two_dec_lim = 10^-2, sig_lim = 10^-4,
+  html = TRUE, ...)
 }
 \arguments{
   \item{pvalues}{The p-values}
 
-  \item{two_dec.limit}{The limit for showing two decimals}
+  \item{two_dec_lim}{The limit for showing two decimals.
+  E.g. the p-value may be 0.056 and we may want to keep the
+  two decimals in order to emphasize the proximity to the
+  all-mighty 0.05 p-value and set this to \eqn{10^-2}. This
+  allows that a value of 0.0056 is rounded to 0.006 and
+  this makes intuitive sense as the 0.0056 level as this is
+  well below the 0.05 value and thus not as interesting to
+  know the exact proximity to 0.05. \emph{Disclaimer:} The
+  0.05-limit is really silly and debated, unfortunately it
+  remains a standard and this package tries to adapt to the
+  current standards in order to limit publication
+  associated issues.}
 
-  \item{sig.limit}{The significance limit for < sign}
+  \item{sig_lim}{The significance limit for < sign}
 
   \item{html}{If the less than sign should be < or &lt; as
   needed for html output.}
+
+  \item{...}{Currently only used for generating warnings of
+  deprecated call parameters.}
 }
 \value{
 vector

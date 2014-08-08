@@ -25,8 +25,16 @@
 #' @param factor_fn The method used to describe factors, see \code{\link{describeFactors}}.
 #' @param statistics Add statistics, fisher test for proportions and Wilcoxon
 #'  for continuous variables
-#' @param two_dec.limit The limit for showing two decimals .
-#' @param sig.limit The significance limit for < sign, i.e. p-value 0.0000312
+#' @param statistics.two_dec_lim The limit for showing two decimals. E.g.
+#'  the p-value may be 0.056 and we may want to keep the two decimals in order
+#'  to emphasize the proximity to the all-mighty 0.05 p-value and set this to
+#'  \eqn{10^-2}. This allows that a value of 0.0056 is rounded to 0.006 and this
+#'  makes intuitive sense as the 0.0056 level as this is well below
+#'  the 0.05 value and thus not as interesting to know the exact proximity to
+#'  0.05. \emph{Disclaimer:} The 0.05-limit is really silly and debated, unfortunately
+#'  it remains a standard and this package tries to adapt to the current standards in order
+#'  to limit publication associated issues.
+#' @param statistics.sig_lim The significance limit for < sign, i.e. p-value 0.0000312
 #'  should be < 0.0001 with the default setting.
 #' @param show_all_values This is by default false as for instance if there is
 #'  no missing and there is only one variable then it is most sane to only show
@@ -50,6 +58,8 @@
 #' @param percentage_sign If you want to surpress the percentage sign you
 #'  can set this variable to FALSE. You can also choose something else that
 #'  the default \% if you so wish by setting this variable.
+#' @param ... Currently only used for generating warnings of deprecated call
+#'  parameters.
 #' @return Returns a vector if vars wasn't specified and it's a
 #'  continuous or binary statistic. If vars was a matrix then it
 #'  appends the result to the end of that matrix. If the x variable
@@ -71,7 +81,7 @@ getDescriptionStatsBy <- function(x,
                                   html = FALSE, NEJMstyle = FALSE,
                                   numbers_first = TRUE,
                                   statistics=FALSE,
-                                  sig.limit=10^-4, two_dec.limit= 10^-2,
+                                  statistics.sig_lim=10^-4, two_dec.limit= 10^-2,
                                   show_missing,
                                   show_missing.digits = digits,
                                   continuous_fn = describeMean,
@@ -90,6 +100,16 @@ getDescriptionStatsBy <- function(x,
   if ("show_missing_digits" %in% names(list(...))){
     show_missing.digits <- show_missing_digits
     warning("Deprecated: show_missing_digits argument is now show_missing.digits as of ver. 1.0")
+  }
+
+  if ("sig.limit" %in% names(list(...))){
+    statistics.sig_lim <- sig.limit
+    warning("Deprecated: sig.limit argument is now statistics.sig_lim as of ver. 1.0")
+  }
+
+  if ("two_dec.limit" %in% names(list(...))){
+    statistics.two_dec_lim <- two_dec.limit
+    warning("Deprecated: two_dec.limit argument is now statistics.two_dec_lim as of ver. 1.0")
   }
 
   # Always have a total column if the description statistics
@@ -364,7 +384,8 @@ getDescriptionStatsBy <- function(x,
 
   if (statistics){
     pval <- pvalueFormatter(pval,
-                            sig.limit=sig.limit, two_dec.limit= two_dec.limit,
+                            sig_lim=statistics.sig_lim,
+                            two_dec_lim= statistics.two_dec_lim,
                             html=html)
     results <- cbind(results, c(pval, rep("", nrow(results)-1)))
     cn <- c(cn, "p-value")
