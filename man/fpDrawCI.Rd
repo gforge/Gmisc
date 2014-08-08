@@ -164,6 +164,6 @@ par(ask=ask)
 }
 \seealso{
 Other forestplot functions: \code{\link{forestplot2}};
-\code{\link{fpColors}}
+\code{\link{fpColors}}; \code{\link{fpLegend}}
 }
 

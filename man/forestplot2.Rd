@@ -9,11 +9,9 @@ forestplot2(labeltext, mean, lower, upper, align = NULL, is.summary = FALSE,
   col = fpColors(), xlog = FALSE, xticks = NULL, xticks.digits = 2,
   lwd.xaxis = NULL, lwd.zero = NULL, lwd.ci = NULL, cex = 1,
   cex.axis = cex * 0.6, boxsize = NULL, mar = unit(rep(5, times = 4),
-  "mm"), main = NULL, legend = NULL, legend.pos = "top",
-  legend.cex = cex * 0.8, legend.gp = NULL, legend.r = unit(0, "snpc"),
-  legend.padding = unit(ifelse(length(legend.gp) > 0, 3, 0), "mm"),
-  legend.title = NULL, new_page = FALSE, confintNormalFn = fpDrawNormalCI,
-  confintSummaryFn = fpDrawSummaryCI, legendMarkerFn = NULL, ...)
+  "mm"), main = NULL, legend, legend_args = fpLegend(), new_page = FALSE,
+  confintNormalFn = fpDrawNormalCI, confintSummaryFn = fpDrawSummaryCI,
+  legendMarkerFn = NULL, ...)
 }
 \arguments{
   \item{labeltext}{A list, matrix, vector or expression
@@ -107,51 +105,11 @@ forestplot2(labeltext, mean, lower, upper, align = NULL, is.summary = FALSE,
   \item{main}{The title of the plot if any, default
   \code{NULL}}
 
-  \item{legend}{Legen corresponding to the number of bars.}
+  \item{legend}{Legend corresponding to the number of
+  bars.}
 
-  \item{legend.pos}{The position of the legend, either at
-  the "top" or the "right" unlesss positioned inside the
-  plot. If you want the legend to be positioned inside the
-  plot then you have to provide a list with the same x & y
-  qualities as \code{\link[graphics]{legend}}. For instance
-  if you want the legend to be positioned at the top right
-  corner then use \code{legend.pos = list("topright")} -
-  this is equivalent to \code{legend.pos = list(x=1, y=1)}.
-  If you want to have a distance from the edge of the graph
-  then add a inset to the list, e.g. \code{legend.pos =
-  list("topright", "inset"=.1)} - the inset should be
-  either a \code{\link[grid]{unit}} element or a value
-  between 0 and 1. The default is to have the boxes aligned
-  vertical, if you want them to be in a line then you can
-  specify the "align" option, e.g. \code{legend.pos =
-  list("topright", "inset"=.1, "align"="horizontal")}}
-
-  \item{legend.cex}{The cex size of the legend, defaults to
-  80 \% procent of cex parameter.}
-
-  \item{legend.gp}{The \code{\link[grid]{gpar}} options for
-  the legend. If you want the background color to be light
-  grey then use \code{legend.gp = gpar(fill =
-  "lightgrey")}. If you want a border then set the col
-  argument: \code{legend.gp = gpar(fill = "lightgrey",
-  col="black")}. You can also use the lwd and lty argument
-  as usual, \code{legend.gp = gpar(lwd=2, lty=1)}, will
-  result in a black border box of line type 1 and line
-  width 2.}
-
-  \item{legend.r}{The box can have rounded edges, check out
-  \code{\link[grid]{grid.roundrect}}. The r option should
-  be a \code{\link[grid]{unit}} object. This is by default
-  \code{unit(0, "snpc")} but you can choose any value that
-  you want. The \code{"snpc"} unit is the preferred
-  option.}
-
-  \item{legend.padding}{The padding for the legend box,
-  only used if box is drawn. This is the distance from the
-  border to the text/boxes of the legend.}
-
-  \item{legend.title}{The title of the legend if any,
-  default to NULL}
+  \item{legend_args}{The legend arguments as returned by
+  the \code{\link{fpLegend}} function.}
 
   \item{new_page}{If you want the plot to appear on a new
   blank page then set this to \code{TRUE}, by default it is
@@ -317,6 +275,6 @@ Other forestplot functions: \code{\link{fpColors}};
 \code{\link{fpDrawCircleCI}},
 \code{\link{fpDrawDiamondCI}},
 \code{\link{fpDrawNormalCI}}, \code{\link{fpDrawPointCI}},
-\code{\link{fpDrawSummaryCI}}
+\code{\link{fpDrawSummaryCI}}; \code{\link{fpLegend}}
 }
 

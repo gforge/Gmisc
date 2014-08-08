@@ -3,29 +3,29 @@
 \alias{prFpGetLegendBoxPosition}
 \title{Converts legend position to a standard position}
 \usage{
-prFpGetLegendBoxPosition(legend.pos)
+prFpGetLegendBoxPosition(pos)
 }
 \arguments{
-  \item{legend.pos}{The position of the legend, either at
-  the "top" or the "right" unlesss positioned inside the
-  plot. If you want the legend to be positioned inside the
-  plot then you have to provide a list with the same x & y
+  \item{pos}{The position of the legend, either at the
+  "top" or the "right" unlesss positioned inside the plot.
+  If you want the legend to be positioned inside the plot
+  then you have to provide a list with the same x & y
   qualities as \code{\link[graphics]{legend}}. For instance
   if you want the legend to be positioned at the top right
-  corner then use \code{legend.pos = list("topright")} -
-  this is equivalent to \code{legend.pos = list(x=1, y=1)}.
-  If you want to have a distance from the edge of the graph
-  then add a inset to the list, e.g. \code{legend.pos =
-  list("topright", "inset"=.1)} - the inset should be
-  either a \code{\link[grid]{unit}} element or a value
-  between 0 and 1. The default is to have the boxes aligned
-  vertical, if you want them to be in a line then you can
-  specify the "align" option, e.g. \code{legend.pos =
-  list("topright", "inset"=.1, "align"="horizontal")}}
+  corner then use \code{pos = list("topright")} - this is
+  equivalent to \code{pos = list(x=1, y=1)}. If you want to
+  have a distance from the edge of the graph then add a
+  inset to the list, e.g. \code{pos = list("topright",
+  "inset"=.1)} - the inset should be either a
+  \code{\link[grid]{unit}} element or a value between 0 and
+  1. The default is to have the boxes aligned vertical, if
+  you want them to be in a line then you can specify the
+  "align" option, e.g. \code{pos = list("topright",
+  "inset"=.1, "align"="horizontal")}}
 }
 \value{
-\code{list} Returns the \code{legend.pos} list with the
-correct x/y/adjust values
+\code{list} Returns the \code{pos} list with the correct
+x/y/adjust values
 }
 \description{
 Used for the forestplot legend box.

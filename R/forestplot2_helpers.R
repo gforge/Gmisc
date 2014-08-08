@@ -339,7 +339,7 @@ fpDrawSummaryCI <- function(lower_limit, estimate, upper_limit,
                          col = col))
 }
 
-#' A function for the color elements used in the forestplot2()
+#' A function for the color elements used in forestplot2()
 #'
 #' This function encapsulates all the colors that are used in the
 #' \code{\link{forestplot2}} function. As there are plenty of color
@@ -412,6 +412,51 @@ fpColors <- function (all.elements,
               zero = all.elements,
               text = all.elements,
               axes = all.elements))
+}
+
+#' A function for the legend used in forestplot2()
+#'
+#' This function encapsulates all the legend options that are used in the
+#' \code{\link{forestplot2}} function. This is in order to limit the crowding
+#' among the arguments for the \code{\link{forestplot2}} call.
+#'
+#' @param pos The position of the legend, either at the "top" or the "right" unlesss
+#'  positioned inside the plot. If you want the legend to be positioned inside the plot
+#'  then you have to provide a list with the same x & y qualities as \code{\link[graphics]{legend}}.
+#'  For instance if you want the legend to be positioned at the top right corner then
+#'  use \code{pos = list("topright")} - this is equivalent to \code{pos = list(x=1, y=1)}.
+#'  If you want to have a distance from the edge of the graph then add a inset to the list,
+#'  e.g. \code{pos = list("topright", "inset"=.1)} - the inset should be either a \code{\link[grid]{unit}}
+#'  element or a value between 0 and 1. The default is to have the boxes aligned vertical, if
+#'  you want them to be in a line then you can specify the "align" option, e.g.
+#'  \code{pos = list("topright", "inset"=.1, "align"="horizontal")}
+#' @param cex The cex size of the legend, defaults to 80 \% procent of cex parameter.
+#' @param gp The \code{\link[grid]{gpar}} options for the legend. If you want
+#'  the background color to be light grey then use \code{gp = gpar(fill = "lightgrey")}.
+#'  If you want a border then set the col argument: \code{gp = gpar(fill = "lightgrey", col="black")}.
+#'  You can also use the lwd and lty argument as usual, \code{gp = gpar(lwd=2, lty=1)}, will result
+#'  in a black border box of line type 1 and line width 2.
+#' @param r The box can have rounded edges, check out \code{\link[grid]{grid.roundrect}}. The
+#'  r option should be a \code{\link[grid]{unit}} object. This is by default \code{unit(0, "snpc")}
+#'  but you can choose any value that you want. The \code{"snpc"} unit is the preferred option.
+#' @param padding The padding for the legend box, only used if box is drawn. This is
+#'  the distance from the border to the text/boxes of the legend.
+#' @param title The title of the legend if any
+#' @return \code{list} Returns a list with all the elements
+#' @export
+#' @family forestplot functions
+fpLegend <- function(pos           = "top",
+                     cex           = cex*.8,
+                     gp            = NULL,
+                     r             = unit(0, "snpc"),
+                     padding       = unit(ifelse(length(gp) > 0, 3, 0), "mm"),
+                     title         = NULL){
+  return(list(pos = pos,
+              cex = cex,
+              gp = gp,
+              r = r,
+              padding = padding,
+              title = title))
 }
 
 #' Get a function list
@@ -825,14 +870,17 @@ prFpPrintLabels <- function(labels, nc, nr){
 #'  legend is saved inside \code{attr("title")}
 #'
 #' @inheritParams forestplot2
+#' @inheritParams fpLegend
 #' @keywords internal
-prFpGetLegendGrobs <- function(legend, legend.cex, legend.title=NULL){
+prFpGetLegendGrobs <- function(legend,
+                               cex,
+                               title){
   lGrobs <- list()
   max_width <- 0
   max_height <- 0
   for (n in 1:length(legend)){
     lGrobs[[n]] <- textGrob(legend[n], x=0, just="left",
-                            gp=gpar(cex=legend.cex))
+                            gp=gpar(cex=cex))
 
     gw <- convertUnit(grobWidth(lGrobs[[n]]), "mm", valueOnly=TRUE)
     gh <- convertUnit(grobHeight(lGrobs[[n]]), "mm", valueOnly=TRUE)
@@ -850,10 +898,10 @@ prFpGetLegendGrobs <- function(legend, legend.cex, legend.title=NULL){
       unit(.5, "lines"))
 
   # Do title stuff if present
-  if (is.character(legend.title)){
-    title <- textGrob(legend.title, x=0, just="left",
+  if (is.character(title)){
+    title <- textGrob(title, x=0, just="left",
         gp=gpar(fontface = "bold",
-        cex = legend.cex*1.1))
+        cex = cex*1.1))
     attr(lGrobs, "title") <- title
 
     attr(lGrobs, "titleHeight") <- grobHeight(title)
@@ -872,8 +920,6 @@ prFpGetLegendGrobs <- function(legend, legend.cex, legend.title=NULL){
 #' inside the current viewport.
 #'
 #' @param lGrobs A list with all the grobs, see \code{\link{prFpGetLegendGrobs}}
-#' @param legend.pos Specifies if the legend is horizontal or not. Can either
-#'  be a list or a string.
 #' @param col The colors of the legends.
 #' @param colgap The gap between the box and the text
 #' @param legendMarkerFn The function for drawing the marker
@@ -881,13 +927,16 @@ prFpGetLegendGrobs <- function(legend, legend.cex, legend.title=NULL){
 #' @return \code{void}
 #'
 #' @inheritParams forestplot2
+#' @inheritParams fpLegend
+#'
 #' @keywords internal
-prFpDrawLegend <- function (lGrobs, legend.pos,
+prFpDrawLegend <- function (lGrobs,
                             col,
                             colgap,
-                            legend.gp,
-                            legend.r,
-                            legend.padding,
+                            pos,
+                            gp,
+                            r,
+                            padding,
                             legendMarkerFn,
                             ...) {
   if (!inherits(lGrobs, "Legend"))
@@ -895,16 +944,16 @@ prFpDrawLegend <- function (lGrobs, legend.pos,
 
   # Draw the rounded rectangle at first
   # if there is a gpar specified.
-  if (length(legend.gp) > 0){
-    grid.roundrect(gp = legend.gp, r=legend.r)
-    inner_vp <- viewport(width=unit(1, "npc") - legend.padding - legend.padding,
-      height=unit(1, "npc") - legend.padding - legend.padding)
+  if (length(gp) > 0){
+    grid.roundrect(gp = gp, r=r)
+    inner_vp <- viewport(width=unit(1, "npc") - padding - padding,
+      height=unit(1, "npc") - padding - padding)
     pushViewport(inner_vp)
   }
   legend_width <- 0
   legend_height <- 0
-  if (!is.list(legend.pos) && legend.pos == "top" ||
-    is.list(legend.pos) && "align" %in% names(legend.pos) && legend.pos[["align"]] == "horizontal"){
+  if (!is.list(pos) && pos == "top" ||
+    is.list(pos) && "align" %in% names(pos) && pos[["align"]] == "horizontal"){
     orientation <- "horizontal"
   }else{
     orientation <- "vertical"
@@ -1024,7 +1073,7 @@ prFpDrawLegend <- function (lGrobs, legend.pos,
     upViewport()
   }
 
-  if (length(legend.gp) > 0){
+  if (length(gp) > 0){
     upViewport()
   }
 }
@@ -1291,84 +1340,84 @@ prFpFindWidestGrob <- function (grob.list, return_unit="mm"){
 #'
 #' Used for the forestplot legend box.
 #'
-#' @return \code{list} Returns the \code{legend.pos} list with
+#' @return \code{list} Returns the \code{pos} list with
 #'  the correct x/y/adjust values
 #'
-#' @inheritParams forestplot2
+#' @inheritParams fpLegend
 #' @keywords internal
-prFpGetLegendBoxPosition <- function (legend.pos) {
+prFpGetLegendBoxPosition <- function (pos) {
   valid_txt_pos <- c("bottomright", "bottom", "bottomleft", "left", "topleft", "top", "topright", "right", "center")
-  if (!all(c("x", "y") %in% names(legend.pos)) &&
-        !(("x" %in% legend.pos &&
-             any(legend.pos[["x"]] == valid_txt_pos)) ||
-            any(legend.pos[[1]] == valid_txt_pos)))
+  if (!all(c("x", "y") %in% names(pos)) &&
+        !(("x" %in% pos &&
+             any(pos[["x"]] == valid_txt_pos)) ||
+            any(pos[[1]] == valid_txt_pos)))
     stop("If you want to specify the legend position in a certain corner",
          " within the main plot then you need to have list names x and y specified,",
          " or you should have the first list element to be '", paste(valid_txt_pos, collapse="'/'"), "',",
          " if you don't specify the first element then it can be the 'x' element")
 
   # Convert to the x & y format to make things easier
-  if (!all(c("x", "y") %in% names(legend.pos))){
-    if ("x" %in% names(legend.pos))
-      txt_pos <- legend.pos[["x"]]
+  if (!all(c("x", "y") %in% names(pos))){
+    if ("x" %in% names(pos))
+      txt_pos <- pos[["x"]]
     else
-      txt_pos <- legend.pos[[1]]
+      txt_pos <- pos[[1]]
 
     # The inset offsets the position
-    if (!"inset" %in% names(legend.pos)){
-      legend.pos[["inset"]] <- unit(0, "npc")
-    }else if (!is.unit(legend.pos[["inset"]])){
-      if (legend.pos[["inset"]] > 1 || legend.pos[["inset"]] < 0)
-        stop("If you have not specified the unit of the legend.pos inset then it should be between 0 and 1")
-      legend.pos[["inset"]] <- unit(legend.pos[["inset"]], "npc")
+    if (!"inset" %in% names(pos)){
+      pos[["inset"]] <- unit(0, "npc")
+    }else if (!is.unit(pos[["inset"]])){
+      if (pos[["inset"]] > 1 || pos[["inset"]] < 0)
+        stop("If you have not specified the unit of the pos inset then it should be between 0 and 1")
+      pos[["inset"]] <- unit(pos[["inset"]], "npc")
     }else{
-      if (convertUnit(legend.pos[["inset"]], unitTo="npc", valueOnly=TRUE) > 1)
+      if (convertUnit(pos[["inset"]], unitTo="npc", valueOnly=TRUE) > 1)
         stop("You have provided a value outside the possible range ('npc' bigger than 1)")
     }
 
     if (txt_pos == "bottomright"){
-      legend.pos[["x"]] <- unit(1, "npc") - legend.pos[["inset"]]
-      legend.pos[["y"]] <- unit(0, "npc") + legend.pos[["inset"]]
-      legend.pos[["just"]] <- c("right", "bottom")
+      pos[["x"]] <- unit(1, "npc") - pos[["inset"]]
+      pos[["y"]] <- unit(0, "npc") + pos[["inset"]]
+      pos[["just"]] <- c("right", "bottom")
     }else if(txt_pos == "bottom"){
-      legend.pos[["x"]] <- unit(0.5, "npc")
-      legend.pos[["y"]] <- unit(0, "npc") + legend.pos[["inset"]]
-      legend.pos[["just"]] <- c("center", "bottom")
+      pos[["x"]] <- unit(0.5, "npc")
+      pos[["y"]] <- unit(0, "npc") + pos[["inset"]]
+      pos[["just"]] <- c("center", "bottom")
     }else if (txt_pos == "bottomleft"){
-      legend.pos[["x"]] <- unit(0, "npc") + legend.pos[["inset"]]
-      legend.pos[["y"]] <- unit(0, "npc") + legend.pos[["inset"]]
-      legend.pos[["just"]] <- c("left", "bottom")
+      pos[["x"]] <- unit(0, "npc") + pos[["inset"]]
+      pos[["y"]] <- unit(0, "npc") + pos[["inset"]]
+      pos[["just"]] <- c("left", "bottom")
     }else if (txt_pos == "left"){
-      legend.pos[["x"]] <- unit(0, "npc") + legend.pos[["inset"]]
-      legend.pos[["y"]] <- unit(.5, "npc")
-      legend.pos[["just"]] <- c("left", "center")
+      pos[["x"]] <- unit(0, "npc") + pos[["inset"]]
+      pos[["y"]] <- unit(.5, "npc")
+      pos[["just"]] <- c("left", "center")
     }else if (txt_pos == "topleft"){
-      legend.pos[["x"]] <- unit(0, "npc") + legend.pos[["inset"]]
-      legend.pos[["y"]] <- unit(1, "npc") - legend.pos[["inset"]]
-      legend.pos[["just"]] <- c("left", "top")
+      pos[["x"]] <- unit(0, "npc") + pos[["inset"]]
+      pos[["y"]] <- unit(1, "npc") - pos[["inset"]]
+      pos[["just"]] <- c("left", "top")
     }else if (txt_pos == "top"){
-      legend.pos[["x"]] <- unit(0.5, "npc")
-      legend.pos[["y"]] <- unit(1, "npc") - legend.pos[["inset"]]
-      legend.pos[["just"]] <- c("center", "top")
+      pos[["x"]] <- unit(0.5, "npc")
+      pos[["y"]] <- unit(1, "npc") - pos[["inset"]]
+      pos[["just"]] <- c("center", "top")
     }else if (txt_pos == "topright"){
-      legend.pos[["x"]] <- unit(1, "npc") - legend.pos[["inset"]]
-      legend.pos[["y"]] <- unit(1, "npc") - legend.pos[["inset"]]
-      legend.pos[["just"]] <- c("right", "top")
+      pos[["x"]] <- unit(1, "npc") - pos[["inset"]]
+      pos[["y"]] <- unit(1, "npc") - pos[["inset"]]
+      pos[["just"]] <- c("right", "top")
     }else if (txt_pos == "right"){
-      legend.pos[["x"]] <- unit(1, "npc") - legend.pos[["inset"]]
-      legend.pos[["y"]] <- unit(.5, "npc")
-      legend.pos[["just"]] <- c("right", "center")
+      pos[["x"]] <- unit(1, "npc") - pos[["inset"]]
+      pos[["y"]] <- unit(.5, "npc")
+      pos[["just"]] <- c("right", "center")
     }else if (txt_pos == "center" || txt_pos == "centre"){
-      legend.pos[["x"]] <- unit(.5, "npc")
-      legend.pos[["y"]] <- unit(.5, "npc")
-      legend.pos[["just"]] <- c("center", "center")
+      pos[["x"]] <- unit(.5, "npc")
+      pos[["y"]] <- unit(.5, "npc")
+      pos[["just"]] <- c("center", "center")
     }else{
-      stop("Position '", legend.pos[["x"]], "'not yet implemented")
+      stop("Position '", pos[["x"]], "'not yet implemented")
     }
-  }else if(!"just" %in% names(legend.pos)){
-    legend.pos[["just"]] <- c("center", "center")
+  }else if(!"just" %in% names(pos)){
+    pos[["just"]] <- c("center", "center")
   }
-  return (legend.pos)
+  return (pos)
 }
 
 #' Prepares the legend marker function
