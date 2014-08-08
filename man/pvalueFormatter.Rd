@@ -22,7 +22,8 @@ pvalueFormatter(pvalues, two_dec_lim = 10^-2, sig_lim = 10^-4,
   current standards in order to limit publication
   associated issues.}
 
-  \item{sig_lim}{The significance limit for < sign}
+  \item{sig_lim}{The significance limit for the less than
+  sign, i.e. the '<'}
 
   \item{html}{If the less than sign should be < or &lt; as
   needed for html output.}

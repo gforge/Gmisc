@@ -18,7 +18,7 @@
 #'  0.05. \emph{Disclaimer:} The 0.05-limit is really silly and debated, unfortunately
 #'  it remains a standard and this package tries to adapt to the current standards in order
 #'  to limit publication associated issues.
-#' @param sig_lim The significance limit for < sign
+#' @param sig_lim The significance limit for the less than sign, i.e. the '<'
 #' @param html If the less than sign should be < or &lt;
 #'  as needed for html output.
 #' @param ... Currently only used for generating warnings of deprecated call
