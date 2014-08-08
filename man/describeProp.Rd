@@ -5,18 +5,10 @@
 the number and the percentage}
 \usage{
 describeProp(x, html = FALSE, digits = 1, number_first = TRUE,
-  show_missing = FALSE, show_missing_digits = digits,
-  horizontal_proportions = NULL, default_ref = "First",
+  show_missing = FALSE, show_missing.digits = digits, default_ref,
   percentage_sign = TRUE, language = "en", ...)
 }
 \arguments{
-  \item{default_ref}{If you use proportions with only one
-  variable it can be useful to set the reference level that
-  is of interest to show. This can wither be "First", level
-  name or level number.}
-
-  \item{...}{Passed on to \code{\link{outputInt}}}
-
   \item{x}{The variable that you want the statistics for}
 
   \item{html}{If HTML compatible output shoudl be used
@@ -32,24 +24,9 @@ describeProp(x, html = FALSE, digits = 1, number_first = TRUE,
   \item{show_missing}{This indicates if missing should be
   added as a separate row below all other.}
 
-  \item{show_missing_digits}{The number of digits to use
+  \item{show_missing.digits}{The number of digits to use
   for the missing percentage, defaults to the overall
   \code{digits}.}
-
-  \item{horizontal_proportions}{Is only active if
-  show_missing since this is the only case of a proportion
-  among continuous variables. This is default NULL and
-  indicates that the proportions are to be interpreted in a
-  vertical manner. If we want the data to be horizontal,
-  i.e. the total should be shown and then how these differ
-  in the different groups then supply the function with the
-  total number in each group, i.e. if done in a by manner
-  as in \code{\link{getDescriptionStatsBy}} it needs to
-  provide the number before the by() command. Note! This
-  calls the \code{\link{describeFactors}} since the
-  horizontal interpretation looses the vertical information
-  in the second category and is thus better interpreted as
-  a whole.}
 
   \item{percentage_sign}{If you want to suppress the
   percentage sign you can set this variable to FALSE. You
@@ -61,9 +38,15 @@ describeProp(x, html = FALSE, digits = 1, number_first = TRUE,
   language of interest. Currently only english is
   distinguished from the ISO format using a ',' as the
   separator in the \code{\link{outputInt}} function.}
+
+  \item{...}{Passed on to \code{\link{describeFactors}}}
+
+  \item{default_ref}{The default reference, either first,
+  the level name or a number within the levels. If left out
+  it defaults to the first value.}
 }
 \value{
-A string formatted for printing either latex by HTML
+\code{string} A string formatted for either LaTeX or HTML
 }
 \description{
 A function that returns a description proportion that
@@ -74,9 +57,6 @@ describeProp(factor(sample(50, x=c("A","B"), replace=TRUE)))
 describeProp(factor(sample(50, x=c("A","B", NA), replace=TRUE)), show_missing=TRUE)
 }
 \seealso{
-\code{\link{getDescriptionStatsBy}},
-\code{\link{describeFactors}}
-
 Other description functions: \code{\link{describeFactors}};
 \code{\link{describeMean}}; \code{\link{describeMedian}}
 }

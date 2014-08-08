@@ -17,7 +17,7 @@
 #'  should be presented first. The second is encapsulated in parentheses ().
 #' @param show_missing Show the missing values. This adds another row if
 #'  there are any missing values.
-#' @param show_missing_digits The number of digits to use for the
+#' @param show_missing.digits The number of digits to use for the
 #'  missing percentage, defaults to the overall \code{digits}.
 #' @param continuous_fn The method to describe continuous variables. The
 #'  default is \code{\link{describeMean}}.
@@ -47,9 +47,6 @@
 #'  it may be interesting to have a column at the far right that indicates the
 #'  unit measurement. If this column is specified then the total column will
 #'  appear before the units (if specified as last).
-#' @param default_ref If you use proportions with only one variable, i.e. not show_all_values,
-#'  then it can be useful to set the reference level that is of interest to show. This can
-#'  wither be "First", level name or level number.
 #' @param percentage_sign If you want to surpress the percentage sign you
 #'  can set this variable to FALSE. You can also choose something else that
 #'  the default \% if you so wish by setting this variable.
@@ -58,6 +55,7 @@
 #'  appends the result to the end of that matrix. If the x variable
 #'  is a factor then it does not append and you get a warning.
 #'
+#' @inheritParams prDescGetAndValidateDefaultRef
 #' @example inst/examples/getDescriptionStatsBy_example.R
 #'
 #' @seealso \code{\link{describeMean}}, \code{\link{describeProp}}, \code{\link{describeFactors}}, \code{\link{htmlTable}}
@@ -73,8 +71,8 @@ getDescriptionStatsBy <-
            numbers_first = TRUE,
            statistics=FALSE,
            sig.limit=10^-4, two_dec.limit= 10^-2,
-           show_missing = FALSE,
-           show_missing_digits = digits,
+           show_missing,
+           show_missing.digits = digits,
            continuous_fn = describeMean,
            prop_fn = describeProp,
            factor_fn = describeFactors,
@@ -83,8 +81,15 @@ getDescriptionStatsBy <-
            add_total_col,
            total_col_show_perc = TRUE,
            use_units = FALSE,
-           default_ref = "First",
-           percentage_sign = TRUE){
+           default_ref,
+           percentage_sign = TRUE,
+           ...){
+
+    # Warnings due to interface changes in 1.0
+    if ("show_missing_digits" %in% names(list(...))){
+      show_missing.digits <- show_missing_digits
+      warning("Deprecated: show_missing_digits argument is now show_missing.digits as of ver. 1.0")
+    }
 
     # Always have a total column if the description statistics
     # are presented in a horizontal fashion
@@ -192,14 +197,14 @@ getDescriptionStatsBy <-
         t <- by(x, by, FUN=continuous_fn, html=html, digits=digits,
                 number_first=numbers_first,
                 show_missing = show_missing,
-                show_missing_digits = show_missing_digits,
+                show_missing.digits = show_missing.digits,
                 horizontal_proportions = table(is.na(x), useNA=show_missing),
                 percentage_sign = percentage_sign)
       else
         t <- by(x, by, FUN=continuous_fn, html=html, digits=digits,
                 number_first=numbers_first,
                 show_missing = show_missing,
-                show_missing_digits = show_missing_digits,
+                show_missing.digits = show_missing.digits,
                 percentage_sign = percentage_sign)
 
 
@@ -219,12 +224,12 @@ getDescriptionStatsBy <-
                length(levels(x)) == 2 &&
                hrzl_prop == FALSE){
 
-      default_ref <- prGetAndValidateDefaultRef(x, default_ref)
+      default_ref <- prDescGetAndValidateDefaultRef(x, default_ref)
 
       t <- by(x, by, FUN=prop_fn, html=html, digits=digits,
               number_first=numbers_first,
               show_missing = show_missing,
-              show_missing_digits = show_missing_digits,
+              show_missing.digits = show_missing.digits,
               default_ref = default_ref, percentage_sign = percentage_sign)
 
       # Set the rowname to a special format
@@ -261,14 +266,14 @@ getDescriptionStatsBy <-
         t <- by(x, by, FUN=factor_fn, html=html, digits=digits,
                 number_first=numbers_first,
                 show_missing = show_missing,
-                show_missing_digits = show_missing_digits,
+                show_missing.digits = show_missing.digits,
                 horizontal_proportions = table(x, useNA=show_missing),
                 percentage_sign = percentage_sign)
       }else{
         t <- by(x, by, FUN=factor_fn, html=html, digits=digits,
                 number_first=numbers_first,
                 show_missing = show_missing,
-                show_missing_digits = show_missing_digits,
+                show_missing.digits = show_missing.digits,
                 percentage_sign = percentage_sign)
       }
 
@@ -312,7 +317,7 @@ getDescriptionStatsBy <-
                                      show_perc=total_col_show_perc,
                                      show_all_values = show_all_values,
                                      show_missing=show_missing,
-                                     show_missing_digits = show_missing_digits,
+                                     show_missing.digits = show_missing.digits,
                                      html=html,
                                      digits=digits,
                                      continuous_fn = continuous_fn,

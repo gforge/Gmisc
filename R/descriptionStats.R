@@ -1,5 +1,9 @@
-#' A function that returns a description mean that contains
-#' the standard deviation
+#' Describe the mean
+#'
+#' A function that returns a description of a continuous variable using
+#' the mean together with the standard deviation. The standard deviation
+#' is used as it is "industry standard" to use mean with standard deviation
+#' and not because it's the only option.
 #'
 #' @param x The variable that you want the statistics for
 #' @param digits The number of decimals used
@@ -10,19 +14,8 @@
 #'  This is only used together with the show_missing variable.
 #' @param show_missing This indicates if missing should be added as a separate
 #'  row below all other.
-#' @param show_missing_digits The number of digits to use for the
+#' @param show_missing.digits The number of digits to use for the
 #'  missing percentage, defaults to the overall \code{digits}.
-#' @param horizontal_proportions Is only active if show_missing since this is
-#'  the only case of a proportion among continuous variables. This is default NULL and indicates
-#'  that the proportions are to be interpreted in a vertical manner.
-#'  If we want the data to be horizontal, i.e. the total should be shown
-#'  and then how these differ in the different groups then supply the
-#'  function with the total number in each group, i.e. if done in a by
-#'  manner as in \code{\link{getDescriptionStatsBy}} it needs to provide
-#'  the number before the by() command. Note! This calls the
-#'  \code{\link{describeFactors}} since the horizontal interpretation looses the
-#'  vertical information in the second category and is thus better
-#'  interpreted as a whole.
 #' @param percentage_sign If you want to suppress the percentage sign you
 #'  can set this variable to FALSE. You can also choose something else that
 #'  the default \% if you so wish by setting this variable. Note, this is
@@ -34,7 +27,7 @@
 #'  format using a ',' as the separator in the \code{\link{outputInt}}
 #'  function.
 #' @param ... Passed on to \code{\link{describeFactors}}
-#' @return A string formatted for printing either latex by  HTML
+#' @return \code{string} A string formatted for either LaTeX or HTML
 #'
 #' @seealso \code{\link{getDescriptionStatsBy}}
 #'
@@ -48,13 +41,21 @@ describeMean <- function(x,
                          html=FALSE,
                          digits=1,
                          number_first = TRUE,
-                         show_missing = FALSE,
-                         show_missing_digits = digits,
-                         horizontal_proportions=NULL,
+                         show_missing,
+                         show_missing.digits = digits,
                          percentage_sign = TRUE,
                          plusmin_str,
                          language = "en",
                          ...){
+  dot_args <- list(...)
+
+  # Warnings due to interface changes in 1.0
+  if ("show_missing_digits" %in% names(dot_args)){
+    show_missing.digits <- show_missing_digits
+    dot_args$show_missing_digits <- NULL
+    warning("Deprecated: show_missing_digits argument is now show_missing.digits as of ver. 1.0")
+  }
+
   show_missing <- prConvertShowMissing(show_missing)
 
   if (missing(plusmin_str))
@@ -71,13 +72,14 @@ describeMean <- function(x,
     ret <- sprintf("$%s$", ret)
 
   if (show_missing %in% c("ifany", "always") & sum(is.na(x))>0){
-    missing <- describeFactors(is.na(x), number_first = number_first,
-                               percentage_sign=percentage_sign,
-                               language = language,
-                               digits = show_missing_digits, html = html,
-                               horizontal_proportions = horizontal_proportions,
-                               ...)
-    ret <- rbind(ret, missing["TRUE", ])
+    ret <- rbind(ret,
+                 prDescGetMissing(x = x,
+                                  html = html,
+                                  number_first = number_first,
+                                  percentage_sign = percentage_sign,
+                                  language = language,
+                                  show_missing.digits = show_missing.digits,
+                                  dot_args = dot_args))
     rownames(ret) <- c("Mean (SD)", "Missing")
   } else if (show_missing == "always"){
     if(percentage_sign == TRUE)
@@ -95,16 +97,12 @@ describeMean <- function(x,
   return (ret)
 }
 
+
 #' A function that returns a description median that contains
 #' the interquartile range or the full range
 #'
 #' @param iqr If interquartile range should be used
-#' @param digits The number of decimals used
-#' @param language The ISO-639-1 two-letter code for the language of
-#'  interest. Currently only english is distinguished from the ISO
-#'  format using a ',' as the separator in the \code{\link{outputInt}}
-#'  function.
-#' @return A string formatted for printing either latex by  HTML
+#' @return \code{string} A string formatted for either LaTeX or HTML
 #'
 #' @inheritParams describeMean
 #' @seealso \code{\link{getDescriptionStatsBy}}
@@ -116,17 +114,24 @@ describeMean <- function(x,
 #' @family description functions
 #' @export
 describeMedian <- function(x,
-  iqr=TRUE,
-  html=FALSE,
-  digits=1,
-  number_first = TRUE,
-  show_missing = FALSE,
-  show_missing_digits = digits,
-  horizontal_proportions=NULL,
-  percentage_sign = TRUE,
-  language = "en",
-  ...){
-  show_missing <- prConvertShowMissing(show_missing)
+                           iqr=TRUE,
+                           html=FALSE,
+                           digits=1,
+                           number_first = TRUE,
+                           show_missing = FALSE,
+                           show_missing.digits = digits,
+                           horizontal_proportions,
+                           percentage_sign = TRUE,
+                           language = "en",
+                           ...){
+  dot_args <- list(...)
+
+  # Warnings due to interface changes in 1.0
+  if ("show_missing_digits" %in% names(dot_args)){
+    show_missing.digits <- show_missing_digits
+    dot_args$show_missing_digits <- NULL
+    warning("Deprecated: show_missing_digits argument is now show_missing.digits as of ver. 1.0")
+  }
 
   if (iqr)
     range_quantiles = c(1/4, 3/4)
@@ -139,13 +144,15 @@ describeMedian <- function(x,
                    quantile(x, probs=range_quantiles[2], na.rm=TRUE))
 
   if (show_missing %in% c("ifany", "always") & sum(is.na(x))>0){
-    missing <- describeFactors(is.na(x), number_first = number_first,
-                               percentage_sign=percentage_sign,
-                               language = language,
-                               digits = show_missing_digits, html = html,
-                               horizontal_proportions = horizontal_proportions,
-                               ...)
-    ret <- rbind(ret, missing["TRUE", ])
+    ret <- rbind(ret,
+                 prDescGetMissing(x = x,
+                                  html = html,
+                                  number_first = number_first,
+                                  percentage_sign = percentage_sign,
+                                  language = language,
+                                  show_missing.digits = show_missing.digits,
+                                  dot_args = dot_args))
+
     rownames(ret) <- c(
       ifelse(iqr, "Median (IQR)", "Median (range)"),
       "Missing")
@@ -170,14 +177,10 @@ describeMedian <- function(x,
 #' A function that returns a description proportion that contains
 #' the number and the percentage
 #'
-#' @param default_ref If you use proportions with only one variable
-#'  it can be useful to set the reference level that is of interest to show. This can
-#'  wither be "First", level name or level number.
-#' @param ... Passed on to \code{\link{outputInt}}
-#' @return A string formatted for printing either latex by  HTML
+#' @return \code{string} A string formatted for either LaTeX or HTML
 #'
 #' @inheritParams describeMean
-#' @seealso \code{\link{getDescriptionStatsBy}}, \code{\link{describeFactors}}
+#' @inheritParams prDescGetAndValidateDefaultRef
 #' @examples
 #' describeProp(factor(sample(50, x=c("A","B"), replace=TRUE)))
 #' describeProp(factor(sample(50, x=c("A","B", NA), replace=TRUE)), show_missing=TRUE)
@@ -185,19 +188,27 @@ describeMedian <- function(x,
 #' @family description functions
 #' @export
 describeProp <- function(x,
-  html=FALSE,
-  digits=1,
-  number_first = TRUE,
-  show_missing = FALSE,
-  show_missing_digits = digits,
-  horizontal_proportions = NULL,
-  default_ref = "First",
-  percentage_sign = TRUE,
-  language = "en",
-  ...){
+                         html=FALSE,
+                         digits=1,
+                         number_first = TRUE,
+                         show_missing = FALSE,
+                         show_missing.digits = digits,
+                         default_ref,
+                         percentage_sign = TRUE,
+                         language = "en",
+                         ...){
+  dot_args <- list(...)
+
+  # Warnings due to interface changes in 1.0
+  if ("show_missing_digits" %in% names(dot_args)){
+    show_missing.digits <- show_missing_digits
+    dot_args$show_missing_digits <- NULL
+    warning("Deprecated: show_missing_digits argument is now show_missing.digits as of ver. 1.0")
+  }
+
   show_missing <- prConvertShowMissing(show_missing)
 
-  default_ref <- prGetAndValidateDefaultRef(x, default_ref)
+  default_ref <- prDescGetAndValidateDefaultRef(x, default_ref)
 
   # If we're to use the horizontal proportions then
   # it's better to report the variable as a factor
@@ -205,22 +216,28 @@ describeProp <- function(x,
   # When we have missing it also gets more difficult
   # to just report one percentage as it suddenly uncertain
   # for what percentage the number applies to
-  if(is.null(horizontal_proportions) == FALSE ||
+  if(!"horizontal_proportions" %in% names(dot_args) ||
        (show_missing == "ifany" &&
           any(is.na(x))) ||
-       show_missing == "always")
-    return(describeFactors(x=x,
-                           html=html,
-                           number_first = number_first,
-                           digits = digits,
-                           percentage_sign=percentage_sign,
-                           language = language,
-                           show_missing = show_missing,
-                           show_missing_digits = show_missing_digits,
-                           horizontal_proportions = horizontal_proportions,
-                           ...))
+       show_missing == "always"){
 
-  if (is.factor(x) == FALSE)
+    df_arg_list <- list(x = x,
+                        html = html,
+                        number_first = number_first,
+                        percentage_sign=percentage_sign,
+                        language = language,
+                        digits = digits,
+                        show_missing = show_missing,
+                        show_missing.digits = show_missing.digits)
+    for (n in names(dot_args)){
+      if (!n %in% names(df_arg_list)){
+        df_arg_list[[n]] <- dot_args[[n]]
+      }
+    }
+    return(do.call(describeFactors, df_arg_list))
+  }
+
+  if (!is.factor(x))
     x <- factor(x)
 
   no <- sum(x == levels(x)[default_ref], na.rm=T)
@@ -228,12 +245,20 @@ describeProp <- function(x,
   # Don't count missing since those are treated as factors if any
   percent <- 100*no/length(x[is.na(x)==FALSE])
 
-  no <- outputInt(no, language=language, html=html, ...)
+  oi_args <- lis(x = no,
+                 language = language,
+                 html = html)
+  for (n in names(dot_args)){
+    if (!n %in% names(oi_args)){
+      oi_args[[n]] <- dot_args[[n]]
+    }
+  }
+  no <- do.call(outputInt, oi_args)
 
   # The LaTeX treats % as comments unless it's properly escaped
   if(percentage_sign == TRUE)
     percentage_sign <- ifelse (html, "%", "\\%")
-  else if(is.character(percentage_sign) == FALSE)
+  else if(!is.character(percentage_sign))
     percentage_sign = ""
 
   if (number_first)
@@ -246,7 +271,7 @@ describeProp <- function(x,
 
 
 #' Describes factor variables
-#' 
+#'
 #' A function that returns a description proportion in a
 #' factir that contains the number of times a variable and the percentage
 #'
@@ -274,15 +299,23 @@ describeProp <- function(x,
 #'
 #' @export
 describeFactors <- function(x,
-  html=FALSE,
-  digits=1,
-  number_first = TRUE,
-  show_missing = FALSE,
-  show_missing_digits = digits,
-  horizontal_proportions = NULL,
-  percentage_sign = TRUE,
-  language = "en",
-  ...) {
+                            html=FALSE,
+                            digits=1,
+                            number_first = TRUE,
+                            show_missing = FALSE,
+                            show_missing.digits = digits,
+                            horizontal_proportions,
+                            percentage_sign = TRUE,
+                            language = "en",
+                            ...) {
+  dot_args <- list(...)
+
+  # Warnings due to interface changes in 1.0
+  if ("show_missing_digits" %in% names(dot_args)){
+    show_missing.digits <- show_missing_digits
+    dot_args$show_missing_digits <- NULL
+    warning("Deprecated: show_missing_digits argument is now show_missing.digits as of ver. 1.0")
+  }
 
   show_missing <- prConvertShowMissing(show_missing)
 
@@ -290,25 +323,29 @@ describeFactors <- function(x,
   table_results <- table(x, useNA= show_missing)
 
   # Check if we should relate to an external total
-  if (is.null(horizontal_proportions) == FALSE){
+  if (missing(horizontal_proportions)){
 
     # Error check the horizontal_proporitons variable
     # First check that it's a table or at least a vector
     if (is.numeric(horizontal_proportions) == FALSE ||
-      (class(horizontal_proportions) != "table" &&
-        is.vector(horizontal_proportions) == FALSE))
-      stop(sprintf("You have not provided a proper table/vector variable for the function, the class you've given is: '%s', instead of numeric vector or table",
-          class(horizontal_proportions)))
+          (!inherits(horizontal_proportions, "table") &&
+             is.vector(horizontal_proportions) == FALSE))
+      stop("You have not provided a proper table/vector variable for the function,",
+           " the class you've given is: '", class(horizontal_proportions) , "'",
+           ", instead of numeric vector or table")
 
     # The original table should always be longer than the subtable
     if (length(horizontal_proportions) < length(table_results))
-      stop(sprintf("There is a length discrepancy between the number of groups in the given sample and the reference sample, %d < %d!",
-          length(horizontal_proportions), length(table_results)))
+      stop("There is a length discrepancy between the number of groups in the given sample",
+           " and the reference sample, ",
+           length(horizontal_proportions), " < ", length(table_results) , "!")
 
     # All variables should exist in the horizontal table
     if (all(names(table_results) %in% names(horizontal_proportions)) == FALSE)
-      stop(sprintf("Your results contain results that are not in the reference horizontal_proportions: %s",
-          paste(names(table_results)[names(table_results) %in% names(horizontal_proportions)], collapse=", ")))
+      stop("Your results contain results that are not in ",
+           "the reference horizontal_proportions: ",
+           paste(names(table_results)[names(table_results) %in% names(horizontal_proportions)],
+                 collapse=", "))
 
     # Create a equal length array with the same order
     if(length(horizontal_proportions) > length(table_results)){
@@ -336,7 +373,7 @@ describeFactors <- function(x,
     # to be able to reference them
     names(percentages) <- names(horizontal_proportions)
     for (n in names(horizontal_proportions)){
-      # Strange things happen with NA...
+      # Strange things happen with NA
       # Need to find that element in a slightly odd way
       if (is.na(n))
         percentages[is.na(names(percentages))] <-
@@ -349,7 +386,16 @@ describeFactors <- function(x,
   }
 
   # Format the values
-  values <- sapply(table_results, outputInt, language=language, html=html, ...=...)
+  sa_args <- lis(X = table_results,
+                 FUN = outputInt,
+                 language = language,
+                 html = html)
+  for (n in names(dot_args)){
+    if (!n %in% names(sa_args)){
+      sa_args[[n]] <- dot_args[[n]]
+    }
+  }
+  values <- do.call(sapply, sa_args)
 
   # The LaTeX treats % as comments unless it's properly escaped
   if(percentage_sign == TRUE)
@@ -361,7 +407,7 @@ describeFactors <- function(x,
   if (number_first)
     ret <- matrix(
       sprintf(ifelse(is.na(names(table_results)),
-                     sprintf("%%s (%%.%df%%s)", show_missing_digits),
+                     sprintf("%%s (%%.%df%%s)", show_missing.digits),
                      sprintf("%%s (%%.%df%%s)", digits)),
               values,
               percentages,
@@ -369,7 +415,7 @@ describeFactors <- function(x,
   else
     ret <- matrix(
       sprintf(ifelse(is.na(names(table_results)),
-                     sprintf("%%.%df%%s (%%s)", show_missing_digits),
+                     sprintf("%%.%df%%s (%%s)", show_missing.digits),
                      sprintf("%%.%df%%s (%%s)", digits)),
               percentages,
               percentage_sign,

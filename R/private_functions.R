@@ -111,12 +111,13 @@ prConvertShowMissing <- function(show_missing){
 #'
 #' @param x The variable of interest with the levels
 #' @param default_ref The default reference, either first,
-#'  the level name or a number within the levels
+#'  the level name or a number within the levels. If left out
+#'  it defaults to the first value.
 #' @return \code{integer} The level number of interest
 #'
 #' @keywords internal
-prGetAndValidateDefaultRef <- function(x, default_ref){
-  if (default_ref == "First"){
+prDescGetAndValidateDefaultRef <- function(x, default_ref){
+  if (missing(default_ref)){
     default_ref <- 1
   }else if (is.character(default_ref)){
     if (default_ref %in% levels(x))
@@ -130,6 +131,37 @@ prGetAndValidateDefaultRef <- function(x, default_ref){
       " as this is only used for factors.")
 
   return(default_ref)
+}
+
+
+#' Gets missing stats
+#'
+#' Gets the missing row for \code{\link{describeMean}}
+#' and \code{\link{describeMedian}}.
+#'
+#' @inheritParams describeMean
+#' @return \code{vector} A vector with the missing estimate
+#' @keywords internal
+prDescGetMissing <- function (x,
+                              html,
+                              number_first,
+                              percentage_sign,
+                              language,
+                              show_missing.digits,
+                              dot_args) {
+  df_arg_list <- list(x = is.na(x),
+                      html = html,
+                      number_first = number_first,
+                      percentage_sign=percentage_sign,
+                      language = language,
+                      digits = show_missing.digits)
+  for (n in names(dot_args)){
+    if (!n %in% names(df_arg_list)){
+      df_arg_list[[n]] <- dot_args[[n]]
+    }
+  }
+  missing <- do.call(describeFactors, df_arg_list)
+  return(missing["TRUE", ])
 }
 
 #' Pushes viewport with margins

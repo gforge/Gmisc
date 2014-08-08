@@ -5,12 +5,11 @@
 \usage{
 getDescriptionStatsBy(x, by, digits = 1, html = FALSE, NEJMstyle = FALSE,
   numbers_first = TRUE, statistics = FALSE, sig.limit = 10^-4,
-  two_dec.limit = 10^-2, show_missing = FALSE,
-  show_missing_digits = digits, continuous_fn = describeMean,
-  prop_fn = describeProp, factor_fn = describeFactors,
-  show_all_values = FALSE, hrzl_prop = FALSE, add_total_col,
-  total_col_show_perc = TRUE, use_units = FALSE, default_ref = "First",
-  percentage_sign = TRUE)
+  two_dec.limit = 10^-2, show_missing, show_missing.digits = digits,
+  continuous_fn = describeMean, prop_fn = describeProp,
+  factor_fn = describeFactors, show_all_values = FALSE, hrzl_prop = FALSE,
+  add_total_col, total_col_show_perc = TRUE, use_units = FALSE, default_ref,
+  percentage_sign = TRUE, ...)
 }
 \arguments{
   \item{x}{The variable that you want the statistics for}
@@ -33,7 +32,7 @@ getDescriptionStatsBy(x, by, digits = 1, html = FALSE, NEJMstyle = FALSE,
   \item{show_missing}{Show the missing values. This adds
   another row if there are any missing values.}
 
-  \item{show_missing_digits}{The number of digits to use
+  \item{show_missing.digits}{The number of digits to use
   for the missing percentage, defaults to the overall
   \code{digits}.}
 
@@ -85,15 +84,14 @@ getDescriptionStatsBy(x, by, digits = 1, html = FALSE, NEJMstyle = FALSE,
   this column is specified then the total column will
   appear before the units (if specified as last).}
 
-  \item{default_ref}{If you use proportions with only one
-  variable, i.e. not show_all_values, then it can be useful
-  to set the reference level that is of interest to show.
-  This can wither be "First", level name or level number.}
-
   \item{percentage_sign}{If you want to surpress the
   percentage sign you can set this variable to FALSE. You
   can also choose something else that the default \% if you
   so wish by setting this variable.}
+
+  \item{default_ref}{The default reference, either first,
+  the level name or a number within the levels. If left out
+  it defaults to the first value.}
 }
 \value{
 Returns a vector if vars wasn't specified and it's a
