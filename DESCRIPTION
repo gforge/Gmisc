@@ -1,14 +1,8 @@
 Package: Gmisc
-<<<<<<< HEAD
 Version: 0.6.8
 Date: 2014-08-08
-Title: A few handy misc functions for plots, tables, and more
-=======
-Version: 0.6.7
-Date: 2014-07-27
 Title: Collection of functions for plotting relations, generating tables, and
     more.
->>>>>>> b8bd2bb9a340f57893eb518bd3ed4e490344ea1d
 Author: Max Gordon <max@gforge.se>
 Maintainer: Max Gordon <max@gforge.se>
 Description: This is a collection of functions for tables, plots, and more. For

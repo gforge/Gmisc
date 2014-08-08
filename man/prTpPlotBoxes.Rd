@@ -69,7 +69,7 @@ prTpPlotBoxes(overlap_order, transition_flow, no_boxes, box_width, tot_spacing,
   \item{box_prop}{If you want the boxes to have proportions
   indicating some other factors then input a matrix with
   quantiles for the proportions. Note the size mus be
-  nrow(transition_flow) x 2.}
+  \code{nrow(transition_flow) x 2}.}
 
   \item{lwd_prop_total}{The width of the lines may be
   proportional to either the other flows from that box, or
