@@ -34,7 +34,7 @@
 #' 
 #' # Return the original settings
 #' options(org_opts)
-#' @family figure_caption_no
+#' @family Figure caption number functions
 figCapNo <- function(str, 
                      roman = getOption("fig_caption_no_roman",
                                        FALSE),
@@ -68,14 +68,13 @@ figCapNo <- function(str,
 #' The function relies on \code{options("fig_caption_no")}
 #' in order to keep track of the last number. 
 #'
-#' @param roman Whether or not to use roman numbers instead
-#'  of arabic. Can also be set through \code{options(fig_caption_no_roman = TRUE)}
+#' @inheritParams figCapNo
 #' @export
 #' @examples
 #' org_opts <- options(fig_caption_no=1)
 #' figCapNoLast()
 #' options(org_opts)
-#' @family figure_caption_no
+#' @family Figure caption number functions
 figCapNoLast <- function(roman = getOption("fig_caption_no_roman",
                                            FALSE)){
   last_no <- getOption("fig_caption_no")
@@ -100,14 +99,13 @@ figCapNoLast <- function(roman = getOption("fig_caption_no_roman",
 #' The function relies on \code{options("fig_caption_no")}
 #' in order to keep track of the last number. 
 #'
-#' @param roman Whether or not to use roman numbers instead
-#'  of arabic. Can also be set through \code{options(fig_caption_no_roman = TRUE)}
+#' @inheritParams figCapNo
 #' @export
 #' @examples
 #' org_opts <- options(fig_caption_no=1)
 #' figCapNoLast()
 #' options(org_opts)
-#' @family figure_caption_no
+#' @family Figure caption number functions
 figCapNoNext <- function(roman = getOption("fig_caption_no_roman",
                                            FALSE)){
   last_no <- getOption("fig_caption_no")

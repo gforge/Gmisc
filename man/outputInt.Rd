@@ -19,7 +19,7 @@ outputInt(x, language = "en", html = TRUE, ...)
   \item{...}{Passed to \code{\link[base]{format}}}
 }
 \value{
-string
+\code{string}
 }
 \description{
 English uses ',' between every 3 numbers while the SI

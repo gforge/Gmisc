@@ -4,7 +4,7 @@
 #' reason not included by default in the \code{grid}-package.
 #'
 #' @param x The \code{\link[grid]{xaxisGrob}} object
-#' @return A unit object
+#' @return \code{grid::unit} A \code{\link[grid]{unit}} object
 #'
 #' @examples
 #' grid.newpage()

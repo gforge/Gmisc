@@ -10,7 +10,7 @@
 #' @param attr2force An optional lists of attributes
 #'  that you may want to force copy even if they already
 #'  exist in the new object
-#' @return object The to object
+#' @return \code{object} The \code{to} argument object
 #'
 #' @examples
 #' a <- "test"

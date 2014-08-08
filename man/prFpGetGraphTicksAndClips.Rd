@@ -7,35 +7,41 @@ prFpGetGraphTicksAndClips(xticks, xticks.digits, xlog, xlab, lwd.xaxis, col,
   cex, cex.axis, clip, zero, x_range, nc, mean)
 }
 \arguments{
-  \item{xticks}{The xticks}
-
-  \item{xticks.digits}{Number of digits for the xticks}
-
-  \item{xlog}{If the axis should be log()}
-
-  \item{xlab}{The x-axis label}
-
-  \item{lwd.xaxis}{The line width of the x-axis}
-
-  \item{col}{The color object}
-
-  \item{cex}{The text size}
-
-  \item{cex.axis}{The axis tick text size}
-
-  \item{clip}{The clip margins}
-
-  \item{zero}{The zero effect}
-
-  \item{x_range}{The range that values span}
+  \item{x_range}{The range that the values from the
+  different confidence interval span}
 
   \item{nc}{Number of columns}
 
   \item{mean}{The original means, either matrix or vector}
+
+  \item{xticks}{Optional user-specified x-axis tick marks.
+  Specify NULL to use the defaults, numeric(0) to omit the
+  x-axis.}
+
+  \item{xticks.digits}{The number of digits to allow in the
+  x-axis if this is created by default.}
+
+  \item{xlog}{If TRUE, x-axis tick marks are exponentiated}
+
+  \item{xlab}{x-axis label}
+
+  \item{lwd.xaxis}{lwd for the xaxis}
+
+  \item{col}{See \code{\link{fpColors}}}
+
+  \item{cex}{The font adjustment}
+
+  \item{cex.axis}{The font adjustment for the x-xaxis,
+  defaults to 60 \% of the cex parameter.}
+
+  \item{clip}{Lower and upper limits for clipping
+  confidence intervals to arrows}
+
+  \item{zero}{x-axis coordinate for zero line}
 }
 \value{
-list Returns a list with axis_vp, axisGrob, labGrob, zero
-and clip
+\code{list} Returns a list with axis_vp, axisGrob, labGrob,
+zero and clip
 }
 \description{
 Gets the x-label and zero-bar details

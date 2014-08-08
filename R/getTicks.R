@@ -13,7 +13,7 @@
 #' @param clip if the ci are clipped
 #' @param exp If the value should be in exponential form (default)
 #' @param digits Number of digits - used in exp mode
-#' @return Returns a vector with the ticks appropriate
+#' @return \code{vector} Returns a vector with the ticks
 #'
 #' @example inst/examples/getTicks_example.R
 getTicks <- function(low,

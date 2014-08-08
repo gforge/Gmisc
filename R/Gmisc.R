@@ -4,6 +4,7 @@
 #' The package is inspired by Frank Harrel's Hmisc package. The main focus
 #' is on tables and plots. 
 #'  
+#' @section The htmlTable:
 #' For tables you'll find the convenient \code{\link{htmlTable}} that I have used 
 #' for advanced table layout. A major focus has been to have
 #' it compatible with LibreOffice (you can copy/past from there into word)
@@ -12,12 +13,14 @@
 #' to copy->paste directly from the viewer into a MS Word document without
 #' any layout loss.
 #' 
+#' @section Description functions:
 #' To accompany the \code{\link{htmlTable}} function is the 
 #' \code{\link{getDescriptionStatsBy}} it is a straight forward function that 
 #' aims at helping you to generate descriptive table stratified by different
 #' variables. In other words, the function returns everything you need for generating
 #' a \emph{Table 1} ready for publication.
 #'  
+#' @section Plots:
 #' The main plots are \code{\link{forestplot2}} and \code{\link{transitionPlot}}. 
 #' The forest plot is a more general version of the original 
 #' \code{\link[rmeta]{forestplot}} function aimed at using the forest 
@@ -33,6 +36,6 @@
 #' that tries to illustrate and use the SVD in order to select the ones having
 #' most influence on the V-matrix. 
 #' 
-#' @name Gmisc
+#' @name Gmisc-package
 #' @docType package
 NULL

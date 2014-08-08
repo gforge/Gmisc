@@ -1,5 +1,9 @@
 NEWS for the Gmisc package
 
+Changes for 0.6.8
+-----------------
+* Applied the DRY-documentation principle
+
 Changes for 0.6.7
 -----------------
 * Added an interactive() check before using the viewer

@@ -10,11 +10,16 @@ describeMedian(x, iqr = TRUE, html = FALSE, digits = 1,
   ...)
 }
 \arguments{
-  \item{x}{The variable that you want the statistics for}
-
   \item{iqr}{If interquartile range should be used}
 
   \item{digits}{The number of decimals used}
+
+  \item{language}{The ISO-639-1 two-letter code for the
+  language of interest. Currently only english is
+  distinguished from the ISO format using a ',' as the
+  separator in the \code{\link{outputInt}} function.}
+
+  \item{x}{The variable that you want the statistics for}
 
   \item{html}{If HTML compatible output shoudl be used
   instead of default LaTeX}
@@ -51,11 +56,6 @@ describeMedian(x, iqr = TRUE, html = FALSE, digits = 1,
   can also choose something else that the default \% if you
   so wish by setting this variable. Note, this is only used
   when combined with the missing information.}
-
-  \item{language}{The ISO-639-1 two-letter code for the
-  language of interest. Currently only english is
-  distinguished from the ISO format using a ',' as the
-  separator in the \code{\link{outputInt}} function.}
 
   \item{...}{Passed on to \code{\link{describeFactors}}}
 }

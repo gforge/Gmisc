@@ -311,4 +311,11 @@ par(ask=ask)
 \author{
 Max Gordon, Thomas Lumley
 }
+\seealso{
+Other forestplot functions: \code{\link{fpColors}};
+\code{\link{fpDrawCircleCI}},
+\code{\link{fpDrawDiamondCI}},
+\code{\link{fpDrawNormalCI}}, \code{\link{fpDrawPointCI}},
+\code{\link{fpDrawSummaryCI}}
+}
 

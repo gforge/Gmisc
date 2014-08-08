@@ -20,7 +20,7 @@ figCapNoLast()
 options(org_opts)
 }
 \seealso{
-Other figure_caption_no: \code{\link{figCapNoNext}};
-\code{\link{figCapNo}}
+Other Figure caption number functions:
+\code{\link{figCapNoNext}}; \code{\link{figCapNo}}
 }
 

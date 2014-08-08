@@ -6,7 +6,7 @@
 #' in for those parameters.
 #'
 #' @param ... Any number of lists that you want to merge
-#' @param lapplyOutput The lapply function outputs a number
+#' @param lapplyOutput The \code{\link[base]{lapply}} function outputs a number
 #'  of lists and this is for specifically merging all of those.
 #' @return Returns a list with all the given lists.
 #'

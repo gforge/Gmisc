@@ -108,6 +108,7 @@
 #' @author Max Gordon, Thomas Lumley
 #' 
 #' @example inst/examples/forestplot2_example.R
+#' @family forestplot functions
 #' @export
 forestplot2 <- function (labeltext, 
                          mean, lower, upper, 

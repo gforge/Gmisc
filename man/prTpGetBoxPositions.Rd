@@ -19,9 +19,12 @@ prTpGetBoxPositions(no, side, transitions, prop_start_sizes, prop_end_sizes,
 
   \item{prop_end_sizes}{The size of the end boxes}
 
-  \item{tot_spacing}{The total space between the boxes}
+  \item{tot_spacing}{The proportion of the vertical space
+  that is to be left empty. It is then split evenly between
+  the boxes.}
 
-  \item{box_width}{The width of the box}
+  \item{box_width}{The width of the box. By default the box
+  is one fourth of the plot width.}
 }
 \value{
 \code{list(top, left, bottom, right, width, height)}

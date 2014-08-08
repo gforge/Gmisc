@@ -173,7 +173,7 @@ htmlTable(x, title = first.word(deparse(substitute(x))), headings,
   \code{FALSE} if you want to remove that functionality.}
 }
 \value{
-Returns a string of class htmlTable
+\code{string} Returns a string of class htmlTable
 }
 \description{
 This is a function for outputting a more advanced table

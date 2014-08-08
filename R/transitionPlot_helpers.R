@@ -32,7 +32,7 @@ prTpGetBoxPropClr <- function(clr, no_boxes, lengthOneOK = FALSE){
 #' @param line_col The line color around the box
 #' @param lwd The line width
 #' @param prop Provide a proportion if the box should be split (0-1)
-#' @return \code{NULL}
+#' @return \code{void}
 #'
 #' @keywords internal
 prTpPlotBox <- function(bx, bx_txt, fill, txt_clr,
@@ -155,7 +155,7 @@ prTpGetBoxSizedTextGrob <- function(txt,
 #'  at the low/high proportions of the spectrum then it
 #'  can be of interest to focus the color change to the center
 #'  leaving the tails constant
-#' @return \code{NULL}
+#' @return \code{void}
 #'
 #' @keywords internal
 prTpPlotArrows <- function(type,
@@ -312,38 +312,25 @@ prTpPlotArrows <- function(type,
 #'
 #' Outputs all the boxes and arrow
 #'
-#' @param overlap_order The order in which the boxes are plotted
-#' @param transition_flow The transition flow matrix
 #' @param no_boxes Number of boxes to plot
-#' @param box_width The width of the boxes
-#' @param tot_spacing The total spacing between the boxes
 #' @param txt The text
-#' @param cex The font size
 #' @param prop_start_sizes The proportion of the different boxes
 #'  to the left
 #' @param prop_end_sizes The proportion of the different boxes
 #'  to the right
-#' @param box_prop The box proportions if any
 #' @param fill_start_clr The color of the boxes to the left
 #' @param fill_end_clr The color of the boxes to the right
 #' @param lwd The line width
 #' @param line_col The color of the line
-#' @param overlap_add_width The additional width the the arrow for the overlap
-#' @param overlap_bg_clr The color of the overlap
-#' @param type_of_arrow The type of arrow to be used
 #' @param abs_arrow_width The absolute width of the arrow
-#' @param arrow_clr The color of the arrow
 #' @param transition_arrow_props The proportions of the different transitions if
 #'  available.
 #' @param plot_arrows If we are plotting shadow boxes then
 #'  arrows should not be plotted and this should be set to \code{FALSE}
-#' @param color_bar_subspace If there is little or no difference exists
-#'  at the low/high proportions of the spectrum then it
-#'  can be of interest to focus the color change to the center
-#'  leaving the tails constant
 #' @param proportion It there is a proportion
-#' @return \code{NULL}
+#' @return \code{void}
 #'
+#' @inheritParams transitionPlot
 #' @keywords internal
 prTpPlotBoxes <- function (overlap_order,
                            transition_flow,
@@ -478,10 +465,9 @@ prTpPlotBoxes <- function (overlap_order,
 #' @param transitions The flows to or from
 #' @param prop_start_sizes The size of the start boxes
 #' @param prop_end_sizes The size of the end boxes
-#' @param tot_spacing The total space between the boxes
-#' @param box_width The width of the box
 #' @return \code{list(top, left, bottom, right, width, height)}
 #'
+#' @inheritParams transitionPlot
 #' @keywords internal
 prTpGetBoxPositions <- function (no, side,
                                  transitions,

@@ -163,8 +163,7 @@ forestplot2(row_names, coef, low, high,
 par(ask=ask)
 }
 \seealso{
-\code{\link{forestplot2}}
-
-Other forestplot functions: \code{\link{fpColors}}
+Other forestplot functions: \code{\link{forestplot2}};
+\code{\link{fpColors}}
 }
 

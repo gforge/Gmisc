@@ -8,9 +8,9 @@ mergeLists(..., lapplyOutput = NULL)
 \arguments{
   \item{...}{Any number of lists that you want to merge}
 
-  \item{lapplyOutput}{The lapply function outputs a number
-  of lists and this is for specifically merging all of
-  those.}
+  \item{lapplyOutput}{The \code{\link[base]{lapply}}
+  function outputs a number of lists and this is for
+  specifically merging all of those.}
 }
 \value{
 Returns a list with all the given lists.

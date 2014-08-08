@@ -25,7 +25,7 @@ prTpPlotBox(bx, bx_txt, fill, txt_clr, cex, line_col, lwd, prop = NA)
   split (0-1)}
 }
 \value{
-\code{NULL}
+\code{void}
 }
 \description{
 Plots the box for the transition plot

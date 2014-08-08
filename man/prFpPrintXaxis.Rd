@@ -9,9 +9,10 @@ prFpPrintXaxis(axisList, col, lwd.zero)
   \item{axisList}{The list from
   \code{\link{prFpGetGraphTicksAndClips}}}
 
-  \item{col}{The colors list}
+  \item{col}{See \code{\link{fpColors}}}
 
-  \item{lwd.zero}{The zero line's line width}
+  \item{lwd.zero}{lwd for the vertical line that gives the
+  no-effect line}
 }
 \value{
 void

@@ -12,7 +12,7 @@ prFpFindWidestGrob(grob.list, return_unit = "mm")
   specifier}
 }
 \value{
-\code{\link[grid]{unit}}
+\code{grid::unit} Returns the widest grob and its width
 }
 \description{
 Finds the widest grob in the current list of grobs

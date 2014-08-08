@@ -21,7 +21,7 @@ prPushMarginViewport(bottom, left, top, right, name = NULL)
   \item{name}{The name of the last viewport}
 }
 \value{
-\code{NULL}
+\code{void}
 }
 \description{
 A \code{\link[grid]{grid.layout}} object is used to

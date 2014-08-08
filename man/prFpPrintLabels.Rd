@@ -13,7 +13,7 @@ prFpPrintLabels(labels, nc, nr)
   \item{nr}{Number of rows}
 }
 \value{
-void
+\code{void}
 }
 \description{
 This is a helper function to the \code{\link{forestplot2}}

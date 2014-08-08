@@ -47,88 +47,88 @@
 #' @param x The matrix/data.frame with the data
 #' @param title The title of the table. Used for labeling etc.
 #' @param headings a vector of character strings specifying column
-#'    headings, defaulting to \code{x}'s 	\code{colnames}
+#' headings, defaulting to \code{x}'s 	\code{colnames}
 #' @param align a character strings specifying column alignments, defaulting to
-#'    \code{paste(c("l", rep('c',ncol(n_table)-1)),collapse='')} to center. Valid alignments are
-#'    l = left, c = center and r = right. You can also specify \code{align='c|c'} and
-#'    other LaTeX tabular formatting.
+#'  \code{paste(c("l", rep('c',ncol(n_table)-1)),collapse='')} to center. Valid alignments are
+#'  l = left, c = center and r = right. You can also specify \code{align='c|c'} and
+#'  other LaTeX tabular formatting.
 #' @param halign a character strings specifying alignment for column headings,
-#'    defaulting to centered.
+#'  defaulting to centered.
 #' @param cgroup a vector or a matrix of character strings defining major column headings. The default
-#'    is to have none. This is also known as "the column spanner". If you want a column not
-#'    to have a spanner then put that column as "". If you pass cgroup and n.crgroup as
-#'    matrices you can have multiline cgroups. If the different levels have different number
-#'    of elements you need to set the ones that lack elements to NA. For instance
-#'    \code{cgroup = rbind(c("first", "second", NA), c("a", "b", "c"))}.
+#'  is to have none. This is also known as "the column spanner". If you want a column not
+#'  to have a spanner then put that column as "". If you pass cgroup and n.crgroup as
+#'  matrices you can have multiline cgroups. If the different levels have different number
+#'  of elements you need to set the ones that lack elements to NA. For instance
+#'  \code{cgroup = rbind(c("first", "second", NA), c("a", "b", "c"))}.
 #' @param n.cgroup  a vector or matrix containing the number of columns for which each element in
-#'    cgroup is a heading. For example, specify \code{cgroup=c("Major 1","Major 2")},
-#'    \code{n.cgroup=c(3,3)} if \code{"Major 1"} is to span columns 1-3 and
-#'    \code{"Major 2"} is to span columns 4-6.
-#'    \code{rowlabel} does not count in the column numbers. You can omit \code{n.cgroup}
-#'    if all groups have the same number of columns.
+#'  cgroup is a heading. For example, specify \code{cgroup=c("Major 1","Major 2")},
+#'  \code{n.cgroup=c(3,3)} if \code{"Major 1"} is to span columns 1-3 and
+#'  \code{"Major 2"} is to span columns 4-6.
+#'  \code{rowlabel} does not count in the column numbers. You can omit \code{n.cgroup}
+#'  if all groups have the same number of columns.
 #' @param cgroup.just The justification of the c.groups
 #' @param rgroup A vector of character strings containing headings for row groups.
-#'    \code{n.rgroup} must be present when \code{rgroup} is given. The first
-#'    \code{n.rgroup[1]}rows are sectioned off and \code{rgroup[1]} is used as a bold
-#'    heading for them. The usual row dimnames (which must be present if \code{rgroup} is)
-#'    are indented. The next \code{n.rgroup[2]} rows are treated likewise, etc. If you don't
-#'    want a row to be part of a row group then you just put "" for that row, remember to add
-#'    the corresponding number of rows in n.rgroup.
+#'  \code{n.rgroup} must be present when \code{rgroup} is given. The first
+#'  \code{n.rgroup[1]}rows are sectioned off and \code{rgroup[1]} is used as a bold
+#'  heading for them. The usual row dimnames (which must be present if \code{rgroup} is)
+#'  are indented. The next \code{n.rgroup[2]} rows are treated likewise, etc. If you don't
+#'  want a row to be part of a row group then you just put "" for that row, remember to add
+#'  the corresponding number of rows in n.rgroup.
 #' @param n.rgroup integer vector giving the number of rows in each grouping. If \code{rgroup}
-#'    is not specified, \code{n.rgroup} is just used to divide off blocks of rows by horizontal
-#'    lines. If \code{rgroup} is given but \code{n.rgroup} is omitted, \code{n.rgroup} will
-#'    default so that each row group contains the same number of rows.
+#'  is not specified, \code{n.rgroup} is just used to divide off blocks of rows by horizontal
+#'  lines. If \code{rgroup} is given but \code{n.rgroup} is omitted, \code{n.rgroup} will
+#'  default so that each row group contains the same number of rows.
 #' @param rgroupCSSstyle CSS style for the rgorup, if different styles are wanted for each of the
-#'    rgroups you can just specify a vector with the number of elements
+#'  rgroups you can just specify a vector with the number of elements
 #' @param rgroupCSSseparator The line between different rgroups. The line is set to the TR element
-#'    of the lower rgroup, i.e. you have to set the border-top/padding-top etc to a line with
-#'    the expected function. This is only used for rgroups that are printed. You can specify
-#'    different separators if you give a vector of rgroup - 1 length (this is since the first
-#'    rgroup doesn't have a separator).
+#'  of the lower rgroup, i.e. you have to set the border-top/padding-top etc to a line with
+#'  the expected function. This is only used for rgroups that are printed. You can specify
+#'  different separators if you give a vector of rgroup - 1 length (this is since the first
+#'  rgroup doesn't have a separator).
 #' @param tspanner The table spanner is somewhat of a table header that
-#'    you can use when you want to join different tables with the same columns.
+#'  you can use when you want to join different tables with the same columns.
 #' @param n.tspanner The number of rows in the original matrix that
-#'    the table spanner should span
+#'  the table spanner should span
 #' @param tspannerCSSstyle The CSS style for the table spanner
 #' @param tspannerCSSseparator The line between different spanners
 #' @param rowlabel If x has row dimnames, rowlabel is a character string containing the
-#'    column heading for the row dimnames. The default is the name of the argument for x.
+#'  column heading for the row dimnames. The default is the name of the argument for x.
 #' @param rowlabel.pos Where the rowlabel should be positioned. This value can be "top",
-#'    "bottom", "header", or a integer between \code{1} and \code{nrow(cgroup) + 1}. The options
-#'    "bottom", "header" are the same, where the row label is presented at the same level as
-#'    the header.
+#'  "bottom", "header", or a integer between \code{1} and \code{nrow(cgroup) + 1}. The options
+#'  "bottom", "header" are the same, where the row label is presented at the same level as
+#'  the header.
 #' @param rowname Default is rownames of matrix or data.frame.
 #' @param caption a text string to use as a caption to print at the top of the first
-#'    page of the table. Default is no caption.
+#'  page of the table. Default is no caption.
 #' @param caption.loc set to \code{"bottom"} to position a caption below the table
-#'    instead of the default of \code{"top"}.
+#'  instead of the default of \code{"top"}.
 #' @param tfoot Add a table footer if needed at the bottom of the table using
-#'    the \code{<tfoot>} html element.
+#'  the \code{<tfoot>} html element.
 #' @param label a text string representing a symbolic label for the
-#'    table for referencing as an anchor. All you need to do is to reference the
-#'    table, for instance \code{<a href="#anchor_name">see table 2</a>}
+#'  table for referencing as an anchor. All you need to do is to reference the
+#'  table, for instance \code{<a href="#anchor_name">see table 2</a>}
 #' @param ctable If the table should have a double top border or a single a' la LaTeX ctable style
 #' @param compatibility Is default set to \code{LibreOffice} as some
-#'    settings need to be in old html format as Libre Office can't
-#'    handle some commands such as the css caption-alignment. Note: this
-#'    option is not yet fully implemented for all details, in the future
-#'    I aim to generate a html-correct table and one that is aimed
-#'    at Libre Office compatibility. Word-compatibility is difficult as
-#'    Word ignores most settings and destroys all layout attempts
-#'    (at least that is how my 2010 version behaves).
+#'  settings need to be in old html format as Libre Office can't
+#'  handle some commands such as the css caption-alignment. Note: this
+#'  option is not yet fully implemented for all details, in the future
+#'  I aim to generate a html-correct table and one that is aimed
+#'  at Libre Office compatibility. Word-compatibility is difficult as
+#'  Word ignores most settings and destroys all layout attempts
+#'  (at least that is how my 2010 version behaves).
 #' @param altcol alternating colors for each \code{rgroup}; one or two colors
-#'    is recommended and will be recycled (will throw warning if the number of
-#'    \code{rgroup}s is not a multiple of \code{length(altcol)}). Note that
-#'    the altcol currently only works when copy-pasting from the browser and
-#'    not when opening directly in LibreOffice.
+#'  is recommended and will be recycled (will throw warning if the number of
+#'  \code{rgroup}s is not a multiple of \code{length(altcol)}). Note that
+#'  the altcol currently only works when copy-pasting from the browser and
+#'  not when opening directly in LibreOffice.
 #' @param tableCSSclass The html CSS class for the table. This allows directing html
-#'    formatting through \href{http://www.w3schools.com/css/css_selectors.asp}{CSS}
-#'    directly at all instances of that class. \emph{Note:} unfortunately the
-#'    CSS is frequently ignored by word processors. This option
-#'    is mostly inteded for web-presentations.
+#'  formatting through \href{http://www.w3schools.com/css/css_selectors.asp}{CSS}
+#'  directly at all instances of that class. \emph{Note:} unfortunately the
+#'  CSS is frequently ignored by word processors. This option
+#'  is mostly inteded for web-presentations.
 #' @param ... Passed on to \code{print.htmlTable} function and any argument except the
-#'    \code{useViewer} will be passed on to the \code{\link[base]{cat}} function.
-#' @return Returns a string of class htmlTable
+#'  \code{useViewer} will be passed on to the \code{\link[base]{cat}} function.
+#' @return \code{string} Returns a string of class htmlTable
 #'
 #' @example inst/examples/htmlTable_example.R
 #'

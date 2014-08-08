@@ -11,7 +11,7 @@
 #' @param html If the format is used in html context
 #'  then the space should be a non-breaking space, \code{&nbsp;}
 #' @param ... Passed to \code{\link[base]{format}}
-#' @return string
+#' @return \code{string}
 #'
 #' @examples
 #' outputInt(123456)

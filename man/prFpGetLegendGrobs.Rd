@@ -6,11 +6,13 @@
 prFpGetLegendGrobs(legend, legend.cex, legend.title = NULL)
 }
 \arguments{
-  \item{legend}{The legend names}
+  \item{legend}{Legen corresponding to the number of bars.}
 
-  \item{legend.cex}{The cex for the text size}
+  \item{legend.cex}{The cex size of the legend, defaults to
+  80 \% procent of cex parameter.}
 
-  \item{legend.title}{The title of the legend if any}
+  \item{legend.title}{The title of the legend if any,
+  default to NULL}
 }
 \value{
 \code{list} A "Legend" class that derives from a list with

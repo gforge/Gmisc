@@ -34,8 +34,6 @@
 #' @return \code{void} The function outputs the line using grid compatible
 #'  functions and does not return anything.
 #'
-#' @seealso \code{\link{forestplot2}}
-#'
 #' @example inst/examples/forestplot2_alt_ci_example.R
 #' @rdname fpDrawCI
 #' @export
@@ -582,22 +580,14 @@ prFpGetConfintFnList <- function(fn, no_rows, no_cols){
 #'
 #' Gets the x-label and zero-bar details
 #'
-#' @param xticks The xticks
-#' @param xticks.digits Number of digits for the xticks
-#' @param xlog If the axis should be log()
-#' @param xlab The x-axis label
-#' @param lwd.xaxis The line width of the x-axis
-#' @param col The color object
-#' @param cex The text size
-#' @param cex.axis The axis tick text size
-#' @param clip The clip margins
-#' @param zero The zero effect
-#' @param x_range The range that values span
+#' @param x_range The range that the values from the different confidence
+#'  interval span
 #' @param nc Number of columns
 #' @param mean The original means, either matrix or vector
-#' @return list Returns a list with axis_vp, axisGrob, labGrob, zero and clip
+#' @return \code{list} Returns a list with axis_vp, axisGrob, labGrob, zero and clip
 #'
 #'
+#' @inheritParams forestplot2
 #' @keywords internal
 prFpGetGraphTicksAndClips <- function(xticks,
                                       xticks.digits,
@@ -750,11 +740,9 @@ prFpGetGraphTicksAndClips <- function(xticks,
 #' function.
 #'
 #' @param axisList The list from \code{\link{prFpGetGraphTicksAndClips}}
-#' @param col The colors list
-#' @param lwd.zero The zero line's line width
 #' @return void
 #'
-#'
+#' @inheritParams forestplot2
 #' @keywords internal
 prFpPrintXaxis <- function(axisList,
                            col,
@@ -802,8 +790,7 @@ prFpPrintXaxis <- function(axisList,
 #' @param labels A list to the labels
 #' @param nc Number of columns
 #' @param nr Number of rows
-#' @return void
-#'
+#' @return \code{void}
 #'
 #' @keywords internal
 prFpPrintLabels <- function(labels, nc, nr){
@@ -827,16 +814,13 @@ prFpPrintLabels <- function(labels, nc, nr){
 
 #' Gets the forestplot legend grobs
 #'
-#' @param legend The legend names
-#' @param legend.cex The cex for the text size
-#' @param legend.title The title of the legend if any
 #' @return \code{list} A "Legend" class that derives from a
 #'  list with all the different legends. The list also contains
 #'  attributes such as height, width, max_height,
 #'  max_width, line_height_and_spacing. The title of the
 #'  legend is saved inside \code{attr("title")}
 #'
-#'
+#' @inheritParams forestplot2
 #' @keywords internal
 prFpGetLegendGrobs <- function(legend, legend.cex, legend.title=NULL){
   lGrobs <- list()
@@ -888,16 +872,11 @@ prFpGetLegendGrobs <- function(legend, legend.cex, legend.title=NULL){
 #'  be a list or a string.
 #' @param col The colors of the legends.
 #' @param colgap The gap between the box and the text
-#' @param legend.gp The \code{\link[grid]{gpar}} options for background fill, border etc.
-#'  If NULL this is not used,
-#' @param legend.r The radius for the box if any (see \code{\link[grid]{grid.roundrect}})
-#' @param legend.padding The padding for the legend box, only used if box is drawn. This is
-#'  the distance from the border to the text/boxes of the legend.
 #' @param legendMarkerFn The function for drawing the marker
 #' @param ... Passed to the legend \code{legendMarkerFn}
 #' @return \code{void}
 #'
-#'
+#' @inheritParams forestplot2
 #' @keywords internal
 prFpDrawLegend <- function (lGrobs, legend.pos,
                             col,
@@ -1054,14 +1033,8 @@ prFpDrawLegend <- function (lGrobs, legend.pos,
 #' that it continues beyond the graph The zero bar has to
 #' be on the chart though!
 #'
-#' @param upper Upper confidence intervals
-#' @param lower Lower confidence intervals
-#' @param clip The clip argument
-#' @param zero The zero effect line position
-#' @param xticks The xticks if any
-#' @param xlog A TRUE or FALSE for if the axis is log()
 #' @return \code{vector} Contains a min and max value
-#'
+#' @inheritParams forestplot2
 #'
 #' @keywords internal
 prFpXrange <- function(upper, lower, clip, zero, xticks, xlog){
@@ -1108,26 +1081,20 @@ prFpXrange <- function(upper, lower, clip, zero, xticks, xlog){
 #' A function that gets all the labels
 #'
 #' @param label_type The type of text labels
-#' @param labeltext The text labels
 #' @param align Alignment, should be equal to \code{length(nc}
 #' @param nc Number of columns
 #' @param nr Number of rows
-#' @param is.summary If the row is a summary
-#' @param fontfamily.summary The summary fontfamily
-#' @param fontfamily.labelrow The regular fontfamily (non-summary)
-#' @param col A list with the colors
-#' @param cex The font size adjustment
 #' @return \code{list} A list with \code{length(nc)} where each element contains
 #'  a list of \code{length(nr)} elements with attributes width/height for each
 #'  element and max_width/max_height for the total
 #'
-#'
+#' @inheritParams forestplot2
 #' @keywords internal
 prFpGetLabels <- function(label_type, labeltext, align,
-  nc, nr,
-  is.summary,
-  fontfamily.summary, fontfamily.labelrow,
-  col, cex){
+                          nc, nr,
+                          is.summary,
+                          fontfamily.summary, fontfamily.labelrow,
+                          col, cex){
   labels <- vector("list", nc)
 
   max_height <- NULL
@@ -1203,12 +1170,11 @@ prFpGetLabels <- function(label_type, labeltext, align,
 #' expression from the supplied labeltext.
 #'
 #' @param label_type The type of label
-#' @param labeltext The text
 #' @param i The row
 #' @param j The column
 #' @return An expression or a text
 #'
-#'
+#' @inheritParams forestplot2
 #' @keywords internal
 prFpFetchRowLabel <- function(label_type, labeltext, i, j){
   if (label_type=="expression"){
@@ -1234,13 +1200,12 @@ prFpFetchRowLabel <- function(label_type, labeltext, i, j){
 #'
 #' The layout makes space for a legend if needed
 #'
-#' @param lineheight The line height
 #' @param labels The labels
 #' @param nr Number of rows
 #' @param legend_layout A legend layout object if applicable
 #' @return \code{viewport} Returns the viewport needed
 #'
-#'
+#' @inheritParams forestplot2
 #' @keywords internal
 prFpGetLayoutVP <- function (lineheight, labels, nr, legend_layout = NULL) {
   if (!is.unit(lineheight)){
@@ -1299,9 +1264,7 @@ prFpValidateLabelList <- function(labelList){
 #'
 #' @param grob.list A list of grobs
 #' @param return_unit A valid \code{\link[grid]{unit}} specifier
-#' @return \code{\link[grid]{unit}}
-#'
-#'
+#' @return \code{grid::unit} Returns the widest grob and its width
 prFpFindWidestGrob <- function (grob.list, return_unit="mm"){
   len <- c()
   for (i in seq(along.with=grob.list)){
@@ -1322,11 +1285,10 @@ prFpFindWidestGrob <- function (grob.list, return_unit="mm"){
 #'
 #' Used for the forestplot legend box.
 #'
-#' @param legend.pos The legend position list
-#' @return \code{list} Returns the legend.pos list with
+#' @return \code{list} Returns the \code{legend.pos} list with
 #'  the correct x/y/adjust values
 #'
-#'
+#' @inheritParams forestplot2
 #' @keywords internal
 prFpGetLegendBoxPosition <- function (legend.pos) {
   valid_txt_pos <- c("bottomright", "bottom", "bottomleft", "left", "topleft", "top", "topright", "right", "center")

@@ -6,14 +6,25 @@
 prFpGetLayoutVP(lineheight, labels, nr, legend_layout = NULL)
 }
 \arguments{
-  \item{lineheight}{The line height}
-
   \item{labels}{The labels}
 
   \item{nr}{Number of rows}
 
   \item{legend_layout}{A legend layout object if
   applicable}
+
+  \item{lineheight}{Height of the graph. By default this is
+  \code{auto} and adjustes to the space that is left after
+  adjusting for x-axis size and legend. Sometimes it might
+  be desireable to set the line height to a certain height,
+  for instance if you have several forestplots you may want
+  to standardize their line height, then you set this
+  variable to a certain height, note this should be
+  provided as a \code{\link[grid]{unit}} object. A good
+  option is to set the line height to \code{unit(2, "cm")}.
+  A third option is to set line height to "lines" and then
+  you get 50 % more than what the text height is as your
+  line height.}
 }
 \value{
 \code{viewport} Returns the viewport needed

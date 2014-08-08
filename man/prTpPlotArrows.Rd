@@ -41,7 +41,7 @@ prTpPlotArrows(type, box_row, transition_flow, max_flow, min_lwd, max_lwd, clr,
   change to the center leaving the tails constant}
 }
 \value{
-\code{NULL}
+\code{void}
 }
 \description{
 Outputs all the arrows from a box row

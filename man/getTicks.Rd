@@ -20,7 +20,7 @@ getTicks(low, high = low, clip = c(-Inf, Inf), exp = FALSE, digits = 0)
   \item{digits}{Number of digits - used in exp mode}
 }
 \value{
-Returns a vector with the ticks appropriate
+\code{vector} Returns a vector with the ticks
 }
 \description{
 Gets the ticks in a formatted version. This is since I'm

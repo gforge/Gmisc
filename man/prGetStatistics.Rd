@@ -10,20 +10,19 @@ prGetStatistics(x, show_perc = FALSE, html = TRUE, digits = 1,
   percentage_sign = percentage_sign)
 }
 \arguments{
-  \item{x}{The variable that we want the statistics for}
+  \item{x}{The variable that you want the statistics for}
 
-  \item{show_perc}{If this is a factor/proportion variable
-  then we might want to show the percentages}
+  \item{html}{If HTML compatible output shoudl be used
+  instead of default LaTeX}
 
-  \item{html}{If the output should be in html or LaTeX
-  formatting}
+  \item{digits}{The number of decimals used}
 
-  \item{digits}{Number of decimal digits}
+  \item{numbers_first}{If the number should be given or if
+  the percentage should be presented first. The second is
+  encapsulated in parentheses ().}
 
-  \item{numbers_first}{If number is to be prior to the
-  percentage}
-
-  \item{show_missing}{If missing should be included}
+  \item{show_missing}{Show the missing values. This adds
+  another row if there are any missing values.}
 
   \item{show_missing_digits}{The number of digits to use
   for the missing percentage, defaults to the overall
@@ -35,18 +34,19 @@ prGetStatistics(x, show_perc = FALSE, html = TRUE, digits = 1,
   the other one will just be a complement to the first. For
   instance sex - if you know gender then automatically you
   know the distribution of the other sex as it's 100 \% -
-  other \%.}
+  other \%. To choose which one you want to show then set
+  the \code{default_ref} parameter.}
 
-  \item{continuous_fn}{A function for describing continuous
-  variables defaults to \code{\link{describeMean}}}
+  \item{continuous_fn}{The method to describe continuous
+  variables. The default is \code{\link{describeMean}}.}
 
-  \item{prop_fn}{A function for describing proportions,
-  defaults to the factor function}
+  \item{factor_fn}{The method used to describe factors, see
+  \code{\link{describeFactors}}.}
 
-  \item{factor_fn}{A function for describing factors,
-  defaults to \code{\link{describeFactors}}}
+  \item{prop_fn}{The method used to describe proportions,
+  see \code{\link{describeProp}}.}
 
-  \item{percentage_sign}{If you want to suppress the
+  \item{percentage_sign}{If you want to surpress the
   percentage sign you can set this variable to FALSE. You
   can also choose something else that the default \% if you
   so wish by setting this variable.}

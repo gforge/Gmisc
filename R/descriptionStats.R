@@ -45,16 +45,16 @@
 #' @family description functions
 #' @export
 describeMean <- function(x,
-  html=FALSE,
-  digits=1,
-  number_first = TRUE,
-  show_missing = FALSE,
-  show_missing_digits = digits,
-  horizontal_proportions=NULL,
-  percentage_sign = TRUE,
-  plusmin_str,
-  language = "en",
-  ...){
+                         html=FALSE,
+                         digits=1,
+                         number_first = TRUE,
+                         show_missing = FALSE,
+                         show_missing_digits = digits,
+                         horizontal_proportions=NULL,
+                         percentage_sign = TRUE,
+                         plusmin_str,
+                         language = "en",
+                         ...){
   show_missing <- prConvertShowMissing(show_missing)
 
   if (missing(plusmin_str))
@@ -98,40 +98,15 @@ describeMean <- function(x,
 #' A function that returns a description median that contains
 #' the interquartile range or the full range
 #'
-#' @param x The variable that you want the statistics for
 #' @param iqr If interquartile range should be used
 #' @param digits The number of decimals used
-#' @param html If HTML compatible output shoudl be used instead
-#'  of default LaTeX
-#' @param number_first If the number should be given or if the percentage
-#'  should be presented first. The second is encapsulated in parentheses ().
-#'  This is only used together with the show_missing variable.
-#' @param show_missing This indicates if missing should be added as a separate
-#'  row below all other.
-#' @param show_missing_digits The number of digits to use for the
-#'  missing percentage, defaults to the overall \code{digits}.
-#' @param horizontal_proportions Is only active if show_missing since this is
-#'  the only case of a proportion among continuous variables. This is default NULL and indicates
-#'  that the proportions are to be interpreted in a vertical manner.
-#'  If we want the data to be horizontal, i.e. the total should be shown
-#'  and then how these differ in the different groups then supply the
-#'  function with the total number in each group, i.e. if done in a by
-#'  manner as in \code{\link{getDescriptionStatsBy}} it needs to provide
-#'  the number before the by() command. Note! This calls the
-#'  \code{\link{describeFactors}} since the horizontal interpretation looses the
-#'  vertical information in the second category and is thus better
-#'  interpreted as a whole.
-#' @param percentage_sign If you want to suppress the percentage sign you
-#'  can set this variable to FALSE. You can also choose something else that
-#'  the default \% if you so wish by setting this variable. Note, this is
-#'  only used when combined with the missing information.
 #' @param language The ISO-639-1 two-letter code for the language of
 #'  interest. Currently only english is distinguished from the ISO
 #'  format using a ',' as the separator in the \code{\link{outputInt}}
 #'  function.
-#' @param ... Passed on to \code{\link{describeFactors}}
 #' @return A string formatted for printing either latex by  HTML
 #'
+#' @inheritParams describeMean
 #' @seealso \code{\link{getDescriptionStatsBy}}
 #'
 #' @examples
@@ -195,40 +170,13 @@ describeMedian <- function(x,
 #' A function that returns a description proportion that contains
 #' the number and the percentage
 #'
-#' @param x The variable that you want the statistics for
-#' @param digits The number of decimals used for the percentage
-#' @param html If HTML compatible output should be used instead
-#'  of default LaTeX
-#' @param number_first If the number should be given or if the percentage
-#'  should be presented first. The second is encapsulated in parentheses ().
-#' @param show_missing This indicates if missing should be added as a separate
-#'  row below all other. This will always be converted into the describeFactor
-#'  function if there is a missing row.
-#' @param show_missing_digits The number of digits to use for the
-#'  missing percentage, defaults to the overall \code{digits}.
-#' @param horizontal_proportions This is default NULL and indicates
-#'  that the proportions are to be interpreted in a vertical manner.
-#'  If we want the data to be horizontal, i.e. the total should be shown
-#'  and then how these differ in the different groups then supply the
-#'  function with the total number in each group, i.e. if done in a by
-#'  manner as in \code{\link{getDescriptionStatsBy}} it needs to provide
-#'  the number before the by() command. Note! This calls the
-#'  \code{\link{describeFactors}} since the horizontal interpretation looses the
-#'  vertical information in the second category and is thus better
-#'  interpreted as a whole.
 #' @param default_ref If you use proportions with only one variable
 #'  it can be useful to set the reference level that is of interest to show. This can
 #'  wither be "First", level name or level number.
-#' @param percentage_sign If you want to suppress the percentage sign you
-#'  can set this variable to FALSE. You can also choose something else that
-#'  the default \% if you so wish by setting this variable.
-#' @param language The ISO-639-1 two-letter code for the language of
-#'  interest. Currently only english is distinguished from the ISO
-#'  format using a ',' as the separator in the \code{\link{outputInt}}
-#'  function.
 #' @param ... Passed on to \code{\link{outputInt}}
 #' @return A string formatted for printing either latex by  HTML
 #'
+#' @inheritParams describeMean
 #' @seealso \code{\link{getDescriptionStatsBy}}, \code{\link{describeFactors}}
 #' @examples
 #' describeProp(factor(sample(50, x=c("A","B"), replace=TRUE)))
@@ -297,36 +245,15 @@ describeProp <- function(x,
 }
 
 
-#' A function that returns a description proportion that contains
-#' the number and the percentage
+#' Describes factor variables
+#' 
+#' A function that returns a description proportion in a
+#' factir that contains the number of times a variable and the percentage
 #'
-#' @param x The variable that you want the statistics for
-#' @param digits The number of decimals used for the percentage
-#' @param html If HTML compatible output should be used instead
-#'  of default LaTeX
-#' @param number_first If the number should be given or if the percentage
-#'  should be presented first. The second is encapsulated in parentheses ().
-#' @param show_missing This indicates if missing should be added as a separate
-#'  row below all other.
-#' @param show_missing_digits The number of digits to use for the
-#'  missing percentage, defaults to the overall \code{digits}.
-#' @param horizontal_proportions This is default NULL and indicates
-#'  that the proportions are to be interpreted in a vertical manner.
-#'  If we want the data to be horizontal, i.e. the total should be shown
-#'  and then how these differ in the different groups then supply the
-#'  function with the total number in each group, i.e. if done in a by
-#'  manner as in \code{\link{getDescriptionStatsBy}} it needs to provide
-#'  the number before the by() command.
-#' @param percentage_sign If you want to suppress the percentage sign you
-#'  can set this variable to FALSE. You can also choose something else that
-#'  the default \% if you so wish by setting this variable.
-#' @param language The ISO-639-1 two-letter code for the language of
-#'  interest. Currently only english is distinguished from the ISO
-#'  format using a ',' as the separator in the \code{\link{outputInt}}
-#'  function.
 #' @param ... Passed on to \code{\link{outputInt}}
 #' @return A string formatted for printing either latex by  HTML
 #'
+#' @inheritParams describeMean
 #' @seealso \code{\link{getDescriptionStatsBy}}
 #' @family description functions
 #'
@@ -451,5 +378,5 @@ describeFactors <- function(x,
   rn <- names(table_results)
   rn[is.na(rn)] <- "Missing"
   rownames(ret) <- rn
-  return(ret)
+
 }

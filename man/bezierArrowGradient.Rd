@@ -10,20 +10,8 @@ bezierArrowGradient(width = 0.05, clr = "#000000", default.units = "npc",
   ...)
 }
 \arguments{
-  \item{width}{The width of the arrow, either a numeric
-  single number or a unit. \strong{Note:} The arrow does
-  not rely on lwd but on actual width. Same as in the
-  \code{\link{bezierArrowSmpl}}}
-
-  \item{default.units}{A string indicating the default
-  units to use width is given as numeric vectors.}
-
   \item{clr}{The color of the arrow. This is the main color
   of the arrow and not the gradient color.}
-
-  \item{align_2_axis}{Indicates if the arrow should be
-  vertically/horizontally aligned. This is useful for
-  instance if the arrow attaches to a box.}
 
   \item{grdt_type}{The type of growth and gradient that is
   to be used, currently it only supports triangle (I'm
@@ -49,14 +37,26 @@ bezierArrowGradient(width = 0.05, clr = "#000000", default.units = "npc",
 
   \item{...}{Passed on to \code{\link{bezierArrowSmpl}}}
 
-  \item{gp}{An object of class gpar, typically the output
-  from a call to the function gpar. This is basically a
-  list of graphical parameter settings.}
+  \item{default.units}{A string indicating the default
+  units to use if \code{x} or \code{y} are only given as
+  numeric vectors.}
 
   \item{vp}{A Grid viewport object (or NULL).}
+
+  \item{gp}{An object of class \code{gpar}, typically the
+  output from a call to the function \code{gpar}.  This is
+  basically a list of graphical parameter settings.}
+
+  \item{width}{The width of the arrow, either a numeric
+  single number or a unit. \strong{Note:} The arrow does
+  not rely on lwd but on actual width.}
+
+  \item{align_2_axis}{Indicates if the arrow should be
+  vertically/horizontally aligned. This is useful for
+  instance if the arrow attaches to a box.}
 }
 \value{
-A grob of gList() type
+\code{grid::gList()} A grob of gList() type
 }
 \description{
 This is an experimental addition to the original

@@ -18,7 +18,7 @@ copyAllNewAttributes(from, to, attr2skip = c(), attr2force = c())
   the new object}
 }
 \value{
-object The to object
+\code{object} The \code{to} argument object
 }
 \description{
 Skips the attributes that the to object already has to

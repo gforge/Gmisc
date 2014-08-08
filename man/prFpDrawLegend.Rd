@@ -17,20 +17,31 @@ prFpDrawLegend(lGrobs, legend.pos, col, colgap, legend.gp, legend.r,
 
   \item{colgap}{The gap between the box and the text}
 
-  \item{legend.gp}{The \code{\link[grid]{gpar}} options for
-  background fill, border etc. If NULL this is not used,}
-
-  \item{legend.r}{The radius for the box if any (see
-  \code{\link[grid]{grid.roundrect}})}
-
-  \item{legend.padding}{The padding for the legend box,
-  only used if box is drawn. This is the distance from the
-  border to the text/boxes of the legend.}
-
   \item{legendMarkerFn}{The function for drawing the
   marker}
 
   \item{...}{Passed to the legend \code{legendMarkerFn}}
+
+  \item{legend.gp}{The \code{\link[grid]{gpar}} options for
+  the legend. If you want the background color to be light
+  grey then use \code{legend.gp = gpar(fill =
+  "lightgrey")}. If you want a border then set the col
+  argument: \code{legend.gp = gpar(fill = "lightgrey",
+  col="black")}. You can also use the lwd and lty argument
+  as usual, \code{legend.gp = gpar(lwd=2, lty=1)}, will
+  result in a black border box of line type 1 and line
+  width 2.}
+
+  \item{legend.r}{The box can have rounded edges, check out
+  \code{\link[grid]{grid.roundrect}}. The r option should
+  be a \code{\link[grid]{unit}} object. This is by default
+  \code{unit(0, "snpc")} but you can choose any value that
+  you want. The \code{"snpc"} unit is the preferred
+  option.}
+
+  \item{legend.padding}{The padding for the legend box,
+  only used if box is drawn. This is the distance from the
+  border to the text/boxes of the legend.}
 }
 \value{
 \code{void}

@@ -6,17 +6,24 @@
 prFpXrange(upper, lower, clip, zero, xticks, xlog)
 }
 \arguments{
-  \item{upper}{Upper confidence intervals}
+  \item{upper}{The upper bound of the confidence interval
+  for the forestplot, needs to be the same format as the
+  mean, i.e. matrix/vector of equal columns & length}
 
-  \item{lower}{Lower confidence intervals}
+  \item{lower}{The lower bound of the confidence interval
+  for the forestplot, needs to be the same format as the
+  mean, i.e. matrix/vector of equal columns & length}
 
-  \item{clip}{The clip argument}
+  \item{clip}{Lower and upper limits for clipping
+  confidence intervals to arrows}
 
-  \item{zero}{The zero effect line position}
+  \item{zero}{x-axis coordinate for zero line}
 
-  \item{xticks}{The xticks if any}
+  \item{xticks}{Optional user-specified x-axis tick marks.
+  Specify NULL to use the defaults, numeric(0) to omit the
+  x-axis.}
 
-  \item{xlog}{A TRUE or FALSE for if the axis is log()}
+  \item{xlog}{If TRUE, x-axis tick marks are exponentiated}
 }
 \value{
 \code{vector} Contains a min and max value

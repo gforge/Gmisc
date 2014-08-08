@@ -12,7 +12,7 @@ prGetAndValidateDefaultRef(x, default_ref)
   the level name or a number within the levels}
 }
 \value{
-integer The level number of interest
+\code{integer} The level number of interest
 }
 \description{
 A helper function for the description stats

@@ -9,7 +9,7 @@
   \item{x}{The \code{\link[grid]{xaxisGrob}} object}
 }
 \value{
-A unit object
+\code{grid::unit} A \code{\link[grid]{unit}} object
 }
 \description{
 A function that gets the height of an axisGrob. It is for

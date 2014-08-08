@@ -2,11 +2,11 @@
 #'
 #' Inserts a row and keeps the attributes \code{\link{copyAllNewAttributes}}
 #'
-#' @param m matrix.
+#' @param m matrix
 #' @param r row number where the new row should be inserted
-#' @param v optional values for the new row.
+#' @param v optional values for the new row
 #' @param rName optional character string: the name of the new row.
-#' @return a matrix with one more row than the provided matrix m.
+#' @return \code{matrix} Returns a matrix with one more row than the provided matrix \code{m}
 #'
 #' @examples
 #' test <- matrix(1:4, ncol=2)

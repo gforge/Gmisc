@@ -6,17 +6,18 @@
 insertRowAndKeepAttr(m, r, v = NA, rName = "")
 }
 \arguments{
-  \item{m}{matrix.}
+  \item{m}{matrix}
 
   \item{r}{row number where the new row should be inserted}
 
-  \item{v}{optional values for the new row.}
+  \item{v}{optional values for the new row}
 
   \item{rName}{optional character string: the name of the
   new row.}
 }
 \value{
-a matrix with one more row than the provided matrix m.
+\code{matrix} Returns a matrix with one more row than the
+provided matrix \code{m}
 }
 \description{
 Inserts a row and keeps the attributes

@@ -44,7 +44,8 @@ package.
 Max Gordon, Thomas Lumley
 }
 \seealso{
-Other forestplot functions: \code{\link{fpDrawCircleCI}},
+Other forestplot functions: \code{\link{forestplot2}};
+\code{\link{fpDrawCircleCI}},
 \code{\link{fpDrawDiamondCI}},
 \code{\link{fpDrawNormalCI}}, \code{\link{fpDrawPointCI}},
 \code{\link{fpDrawSummaryCI}}

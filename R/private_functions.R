@@ -10,44 +10,22 @@
 #' A simple function applied by the \code{\link{getDescriptionStatsBy}}
 #' for the total column.
 #'
-#' @param x The variable that we want the statistics for
-#' @param show_perc If this is a factor/proportion variable then we
-#'  might want to show the percentages
-#' @param html If the output should be in html or LaTeX formatting
-#' @param digits Number of decimal digits
-#' @param numbers_first If number is to be prior to the percentage
-#' @param show_missing If missing should be included
-#' @param show_missing_digits The number of digits to use for the
-#'  missing percentage, defaults to the overall \code{digits}.
-#' @param show_all_values This is by default false as for instance if there is
-#'  no missing and there is only one variable then it is most sane to only show
-#'  one option as the other one will just be a complement to the first. For instance
-#'  sex - if you know gender then automatically you know the distribution of the
-#'  other sex as it's 100 \% - other \%.
-#' @param continuous_fn A function for describing continuous variables
-#'  defaults to \code{\link{describeMean}}
-#' @param prop_fn A function for describing proportions, defaults to
-#'  the factor function
-#' @param factor_fn A function for describing factors, defaults to
-#'  \code{\link{describeFactors}}
-#' @param percentage_sign If you want to suppress the percentage sign you
-#'  can set this variable to FALSE. You can also choose something else that
-#'  the default \% if you so wish by setting this variable.
 #' @return A matrix or a vector depending on the settings
 #'
+#' @inheritParams getDescriptionStatsBy
 #' @keywords internal
 prGetStatistics <- function(x,
-  show_perc = FALSE,
-  html = TRUE,
-  digits = 1,
-  numbers_first = TRUE,
-  show_missing = TRUE,
-  show_missing_digits = digits,
-  show_all_values = FALSE,
-  continuous_fn = describeMean,
-  factor_fn = describeFactors,
-  prop_fn = factor_fn,
-  percentage_sign = percentage_sign)
+                            show_perc = FALSE,
+                            html = TRUE,
+                            digits = 1,
+                            numbers_first = TRUE,
+                            show_missing = TRUE,
+                            show_missing_digits = digits,
+                            show_all_values = FALSE,
+                            continuous_fn = describeMean,
+                            factor_fn = describeFactors,
+                            prop_fn = factor_fn,
+                            percentage_sign = percentage_sign)
 {
   show_missing <- prConvertShowMissing(show_missing)
   if (is.factor(x) ||
@@ -100,7 +78,7 @@ prGetStatistics <- function(x,
 #' A functuon for converting a show_missing variable
 #'
 #' The variable is suppose to be directly compatible with
-#' table(..., useNA=show_missing). It throughs an error
+#' \code{\link[base]{table}}(..., useNA=show_missing). It throughs an error
 #' if not compatible
 #'
 #' @param show_missing Boolean or "no", "ifany", "always"
@@ -124,7 +102,7 @@ prConvertShowMissing <- function(show_missing){
 #' @param x The variable of interest with the levels
 #' @param default_ref The default reference, either first,
 #'  the level name or a number within the levels
-#' @return integer The level number of interest
+#' @return \code{integer} The level number of interest
 #'
 #' @keywords internal
 prGetAndValidateDefaultRef <- function(x, default_ref){
@@ -155,7 +133,7 @@ prGetAndValidateDefaultRef <- function(x, default_ref){
 #' @param top The margin object, either in npc or a \code{\link[grid]{unit}} object
 #' @param right The margin object, either in npc or a \code{\link[grid]{unit}} object
 #' @param name The name of the last viewport
-#' @return \code{NULL}
+#' @return \code{void}
 #'
 #' @keywords internal
 prPushMarginViewport <- function(bottom, left, top, right, name=NULL){

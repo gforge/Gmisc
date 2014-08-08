@@ -4,21 +4,18 @@
 #' with the advantage that it allows you to draw an arrow with a specific
 #' unit width. Note, it has only a end-arrow at this point.
 #'
-#' @param x A numeric vector or unit object specifying x-locations of spline control points.
-#' @param y A numeric vector or unit object specifying y-locations of spline control points.
+#' @inheritParams grid::bezierGrob
 #' @param width The width of the arrow, either a numeric single number or a unit. \strong{Note:}
 #'  The arrow does not rely on lwd but on actual width.
 #' @param clr The color of the arrow.
-#' @param default.units A string indicating the default units to use if x or y are only given as numeric vectors.
-#' @param arrow This is a list with all the \strong{base} (width) and the desired \strong{length} for the arrow.
-#'  \strong{Note:} This differs from the original \code{\link{bezierGrob}} function.
-#' @param align_2_axis Indicates if the arrow should be vertically/horizontally aligned. This
-#'  is useful for instance if the arrow attaches to a box.
+#' @param arrow This is a list with all the \strong{base} (width) and the desired 
+#' \strong{length} for the arrow. \strong{Note:} This differs from the original 
+#' \code{\link{bezierGrob}} function.
+#' @param align_2_axis Indicates if the arrow should be vertically/horizontally 
+#'  aligned. This is useful for instance if the arrow attaches to a box.
 #' @param name A character identifier.
-#' @param gp An object of class gpar, typically the output from a call to the function gpar.
-#'  This is basically a list of graphical parameter settings.
-#' @param vp A Grid viewport object (or NULL).
-#' @return A grob of the class polygonGrob with attributes that correspond to the bezier points.
+#' @return \code{grid::grob} A grob of the class polygonGrob with attributes that 
+#'  correspond to the bezier points.
 #'
 #' @examples
 #' library(grid)

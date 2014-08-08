@@ -9,8 +9,6 @@ prFpGetLabels(label_type, labeltext, align, nc, nr, is.summary,
 \arguments{
   \item{label_type}{The type of text labels}
 
-  \item{labeltext}{The text labels}
-
   \item{align}{Alignment, should be equal to
   \code{length(nc}}
 
@@ -18,16 +16,29 @@ prFpGetLabels(label_type, labeltext, align, nc, nr, is.summary,
 
   \item{nr}{Number of rows}
 
-  \item{is.summary}{If the row is a summary}
+  \item{labeltext}{A list, matrix, vector or expression
+  with the names of each row. The list should be wrapped in
+  m x n number to resemble a matrix:
+  \code{list(list("rowname 1 col 1", "rowname 2 col 1"),
+  list("r1c2", expression(beta))} You can also provide a
+  matrix although this cannot have expressions by design:
+  \code{matrix(c("rowname 1 col 1", "rowname 2 col 1",
+  "r1c2", "beta"), ncol=2)} Use NA:s for blank spaces and
+  if you provide a full column with NA then that column is
+  a empty column that adds some space.}
 
-  \item{fontfamily.summary}{The summary fontfamily}
+  \item{is.summary}{A vector indicating by TRUE/FALSE if
+  the value is a summary value which means that it will
+  have a different font-style.}
 
-  \item{fontfamily.labelrow}{The regular fontfamily
-  (non-summary)}
+  \item{fontfamily.summary}{The fontfamily of the summary}
 
-  \item{col}{A list with the colors}
+  \item{fontfamily.labelrow}{The fontfamily of a regular
+  row}
 
-  \item{cex}{The font size adjustment}
+  \item{col}{See \code{\link{fpColors}}}
+
+  \item{cex}{The font adjustment}
 }
 \value{
 \code{list} A list with \code{length(nc)} where each
