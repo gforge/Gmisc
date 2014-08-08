@@ -81,7 +81,8 @@ getDescriptionStatsBy <- function(x,
                                   html = FALSE, NEJMstyle = FALSE,
                                   numbers_first = TRUE,
                                   statistics=FALSE,
-                                  statistics.sig_lim=10^-4, two_dec.limit= 10^-2,
+                                  statistics.sig_lim=10^-4,
+                                  statistics.two_dec_lim= 10^-2,
                                   show_missing,
                                   show_missing.digits = digits,
                                   continuous_fn = describeMean,
@@ -96,19 +97,23 @@ getDescriptionStatsBy <- function(x,
                                   percentage_sign = TRUE,
                                   ...){
 
+  dot_args <- list(...)
   # Warnings due to interface changes in 1.0
-  if ("show_missing_digits" %in% names(list(...))){
-    show_missing.digits <- show_missing_digits
+  if ("show_missing_digits" %in% names(dot_args)){
+    show_missing.digits <- dot_args$show_missing_digits
+    dot_args$show_missing_digits <- NULL
     warning("Deprecated: show_missing_digits argument is now show_missing.digits as of ver. 1.0")
   }
 
-  if ("sig.limit" %in% names(list(...))){
-    statistics.sig_lim <- sig.limit
+  if ("sig.limit" %in% names(dot_args)){
+    statistics.sig_lim <- dot_args$sig.limit
+    dot_args$sig.limit <- NULL
     warning("Deprecated: sig.limit argument is now statistics.sig_lim as of ver. 1.0")
   }
 
-  if ("two_dec.limit" %in% names(list(...))){
-    statistics.two_dec_lim <- two_dec.limit
+  if ("two_dec.limit" %in% names(dot_args)){
+    statistics.two_dec_lim <- dot_args$two_dec.limit
+    dot_args$two_dec.limit <- NULLL
     warning("Deprecated: two_dec.limit argument is now statistics.two_dec_lim as of ver. 1.0")
   }
 

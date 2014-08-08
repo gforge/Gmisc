@@ -51,7 +51,7 @@ describeMean <- function(x,
 
   # Warnings due to interface changes in 1.0
   if ("show_missing_digits" %in% names(dot_args)){
-    show_missing.digits <- show_missing_digits
+    show_missing.digits <- dot_args$show_missing_digits
     dot_args$show_missing_digits <- NULL
     warning("Deprecated: show_missing_digits argument is now show_missing.digits as of ver. 1.0")
   }
@@ -127,7 +127,7 @@ describeMedian <- function(x,
 
   # Warnings due to interface changes in 1.0
   if ("show_missing_digits" %in% names(dot_args)){
-    show_missing.digits <- show_missing_digits
+    show_missing.digits <- dot_args$show_missing_digits
     dot_args$show_missing_digits <- NULL
     warning("Deprecated: show_missing_digits argument is now show_missing.digits as of ver. 1.0")
   }
@@ -200,7 +200,7 @@ describeProp <- function(x,
 
   # Warnings due to interface changes in 1.0
   if ("show_missing_digits" %in% names(dot_args)){
-    show_missing.digits <- show_missing_digits
+    show_missing.digits <- dot_args$show_missing_digits
     dot_args$show_missing_digits <- NULL
     warning("Deprecated: show_missing_digits argument is now show_missing.digits as of ver. 1.0")
   }
@@ -311,7 +311,7 @@ describeFactors <- function(x,
 
   # Warnings due to interface changes in 1.0
   if ("show_missing_digits" %in% names(dot_args)){
-    show_missing.digits <- show_missing_digits
+    show_missing.digits <- dot_args$show_missing_digits
     dot_args$show_missing_digits <- NULL
     warning("Deprecated: show_missing_digits argument is now show_missing.digits as of ver. 1.0")
   }
