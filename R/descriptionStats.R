@@ -120,7 +120,6 @@ describeMedian <- function(x,
                            number_first = TRUE,
                            show_missing = FALSE,
                            show_missing.digits = digits,
-                           horizontal_proportions,
                            percentage_sign = TRUE,
                            language = "en",
                            ...){
@@ -323,7 +322,7 @@ describeFactors <- function(x,
   table_results <- table(x, useNA= show_missing)
 
   # Check if we should relate to an external total
-  if (missing(horizontal_proportions)){
+  if (!missing(horizontal_proportions)){
 
     # Error check the horizontal_proporitons variable
     # First check that it's a table or at least a vector
@@ -386,7 +385,7 @@ describeFactors <- function(x,
   }
 
   # Format the values
-  sa_args <- lis(X = table_results,
+  sa_args <- list(X = table_results,
                  FUN = outputInt,
                  language = language,
                  html = html)
@@ -424,5 +423,5 @@ describeFactors <- function(x,
   rn <- names(table_results)
   rn[is.na(rn)] <- "Missing"
   rownames(ret) <- rn
-
+  return(ret)
 }
