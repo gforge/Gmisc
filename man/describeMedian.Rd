@@ -6,7 +6,7 @@ the interquartile range or the full range}
 \usage{
 describeMedian(x, iqr = TRUE, html = FALSE, digits = 1,
   number_first = TRUE, show_missing = FALSE, show_missing.digits = digits,
-  horizontal_proportions, percentage_sign = TRUE, language = "en", ...)
+  percentage_sign = TRUE, language = "en", ...)
 }
 \arguments{
   \item{iqr}{If interquartile range should be used}

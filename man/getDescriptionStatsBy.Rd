@@ -5,10 +5,11 @@
 \usage{
 getDescriptionStatsBy(x, by, digits = 1, html = FALSE, NEJMstyle = FALSE,
   numbers_first = TRUE, statistics = FALSE, statistics.sig_lim = 10^-4,
-  two_dec.limit = 10^-2, show_missing, show_missing.digits = digits,
-  continuous_fn = describeMean, prop_fn = describeProp,
-  factor_fn = describeFactors, show_all_values = FALSE, hrzl_prop = FALSE,
-  add_total_col, total_col_show_perc = TRUE, use_units = FALSE, default_ref,
+  statistics.two_dec_lim = 10^-2, show_missing,
+  show_missing.digits = digits, continuous_fn = describeMean,
+  prop_fn = describeProp, factor_fn = describeFactors,
+  show_all_values = FALSE, hrzl_prop = FALSE, add_total_col,
+  total_col_show_perc = TRUE, use_units = FALSE, default_ref,
   percentage_sign = TRUE, ...)
 }
 \arguments{
