@@ -70,8 +70,8 @@ and \pkg{knitr}-integration.
 
   The \code{\link{getTicks}} tries to format ticks for
   plots in a nicer way. The major use is for exponentials
-  where ticks are generated using the \eqn{2^n}{2^n} since
-  a doubling is a concept easy to grasp even for
+  where ticks are generated using the \eqn{2^n} since a
+  doubling is a concept easy to grasp even for
   non-statisticians.
 }
 
