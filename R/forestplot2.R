@@ -1,22 +1,27 @@
-#' Create a forest plot
+#' Draws a forest plot
 #'
-#' forestplot2 is based on the \pkg{rmeta} 2.16
+#' The \emph{forestplot2} is based on the \pkg{rmeta} 2.16
 #' \code{\link[rmeta]{forestplot}} function. This
 #' function resolves some limitations of the original
 #' functions such as:
 #' \itemize{
 #'   \item{Adding expressions: }{Allows use of expressions, e.g. \code{expression(beta)}}
 #'   \item{Multiple bands: }{Using multiple confidence bands for the same label}
-#'   \item{Autosize: }{Adapts to windows size}
+#'   \item{Autosize: }{Adapts to viewport (graph) size}
 #' }
 #'
-#' Using multiple bands for the same label can be interesting when
-#' one wants to compare different outcomer. It can also be an alternative
-#' when you want to show both crude and adjusted estimates.
+#' @section Multiple bands:
 #'
-#' Known issues: the x-axis does not entirely respect the margin.
-#' Autosizing boxes is not always the best option, try to set these
-#' manually as much as possible.
+#' Using multiple bands, i.e. multiple lines, per variable can be interesting when
+#' you want to compare different outcomes. E.g. if you want to compare survival
+#' specific to heart disease to overall survival for smoking it may be useful to
+#' have two bands on top of eachother. Another useful implementation is to show
+#' crude and adjusted estimates as separate bands.
+#'
+#' @section Known issues:
+#'
+#' The x-axis does not entirely respect the margin. Autosizing boxes is not
+#' always the best option, try to set these manually as much as possible.
 #'
 #' @param labeltext A list, matrix, vector or expression with the names of each
 #'   row. The list should be wrapped in m x n number to resemble a matrix:
@@ -64,7 +69,7 @@
 #'   of the cex parameter.
 #' @param boxsize Override the default box size based on precision
 #' @param mar A numerical vector of the form c(bottom, left, top, right) of the type \code{unit()}
-#' @param main The title of the plot if any, default \code{NULL}
+#' @param main The title of the plot if any
 #' @param legend Legend corresponding to the number of bars.
 #' @param legend_args The legend arguments as returned by the \code{\link{fpLegend}} function.
 #' @param new_page If you want the plot to appear on a new blank page then set this to \code{TRUE}, by
@@ -92,10 +97,10 @@
 #' @export
 forestplot2 <- function (labeltext,
                          mean, lower, upper,
-                         align                = NULL,
+                         align,
                          is.summary           = FALSE,
-                         fontfamily.summary   = NULL,
-                         fontfamily.labelrow  = NULL,
+                         fontfamily.summary,
+                         fontfamily.labelrow,
                          clip                 = c(-Inf, Inf),
                          xlab                 = "",
                          zero                 = 0,
@@ -103,22 +108,22 @@ forestplot2 <- function (labeltext,
                          lineheight           = "auto",
                          col                  = fpColors(),
                          xlog                 = FALSE,
-                         xticks               = NULL,
+                         xticks,
                          xticks.digits        = 2,
-                         lwd.xaxis            = NULL,
-                         lwd.zero             = NULL,
-                         lwd.ci               = NULL,
+                         lwd.xaxis,
+                         lwd.zero,
+                         lwd.ci,
                          cex                  = 1,
                          cex.axis             = cex * 0.6,
-                         boxsize              = NULL,
+                         boxsize,
                          mar                  = unit(rep(5, times=4), "mm"),
-                         main                 = NULL,
+                         main,
                          legend,
                          legend_args          = fpLegend(),
                          new_page             = FALSE,
                          confintNormalFn      = fpDrawNormalCI,
                          confintSummaryFn     = fpDrawSummaryCI,
-                         legendMarkerFn      = NULL,
+                         legendMarkerFn,
                          ...)
 {
   dot_args <- list(...)
@@ -132,6 +137,35 @@ forestplot2 <- function (labeltext,
       short_name <- gsub("^legend\\.", "", n)
       legend_args[[short_name]] <- dot_args[[n]]
       dot_args[[n]] <- NULL
+    }
+  }
+
+  # Assume that lower and upper are contained within
+  # the mean variable
+  if (missing(lower) &&
+        missing(upper)){
+    if (NCOL(mean) != 3)
+      stop("If you do not provide lower or upper arguments your mean needs to consist of three columns")
+
+    # If the mean can in this case be eithe 2D-matrix
+    # that generates a regular forest plot or
+    # it can be a 3D-array where the 3:rd level
+    # constitutes the different bands
+    if (dim(mean) == 2){
+      lower_cnr <- which.min(mean[1,])
+      upper_cnr <- which.max(mean[1,])
+      lower <- mean[,lower_cnr,drop=TRUE]
+      upper <- mean[,upper_cnr,drop=TRUE]
+      mean <- mean[,-c(),drop=TRUE]
+    }else if (dim(mean) == 3){
+      lower_cnr <- which.min(mean[1,,1])
+      upper_cnr <- which.max(mean[1,,1])
+      lower <- mean[,lower_cnr,,drop=TRUE]
+      upper <- mean[,upper_cnr,,drop=TRUE]
+      mean <- mean[,-c(),,drop=TRUE]
+    }else{
+      stop("Invalid dimensions of the mean argument,",
+           " should be either 2 or 3 - you have '", dim(mean),"'")
     }
   }
 
@@ -267,7 +301,7 @@ forestplot2 <- function (labeltext,
   }
 
   # Prepare the summary and align variables
-  if (is.null(align)){
+  if (missing(align)){
     align <- c("l", rep("r", nc - 1))
   } else {
     align <- rep(align, length = nc)
@@ -277,12 +311,12 @@ forestplot2 <- function (labeltext,
 
 
   labels <- prFpGetLabels(label_type = label_type,
-    labeltext = labeltext, align = align,
-    nc = nc, nr = nr,
-    is.summary = is.summary,
-    fontfamily.summary = fontfamily.summary,
-    fontfamily.labelrow = fontfamily.labelrow,
-    col = col, cex = cex)
+                          labeltext = labeltext, align = align,
+                          nc = nc, nr = nr,
+                          is.summary = is.summary,
+                          fontfamily.summary = fontfamily.summary,
+                          fontfamily.labelrow = fontfamily.labelrow,
+                          col = col, cex = cex)
 
   # Set the gap between columns, I set it to
   # 6 mm but for relative widths we switch it
@@ -347,7 +381,7 @@ forestplot2 <- function (labeltext,
     right = marList$right,
     name="forestplot_margins")
 
-  if (is.character(main)){
+  if (!missing(main)){
     prGridPlotTitle(title=main, base_cex = cex)
   }
 
@@ -490,7 +524,7 @@ forestplot2 <- function (labeltext,
                         name="BaseGrid"))
 
   # Create the fourth argument 4 the fpDrawNormalCI() function
-  if (!is.null(boxsize)){
+  if (!missing(boxsize)){
     # If matrix is provided this will convert it
     # to a vector but it doesn't matter in this case
     info <- rep(boxsize, length = length(mean))

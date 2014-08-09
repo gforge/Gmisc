@@ -46,46 +46,13 @@ fpDrawNormalCI <- function(lower_limit,
                            clr.line, clr.marker,
                            lwd,
                            ...) {
-  # Draw the lines if the lower limit is
-  # actually below the upper limit
-  if (lower_limit < upper_limit){
-    # If the limit is outside the 0-1 range in npc-units
-    # then that part is outside the box and it should
-    # be clipped (this function adds an arrow to the end
-    # of the line)
-    clipupper <-
-      convertX(unit(upper_limit, "native"),
-               "npc",
-               valueOnly = TRUE) > 1
-    cliplower <-
-      convertX(unit(lower_limit, "native"),
-               "npc",
-               valueOnly = TRUE) < 0
 
-    if (clipupper || cliplower) {
-      # A version where arrows are added to the part outside
-      # the limits of the graph
-      ends <- "both"
-      lims <- unit(c(0, 1), c("npc", "npc"))
-      if (!clipupper) {
-        ends <- "first"
-        lims <- unit(c(0, upper_limit), c("npc", "native"))
-      }
-      if (!cliplower) {
-        ends <- "last"
-        lims <- unit(c(lower_limit, 1), c("native", "npc"))
-      }
-      grid.lines(x = lims,
-                 y = y.offset,
-                 arrow = arrow(ends = ends,
-                               length = unit(0.05, "inches")),
-                 gp = gpar(col = clr.line, lwd=lwd))
-    } else {
-      # Don't draw the line if it's no line to draw
-      grid.lines(x = unit(c(lower_limit, upper_limit), "native"), y = y.offset,
-                 gp = gpar(col = clr.line, lwd=lwd))
-    }
-  }
+  # Funciton for drawing the confidence line
+  prFpDrawLine(lower_limit = lower_limit,
+               upper_limit = upper_limit,
+               clr.line = clr.line,
+               lwd = lwd,
+               y.offset = y.offset)
 
   # If the box is outside the plot the it shouldn't be plotted
   box <- convertX(unit(estimate, "native"), "npc", valueOnly = TRUE)
@@ -108,6 +75,64 @@ fpDrawNormalCI <- function(lower_limit,
   }
 }
 
+#' Draws a straight line
+#'
+#' If the line is outside the boundaries the line
+#' is clipped with an arrow at the limit indicating
+#' that it continues. If the lower limit is not below
+#' the upper limit the line is not drawn.
+#'
+#' @inheritParams fpDrawNormalCI
+#' @return \code{void}
+prFpDrawLine <- function (lower_limit, upper_limit, clr.line, lwd, y.offset) {
+  # Draw the lines if the lower limit is
+  # actually below the upper limit
+  if (lower_limit >= upper_limit)
+    return()
+
+  # If the limit is outside the 0-1 range in npc-units
+  # then that part is outside the box and it should
+  # be clipped (this function adds an arrow to the end
+  # of the line)
+  clipupper <-
+    convertX(unit(upper_limit, "native"),
+             "npc",
+             valueOnly = TRUE) > 1
+  cliplower <-
+    convertX(unit(lower_limit, "native"),
+             "npc",
+             valueOnly = TRUE) < 0
+
+  gp_list <- list(col = clr.line)
+  if (!missing(lwd))
+    gp_list$lwd <- lwd
+
+  grid_line_args <- list(y = y.offset,
+                         gp = do.call(gpar, gp_list))
+  if (clipupper || cliplower) {
+    # A version where arrows are added to the part outside
+    # the limits of the graph
+    ends <- "both"
+    lims <- unit(c(0, 1), c("npc", "npc"))
+    if (!clipupper) {
+      ends <- "first"
+      lims <- unit(c(0, upper_limit), c("npc", "native"))
+    }
+    if (!cliplower) {
+      ends <- "last"
+      lims <- unit(c(lower_limit, 1), c("native", "npc"))
+    }
+    grid_line_args$x <- lims
+    grid_line_args$arrow <-
+      arrow(ends = ends,
+            length = unit(0.05, "inches"))
+  } else {
+    grid_line_args$x <- unit(c(lower_limit, upper_limit), "native")
+  }
+
+  do.call(grid.lines, grid_line_args)
+}
+
 #' @rdname fpDrawCI
 #' @export
 fpDrawDiamondCI <- function(lower_limit,
@@ -118,52 +143,18 @@ fpDrawDiamondCI <- function(lower_limit,
                             clr.line, clr.marker,
                             lwd,
                             ...) {
-
-  # Don't draw the line if it's no line to draw
-  if (lower_limit < upper_limit){
-    # If the limit is outside the 0-1 range in npc-units
-    # then that part is outside the box and it should
-    # be clipped (this function adds an arrow to the end
-    # of the line)
-    clipupper <-
-      convertX(unit(upper_limit, "native"),
-               "npc",
-               valueOnly = TRUE) > 1
-    cliplower <-
-      convertX(unit(lower_limit, "native"),
-               "npc",
-               valueOnly = TRUE) < 0
-
-    # A version where arrows are added to the part outside
-    # the limits of the graph
-    if (clipupper || cliplower) {
-      ends <- "both"
-      lims <- unit(c(0, 1), c("npc", "npc"))
-      if (!clipupper) {
-        ends <- "first"
-        lims <- unit(c(0, upper_limit), c("npc", "native"))
-      }
-      if (!cliplower) {
-        ends <- "last"
-        lims <- unit(c(lower_limit, 1), c("native", "npc"))
-      }
-      grid.lines(x = lims,
-                 y = y.offset,
-                 arrow = arrow(ends = ends,
-                               length = unit(0.05, "inches")),
-                 gp = gpar(col = clr.line, lwd=lwd))
-    } else {
-      grid.lines(x = unit(c(lower_limit, upper_limit), "native"), y = y.offset,
-                 gp = gpar(col = clr.line, lwd=lwd))
-    }
-
-  }
+  # Funciton for drawing the confidence line
+  prFpDrawLine(lower_limit = lower_limit,
+               upper_limit = upper_limit,
+               clr.line = clr.line,
+               lwd = lwd,
+               y.offset = y.offset)
 
   # If the box is outside the plot the it shouldn't be plotted
   box <- convertX(unit(estimate, "native"), "npc", valueOnly = TRUE)
-  skipbox <- box < 0 || box > 1
+  if (box >= 0 &&
+        box <= 1){
 
-  if (!skipbox){
     # Convert size if needed
     default.size.unit = "snpc"
     if(is.unit(size)){
@@ -191,50 +182,18 @@ fpDrawCircleCI <- function(lower_limit,
                            clr.line, clr.marker,
                            lwd,
                            ...) {
-  # Don't draw the line if it's no line to draw
-  if (lower_limit != upper_limit){
-    # If the limit is outside the 0-1 range in npc-units
-    # then that part is outside the box and it should
-    # be clipped (this function adds an arrow to the end
-    # of the line)
-    clipupper <-
-      convertX(unit(upper_limit, "native"),
-               "npc",
-               valueOnly = TRUE) > 1
-    cliplower <-
-      convertX(unit(lower_limit, "native"),
-               "npc",
-               valueOnly = TRUE) < 0
-
-    # A version where arrows are added to the part outside
-    # the limits of the graph
-    if (clipupper || cliplower) {
-      ends <- "both"
-      lims <- unit(c(0, 1), c("npc", "npc"))
-      if (!clipupper) {
-        ends <- "first"
-        lims <- unit(c(0, upper_limit), c("npc", "native"))
-      }
-      if (!cliplower) {
-        ends <- "last"
-        lims <- unit(c(lower_limit, 1), c("native", "npc"))
-      }
-      grid.lines(x = lims,
-                 y = y.offset,
-                 arrow = arrow(ends = ends,
-                               length = unit(0.05, "inches")),
-                 gp = gpar(col = clr.line, lwd=lwd))
-    } else {
-      grid.lines(x = unit(c(lower_limit, upper_limit), "native"), y = y.offset,
-                 gp = gpar(col = clr.line, lwd=lwd))
-    }
-  }
+  # Funciton for drawing the confidence line
+  prFpDrawLine(lower_limit = lower_limit,
+               upper_limit = upper_limit,
+               clr.line = clr.line,
+               lwd = lwd,
+               y.offset = y.offset)
 
   # If the box is outside the plot the it shouldn't be plotted
   box <- convertX(unit(estimate, "native"), "npc", valueOnly = TRUE)
-  skipbox <- box < 0 || box > 1
 
-  if (!skipbox){
+  if (box >= 0 &&
+        box <= 1){
     # Convert size into 'mm' and switch to radius
     if(is.unit(size)){
       size <- convertUnit(size, unitTo="mm", valueOnly=TRUE)
@@ -263,50 +222,18 @@ fpDrawPointCI <- function(lower_limit,
                           lwd,
                           pch = 1,
                           ...) {
-  # Don't draw the line if it's no line to draw
-  if (lower_limit < upper_limit){
-    # If the limit is outside the 0-1 range in npc-units
-    # then that part is outside the box and it should
-    # be clipped (this function adds an arrow to the end
-    # of the line)
-    clipupper <-
-      convertX(unit(upper_limit, "native"),
-               "npc",
-               valueOnly = TRUE) > 1
-    cliplower <-
-      convertX(unit(lower_limit, "native"),
-               "npc",
-               valueOnly = TRUE) < 0
-
-    # A version where arrows are added to the part outside
-    # the limits of the graph
-    if (clipupper || cliplower) {
-      ends <- "both"
-      lims <- unit(c(0, 1), c("npc", "npc"))
-      if (!clipupper) {
-        ends <- "first"
-        lims <- unit(c(0, upper_limit), c("npc", "native"))
-      }
-      if (!cliplower) {
-        ends <- "last"
-        lims <- unit(c(lower_limit, 1), c("native", "npc"))
-      }
-      grid.lines(x = lims,
-                 y = y.offset,
-                 arrow = arrow(ends = ends,
-                               length = unit(0.05, "inches")),
-                 gp = gpar(col = clr.line, lwd=lwd))
-    } else {
-      grid.lines(x = unit(c(lower_limit, upper_limit), "native"), y = y.offset,
-                 gp = gpar(col = clr.line, lwd=lwd))
-    }
-  }
+  # Funciton for drawing the confidence line
+  prFpDrawLine(lower_limit = lower_limit,
+               upper_limit = upper_limit,
+               clr.line = clr.line,
+               lwd = lwd,
+               y.offset = y.offset)
 
   # If the box is outside the plot the it shouldn't be plotted
   box <- convertX(unit(estimate, "native"), "npc", valueOnly = TRUE)
-  skipbox <- box < 0 || box > 1
 
-  if (!skipbox){
+  if (box >= 0 &&
+        box <= 1){
     # Convert size into 'snpc' if not given
     if(!is.unit(size)){
       size <- unit(size, "snpc")
@@ -670,7 +597,7 @@ prFpGetGraphTicksAndClips <- function(xticks,
     clip <- log(clip)
     zero <- log(zero)
 
-    if (is.null(xticks)) {
+    if (missing(xticks)) {
       ticks <- getTicks(exp(x_range),
                         clip=clip,
                         exp=xlog,
@@ -719,7 +646,7 @@ prFpGetGraphTicksAndClips <- function(xticks,
 
 
   } else {
-    if (is.null(xticks)){
+    if (missing(xticks)){
       ticks <- getTicks(x_range,
                         clip=clip,
                         exp=xlog,
@@ -756,11 +683,14 @@ prFpGetGraphTicksAndClips <- function(xticks,
   }
 
   if (length(ticks) != 1 || ticks != 0){
+    gp_list <- list(cex = cex.axis,
+                    col = col$axes)
+    if(!missing(lwd.xaxis))
+      gp_list$lwd <- lwd.xaxis
+
     dg <- xaxisGrob(at    = ticks,
                     label = ticklabels,
-                    gp    = gpar(cex = cex.axis,
-                                 col = col$axes,
-                                 lwd=lwd.xaxis))
+                    gp    = do.call(gpar, gp_list))
   }else{
     dg <- FALSE
   }
@@ -800,9 +730,13 @@ prFpPrintXaxis <- function(axisList,
   pushViewport(axisList$axis_vp)
 
   # Plot the vertical "zero" axis
+  gp_list <- list(col = col$zero)
+  if (!missing(lwd.zero))
+    gp_list$lwd <- lwd.zero
+
   grid.lines(x  = unit(axisList$zero, "native"),
              y  = 0:1,
-             gp = gpar(col = col$zero, lwd=lwd.zero))
+             gp = do.call(gpar, gp_list))
 
   lab_y <- unit(0, "mm")
   lab_grob_height <- unit(-2, "mm")
@@ -1099,7 +1033,7 @@ prFpXrange <- function(upper, lower, clip, zero, xticks, xlog){
   # endpoints unless there are prespecified
   # ticks indicating that the end-points aren't
   # included in the x-axis
-  if (is.null(xticks)){
+  if (missing(xticks)){
     ret <- c(
         min(
             zero,
@@ -1182,21 +1116,29 @@ prFpGetLabels <- function(label_type, labeltext, align,
             x <- switch(align[j], l = 0, r = 1, c = 0.5)
           }
 
+          gp_list <- list(fontface = "bold",
+                          cex = cex*1.1,
+                          col = rep(col$text, length = nr)[i])
+          if (!missing(fontfamily.summary))
+            gp_list$fontfamily <- fontfamily.summary
+
           # Create a textGrob for the summary
-          labels[[j]][[i]] <- textGrob(txt_out, x = x,
-            just = just,
-            gp = gpar(fontface = "bold",
-              fontfamily=fontfamily.summary,
-              cex = cex*1.1,
-              col = rep(col$text, length = nr)[i]))
+          labels[[j]][[i]] <-
+            textGrob(txt_out, x = x,
+                     just = just,
+                     gp = do.call(gpar, gp_list))
         }else{
+          gp_list <- list(fontface = "plain",
+                          cex = cex,
+                          col = rep(col$text, length = nr)[i])
+          if (!missing(fontfamily.labelrow))
+            gp_list$fontfamily <- fontfamily.labelrow
+
           # Create a textGrob with the current row-cell for the label
-          labels[[j]][[i]] <- textGrob(txt_out, x = x,
-            just = just,
-            gp = gpar(fontface = "plain",
-              cex = cex,
-              fontfamily=fontfamily.labelrow,
-              col = rep(col$text, length = nr)[i]))
+          labels[[j]][[i]] <-
+            textGrob(txt_out, x = x,
+                     just = just,
+                     gp = do.call(gpar, gp_list))
         }
 
         attr(labels[[j]][[i]], "height") <- grobHeight(labels[[j]][[i]])
@@ -1429,43 +1371,52 @@ prFpGetLegendBoxPosition <- function (pos) {
 #'
 #' @keywords internal
 prFpPrepareLegendMarker <- function (legendMarkerFn, col_no, confintNormalFn) {
-  if (is.function(legendMarkerFn)){
-    legendMarkerFn <- lapply(1:col_no, function(x) legendMarkerFn)
-  }else if (is.character(legendMarkerFn)){
-    if (length(legendMarkerFn) == 1){
-      legendMarkerFn <- rep(legendMarkerFn, times=col_no)
-    }else if (length(legendMarkerFn) != col_no){
-      stop("The number of legend markers, ", length(legendMarkerFn),
-           ", should be the same as the number of columns for the mean, ", col_no)
+  if (!missing(legendMarkerFn)){
+    if (is.function(legendMarkerFn)){
+      return(lapply(1:col_no, function(x) legendMarkerFn))
+    }
+    if(is.character(legendMarkerFn)){
+      if (length(legendMarkerFn) == 1){
+        legendMarkerFn <- rep(legendMarkerFn, times=col_no)
+      }else if (length(legendMarkerFn) != col_no){
+        stop("The number of legend markers, ", length(legendMarkerFn),
+             ", should be the same as the number of columns for the mean, ", col_no)
+      }
+
+      tmp <- list()
+      for (i in 1:length(legendMarkerFn)){
+        tmp[[i]] <- get(legendMarkerFn[i])
+      }
+
+      return(tmp)
     }
 
-    tmp <- list()
-    for (i in 1:length(legendMarkerFn)){
-      tmp[[i]] <- get(legendMarkerFn[i])
+    if(is.list(legendMarkerFn)){
+      if(length(legendMarkerFn) != col_no){
+        stop("The number of legend markers, ", length(legendMarkerFn), ",",
+             " should be the same as the number of columns for the mean, ", col_no)
+      }else if(!all(sapply(legendMarkerFn, function(x) is.function(x)))){
+        stop("If you provide a list for legendMarkerFn then each element should be a function")
+      }
+
+      return(legendMarkerFn)
     }
 
-    legendMarkerFn <- tmp
-  }else if(is.list(legendMarkerFn) &&
-             length(legendMarkerFn) != col_no){
-    stop("The number of legend markers, ", length(legendMarkerFn),
-         ", should be the same as the number of columns for the mean, ", col_no)
-  }else if(is.list(legendMarkerFn) &&
-             !all(sapply(legendMarkerFn, function(x) is.function(x)))){
-    stop("If you provide a list for legendMarkerFn then each element should be a function")
-  }else if(is.null(legendMarkerFn)){
-    if (length(confintNormalFn) == col_no){
-      legendMarkerFn <-
-        prFpGetConfintFnList(fn = confintNormalFn,
-                             no_rows = NROW(mean),
-                             no_cols = col_no)[[1]]
-    }else{
-      # Not sure what to do if the number don't match the number of legends
-      # and it ain't 1
-      if (length(confintNormalFn) != 1)
-        confintNormalFn <- fpDrawNormalCI
-
-      legendMarkerFn <- lapply(1:col_no, function(x) confintNormalFn)
-    }
+    stop("The legend marked function designated by the legendMarkerFn",
+         " is neither a character or a function")
   }
-  return(legendMarkerFn)
+
+  if (length(confintNormalFn) == col_no){
+    return(prFpGetConfintFnList(fn = confintNormalFn,
+                                no_rows = NROW(mean),
+                                no_cols = col_no)[[1]])
+  }
+
+  # Not sure what to do if the number don't match the number of legends
+  # and it ain't 1 and it therefore defaults to the normal confidence
+  # interval marker
+  if (length(confintNormalFn) != 1)
+    confintNormalFn <- fpDrawNormalCI
+
+  return(lapply(1:col_no, function(x) confintNormalFn))
 }
