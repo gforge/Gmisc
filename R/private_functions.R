@@ -20,7 +20,7 @@ prGetStatistics <- function(x,
                             digits = 1,
                             numbers_first = TRUE,
                             show_missing = TRUE,
-                            show_missing_digits = digits,
+                            show_missing.digits = digits,
                             show_all_values = FALSE,
                             continuous_fn = describeMean,
                             factor_fn = describeFactors,
@@ -28,43 +28,42 @@ prGetStatistics <- function(x,
                             percentage_sign = percentage_sign)
 {
   show_missing <- prConvertShowMissing(show_missing)
+  # All the describe functions have the same interface
+  # so it is useful to gather all the arguments here
+  describe_args <-
+    list(x = x,
+         html = html,
+         digits = digits,
+         number_first = numbers_first,
+         show_missing = show_missing,
+         show_missing.digits = show_missing.digits,
+         percentage_sign = percentage_sign)
+
   if (is.factor(x) ||
         is.logical(x) ||
         is.character(x)){
     if (length(unique(x)) == 2){
       if (show_perc){
-        total_table <- prop_fn(x,
-            html=html,
-            digits=digits,
-            number_first=numbers_first,
-            show_missing = show_missing,
-            percentage_sign = percentage_sign)
+        total_table <- do.call(prop_fn, describe_args)
       }else{
         total_table <- table(x, useNA=show_missing)
         names(total_table)[is.na(names(total_table))] <- "Missing"
         # Choose only the reference level
         if (show_all_values == FALSE)
-          total_table <- total_table[names(total_table) %in% c(levels(x)[1], "Missing")]
+          total_table <- total_table[names(total_table) %in%
+                                       c(levels(x)[1], "Missing")]
       }
 
     } else {
       if (show_perc)
-        total_table <- factor_fn(x,
-            html=html,
-            digits=digits,
-            number_first=numbers_first,
-            show_missing = show_missing,
-            percentage_sign = percentage_sign)
+        total_table <- do.call(factor_fn, describe_args)
       else{
         total_table <- table(x, useNA=show_missing)
         names(total_table)[is.na(names(total_table))] <- "Missing"
       }
     }
   }else{
-    total_table <- continuous_fn(x,
-      html=html, digits=digits,
-      number_first=numbers_first,
-      show_missing = show_missing)
+    total_table <- do.call(continuous_fn, describe_args)
 
     # If a continuous variable has two rows then it's assumed that the second is the missing
     if (length(total_table) == 2 &&
