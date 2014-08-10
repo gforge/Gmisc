@@ -215,7 +215,7 @@ describeProp <- function(x,
   # When we have missing it also gets more difficult
   # to just report one percentage as it suddenly uncertain
   # for what percentage the number applies to
-  if(!"horizontal_proportions" %in% names(dot_args) ||
+  if("horizontal_proportions" %in% names(dot_args) ||
        (show_missing == "ifany" &&
           any(is.na(x))) ||
        show_missing == "always"){
@@ -244,7 +244,7 @@ describeProp <- function(x,
   # Don't count missing since those are treated as factors if any
   percent <- 100*no/length(x[is.na(x)==FALSE])
 
-  oi_args <- lis(x = no,
+  oi_args <- list(x = no,
                  language = language,
                  html = html)
   for (n in names(dot_args)){
