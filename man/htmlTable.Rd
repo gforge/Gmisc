@@ -10,7 +10,7 @@ htmlTable(x, title = first.word(deparse(substitute(x))), headings,
   cgroup.just, rgroup, n.rgroup, rgroupCSSstyle = "font-weight: 900;",
   rgroupCSSseparator = "", tspanner, n.tspanner,
   tspannerCSSstyle = "font-weight: 900; text-transform:capitalize; text-align: center;",
-  tspannerCSSseparator = "border-top: 1px solid grey;", rowlabel = title,
+  tspannerCSSseparator = "border-top: 1px solid grey;", rowlabel,
   rowlabel.pos = "bottom", ctable = FALSE, compatibility = "LibreOffice",
   rowname, caption, caption.loc = "top", tfoot, label, altcol = "white",
   tableCSSclass = "gmisc_table", ...)
@@ -105,8 +105,7 @@ htmlTable(x, title = first.word(deparse(substitute(x))), headings,
 
   \item{rowlabel}{If x has row dimnames, rowlabel is a
   character string containing the column heading for the
-  row dimnames. The default is the name of the argument for
-  x.}
+  row dimnames.}
 
   \item{rowlabel.pos}{Where the rowlabel should be
   positioned. This value can be "top", "bottom", "header",
@@ -165,12 +164,21 @@ htmlTable(x, title = first.word(deparse(substitute(x))), headings,
 
   \item{...}{Passed on to \code{print.htmlTable} function
   and any argument except the \code{useViewer} will be
-  passed on to the \code{\link[base]{cat}} function.}
+  passed on to the \code{\link[base]{cat}} functions
+  arguments.}
 
   \item{useViewer}{If you are using RStudio there is a
   viewer thar can render the table within that is envoced
   if in \code{\link[base]{interactive}} mode. Set this to
-  \code{FALSE} if you want to remove that functionality.}
+  \code{FALSE} if you want to remove that functionality.
+  You can also force the function to call a specific viewer
+  by setting this to a viewer function, e.g.
+  \code{useViewer = utils::browseUrl} if you want to
+  override the default RStudio viewer. Another option that
+  does the same is to set the
+  \code{options(viewer=utils::browseUrl)} and it will
+  default to that particular viewer (this is how RStudio
+  decides on a viewer).}
 }
 \value{
 \code{string} Returns a string of class htmlTable
@@ -406,5 +414,4 @@ htmlTable(output_data, align = 'rccc',
 \code{\link{getDescriptionStatsBy}},
 \code{\link{splitLines4Table}}
 }
-\keyword{internal}
 

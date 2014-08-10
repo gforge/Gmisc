@@ -4,7 +4,7 @@
 \title{Get statistics according to the type}
 \usage{
 prGetStatistics(x, show_perc = FALSE, html = TRUE, digits = 1,
-  numbers_first = TRUE, show_missing = TRUE, show_missing_digits = digits,
+  numbers_first = TRUE, show_missing = TRUE, show_missing.digits = digits,
   show_all_values = FALSE, continuous_fn = describeMean,
   factor_fn = describeFactors, prop_fn = factor_fn,
   percentage_sign = percentage_sign)
@@ -23,6 +23,10 @@ prGetStatistics(x, show_perc = FALSE, html = TRUE, digits = 1,
 
   \item{show_missing}{Show the missing values. This adds
   another row if there are any missing values.}
+
+  \item{show_missing.digits}{The number of digits to use
+  for the missing percentage, defaults to the overall
+  \code{digits}.}
 
   \item{show_all_values}{This is by default false as for
   instance if there is no missing and there is only one
