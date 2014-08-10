@@ -3,8 +3,8 @@
 \alias{fpLegend}
 \title{A function for the legend used in forestplot2()}
 \usage{
-fpLegend(pos = "top", cex = cex * 0.8, gp = NULL, r = unit(0, "snpc"),
-  padding = unit(ifelse(length(gp) > 0, 3, 0), "mm"), title = NULL)
+fpLegend(pos = "top", cex = 0.8, gp = NULL, r = unit(0, "snpc"),
+  padding = unit(ifelse(!is.null(gp), 3, 0), "mm"), title = NULL)
 }
 \arguments{
   \item{pos}{The position of the legend, either at the

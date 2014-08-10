@@ -25,7 +25,11 @@ prFpGetLabels(label_type, labeltext, align, nc, nr, is.summary,
   \code{matrix(c("rowname 1 col 1", "rowname 2 col 1",
   "r1c2", "beta"), ncol=2)} Use NA:s for blank spaces and
   if you provide a full column with NA then that column is
-  a empty column that adds some space.}
+  a empty column that adds some space. \emph{Note:} If you
+  do not provide the mean/lower/upper arguments the
+  function expects the label text to be a matrix containing
+  the labeltext in the rownames and then columns for mean,
+  lower, and upper .}
 
   \item{is.summary}{A vector indicating by TRUE/FALSE if
   the value is a summary value which means that it will

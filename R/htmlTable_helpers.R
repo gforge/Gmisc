@@ -174,7 +174,7 @@ prHtAddAlign2Style <- function(style, align){
 #' some preparation for the cgroup options is required.
 #'
 #' @inheritParams htmlTable
-#' @return \code(list(cgroup, n.cgroup, cgroup_spacer_cells)
+#' @return \code{list(cgroup, n.cgroup, cgroup_spacer_cells)}
 #' @keywords internal
 #' @family hidden helper functions for \code{\link{htmlTable}}
 prHtPrepareCgroup <- function(x, cgroup, n.cgroup, cgroup.just){
