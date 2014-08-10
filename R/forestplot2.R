@@ -24,13 +24,17 @@
 #' always the best option, try to set these manually as much as possible.
 #'
 #' @param labeltext A list, matrix, vector or expression with the names of each
-#'   row. The list should be wrapped in m x n number to resemble a matrix:
-#'   \code{list(list("rowname 1 col 1", "rowname 2 col 1"), list("r1c2", expression(beta))}
-#'   You can also provide a matrix although this cannot have expressions by design:
-#'   \code{matrix(c("rowname 1 col 1", "rowname 2 col 1", "r1c2", "beta"), ncol=2)}
-#'   Use NA:s for blank spaces and if you provide a full column with NA then
-#'   that column is a empty column that adds some space.
-#' @param mean A vector or a matrix with the averages
+#'  row. The list should be wrapped in m x n number to resemble a matrix:
+#'  \code{list(list("rowname 1 col 1", "rowname 2 col 1"), list("r1c2", expression(beta))}
+#'  You can also provide a matrix although this cannot have expressions by design:
+#'  \code{matrix(c("rowname 1 col 1", "rowname 2 col 1", "r1c2", "beta"), ncol=2)}
+#'  Use NA:s for blank spaces and if you provide a full column with NA then
+#'  that column is a empty column that adds some space. \emph{Note:} If you do not
+#'  provide the mean/lower/upper arguments the function expects the label text
+#'  to be a matrix containing the labeltext in the rownames and then columns for
+#'  mean, lower, and upper .
+#' @param mean A vector or a matrix with the averages. You can also provide a 2D/3D
+#'  matrix that is automatically converted to the lower/upper parameters.
 #' @param lower The lower bound of the confidence interval for the forestplot, needs
 #'   to be the same format as the mean, i.e. matrix/vector of equal columns & length
 #' @param upper The upper bound of the confidence interval for the forestplot, needs
@@ -140,33 +144,45 @@ forestplot2 <- function (labeltext,
     }
   }
 
+  if (missing(lower) &&
+        missing(upper) &&
+        missing(mean)){
+    if(missing(labeltext))
+      stop("You need to provide the labeltext or",
+           " the mean/lower/upper arguments")
+
+    if (NCOL(labeltext) != 3)
+      stop("If you only provide the function the labeltext and",
+           " not the mean/lower/upper then you need to have",
+           " a 3-column labeltext where the columns correspond to",
+           " the mean, lower, and upper columns")
+
+    mean <- labeltext
+    labeltext <- rownames(mean)
+  }
+
+  if (missing(labeltext))
+    labeltext <- rownames(mean)
+
+  if (is.null(labeltext))
+    stop("You must provide labeltext either in the direct form as an argument",
+         " or as rownames for the mean argument.")
+
   # Assume that lower and upper are contained within
   # the mean variable
   if (missing(lower) &&
         missing(upper)){
     if (NCOL(mean) != 3)
-      stop("If you do not provide lower or upper arguments your mean needs to consist of three columns")
+      stop("If you do not provide lower/upper arguments your mean needs to have 3 columns")
 
     # If the mean can in this case be eithe 2D-matrix
     # that generates a regular forest plot or
     # it can be a 3D-array where the 3:rd level
     # constitutes the different bands
-    if (dim(mean) == 2){
-      lower_cnr <- which.min(mean[1,])
-      upper_cnr <- which.max(mean[1,])
-      lower <- mean[,lower_cnr,drop=TRUE]
-      upper <- mean[,upper_cnr,drop=TRUE]
-      mean <- mean[,-c(),drop=TRUE]
-    }else if (dim(mean) == 3){
-      lower_cnr <- which.min(mean[1,,1])
-      upper_cnr <- which.max(mean[1,,1])
-      lower <- mean[,lower_cnr,,drop=TRUE]
-      upper <- mean[,upper_cnr,,drop=TRUE]
-      mean <- mean[,-c(),,drop=TRUE]
-    }else{
-      stop("Invalid dimensions of the mean argument,",
-           " should be either 2 or 3 - you have '", dim(mean),"'")
-    }
+    all <- prFpConvertMultidimArray(mean)
+    mean <- all$mean
+    lower <- all$lower
+    upper <- all$upper
   }
 
   if (NCOL(mean) != NCOL(lower) ||
@@ -386,7 +402,7 @@ forestplot2 <- function (labeltext,
   }
 
   # Initiate the legend
-  if (length(legend) > 0){
+  if (!missing(legend)){
     lGrobs <- prFpGetLegendGrobs(legend = legend,
                                  cex = legend_args$cex,
                                  title = legend_args$title)
@@ -438,7 +454,8 @@ forestplot2 <- function (labeltext,
 
   # If the legend should be positioned within the plot then wait
   # until after the plot has been drawn
-  if (length(legend) > 0 && !is.list(legend_args$pos)){
+  if (!missing(legend) > 0 &&
+        !is.list(legend_args$pos)){
     pushViewport(prFpGetLayoutVP(lineheight=lineheight,
         labels = labels,
         nr=nr,
@@ -617,8 +634,9 @@ forestplot2 <- function (labeltext,
                  size=info_values[j],
                  y.offset = current_y.offset,
                  clr.line = clr.line[j],
-                 clr.marker = clr.marker[j],
-                 lwd=lwd.ci)
+                 clr.marker = clr.marker[j])
+          if (!missing(lwd.ci))
+            call_list$lwd <- lwd.ci
         }
 
         # Add additional arguments that are passed on
@@ -650,8 +668,9 @@ forestplot2 <- function (labeltext,
                upper_limit=up_values,
                size=info_values,
                clr.line = clr.line,
-               clr.marker = clr.marker,
-               lwd=lwd.ci)
+               clr.marker = clr.marker)
+        if (!missing(lwd.ci))
+          call_list$lwd <- lwd.ci
       }
 
       # Add additional arguments that are passed on
@@ -672,7 +691,8 @@ forestplot2 <- function (labeltext,
   }
 
   # Output the legend if it is inside the main plot
-  if (length(legend) > 0 && is.list(legend_args$pos)){
+  if (!missing(legend) &&
+        is.list(legend_args$pos)){
     plot_vp <- viewport(layout.pos.row = 1:nr,
       layout.pos.col = 2 * nc + 1,
       name = "main_plot_area")

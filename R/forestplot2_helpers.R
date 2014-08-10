@@ -373,10 +373,10 @@ fpColors <- function (all.elements,
 #' @export
 #' @family forestplot functions
 fpLegend <- function(pos           = "top",
-                     cex           = cex*.8,
+                     cex           = .8,
                      gp            = NULL,
                      r             = unit(0, "snpc"),
-                     padding       = unit(ifelse(length(gp) > 0, 3, 0), "mm"),
+                     padding       = unit(ifelse(!is.null(gp), 3, 0), "mm"),
                      title         = NULL){
   return(list(pos = pos,
               cex = cex,
@@ -1419,4 +1419,72 @@ prFpPrepareLegendMarker <- function (legendMarkerFn, col_no, confintNormalFn) {
     confintNormalFn <- fpDrawNormalCI
 
   return(lapply(1:col_no, function(x) confintNormalFn))
+}
+
+#' Converts a 2D or 3D array to mean, lower, upper
+#'
+#' @param x The array to convert
+#' @return \code{list(mean = mean, lower = lower, upper = upper)}
+#' @keywords internal
+prFpConvertMultidimArray <- function(x){
+  switch(as.character(length(dim(x))),
+         "2" = {
+           # Loop through the different rows as a row with only a label may have NA in it
+           lower_cnr <- NULL
+           upper_cnr <- NULL
+           for (d1 in dim(x)[1]){
+             if (length(unique(x[d1,])) < 3)
+               next;
+
+             lower_cnr <- which.min(x[d1,])
+             upper_cnr <- which.max(x[d1,])
+             if (length(lower_cnr) == 1 &&
+                   length(upper_cnr) == 1){
+               break;
+             }
+           }
+           if (length(lower_cnr) != 1 ||
+                 length(upper_cnr) != 1)
+             stop("Sorry did not manage to automatically identify",
+                  " the upper/lower boundaries.")
+
+           lower <- x[,lower_cnr,drop=TRUE]
+           upper <- x[,upper_cnr,drop=TRUE]
+           mean <- x[,-c(upper_cnr, lower_cnr),drop=TRUE]},
+         "3" = {
+           # Loop through the different rows as a row with only a label may have NA in it
+           # this is a little complicated as we're doing a 3D loop and exiting
+           # as soon as the vars have been identified
+           lower_cnr <- NULL
+           upper_cnr <- NULL
+           for (d3 in 1:dim(x)[3]){
+             for (d1 in 1:dim(x)[1]){
+               if (length(unique(x[d1,,d3])) < 3)
+                 next;
+
+               lower_cnr <- which.min(x[d1,,d3])
+               upper_cnr <- which.max(x[d1,,d3])
+
+               if (length(lower_cnr) == 1 &&
+                     length(upper_cnr) == 1)
+                 break;
+             }
+             if (length(lower_cnr) == 1 &&
+                   length(upper_cnr) == 1)
+               break;
+
+           }
+           if (length(lower_cnr) != 1 ||
+                 length(upper_cnr) != 1)
+             stop("Sorry did not manage to automatically identify",
+                  " the upper/lower boundaries.")
+           lower_cnr <- which.min(x[1,,1])
+           upper_cnr <- which.max(x[1,,1])
+           lower <- x[,lower_cnr,,drop=TRUE]
+           upper <- x[,upper_cnr,,drop=TRUE]
+           mean <- x[,-c(upper_cnr, lower_cnr),,drop=TRUE]},{
+             stop("Invalid number of dimensions of the mean argument,",
+                  " should be either 2 or 3 - you have '", length(dim(mean)),"'")
+           })
+  return(list(mean = mean, lower = lower, upper = upper))
 }
