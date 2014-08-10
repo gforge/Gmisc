@@ -235,12 +235,13 @@ getDescriptionStatsBy <- function(x,
 
 
     if (length(t[[1]]) != 1){
-      if (deparse(continuous_fn) == "describeMean")
+      fn_name <- deparse(substitute(continuous_fn))
+      if (fn_name == "describeMean")
         names(t[[1]][1]) = "Mean"
-      else if (deparse(continuous_fn) == "describeMedian")
+      else if (fn_name == "describeMedian")
         names(t[[1]][1]) = "Median"
       else
-        names(t[[1]][1]) = deparse(continuous_fn)
+        names(t[[1]][1]) = fn_name
     }
 
     if (statistics)
