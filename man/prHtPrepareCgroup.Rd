@@ -30,7 +30,8 @@ prHtPrepareCgroup(x, cgroup, n.cgroup, cgroup.just)
   \item{cgroup.just}{The justification of the c.groups}
 }
 \value{
-\code{list(cgroup, n.cgroup, cgroup_spacer_cells)}
+\code{list(cgroup, n.cgroup, cgroup.just,
+cgroup_spacer_cells)}
 }
 \description{
 Due to the complicated structure of multilevel cgroups

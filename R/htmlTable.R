@@ -341,6 +341,7 @@ htmlTable <- function(x,
 
     cgroup <- ret$cgroup
     n.cgroup <- ret$n.cgroup
+    cgroup.just <- ret$cgroup.just
     cgroup_spacer_cells <- ret$cgroup_spacer_cells
   }
 
