@@ -379,4 +379,5 @@ describeFactors <- function(x,
   rn[is.na(rn)] <- "Missing"
   rownames(ret) <- rn
 
+  return(ret)
 }
