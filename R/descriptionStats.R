@@ -27,7 +27,7 @@
 #'  format using a ',' as the separator in the \code{\link{outputInt}}
 #'  function.
 #' @param ... Passed on to \code{\link{describeFactors}}
-#' @return \code{string} A string formatted for either LaTeX or HTML
+#' @return \code{string} Returns a string formatted for either LaTeX or HTML
 #'
 #' @seealso \code{\link{getDescriptionStatsBy}}
 #'
@@ -423,5 +423,6 @@ describeFactors <- function(x,
   rn <- names(table_results)
   rn[is.na(rn)] <- "Missing"
   rownames(ret) <- rn
+  return(ret)
   return(ret)
 }

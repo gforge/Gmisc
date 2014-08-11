@@ -252,3 +252,16 @@ test_that("Check factor function with missing",
     }
   }
 })
+
+test_that("Problem with boolean x", {
+  set.seed(1)
+  aa <- factor(sample(c("No", "Yes"), size = 50, replace = TRUE))
+  aaa <- sample(c(TRUE, FALSE), size = 50, replace = TRUE)
+  ret <- getDescriptionStatsBy(x = aaa, by=aa, numbers_first = TRUE)
+  expect_equivalent(nrow(ret), 2, 
+                    info="There should only be one alternative returned")
+  expect_equivalent(ncol(ret), 2, 
+                    info="There should be two columns")
+  expect_match(ret["TRUE", "No"], sprintf("^%d", table(aaa, aa)["TRUE", "No"]),
+               info="The value does not seem to match the raw table")
+})
