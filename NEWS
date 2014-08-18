@@ -1,5 +1,9 @@
 NEWS for the Gmisc package
 
+Changes for 1.0.0
+-----------------
+* Added the fastDoCall function as an faster alternative to the do.call
+
 Changes for 0.6.8
 -----------------
 * Applied the DRY-documentation principle
