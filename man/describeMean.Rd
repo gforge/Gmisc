@@ -45,7 +45,8 @@ describeMean(x, html = FALSE, digits = 1, number_first = TRUE,
   \item{...}{Passed on to \code{\link{describeFactors}}}
 }
 \value{
-\code{string} A string formatted for either LaTeX or HTML
+\code{string} Returns a string formatted for either LaTeX
+or HTML
 }
 \description{
 A function that returns a description of a continuous
