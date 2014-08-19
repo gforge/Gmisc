@@ -113,7 +113,7 @@ getDescriptionStatsBy <- function(x,
 
   if ("two_dec.limit" %in% names(dot_args)){
     statistics.two_dec_lim <- dot_args$two_dec.limit
-    dot_args$two_dec.limit <- NULLL
+    dot_args$two_dec.limit <- NULL
     warning("Deprecated: two_dec.limit argument is now statistics.two_dec_lim as of ver. 1.0")
   }
 
