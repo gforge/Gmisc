@@ -192,10 +192,10 @@ test_that("Check factor function with missing",
                   info="Factor vertical percentages don't match")
   }
 
-  a <- getDescriptionStatsBy(Loblolly$fvar, Loblolly$young_w_missing,
-                             hrzl_prop=TRUE,
-                             statistics=TRUE,
-                             html=TRUE, digits=2, statistics.sig_lim=10^-4)
+  suppressWarnings(a <- getDescriptionStatsBy(Loblolly$fvar, Loblolly$young_w_missing,
+                                              hrzl_prop=TRUE,
+                                              statistics=TRUE,
+                                              html=TRUE, digits=2, statistics.sig_lim=10^-4))
 
   for (rn in rownames(a)){
     for (cn in levels(Loblolly$young))
@@ -203,8 +203,8 @@ test_that("Check factor function with missing",
                   info="Factor percentages don't match in horizontal mode")
   }
 
-  a <- getDescriptionStatsBy(Loblolly$fvar_w_missing, Loblolly$young_w_missing,
-                             html=TRUE, digits=2, statistics.sig_lim=10^-4)
+  suppressWarnings(a <- getDescriptionStatsBy(Loblolly$fvar_w_missing, Loblolly$young_w_missing,
+                                              html=TRUE, digits=2, statistics.sig_lim=10^-4))
   stats <- table(Loblolly$fvar_w_missing, Loblolly$young_w_missing, useNA="no")
   vertical_perc_stats <- format(apply(stats, 2, function(x){
     x/sum(x)*100
@@ -219,9 +219,10 @@ test_that("Check factor function with missing",
     }
   }
 
-  a <- getDescriptionStatsBy(Loblolly$fvar_w_missing, Loblolly$young_w_missing,
-                             show_missing="ifany",
-                             html=TRUE, digits=2, statistics.sig_lim=10^-4)
+  suppressWarnings(a <- getDescriptionStatsBy(Loblolly$fvar_w_missing,
+                                              Loblolly$young_w_missing,
+                                              show_missing="ifany",
+                                              html=TRUE, digits=2, statistics.sig_lim=10^-4))
   stats <- table(Loblolly$fvar_w_missing, Loblolly$young_w_missing, useNA="ifany")
   stats <- stats[,!is.na(colnames(stats))]
   rownames(stats)[is.na(rownames(stats))] <- "Missing"
@@ -237,9 +238,9 @@ test_that("Check factor function with missing",
     }
   }
 
-  a <- getDescriptionStatsBy(Loblolly$fvar_w_missing, Loblolly$young_w_missing,
+  suppressWarnings(a <- getDescriptionStatsBy(Loblolly$fvar_w_missing, Loblolly$young_w_missing,
                              show_missing="ifany", hrzl_prop = TRUE,
-                             html=TRUE, digits=2, statistics.sig_lim=10^-4)
+                             html=TRUE, digits=2, statistics.sig_lim=10^-4))
   horizontal_perc_stats <- t(format(apply(stats, 1, function(x){
     x/sum(x)*100
   }), nsmall=2, digits=2))
@@ -251,6 +252,7 @@ test_that("Check factor function with missing",
                   info="Factor vertical percentages don't match")
     }
   }
+
 })
 
 test_that("Problem with boolean x", {
@@ -258,9 +260,9 @@ test_that("Problem with boolean x", {
   aa <- factor(sample(c("No", "Yes"), size = 50, replace = TRUE))
   aaa <- sample(c(TRUE, FALSE), size = 50, replace = TRUE)
   ret <- getDescriptionStatsBy(x = aaa, by=aa, numbers_first = TRUE)
-  expect_equivalent(nrow(ret), 2, 
+  expect_equivalent(nrow(ret), 2,
                     info="There should only be one alternative returned")
-  expect_equivalent(ncol(ret), 2, 
+  expect_equivalent(ncol(ret), 2,
                     info="There should be two columns")
   expect_match(ret["TRUE", "No"], sprintf("^%d", table(aaa, aa)["TRUE", "No"]),
                info="The value does not seem to match the raw table")
