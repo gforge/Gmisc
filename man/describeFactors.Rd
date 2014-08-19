@@ -10,6 +10,17 @@ describeFactors(x, html = FALSE, digits = 1, number_first = TRUE,
 \arguments{
   \item{...}{Passed on to \code{\link{outputInt}}}
 
+  \item{horizontal_proportions}{Is only active if
+  show_missing since this is the only case of a proportion
+  among continuous variables. This is default NULL and
+  indicates that the proportions are to be interpreted in a
+  vertical manner. If we want the data to be horizontal,
+  i.e. the total should be shown and then how these differ
+  in the different groups then supply the function with the
+  total number in each group, i.e. if done in a by manner
+  as in \code{\link{getDescriptionStatsBy}} it needs to
+  provide the number before the by() command.}
+
   \item{x}{The variable that you want the statistics for}
 
   \item{html}{If HTML compatible output shoudl be used
