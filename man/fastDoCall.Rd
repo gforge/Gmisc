@@ -26,7 +26,11 @@ The \code{\link[base]{do.call}} can be somewhat slow,
 especially when working with large objects. This function
 is based upon the suggestions from Hadley Wickham on the R
 mailing list, see
-\href{here}{http://r.789695.n4.nabble.com/call-do-call-expression-too-big-td3574335.html}
+\href{http://r.789695.n4.nabble.com/call-do-call-expression-too-big-td3574335.html}{here}.
+Also thanks to \emph{Tommy} at StackOverflow for
+\href{http://stackoverflow.com/questions/10022436/do-call-in-combination-with}{suggesting}
+how to handle double and triple colon operators, \code{::},
+further enhancing the function.
 }
 \section{Note}{
   While the function attempts to do most of what
