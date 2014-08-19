@@ -233,7 +233,7 @@ describeProp <- function(x,
         df_arg_list[[n]] <- dot_args[[n]]
       }
     }
-    return(do.call(describeFactors, df_arg_list))
+    return(fastDoCall(describeFactors, df_arg_list))
   }
 
   if (!is.factor(x))
@@ -252,7 +252,7 @@ describeProp <- function(x,
       oi_args[[n]] <- dot_args[[n]]
     }
   }
-  no <- do.call(outputInt, oi_args)
+  no <- fastDoCall(outputInt, oi_args)
 
   # The LaTeX treats % as comments unless it's properly escaped
   if(percentage_sign == TRUE)
@@ -275,6 +275,14 @@ describeProp <- function(x,
 #' factir that contains the number of times a variable and the percentage
 #'
 #' @param ... Passed on to \code{\link{outputInt}}
+#' @param horizontal_proportions Is only active if show_missing since this is
+#'  the only case of a proportion among continuous variables. This is default NULL and indicates
+#'  that the proportions are to be interpreted in a vertical manner.
+#'  If we want the data to be horizontal, i.e. the total should be shown
+#'  and then how these differ in the different groups then supply the
+#'  function with the total number in each group, i.e. if done in a by
+#'  manner as in \code{\link{getDescriptionStatsBy}} it needs to provide
+#'  the number before the by() command.
 #' @return A string formatted for printing either latex by  HTML
 #'
 #' @inheritParams describeMean
@@ -394,7 +402,7 @@ describeFactors <- function(x,
       sa_args[[n]] <- dot_args[[n]]
     }
   }
-  values <- do.call(sapply, sa_args)
+  values <- fastDoCall(sapply, sa_args)
 
   # The LaTeX treats % as comments unless it's properly escaped
   if(percentage_sign == TRUE)

@@ -357,7 +357,7 @@ table_data[['Sex']] <- getT1stat('sex')
 table_data[['Race']] <- getT1stat('race')
 
 ## combine into matrix
-output_data <- do.call(rbind, table_data)
+output_data <- fastDoCall(rbind, table_data)
 rgroup <- names(table_data)
 n.rgroup <- unname(sapply(rgroup, function(x) nrow(table_data[[x]])))
 

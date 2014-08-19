@@ -108,7 +108,7 @@ prFpDrawLine <- function (lower_limit, upper_limit, clr.line, lwd, y.offset) {
     gp_list$lwd <- lwd
 
   grid_line_args <- list(y = y.offset,
-                         gp = do.call(gpar, gp_list))
+                         gp = fastDoCall(gpar, gp_list))
   if (clipupper || cliplower) {
     # A version where arrows are added to the part outside
     # the limits of the graph
@@ -130,7 +130,7 @@ prFpDrawLine <- function (lower_limit, upper_limit, clr.line, lwd, y.offset) {
     grid_line_args$x <- unit(c(lower_limit, upper_limit), "native")
   }
 
-  do.call(grid.lines, grid_line_args)
+  fastDoCall(grid.lines, grid_line_args)
 }
 
 #' @rdname fpDrawCI
@@ -690,7 +690,7 @@ prFpGetGraphTicksAndClips <- function(xticks,
 
     dg <- xaxisGrob(at    = ticks,
                     label = ticklabels,
-                    gp    = do.call(gpar, gp_list))
+                    gp    = fastDoCall(gpar, gp_list))
   }else{
     dg <- FALSE
   }
@@ -736,7 +736,7 @@ prFpPrintXaxis <- function(axisList,
 
   grid.lines(x  = unit(axisList$zero, "native"),
              y  = 0:1,
-             gp = do.call(gpar, gp_list))
+             gp = fastDoCall(gpar, gp_list))
 
   lab_y <- unit(0, "mm")
   lab_grob_height <- unit(-2, "mm")
@@ -1126,7 +1126,7 @@ prFpGetLabels <- function(label_type, labeltext, align,
           labels[[j]][[i]] <-
             textGrob(txt_out, x = x,
                      just = just,
-                     gp = do.call(gpar, gp_list))
+                     gp = fastDoCall(gpar, gp_list))
         }else{
           gp_list <- list(fontface = "plain",
                           cex = cex,
@@ -1138,7 +1138,7 @@ prFpGetLabels <- function(label_type, labeltext, align,
           labels[[j]][[i]] <-
             textGrob(txt_out, x = x,
                      just = just,
-                     gp = do.call(gpar, gp_list))
+                     gp = fastDoCall(gpar, gp_list))
         }
 
         attr(labels[[j]][[i]], "height") <- grobHeight(labels[[j]][[i]])

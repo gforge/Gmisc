@@ -672,7 +672,7 @@ print.htmlTable<- function(x, useViewer, ...){
     # be ignored or it will be added to the output
     cat_args <- args
     cat_args <- cat_args[names(cat_args) %in% names(formals(cat))[-1]]
-    do.call(cat, c(htmlPage, cat_args))
+    fastDoCall(cat, c(htmlPage, cat_args))
 
     if (is.function(useViewer)){
       useViewer(args$file)
@@ -687,7 +687,7 @@ print.htmlTable<- function(x, useViewer, ...){
       }
     }
   }else{
-    do.call(cat, c(x, args))
+    fastDoCall(cat, c(x, args))
   }
 }
 

@@ -44,7 +44,7 @@ prGetStatistics <- function(x,
         is.character(x)){
     if (length(unique(x)) == 2){
       if (show_perc){
-        total_table <- do.call(prop_fn, describe_args)
+        total_table <- fastDoCall(prop_fn, describe_args)
       }else{
         total_table <- table(x, useNA=show_missing)
         names(total_table)[is.na(names(total_table))] <- "Missing"
@@ -56,14 +56,14 @@ prGetStatistics <- function(x,
 
     } else {
       if (show_perc)
-        total_table <- do.call(factor_fn, describe_args)
+        total_table <- fastDoCall(factor_fn, describe_args)
       else{
         total_table <- table(x, useNA=show_missing)
         names(total_table)[is.na(names(total_table))] <- "Missing"
       }
     }
   }else{
-    total_table <- do.call(continuous_fn, describe_args)
+    total_table <- fastDoCall(continuous_fn, describe_args)
 
     # If a continuous variable has two rows then it's assumed that the second is the missing
     if (length(total_table) == 2 &&
@@ -159,7 +159,7 @@ prDescGetMissing <- function (x,
       df_arg_list[[n]] <- dot_args[[n]]
     }
   }
-  missing <- do.call(describeFactors, df_arg_list)
+  missing <- fastDoCall(describeFactors, df_arg_list)
   return(missing["TRUE", ])
 }
 
