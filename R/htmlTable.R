@@ -687,7 +687,9 @@ print.htmlTable<- function(x, useViewer, ...){
       }
     }
   }else{
-    fastDoCall(cat, c(x, args))
+    cat_args <- args
+    cat_args <- cat_args[names(cat_args) %in% names(formals(cat))[-1]]
+    fastDoCall(cat, c(x, cat_args))
   }
 }
 
