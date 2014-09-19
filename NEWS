@@ -3,6 +3,9 @@ NEWS for the Gmisc package
 Changes for 1.0.0
 -----------------
 * Added the fastDoCall function as an faster alternative to the do.call
+* The forestplot2 now accepts a vector of length two for the zero in case you need an
+  area for the zero-effect
+* The forestplot2 now has a maximum colgap length for the box of the box height
 
 Changes for 0.6.8
 -----------------
@@ -22,26 +25,26 @@ Changes for 0.6.6
 
 Changes for 0.6.5
 -----------------
-* Changed the getDescriptionsBy example to work with the htmlTable() instead of 
+* Changed the getDescriptionsBy example to work with the htmlTable() instead of
   the Hmisc::latex()
-* Fixed getDescriptionsBy bug - the Total column failed when specified to be 
+* Fixed getDescriptionsBy bug - the Total column failed when specified to be
   last - thanks Alexandre Vivot
 * Added example for side-by side plotting for forestplot2
-* As of 0.98.932 the knitr package isn't loaded, instead the metadata or device 
+* As of 0.98.932 the knitr package isn't loaded, instead the metadata or device
   options indicates that it is knitting
 * htmlTable bug: The function can now handle matrices without column names
 * htmlTable bug: The function deletes and warns when n.rgroup/n.cgroup < 1
 
 Changes for 0.6.4
 -------------------
-* Bug fix for alt_col not respecting missing rgroup - added also a simple matrix 
+* Bug fix for alt_col not respecting missing rgroup - added also a simple matrix
   output test
 * Added visual tests for htmlTable and moved one of the examples there
 * Added tableCSSclass option for htmlTable - thanks jphiplip
 
 Changes for 0.6.3
 -------------------
-* Changed versioning to a 3-digit system as suggested by Yihui Xie 
+* Changed versioning to a 3-digit system as suggested by Yihui Xie
   http://yihui.name/en/2013/06/r-package-versioning/
 * Added alt_col for coloring the rows of the htmlTable rgroups - thanks raredd
 
@@ -54,8 +57,8 @@ Changes for 0.6.2.3
 Changes for 0.6.2.2
 -------------------
 * transitionPlot - fixed arrow size and empty boxes
-* outputInt now defaults to the ',' formatting according to the English 
-  language. It also has no-breaking space if html option is set. It can also 
+* outputInt now defaults to the ',' formatting according to the English
+  language. It also has no-breaking space if html option is set. It can also
   handle complex vector/matrix input.
 * describeMean now allows for custom plus minus sign
 * describe* now use the outputInt with the default english settings
@@ -67,28 +70,28 @@ Changes for 0.6.2.1
 * Added visual tests and debugged the bezierArrowGradient/transitionPlots
 * Externalized all internal functions of the transitionplot
 * Added proportions for the transitionplot
-* Managed thanks to Baptiste Auguié help on Stack Overflow I know now how to 
-  calculate the height of axisGrobs - useful both in the forestplot2 and the 
+* Managed thanks to Baptiste Auguié help on Stack Overflow I know now how to
+  calculate the height of axisGrobs - useful both in the forestplot2 and the
   transitionPlot functions
-* Fixed the adjustment of the xlabel, the lineheight argument, the viewports for 
+* Fixed the adjustment of the xlabel, the lineheight argument, the viewports for
   the forestplot2 function
 * Simplified the transitionPlot defaults
 * Fixed a gradient bug in bezierArrowGradient
 
 Changes for 0.6.2.0
 -------------------
-* Added the viewer for htmlTable allowing for direct visualisation in RStudio of 
+* Added the viewer for htmlTable allowing for direct visualisation in RStudio of
   the tables. Outside RStudio the utils::browseURL is used.
-* htmlTable added table spanner functionality, some man-page update, removed the 
+* htmlTable added table spanner functionality, some man-page update, removed the
   default NULL arguments in favor of the missing() funciton, and a few minor bugfixes.
 
 Changes for 0.6.1.1
 -------------------
-* The bezierArrowSmpl now uses "mm" internally instead of the default "npc" - 
-  this improves the rendering as the "npc" is dependent on the axis. A few 
+* The bezierArrowSmpl now uses "mm" internally instead of the default "npc" -
+  this improves the rendering as the "npc" is dependent on the axis. A few
   adjustments to arrow functions were also added.
 * Bugfixes for the bezierArrowSmplGradient.
-* Bugfixed missing data for getDescriptionStats and generated a test-file in 
+* Bugfixed missing data for getDescriptionStats and generated a test-file in
   order to check most combinations that they work
 * Fixed the legend-bug for forestplot2 when using points
 
@@ -98,7 +101,7 @@ Changes for 0.6.1.0
 
 Changes for 0.6.0.2
 --------------------
-* Fixed ticks for forestplot2 - the prFpGetGraphTicksAndClips used the exp() for 
+* Fixed ticks for forestplot2 - the prFpGetGraphTicksAndClips used the exp() for
   regular values.
 * Cleaned up some of the code for the fpDrawXXXCI functions
 
@@ -109,9 +112,9 @@ Changes for 0.6.0.1
 
 Changes for 0.6.0.0
 --------------------
-* For LibreOffice compatibility htmlTable now includes caption inside the table 
+* For LibreOffice compatibility htmlTable now includes caption inside the table
   when compatibility='LibreOffice'
-* Split the package to exclude regression functions, these are now in the Greg 
+* Split the package to exclude regression functions, these are now in the Greg
   package
 * Added title and label options to transitionPlot
 * Added a size-autofit for the transitionPlot text
@@ -124,7 +127,7 @@ Changes for 0.5.8.1
 --------------------
 * Bugfixes for printC&A and getDesc.
 * Added a pvalueFormatter
-* Fixed Intercept bug for get/printCrudeAndAdjusted - didn't include the 
+* Fixed Intercept bug for get/printCrudeAndAdjusted - didn't include the
   intercept term
 
 Changes for 0.5.8.0
@@ -139,7 +142,7 @@ Changes for 0.5.7.11
 -------------------
 * Added tfoot option to the htmlTable function
 * Switched to the proper caption-align for htmlTable
-* Added options for htmlTable() where you now can format the table counter text 
+* Added options for htmlTable() where you now can format the table counter text
   and change to Arabic numerals.
 * Bug: changed just to align for printCrudeAndAdjustedModel()
 
@@ -165,7 +168,7 @@ Changes for 0.5.7.6
 * Added more legend border and fill options to the forestplot2
 * Added the legend.title option in the forestplot2
 * Fixed the auto-sizing of the area for the forestplot2
-* Rows/elements with NA are now not included in the zero-line as they are 
+* Rows/elements with NA are now not included in the zero-line as they are
   considered to be headers
 
 Changes for 0.5.7.5
@@ -175,19 +178,19 @@ Changes for 0.5.7.5
 
 Changes for 0.5.7.4
 -------------------
-* Added some debugging info for the getDescriptionStatsBy with more detailed 
+* Added some debugging info for the getDescriptionStatsBy with more detailed
   errors when unit/total columns don't match
 
 Changes for 0.5.7.4
 -------------------
-* Externalized many of the forestplot2 functions and added the option of having 
+* Externalized many of the forestplot2 functions and added the option of having
   a set line height
 * Added new_page option for grid-based plots
 * Updated the simpleRmsAnova function
 
 Changes for 0.5.7.3
 -------------------
-* Removed the plot.new() from transitionplot, this is in order to allow 
+* Removed the plot.new() from transitionplot, this is in order to allow
   splitting plots, adding it to a viewport etc.
 
 Changes for 0.5.7.2
@@ -199,16 +202,16 @@ Changes for 0.5.7.2
 Changes for 0.5.7.1
 -------------------
 * Fixed rownames in printCrudeAndAdjusted
-* Changed printCrudeAndAdjusted to return a matrix subclass instead of 
+* Changed printCrudeAndAdjusted to return a matrix subclass instead of
   immediately printing
 * Ran through som Pkg-check and hopefully cleared out some bugs
 
 Changes for 0.5.7.0
 -------------------
-* getCrudeAndAdjusted is now an S3 method that has a default method and a method 
-  for rms objects. The rms relies on rms:::summaryrms and returns a matrix that 
+* getCrudeAndAdjusted is now an S3 method that has a default method and a method
+  for rms objects. The rms relies on rms:::summaryrms and returns a matrix that
   is pruned and used for the situation.
-* printCrudeAndAdjusted has externalized a lot of its functions and handling of 
+* printCrudeAndAdjusted has externalized a lot of its functions and handling of
   the new rms getCrudeAndAdjusted output
 * printCrudeAndAdjusted now ignores any interaction variables
 
@@ -220,8 +223,8 @@ Changes for 0.5.6.1
 
 Changes for 0.5.6.0
 -------------------
-* The forestplot2 is updated - the widths are now relative to the window size, 
-  there is a margin option, and many of the inside functions have moved to 
+* The forestplot2 is updated - the widths are now relative to the window size,
+  there is a margin option, and many of the inside functions have moved to
   helpers outside. Also fixed the alignment of the summary label to work better.
 * Fixed a minor bug for cgroup without rowlabels
 * Added default_ref for both getDescriptionStatsBy and describeProp function.
@@ -243,7 +246,7 @@ Changes for 0.5.4.5
 Changes for 0.5.4.4
 -------------------
 * Fixed a rowname problem for htmlTable
-* Changed the rowlabel.pos to be by default at the bottom, seems more natural 
+* Changed the rowlabel.pos to be by default at the bottom, seems more natural
   with multi-layered tables.
 
 Changes for 0.5.4.3
@@ -270,7 +273,7 @@ Changes for 0.5.4.1
 
 Changes for 0.5.4.0
 -------------------
-* Added a robust alternative for rms ols regressions that now can use the 
+* Added a robust alternative for rms ols regressions that now can use the
   sandwich package
 
 Changes for 0.5.3.5
@@ -309,7 +312,7 @@ Changes for 0.5.2.0
 Changes for 0.5.1.1
 -------------------
 * Added lwd parameters to the transitionPlot lines
-* Changed the transition matrix - the sums were not necessary as they easily can 
+* Changed the transition matrix - the sums were not necessary as they easily can
   be calculated from the rowSums/colSums.
 
 Changes for 0.5.1.0

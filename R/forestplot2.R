@@ -46,7 +46,8 @@
 #' @param fontfamily.labelrow The fontfamily of a regular row
 #' @param clip Lower and upper limits for clipping confidence intervals to arrows
 #' @param xlab x-axis label
-#' @param zero x-axis coordinate for zero line
+#' @param zero x-axis coordinate for zero line. If you provide a vector of length 2 it
+#'   will print a rectangle instead of just a line.
 #' @param graphwidth Width of confidence interval graph, see \code{\link{unit}} for
 #'   details on how to utilize mm etc. The default is \code{auto}, that is it uses up whatever
 #'   space that is left after adjusting for text size and legend.
@@ -160,6 +161,9 @@ forestplot2 <- function (labeltext,
     mean <- labeltext
     labeltext <- rownames(mean)
   }
+
+  if (length(zero) > 2)
+    stop("The zero marker can only be 1 or 2 values, you have provided: '", length(zero), "' values")
 
   if (missing(labeltext))
     labeltext <- rownames(mean)
@@ -406,6 +410,12 @@ forestplot2 <- function (labeltext,
     lGrobs <- prFpGetLegendGrobs(legend = legend,
                                  cex = legend_args$cex,
                                  title = legend_args$title)
+    legend_colgap <- colgap
+    if (convertUnit(legend_colgap, unitTo = "mm", valueOnly = TRUE) >
+          convertUnit(attr(lGrobs, "max_height"), unitTo = "mm", valueOnly = TRUE)){
+      legend_colgap <- attr(lGrobs, "max_height")
+    }
+
     legend_horizontal_height <-
       sum(legend_args$padding,
           attr(lGrobs, "max_height"),
@@ -419,9 +429,11 @@ forestplot2 <- function (labeltext,
     legend_vertical_width <-
       sum(unit.c(legend_args$padding,
                  attr(lGrobs, "max_height"),
-                 colgap,
+                 legend_colgap,
                  attr(lGrobs, "max_width"),
                  legend_args$padding))
+
+
 
     # Prepare the viewports if the legend is not
     # positioned inside the forestplot, i.e. on the top or right side
@@ -429,10 +441,10 @@ forestplot2 <- function (labeltext,
       ("align" %in% names(legend_args$pos) && legend_args$pos[["align"]] == "horizontal")){
       legend_layout <- grid.layout(nrow=3, ncol=1,
                                    heights=unit.c(legend_horizontal_height,
-                                                 colgap+colgap,
+                                                 legend_colgap+legend_colgap,
                                                  unit(1, "npc")-
                                                    legend_horizontal_height-
-                                                   colgap-colgap))
+                                                   legend_colgap-legend_colgap))
 
       legend_pos <- list(row = 1,
                          col = 1)
@@ -441,9 +453,9 @@ forestplot2 <- function (labeltext,
     }else{
       legend_layout <- grid.layout(nrow=1, ncol=3,
                                    widths = unit.c(unit(1, "npc") -
-                                                     colgap -
+                                                     legend_colgap -
                                                      legend_vertical_width,
-                                                   colgap,
+                                                   legend_colgap,
                                                    legend_vertical_width))
       legend_pos <- list(row = 1,
                          col = 3)
@@ -468,7 +480,7 @@ forestplot2 <- function (labeltext,
     # Draw the legend
     prFpDrawLegend(lGrobs = lGrobs,
                    col = col,
-                   colgap = convertUnit(colgap, unitTo="mm"),
+                   colgap = convertUnit(legend_colgap, unitTo="mm"),
                    pos = legend_args$pos,
                    gp = legend_args$gp,
                    r = legend_args$r,
@@ -706,9 +718,9 @@ forestplot2 <- function (labeltext,
       width <- 0
       for (i in 1:length(lGrobs)){
         if (width > 0){
-          width <- width + convertUnit(colgap, unitTo="npc", valueOnly=TRUE)
+          width <- width + convertUnit(legend_colgap, unitTo="npc", valueOnly=TRUE)
         }
-        width <- width + convertUnit(attr(lGrobs, "max_height") + colgap + attr(lGrobs[[i]], "width"), unitTo="npc", valueOnly=TRUE)
+        width <- width + convertUnit(attr(lGrobs, "max_height") + legend_colgap + attr(lGrobs[[i]], "width"), unitTo="npc", valueOnly=TRUE)
       }
       # Add the padding
       width <- unit(width + convertUnit(legend_args$padding, unitTo="npc", valueOnly=TRUE)*2, "npc")
@@ -730,7 +742,7 @@ forestplot2 <- function (labeltext,
     # Draw the legend
     prFpDrawLegend(lGrobs = lGrobs,
                    col = col,
-                   colgap = colgap,
+                   colgap = legend_colgap,
                    pos = legend_args$pos,
                    gp = legend_args$gp,
                    r = legend_args$r,

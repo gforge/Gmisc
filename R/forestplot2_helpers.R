@@ -734,9 +734,18 @@ prFpPrintXaxis <- function(axisList,
   if (!missing(lwd.zero))
     gp_list$lwd <- lwd.zero
 
-  grid.lines(x  = unit(axisList$zero, "native"),
-             y  = 0:1,
-             gp = fastDoCall(gpar, gp_list))
+  if (length(axisList$zero) == 1){
+    grid.lines(x  = unit(axisList$zero, "native"),
+               y  = 0:1,
+               gp = fastDoCall(gpar, gp_list))
+  }else if (length(axisList$zero) == 2){
+    gp_list$fill <- gp_list$col
+    grid.polygon(x  = unit(c(axisList$zero,
+                             rev(axisList$zero)),
+                           "native"),
+              y  = c(0, 0, 1, 1),
+              gp = fastDoCall(gpar, gp_list))
+  }
 
   lab_y <- unit(0, "mm")
   lab_grob_height <- unit(-2, "mm")

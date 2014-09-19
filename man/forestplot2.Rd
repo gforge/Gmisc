@@ -57,7 +57,9 @@ forestplot2(labeltext, mean, lower, upper, align, is.summary = FALSE,
 
   \item{xlab}{x-axis label}
 
-  \item{zero}{x-axis coordinate for zero line}
+  \item{zero}{x-axis coordinate for zero line. If you
+  provide a vector of length 2 it will print a rectangle
+  instead of just a line.}
 
   \item{graphwidth}{Width of confidence interval graph, see
   \code{\link{unit}} for details on how to utilize mm etc.
@@ -212,8 +214,7 @@ forestplot2(row_names,
             cex  = 2,
             lineheight = "auto",
             xlab = "Lab axis txt")
-popViewport()
-popViewport()
+popViewport(2)
 
 
 # An advanced test
@@ -241,7 +242,7 @@ low <- with(test_data, cbind(low1, low2))
 high <- with(test_data, cbind(high1, high2))
 forestplot2(row_names, coef, low, high,
             main="Cool study",
-            zero = 1, boxsize=0.5,
+            zero = c(0.98, 1.02), boxsize=0.5,
             col=fpColors(box=c("royalblue", "gold"),
                          line=c("darkblue", "orange"),
                          summary=c("darkblue", "red")),

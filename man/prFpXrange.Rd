@@ -17,7 +17,9 @@ prFpXrange(upper, lower, clip, zero, xticks, xlog)
   \item{clip}{Lower and upper limits for clipping
   confidence intervals to arrows}
 
-  \item{zero}{x-axis coordinate for zero line}
+  \item{zero}{x-axis coordinate for zero line. If you
+  provide a vector of length 2 it will print a rectangle
+  instead of just a line.}
 
   \item{xticks}{Optional user-specified x-axis tick marks.
   Specify NULL to use the defaults, numeric(0) to omit the
