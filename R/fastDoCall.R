@@ -23,7 +23,8 @@ fastDoCall <- function(what, args, quote = FALSE, envir = parent.frame()){
   if (quote)
     args <- lapply(args, enquote)
 
-  if (is.null(names(args))){
+  if (is.null(names(args)) ||
+        is.data.frame(args)){
     argn <- args
     args <- list()
   }else{
