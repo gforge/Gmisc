@@ -160,6 +160,9 @@ getDescriptionStatsBy <- function(x,
   }
 
   show_missing <- prConvertShowMissing(show_missing)
+  if (show_missing == "ifany" &&
+        any(is.na(x)))
+    show_missing <- "always"
 
   # If all values are to be shown then simply use
   # the factors function

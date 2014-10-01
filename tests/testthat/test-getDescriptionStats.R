@@ -267,3 +267,18 @@ test_that("Problem with boolean x", {
   expect_match(ret["TRUE", "No"], sprintf("^%d", table(aaa, aa)["TRUE", "No"]),
                info="The value does not seem to match the raw table")
 })
+
+
+test_that("Error when one category has no missing in it", {
+  set.seed(1)
+  aa <- factor(sample(c("A", "B"), size = 50, replace = TRUE))
+  aa[sample(1:50, size = 5)] <- NA
+  aaa <- factor(sample(1:3, size = 50, replace = TRUE))
+  aa[aaa == 2 & is.na(aa)] <- "B"
+  ret <-
+    getDescriptionStatsBy(x = aa, by=aaa, show_missing = "ifany", html=TRUE)
+
+  expect_match(ret["A","2"], sprintf("^%d", table(aa, aaa)["A","2"]),
+               info="The value does not seem to match the raw table")
+  expect_match(ret["Missing","2"], "^0")
+})
