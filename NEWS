@@ -6,6 +6,7 @@ Changes for 1.0.0
 * The forestplot2 now accepts a vector of length two for the zero in case you need an
   area for the zero-effect
 * The forestplot2 now has a maximum colgap length for the box of the box height
+* htmlTable can now handle rowname = FALSE in order to surpress rownames
 
 Changes for 0.6.8
 -----------------

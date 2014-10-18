@@ -199,3 +199,11 @@ test_that("Check that dimensions are correct with cgroup usage",
                "3 rgroup")
 })
 
+test_that("rowname = FALSE it should skip those",
+{
+  mx <- matrix(1:6, ncol=3)
+  rownames(mx) <- c("Row A", "Row B")
+  table_str <- htmlTable(mx, rowname = FALSE)
+  expect_false(grepl("FALSE", table_str))
+  expect_false(grepl("Row A", table_str))
+})

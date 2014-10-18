@@ -104,7 +104,11 @@
 #'  "bottom", "header", or a integer between \code{1} and \code{nrow(cgroup) + 1}. The options
 #'  "bottom", "header" are the same, where the row label is presented at the same level as
 #'  the header.
-#' @param rowname Default is rownames of matrix or data.frame.
+#' @param rowname Default is rownames of matrix or data.frame. If you
+#'  provide \code{FALSE} then it will skip the rownames. Note that
+#'  even if you do \code{rownames(my_dataframe) <- NULL} it still has
+#'  rownames, thus you need to use \code{FALSE} if you want to 
+#'  surpress those.
 #' @param caption a text string to use as a caption to print at the top of the first
 #'  page of the table. Default is no caption.
 #' @param caption.loc set to \code{"bottom"} to position a caption below the table
@@ -182,20 +186,31 @@ htmlTable <- function(x,
                               paste, collapse = '')
                    )
 
+  skip.rownames <- function(rowname){
+    if(missing(rowname))
+      return(TRUE)
+    
+    if (length(rowname) == 1 &&
+         rowname == FALSE)
+      return(TRUE)
+    
+    return(FALSE)
+  }
   # Unfortunately in knitr there seems to be some issue when the
   # rowname is specified immediately as: rowname=rownames(x)
   if (missing(rowname)){
     if (any(is.null(rownames(x)) == FALSE))
       rowname <- rownames(x)
-  }else if (any(is.null(rownames(x))) && !missing(rgroup))
+  }else if (any(is.null(rownames(x))) && !missing(rgroup)){
     warning("You have not specified rownames but you seem to have rgroups.",
             "If you have the first column as rowname but you want the rgroups",
             "to result in subhedings with indentation below then",
             "you should change the rownames to the first column and then",
             "remove it from the table matrix (the x argument object).")
+  }
 
   if (!missing(rowlabel) &&
-        missing(rowname))
+        skip.rownames(rowname))
     stop("You can't have a row label and no rownames.",
          " Either remove the rowlabel argument",
          ", set the rowname argument",
@@ -361,7 +376,7 @@ htmlTable <- function(x,
   }
 
   # A column counter that is used for <td colspan="">
-  total_columns <- ncol(x)+!missing(rowname)
+  total_columns <- ncol(x)+!skip.rownames(rowname)
   if(!missing(cgroup)){
     if (!is.matrix(cgroup)){
       total_columns <- total_columns + length(cgroup) - 1
@@ -408,7 +423,7 @@ htmlTable <- function(x,
   }
 
   rowname_align <- prHtGetAlign("l")
-  if (!missing(rowname) && nchar(align) - 1 == ncol(x)){
+  if (!skip.rownames(rowname) && nchar(align) - 1 == ncol(x)){
     rowname_align <- prHtGetAlign(substr(align, 1,1))
     align <- substring(align, 2)
   }
@@ -459,7 +474,7 @@ htmlTable <- function(x,
     if (!missing(rowlabel) && rowlabel.pos == no_cgroup_rows + 1){
       table_str <- sprintf("%s\n\t\t<th style='font-weight: 900; border-bottom: 1px solid grey; %s'>%s</th>",
         table_str, ts, rowlabel)
-    }else if(!missing(rowname)){
+    }else if(!skip.rownames(rowname)){
       table_str <- sprintf("%s\n\t\t<th style='border-bottom: 1px solid grey; %s'> </th>",
         table_str, ts)
     }
@@ -554,7 +569,7 @@ htmlTable <- function(x,
     if (row_nr == nrow(x))
       cell_style = bottom_row_style
 
-    if (!missing(rowname)){
+    if (!skip.rownames(rowname)){
       # Minor change from original function. If the group doesn't have
       # a group name then there shouldn't be any indentation
       if (!missing(rgroup) &&
