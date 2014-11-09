@@ -282,3 +282,16 @@ test_that("Error when one category has no missing in it", {
                info="The value does not seem to match the raw table")
   expect_match(ret["Missing","2"], "^0")
 })
+
+test_that("Error when one continuous variable has no missing in it", {
+  set.seed(1)
+  aa <- runif(50)
+  aa[sample(1:50, size = 5)] <- NA
+  aaa <- factor(sample(1:3, size = 50, replace = TRUE))
+  aa[aaa == 2 & is.na(aa)] <- 1
+  ret <-
+    getDescriptionStatsBy(x = aa, by=aaa, show_missing = "ifany", html=TRUE)
+  
+  expect_match(ret["Missing","2"], 
+               sprintf("^%d", sum(is.na(aa[aaa == 2]))))
+})

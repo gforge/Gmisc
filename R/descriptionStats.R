@@ -88,7 +88,7 @@ describeMean <- function(x,
       percentage_sign = ""
 
     empty <- sprintf(ifelse(number_first, "0 (0%s)", "0%s (0)"), percentage_sign)
-    ret <- rbind(ret, rep(empty, times=ncol(ret)))
+    ret <- rbind(ret, rep(empty, times=NCOL(ret)))
     rownames(ret) <- c("Mean (SD)", "Missing")
   } else {
     names(ret) <- "Mean (SD)"
@@ -162,7 +162,7 @@ describeMedian <- function(x,
       percentage_sign = ""
 
     empty <- sprintf(ifelse(number_first, "0 (0%s)", "0%s (0)"), percentage_sign)
-    ret <- rbind(ret, rep(empty, times=ncol(ret)))
+    ret <- rbind(ret, rep(empty, times=NCOL(ret)))
     rownames(ret) <- c(
       ifelse(iqr, "Median (IQR)", "Median (range)"),
       "Missing")
