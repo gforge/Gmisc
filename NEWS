@@ -6,8 +6,10 @@ Changes for 1.0.0
 * The forestplot2 now accepts a vector of length two for the zero in case you need an
   area for the zero-effect
 * The forestplot2 now has a maximum colgap length for the box of the box height
-* htmlTable can now handle rowname = FALSE in order to surpress rownames
 * All functions default to html = TRUE instead of FALSE
+* htmlTable can now handle rowname = FALSE in order to surpress rownames
+* htmlTable now defaults to the layout of ctable as this is the more commonly found layout among medical papers
+* htmlTable rgroup has the additional rgroup.padding for those that want to change the no-breaking space padding
 * Fixed a few bugs
 
 Changes for 0.6.8

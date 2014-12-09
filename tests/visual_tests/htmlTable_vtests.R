@@ -7,6 +7,16 @@ htmlTable(mx, n.rgroup=c(2), rgroup=c("Nice!"),
           rgroupCSSstyle = "font-weight:900; background-color:#f2f2f2;")
 
 
+colnames(mx) <- NULL
+htmlTable(mx)
+htmlTable(mx, n.rgroup=2, rgroup="A")
+htmlTable(mx, tspanner = "AA", n.tspanner = 2,
+          n.rgroup=2, rgroup="A")
+htmlTable(mx, tspanner = "AA", n.tspanner = 2)
+
+htmlTable(mx, n.rgroup=2, rgroup="A", rgroup.padding = "")
+
+
 # This will cause the table to look strange
 # but forcing &gt;/&lt; is a bigger constraint
 # that may be undesirable for more advanced users.
@@ -15,6 +25,7 @@ mx[1,2] <- "2<sup>2</sup>"
 mx[1,3] <- "<span style=\"font-weight: 900\">3</span>"
 mx[2,1] <- "<td>"
 htmlTable(mx)
+
 
 mx <- matrix(1:9, ncol=3)
 colnames(mx) <- LETTERS[1:3]
@@ -29,7 +40,7 @@ htmlTable(mx_3_times,
           n.rgroup = rep(c(1,2), times=3),
           tspanner=c("First", "Second", "Third"),
           n.tspanner=rep(nrow(mx), times=3),
-          rowlabel = '', 
+          rowlabel = '',
           altcol = c('white','lightblue1'),
           tfoot = "Some footer text",
           caption="Caption text")
@@ -41,7 +52,7 @@ htmlTable(mx_3_times,
           n.rgroup = rep(c(1,2), times=3),
           tspanner=c("First", "Second", "Third"),
           n.tspanner=rep(nrow(mx), times=3),
-          rowlabel = '', 
+          rowlabel = '',
           altcol = c('white','lightblue1'),
           tfoot = "Some footer text",
           caption="Caption text")
@@ -53,18 +64,18 @@ htmlTable(mx_3_times,
           n.rgroup = rep(c(1,2), times=3),
           tspanner=c("First", "Second", "Third"),
           n.tspanner=rep(nrow(mx), times=3),
-          rowlabel = '', 
+          rowlabel = '',
           tfoot = "Some footer text",
           caption="Caption text")
 
 
-htmlTable(mx_3_times, 
+htmlTable(mx_3_times,
           tspannerCSSstyle="font-weight: 900;",
           tspannerCSSseparator="border-top: 2px solid red;",
           rgroup = rep(c("Group a", "Group b and c"), times=3),
           n.rgroup = rep(c(1,2), times=3),
           tspanner=c("First", "Second", "Third"),
           n.tspanner=rep(nrow(mx), times=3),
-          rowlabel = '', 
+          rowlabel = '',
           tfoot = "Some footer text",
           caption="Caption text")

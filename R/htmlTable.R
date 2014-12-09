@@ -85,6 +85,8 @@
 #'  is not specified, \code{n.rgroup} is just used to divide off blocks of rows by horizontal
 #'  lines. If \code{rgroup} is given but \code{n.rgroup} is omitted, \code{n.rgroup} will
 #'  default so that each row group contains the same number of rows.
+#' @param rgroup.padding Generally two non-breakings spaces, i.e. \code{&nbsp;&nbsp;}, but some
+#'  journals only have a bold face for the rgroup and leaves the subelements unindented.
 #' @param rgroupCSSstyle CSS style for the rgorup, if different styles are wanted for each of the
 #'  rgroups you can just specify a vector with the number of elements
 #' @param rgroupCSSseparator The line between different rgroups. The line is set to the TR element
@@ -161,12 +163,13 @@ htmlTable <- function(x,
                       rgroup, n.rgroup,
                       rgroupCSSstyle = "font-weight: 900;",
                       rgroupCSSseparator = "",
+                      rgroup.padding = "&nbsp;&nbsp;",
                       tspanner, n.tspanner,
-                      tspannerCSSstyle = "font-weight: 900; text-transform:capitalize; text-align: center;",
+                      tspannerCSSstyle = "font-weight: 900; text-transform:capitalize; text-align: left;",
                       tspannerCSSseparator = "border-top: 1px solid grey;",
                       rowlabel,
                       rowlabel.pos = "bottom",
-                      ctable = FALSE,
+                      ctable = TRUE,
                       compatibility = "LibreOffice",
                       rowname,
                       caption,
@@ -457,7 +460,7 @@ htmlTable <- function(x,
                                               rowlabel.pos = rowlabel.pos,
                                               cgroup_spacer_cells = cgroup_spacer_cells))
     }
-    first_row = FALSE
+    first_row <- FALSE
   }
 
 
@@ -481,14 +484,14 @@ htmlTable <- function(x,
 
     cell_style= "border-bottom: 1px solid grey;"
     if (first_row){
-      cell_style=sprintf("%s %s", cell_style, top_row_style)
+      cell_style=paste(cell_style, top_row_style, sep = "; ")
     }
     table_str <- prHtAddCells(table_str = table_str, rowcells = headings,
                               cellcode = "th", align = prHtGetAlign(halign), style=cell_style,
                               cgroup_spacer_cells = cgroup_spacer_cells)
 
     table_str <- sprintf("%s\n\t</tr>", table_str)
-    first_row = FALSE
+    first_row <- FALSE
   }
 
   #################################
@@ -514,14 +517,20 @@ htmlTable <- function(x,
       # appears as if underneath the group while it's
       # actually above but this merges into one line
       if (tspanner_iterator > 1){
-        rs <- sprintf("%s %s", rs,
-                      tspannerCSSseparator[tspanner_iterator-1])
+        rs <- paste(rs,
+                    tspannerCSSseparator[tspanner_iterator-1],
+                    sep="; ")
+      }
+
+      if (first_row){
+        rs <- paste(rs, top_row_style, sep = "; ")
       }
 
       table_str <- sprintf("%s\n\t<tr><td colspan='%d' style='%s'>%s</td></tr>", table_str,
                            total_columns,
                            rs,
                            tspanner[tspanner_iterator])
+      first_row <- FALSE
     }
 
 
@@ -549,6 +558,10 @@ htmlTable <- function(x,
       if (is.na(rgroup[rgroup_iterator]) == FALSE &&
             rgroup[rgroup_iterator] != ""){
 
+        if (first_row){
+          rs <- paste(rs, top_row_style, sep = "; ")
+        }
+
         ## this will allow either rgroupCSSstyle or altcol to
         ## color the rgroup label rows
         table_str <- sprintf("%s\n\t<tr style='background-color:%s;'><td colspan='%d' style='%s'>%s</td></tr>", table_str,
@@ -556,15 +569,26 @@ htmlTable <- function(x,
                              total_columns,
                              rs,
                              rgroup[rgroup_iterator])
+
+        first_row <- FALSE
       }
     }
 
+
     if (!missing(rgroup)){
       ## this will change the bgcolor of the rows, by rgroup
-      table_str <- sprintf("%s\n\t<tr style='background-color:%s;'>", table_str, rs2[row_nr])
+      rs <- sprintf("background-color:%s;", rs2[row_nr])
     }else{
-      table_str <- sprintf("%s\n\t<tr>", table_str)
+      rs <- ""
     }
+
+    if (first_row){
+      rs <- paste(rs, top_row_style, sep = "; ")
+    }
+    first_row <- FALSE
+
+    table_str <- sprintf("%s\n\t<tr style='%s;'>", table_str, rs)
+
     cell_style = "";
     if (row_nr == nrow(x))
       cell_style = bottom_row_style
@@ -580,8 +604,8 @@ htmlTable <- function(x,
 
         # The padding doesn't work well with the Word import - well nothing really works well with word...
         # table_str <- sprintf("%s\n\t\t<td style='padding-left: .5em;'>%s</td>", table_str, rowname[row_nr])
-        table_str <- sprintf("%s\n\t\t<td style='%s'>&nbsp;&nbsp;%s</td>",
-          table_str, prHtAddAlign2Style(cell_style, rowname_align), rowname[row_nr])
+        table_str <- sprintf("%s\n\t\t<td style='%s'>%s%s</td>",
+          table_str, prHtAddAlign2Style(cell_style, rowname_align), rgroup.padding, rowname[row_nr])
       }else
         table_str <- sprintf("%s\n\t\t<td style='%s'>%s</td>",
           table_str, prHtAddAlign2Style(cell_style, rowname_align), rowname[row_nr])
