@@ -9,8 +9,8 @@ prDescGetMissing(x, html, number_first, percentage_sign, language,
 \arguments{
   \item{x}{The variable that you want the statistics for}
 
-  \item{html}{If HTML compatible output shoudl be used
-  instead of default LaTeX}
+  \item{html}{If HTML compatible output should be used. If
+  \code{FALSE} it outputs LaTeX formatting}
 
   \item{number_first}{If the number should be given or if
   the percentage should be presented first. The second is

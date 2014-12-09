@@ -4,15 +4,15 @@
 \title{A function that returns a description proportion that contains
 the number and the percentage}
 \usage{
-describeProp(x, html = FALSE, digits = 1, number_first = TRUE,
+describeProp(x, html = TRUE, digits = 1, number_first = TRUE,
   show_missing = FALSE, show_missing.digits = digits, default_ref,
   percentage_sign = TRUE, language = "en", ...)
 }
 \arguments{
   \item{x}{The variable that you want the statistics for}
 
-  \item{html}{If HTML compatible output shoudl be used
-  instead of default LaTeX}
+  \item{html}{If HTML compatible output should be used. If
+  \code{FALSE} it outputs LaTeX formatting}
 
   \item{digits}{The number of decimals used}
 

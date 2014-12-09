@@ -3,13 +3,13 @@
 \alias{splitLines4Table}
 \title{A helper function for html/LaTeX line formatting}
 \usage{
-splitLines4Table(..., html = FALSE)
+splitLines4Table(..., html = TRUE)
 }
 \arguments{
   \item{...}{The lines that you want to be joined}
 
-  \item{html}{If it's suppose to be in html or LaTeX.
-  Default is LaTeX.}
+  \item{html}{If HTML compatible output should be used. If
+  \code{FALSE} it outputs LaTeX formatting}
 }
 \value{
 string

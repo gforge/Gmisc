@@ -3,15 +3,15 @@
 \alias{describeMean}
 \title{Describe the mean}
 \usage{
-describeMean(x, html = FALSE, digits = 1, number_first = TRUE,
+describeMean(x, html = TRUE, digits = 1, number_first = TRUE,
   show_missing, show_missing.digits = digits, percentage_sign = TRUE,
   plusmin_str, language = "en", ...)
 }
 \arguments{
   \item{x}{The variable that you want the statistics for}
 
-  \item{html}{If HTML compatible output shoudl be used
-  instead of default LaTeX}
+  \item{html}{If HTML compatible output should be used. If
+  \code{FALSE} it outputs LaTeX formatting}
 
   \item{digits}{The number of decimals used}
 

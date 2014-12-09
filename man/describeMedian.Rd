@@ -4,7 +4,7 @@
 \title{A function that returns a description median that contains
 the interquartile range or the full range}
 \usage{
-describeMedian(x, iqr = TRUE, html = FALSE, digits = 1,
+describeMedian(x, iqr = TRUE, html = TRUE, digits = 1,
   number_first = TRUE, show_missing = FALSE, show_missing.digits = digits,
   percentage_sign = TRUE, language = "en", ...)
 }
@@ -13,8 +13,8 @@ describeMedian(x, iqr = TRUE, html = FALSE, digits = 1,
 
   \item{iqr}{If interquartile range should be used}
 
-  \item{html}{If HTML compatible output shoudl be used
-  instead of default LaTeX}
+  \item{html}{If HTML compatible output should be used. If
+  \code{FALSE} it outputs LaTeX formatting}
 
   \item{digits}{The number of decimals used}
 

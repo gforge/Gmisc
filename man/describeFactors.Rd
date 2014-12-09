@@ -3,15 +3,15 @@
 \alias{describeFactors}
 \title{Describes factor variables}
 \usage{
-describeFactors(x, html = FALSE, digits = 1, number_first = TRUE,
+describeFactors(x, html = TRUE, digits = 1, number_first = TRUE,
   show_missing = FALSE, show_missing.digits = digits,
   horizontal_proportions, percentage_sign = TRUE, language = "en", ...)
 }
 \arguments{
   \item{x}{The variable that you want the statistics for}
 
-  \item{html}{If HTML compatible output shoudl be used
-  instead of default LaTeX}
+  \item{html}{If HTML compatible output should be used. If
+  \code{FALSE} it outputs LaTeX formatting}
 
   \item{digits}{The number of decimals used}
 

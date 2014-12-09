@@ -82,8 +82,7 @@ getT1stat <- function(varname, digits = 0) {
                         add_total_col = TRUE,
                         show_all_values = TRUE,
                         hrzl_prop = FALSE,
-                        statistics = FALSE,
-                        html = TRUE,
+                        statistics = FALSE
                         digits = digits,
                         continuous_fn = describeMedian_minmax)
 }

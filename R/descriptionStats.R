@@ -7,8 +7,8 @@
 #'
 #' @param x The variable that you want the statistics for
 #' @param digits The number of decimals used
-#' @param html If HTML compatible output shoudl be used instead
-#'  of default LaTeX
+#' @param html If HTML compatible output should be used. If \code{FALSE}
+#'  it outputs LaTeX formatting
 #' @param number_first If the number should be given or if the percentage
 #'  should be presented first. The second is encapsulated in parentheses ().
 #'  This is only used together with the show_missing variable.
@@ -38,8 +38,8 @@
 #' @family description functions
 #' @export
 describeMean <- function(x,
-                         html=FALSE,
-                         digits=1,
+                         html = TRUE,
+                         digits = 1,
                          number_first = TRUE,
                          show_missing,
                          show_missing.digits = digits,
@@ -114,9 +114,9 @@ describeMean <- function(x,
 #' @family description functions
 #' @export
 describeMedian <- function(x,
-                           iqr=TRUE,
-                           html=FALSE,
-                           digits=1,
+                           iqr = TRUE,
+                           html = TRUE,
+                           digits = 1,
                            number_first = TRUE,
                            show_missing = FALSE,
                            show_missing.digits = digits,
@@ -187,8 +187,8 @@ describeMedian <- function(x,
 #' @family description functions
 #' @export
 describeProp <- function(x,
-                         html=FALSE,
-                         digits=1,
+                         html = TRUE,
+                         digits = 1,
                          number_first = TRUE,
                          show_missing = FALSE,
                          show_missing.digits = digits,
@@ -306,8 +306,8 @@ describeProp <- function(x,
 #'
 #' @export
 describeFactors <- function(x,
-                            html=FALSE,
-                            digits=1,
+                            html = TRUE,
+                            digits = 1,
                             number_first = TRUE,
                             show_missing = FALSE,
                             show_missing.digits = digits,

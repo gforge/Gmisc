@@ -3,7 +3,7 @@
 \alias{getDescriptionStatsBy}
 \title{Creating of description statistics}
 \usage{
-getDescriptionStatsBy(x, by, digits = 1, html = FALSE, NEJMstyle = FALSE,
+getDescriptionStatsBy(x, by, digits = 1, html = TRUE, NEJMstyle = FALSE,
   numbers_first = TRUE, statistics = FALSE, statistics.sig_lim = 10^-4,
   statistics.two_dec_lim = 10^-2, show_missing,
   show_missing.digits = digits, continuous_fn = describeMean,
@@ -20,8 +20,8 @@ getDescriptionStatsBy(x, by, digits = 1, html = FALSE, NEJMstyle = FALSE,
 
   \item{digits}{The number of decimals used}
 
-  \item{html}{If HTML compatible output shoudl be used
-  instead of default LaTeX}
+  \item{html}{If HTML compatible output should be used. If
+  \code{FALSE} it outputs LaTeX formatting}
 
   \item{NEJMstyle}{Adds - no (\%) at the end to
   proportions}
@@ -142,11 +142,9 @@ mtcars$col <- factor(sample(c("red", "black", "silver"),
 label(mtcars$col) <- "Car color"
 
 mpg_data <- getDescriptionStatsBy(mtcars$mpg, mtcars$am,
-                                  use_units = TRUE,
-                                  html = TRUE)
+                                  use_units = TRUE)
 wt_data <- getDescriptionStatsBy(mtcars$wt, mtcars$am,
-                                 use_units = TRUE,
-                                 html = TRUE)
+                                 use_units = TRUE)
 
 htmlTable(
   rbind(mpg_data, wt_data),

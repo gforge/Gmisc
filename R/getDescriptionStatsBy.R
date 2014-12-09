@@ -10,8 +10,8 @@
 #' @param by The variable that you want to split into different
 #'  columns
 #' @param digits The number of decimals used
-#' @param html If HTML compatible output shoudl be used instead
-#'  of default LaTeX
+#' @param html If HTML compatible output should be used. If \code{FALSE}
+#'  it outputs LaTeX formatting
 #' @param NEJMstyle Adds - no (\%) at the end to proportions
 #' @param numbers_first If the number should be given or if the percentage
 #'  should be presented first. The second is encapsulated in parentheses ().
@@ -78,7 +78,8 @@
 getDescriptionStatsBy <- function(x,
                                   by,
                                   digits=1,
-                                  html = FALSE, NEJMstyle = FALSE,
+                                  html = TRUE,
+                                  NEJMstyle = FALSE,
                                   numbers_first = TRUE,
                                   statistics=FALSE,
                                   statistics.sig_lim=10^-4,

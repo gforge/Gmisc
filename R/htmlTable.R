@@ -107,7 +107,7 @@
 #' @param rowname Default is rownames of matrix or data.frame. If you
 #'  provide \code{FALSE} then it will skip the rownames. Note that
 #'  even if you do \code{rownames(my_dataframe) <- NULL} it still has
-#'  rownames, thus you need to use \code{FALSE} if you want to 
+#'  rownames, thus you need to use \code{FALSE} if you want to
 #'  surpress those.
 #' @param caption a text string to use as a caption to print at the top of the first
 #'  page of the table. Default is no caption.
@@ -189,11 +189,11 @@ htmlTable <- function(x,
   skip.rownames <- function(rowname){
     if(missing(rowname))
       return(TRUE)
-    
+
     if (length(rowname) == 1 &&
          rowname == FALSE)
       return(TRUE)
-    
+
     return(FALSE)
   }
   # Unfortunately in knitr there seems to be some issue when the
@@ -718,8 +718,8 @@ print.htmlTable<- function(x, useViewer, ...){
 #' I've created this simple helper function
 #'
 #' @param ... The lines that you want to be joined
-#' @param html If it's suppose to be in html or LaTeX.
-#'  Default is LaTeX.
+#' @param html If HTML compatible output should be used. If \code{FALSE}
+#'  it outputs LaTeX formatting
 #' @return string
 #'
 #' @examples
@@ -729,7 +729,7 @@ print.htmlTable<- function(x, useViewer, ...){
 #'
 #'
 #' @export
-splitLines4Table <- function(..., html=FALSE){
+splitLines4Table <- function(..., html = TRUE){
   strings <- c()
   for (i in list(...)){
     if (is.list(i)){

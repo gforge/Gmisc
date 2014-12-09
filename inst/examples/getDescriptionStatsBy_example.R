@@ -18,11 +18,9 @@ mtcars$col <- factor(sample(c("red", "black", "silver"),
 label(mtcars$col) <- "Car color"
 
 mpg_data <- getDescriptionStatsBy(mtcars$mpg, mtcars$am,
-                                  use_units = TRUE,
-                                  html = TRUE)
+                                  use_units = TRUE)
 wt_data <- getDescriptionStatsBy(mtcars$wt, mtcars$am,
-                                 use_units = TRUE,
-                                 html = TRUE)
+                                 use_units = TRUE)
 
 htmlTable(
   rbind(mpg_data, wt_data),
