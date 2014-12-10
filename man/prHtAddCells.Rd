@@ -35,11 +35,10 @@ string for \code{\link{htmlTable}}
 }
 \seealso{
 Other hidden helper functions for \code{\link{htmlTable}}:
-\code{\link{prHtAddAlign2Style}};
 \code{\link{prHtAddSemicolon2StrEnd}};
 \code{\link{prHtGetCgroupHeader}};
 \code{\link{prHtGetRowlabelPos}};
-\code{\link{prHtGetTableCntr}};
+\code{\link{prHtGetStyle}}; \code{\link{prHtGetTableCntr}};
 \code{\link{prHtPrepareCgroup}}
 }
 \keyword{internal}

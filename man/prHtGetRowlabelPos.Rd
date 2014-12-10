@@ -36,11 +36,10 @@ Gets the rowlabel position
 }
 \seealso{
 Other hidden helper functions for \code{\link{htmlTable}}:
-\code{\link{prHtAddAlign2Style}};
 \code{\link{prHtAddCells}};
 \code{\link{prHtAddSemicolon2StrEnd}};
 \code{\link{prHtGetCgroupHeader}};
-\code{\link{prHtGetTableCntr}};
+\code{\link{prHtGetStyle}}; \code{\link{prHtGetTableCntr}};
 \code{\link{prHtPrepareCgroup}}
 }
 \keyword{internal}

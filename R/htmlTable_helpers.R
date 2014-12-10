@@ -28,6 +28,76 @@ prHtGetTableCntr <- function () {
                                  as.character(tc)))
 }
 
+#' Gets the CSS style element
+#'
+#' A funciton for checking, merging, and more
+#' with a variety of different style formats.
+#'
+#' @param styles The styles can be provided as \code{vector},
+#'  \code{named vector}, or \code{string}.
+#' @param ... All styles here are merged with the first parameter.
+#'  If you provide a name, e.g. \code{styles="background: blue", align="center"}
+#'  the function will convert the \code{align} into proper \code{align: center}.
+#' @return \code{string} Returns the codes merged into one string with
+#'  correct CSS ; and : structure.
+#' @keywords internal
+#' @family hidden helper functions for \code{\link{htmlTable}}
+prHtGetStyle <- function(styles, ...){
+  mergeNames <- function(sv){
+    if (!is.null(names(sv))){
+      sv <- paste(names(sv), sv, sep=": ")
+    }
+    return(sv)
+  }
+  spltNames <- function(sv){
+    ret_sv <- c()
+    for (i in 1:length(sv))
+      ret_sv <- c(ret_sv,
+                  # Split on the ; in case it is not at the end/start
+                  unlist(strsplit(sv[i], "\\b;(\\b|\\W+)", perl=TRUE)))
+    return(ret_sv)
+  }
+
+  styles <- spltNames(mergeNames(styles))
+  dots <- list(...)
+  if (length(dots) > 0){
+    for (i in 1:length(dots)){
+      if (is.null(names(dots[[i]]))){
+        if  (!is.null(names(dots)) &&
+               names(dots)[i] != "" &&
+               !grepl("\\b[;:](\\b|\\W+)", dots[[i]], perl=TRUE))
+          dots[[i]] = paste0(names(dots)[i], ": ", dots[[i]])
+      }else{
+        dots[[i]] = mergeNames(dots[[i]])
+      }
+      styles <- c(styles,
+                  spltNames(dots[[i]]))
+
+    }
+  }
+
+  if (!all(grepl("^[^:]+:.+", styles)))
+    stop("Invalid styles detected, one or more styles lack the needed style 'name: value': ",
+         paste(paste0("'", styles[!grepl("^[^:]+:.+", styles)], "'"), collapse=", "))
+
+  style_names <- gsub("^([^:]+).+", "\\1", styles)
+  if (!any(duplicated(style_names))){
+    unique_styles <- styles
+  }else{
+    # Only select the last style if two of the same type
+    # exist. This in order to avoid any conflicts.
+    unique_styles <- c()
+    for(n in unique(style_names)){
+      unique_styles <-
+        c(unique_styles,
+          styles[max(which(n == style_names))])
+    }
+  }
+
+  unique_styles <- sapply(unique_styles, prHtAddSemicolon2StrEnd, USE.NAMES = FALSE)
+  paste(unique_styles, collapse=" ")
+}
+
 #' Add a ; at the end
 #'
 #' The CSS expects a semicolon at the end of each argument
@@ -123,8 +193,9 @@ prHtGetCgroupHeader <- function(x,
       if (nchar(cgroup_vec[i]) == 0)# Removed as this may now be on purpose || is.na(cgroup_vec[i]))
         header_str <- sprintf("%s\n\t\t<th colspan='%d' style='%s'></th>",
                               header_str, colspan,
-                              prHtAddAlign2Style(sprintf("font-weight: 900; %s", ts),
-                                             prHtGetAlign(strsplit(cgroup_vec.just, '')[[1]][i])))
+                              prHtGetStyle(c(`font-weight`=900),
+                                           ts,
+                                           align=prHtGetAlign(strsplit(cgroup_vec.just, '')[[1]][i])))
       else
         header_str <- sprintf("%s\n\t\t<th colspan='%d' style='font-weight: 900; border-bottom: 1px solid grey; %s'>%s</th>",
                               header_str, colspan, ts, cgroup_vec[i])
@@ -138,34 +209,6 @@ prHtGetCgroupHeader <- function(x,
   }
   header_str <- sprintf("%s\n\t</tr>", header_str)
   return(header_str)
-}
-
-#' Adds text align to style element
-#'
-#' @param style The CSS style for an element
-#' @param align The alignment for that element
-#' @return \code{string} Returns the style with the
-#'  alignment sett according to the align argument
-#' @keywords internal
-#' @family hidden helper functions for \code{\link{htmlTable}}
-prHtAddAlign2Style <- function(style, align){
-  if (grepl("text-align", style)){
-    # Change existing to the actual align
-    # test with: style <- "font-size: 1em; text-align: left; text-decoration: none;"
-    return(gsub("text-align[ ]*:([^;]+)",
-                paste0("text-align: ", align),
-                style))
-  }else{
-    # If there is no style then we don't need to worry about
-    # adding the align information.
-    if (nchar(style) == 0)
-      return(sprintf("text-align: %s;", align))
-
-    # Add ; at end if not already there
-    if (!grepl(";$", style))
-      style <- sprintf("%s;", style)
-    return(sprintf("%s text-align: %s;", style, align))
-  }
 }
 
 #' Prepares the cgroup argument
@@ -386,7 +429,11 @@ prHtAddCells <- function(table_str, rowcells, cellcode, align, style, cgroup_spa
       cell_value <- ""
 
     table_str <- sprintf("%s\n\t\t<%s style='%s'>%s</%s>",
-                         table_str, cellcode, prHtAddAlign2Style(style, align[nr]), cell_value, cellcode)
+                         table_str,
+                         cellcode,
+                         prHtGetStyle(style, align=align[nr]),
+                         cell_value,
+                         cellcode)
 
     # Add empty cell if not last column
     if (nr != length(rowcells) && cgroup_spacer_cells[nr] > 0){

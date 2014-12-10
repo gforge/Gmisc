@@ -8,10 +8,11 @@ htmlTable(x, title = first.word(deparse(substitute(x))), headings,
   align = paste(c("l", rep("c", ncol(x) - 1)), collapse = ""),
   halign = paste(rep("c", ncol(x)), collapse = ""), cgroup, n.cgroup,
   cgroup.just, rgroup, n.rgroup, rgroupCSSstyle = "font-weight: 900;",
-  rgroupCSSseparator = "", tspanner, n.tspanner,
-  tspannerCSSstyle = "font-weight: 900; text-transform:capitalize; text-align: center;",
+  rgroupCSSseparator = "", rgroup.padding = "&nbsp;&nbsp;", tspanner,
+  n.tspanner,
+  tspannerCSSstyle = "font-weight: 900; text-transform: capitalize; text-align: left;",
   tspannerCSSseparator = "border-top: 1px solid grey;", rowlabel,
-  rowlabel.pos = "bottom", ctable = FALSE, compatibility = "LibreOffice",
+  rowlabel.pos = "bottom", ctable = TRUE, compatibility = "LibreOffice",
   rowname, caption, caption.loc = "top", tfoot, label, altcol = "white",
   tableCSSclass = "gmisc_table", ...)
 
@@ -89,6 +90,11 @@ htmlTable(x, title = first.word(deparse(substitute(x))), headings,
   different separators if you give a vector of rgroup - 1
   length (this is since the first rgroup doesn't have a
   separator).}
+
+  \item{rgroup.padding}{Generally two non-breakings spaces,
+  i.e. \code{&nbsp;&nbsp;}, but some journals only have a
+  bold face for the rgroup and leaves the subelements
+  unindented.}
 
   \item{tspanner}{The table spanner is somewhat of a table
   header that you can use when you want to join different

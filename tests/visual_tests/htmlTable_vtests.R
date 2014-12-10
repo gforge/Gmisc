@@ -9,6 +9,7 @@ htmlTable(mx, n.rgroup=c(2), rgroup=c("Nice!"),
 
 colnames(mx) <- NULL
 htmlTable(mx)
+htmlTable(mx[1,,drop=FALSE])
 htmlTable(mx, n.rgroup=2, rgroup="A")
 htmlTable(mx, tspanner = "AA", n.tspanner = 2,
           n.rgroup=2, rgroup="A")
@@ -70,7 +71,7 @@ htmlTable(mx_3_times,
 
 
 htmlTable(mx_3_times,
-          tspannerCSSstyle="font-weight: 900;",
+          tspannerCSSstyle = "color: purple; font-weight: bold;",
           tspannerCSSseparator="border-top: 2px solid red;",
           rgroup = rep(c("Group a", "Group b and c"), times=3),
           n.rgroup = rep(c(1,2), times=3),

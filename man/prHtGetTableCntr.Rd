@@ -19,12 +19,11 @@ calling \code{options()}.
 }
 \seealso{
 Other hidden helper functions for \code{\link{htmlTable}}:
-\code{\link{prHtAddAlign2Style}};
 \code{\link{prHtAddCells}};
 \code{\link{prHtAddSemicolon2StrEnd}};
 \code{\link{prHtGetCgroupHeader}};
 \code{\link{prHtGetRowlabelPos}};
-\code{\link{prHtPrepareCgroup}}
+\code{\link{prHtGetStyle}}; \code{\link{prHtPrepareCgroup}}
 }
 \keyword{internal}
 

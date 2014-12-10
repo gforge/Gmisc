@@ -61,11 +61,10 @@ This function retrieves a header row, i.e. a row within the
 }
 \seealso{
 Other hidden helper functions for \code{\link{htmlTable}}:
-\code{\link{prHtAddAlign2Style}};
 \code{\link{prHtAddCells}};
 \code{\link{prHtAddSemicolon2StrEnd}};
 \code{\link{prHtGetRowlabelPos}};
-\code{\link{prHtGetTableCntr}};
+\code{\link{prHtGetStyle}}; \code{\link{prHtGetTableCntr}};
 \code{\link{prHtPrepareCgroup}}
 }
 \keyword{internal}

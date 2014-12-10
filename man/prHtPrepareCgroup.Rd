@@ -39,12 +39,11 @@ there some preparation for the cgroup options is required.
 }
 \seealso{
 Other hidden helper functions for \code{\link{htmlTable}}:
-\code{\link{prHtAddAlign2Style}};
 \code{\link{prHtAddCells}};
 \code{\link{prHtAddSemicolon2StrEnd}};
 \code{\link{prHtGetCgroupHeader}};
 \code{\link{prHtGetRowlabelPos}};
-\code{\link{prHtGetTableCntr}}
+\code{\link{prHtGetStyle}}; \code{\link{prHtGetTableCntr}}
 }
 \keyword{internal}
 

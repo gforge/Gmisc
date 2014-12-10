@@ -49,8 +49,8 @@ test_that("The rowname should appear",
   table_str <- htmlTable(mx)
   parsed_table <- readHTMLTable(table_str)[[1]]
   expect_equal(ncol(parsed_table), ncol(mx) + 1)
-  expect_match(table_str, "<tr>[^>]+>A</td>")
-  expect_match(table_str, "<tr>[^>]+>B</td>")
+  expect_match(table_str, "<tr[^>]*>[^>]+>A</td>")
+  expect_match(table_str, "<tr[^>]*>[^>]+>B</td>")
 })
 
 test_that("Check that basic output are the same as the provided matrix",
@@ -206,4 +206,25 @@ test_that("rowname = FALSE it should skip those",
   table_str <- htmlTable(mx, rowname = FALSE)
   expect_false(grepl("FALSE", table_str))
   expect_false(grepl("Row A", table_str))
+})
+
+
+test_that("Test style formatter", {
+  styles <- c(background = "black", border ="1px solid grey")
+  expect_equivalent(length(prHtGetStyle(styles)), 1)
+  expect_match(prHtGetStyle(styles), "background: black;")
+  expect_match(prHtGetStyle(styles), "border: [^;]+grey;")
+  expect_match(prHtGetStyle(styles), "border: [^;]+grey;")
+  expect_match(prHtGetStyle(styles, a=2), "border: [^;]+grey;")
+
+  expect_error(prHtGetStyle(styles, "invalid style"))
+  expect_error(prHtGetStyle(styles, "invalid style:"))
+  expect_error(prHtGetStyle(styles, ":invalid style"))
+
+  expect_match(prHtGetStyle(styles, "valid: style"), "valid: style;")
+  expect_match(prHtGetStyle(styles, c(valid= "style")), "valid: style;")
+  expect_match(prHtGetStyle(styles, c(valid= "style", valid1= "style")), "valid: style; valid1: style;")
+  expect_match(prHtGetStyle(styles, c(valid= "style1", valid= "style2")), "valid: style2;")
+  expect_match(prHtGetStyle(styles, c(valid= "style1", valid= "style2"), "valid: style3"), "valid: style3;")
+
 })
