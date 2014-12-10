@@ -3,8 +3,8 @@
 \alias{prDescGetMissing}
 \title{Gets missing stats}
 \usage{
-prDescGetMissing(x, html, number_first, percentage_sign, language,
-  show_missing.digits, dot_args)
+prDescGetMissing(x, html, number_first, percentage_sign, language, useNA.digits,
+  dot_args)
 }
 \arguments{
   \item{x}{The variable that you want the statistics for}
@@ -15,7 +15,7 @@ prDescGetMissing(x, html, number_first, percentage_sign, language,
   \item{number_first}{If the number should be given or if
   the percentage should be presented first. The second is
   encapsulated in parentheses (). This is only used
-  together with the show_missing variable.}
+  together with the useNA variable.}
 
   \item{percentage_sign}{If you want to suppress the
   percentage sign you can set this variable to FALSE. You
@@ -28,8 +28,8 @@ prDescGetMissing(x, html, number_first, percentage_sign, language,
   distinguished from the ISO format using a ',' as the
   separator in the \code{\link{outputInt}} function.}
 
-  \item{show_missing.digits}{The number of digits to use
-  for the missing percentage, defaults to the overall
+  \item{useNA.digits}{The number of digits to use for the
+  missing percentage, defaults to the overall
   \code{digits}.}
 }
 \value{

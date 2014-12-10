@@ -179,12 +179,14 @@ test_that("Check factor function with missing",
 
 
   stats <- table(Loblolly$fvar, Loblolly$young_w_missing, useNA="no")
-  vertical_perc_stats <- format(apply(stats, 2, function(x){
-    x/sum(x)*100
-  }), nsmall=2, digits=2)
-  horizontal_perc_stats <- t(format(apply(stats, 1, function(x){
-    x/sum(x)*100
-  }), nsmall=2, digits=2))
+  vertical_perc_stats <-
+    format(apply(stats, 2, function(x){
+      x/sum(x)*100
+    }), nsmall=2, digits=2)
+  horizontal_perc_stats <-
+    t(format(apply(stats, 1, function(x){
+      x/sum(x)*100
+    }), nsmall=2, digits=2))
 
   for (rn in rownames(a)){
     for (cn in levels(Loblolly$young))
@@ -204,46 +206,52 @@ test_that("Check factor function with missing",
   }
 
   suppressWarnings(a <- getDescriptionStatsBy(Loblolly$fvar_w_missing, Loblolly$young_w_missing,
+                                              useNA="no",
                                               html=TRUE, digits=2, statistics.sig_lim=10^-4))
   stats <- table(Loblolly$fvar_w_missing, Loblolly$young_w_missing, useNA="no")
-  vertical_perc_stats <- format(apply(stats, 2, function(x){
-    x/sum(x)*100
-  }), nsmall=2, digits=2)
+  vertical_perc_stats <-
+    format(apply(stats, 2, function(x){
+      x/sum(x)*100
+    }), nsmall=2, digits=2)
 
   for (rn in rownames(a)){
     for (cn in levels(Loblolly$young)){
       expect_match(a[rn, cn], as.character(stats[rn, cn]),
-                  info="Factor count don't match")
+                  info=sprintf("Factor '%s':'%s' count don't match",
+                               rn, cn))
       expect_match(a[rn, cn], sprintf("%s%%", vertical_perc_stats[rn, cn]),
-                  info="Factor vertical percentages don't match")
+                   info=sprintf("Factor '%s':'%s' vertical percentages don't match",
+                                rn, cn))
     }
   }
 
   suppressWarnings(a <- getDescriptionStatsBy(Loblolly$fvar_w_missing,
                                               Loblolly$young_w_missing,
-                                              show_missing="ifany",
                                               html=TRUE, digits=2, statistics.sig_lim=10^-4))
   stats <- table(Loblolly$fvar_w_missing, Loblolly$young_w_missing, useNA="ifany")
   stats <- stats[,!is.na(colnames(stats))]
   rownames(stats)[is.na(rownames(stats))] <- "Missing"
-  vertical_perc_stats <- format(apply(stats, 2, function(x){
-    x/sum(x)*100
-  }), nsmall=2, digits=2)
+  vertical_perc_stats <-
+    format(apply(stats, 2, function(x){
+      x/sum(x)*100
+    }), nsmall=2, digits=2)
   for (rn in rownames(a)){
     for (cn in levels(Loblolly$young)){
       expect_match(a[rn, cn], as.character(stats[rn, cn]),
-                  info="Factor count don't match")
+                   info=sprintf("Factor '%s':'%s' count don't match",
+                                rn, cn))
       expect_match(a[rn, cn], sprintf("%s%%", str_trim(vertical_perc_stats[rn, cn])),
-                  info="Factor vertical percentages don't match")
+                   info=sprintf("Factor '%s':'%s' vertical percentages don't match",
+                                rn, cn))
     }
   }
 
-  suppressWarnings(a <- getDescriptionStatsBy(Loblolly$fvar_w_missing, Loblolly$young_w_missing,
-                             show_missing="ifany", hrzl_prop = TRUE,
+  suppressWarnings(a <- getDescriptionStatsBy(Loblolly$fvar_w_missing, Loblolly$young_w_missing, hrzl_prop = TRUE,
                              html=TRUE, digits=2, statistics.sig_lim=10^-4))
-  horizontal_perc_stats <- t(format(apply(stats, 1, function(x){
-    x/sum(x)*100
-  }), nsmall=2, digits=2))
+  horizontal_perc_stats <-
+    t(format(apply(stats, 1, function(x){
+      x/sum(x)*100
+    }), nsmall=2, digits=2))
 
 
   for (rn in rownames(a)){
@@ -276,7 +284,7 @@ test_that("Error when one category has no missing in it", {
   aaa <- factor(sample(1:3, size = 50, replace = TRUE))
   aa[aaa == 2 & is.na(aa)] <- "B"
   ret <-
-    getDescriptionStatsBy(x = aa, by=aaa, show_missing = "ifany", html=TRUE)
+    getDescriptionStatsBy(x = aa, by=aaa, html=TRUE)
 
   expect_match(ret["A","2"], sprintf("^%d", table(aa, aaa)["A","2"]),
                info="The value does not seem to match the raw table")
@@ -290,8 +298,8 @@ test_that("Error when one continuous variable has no missing in it", {
   aaa <- factor(sample(1:3, size = 50, replace = TRUE))
   aa[aaa == 2 & is.na(aa)] <- 1
   ret <-
-    getDescriptionStatsBy(x = aa, by=aaa, show_missing = "ifany", html=TRUE)
-  
-  expect_match(ret["Missing","2"], 
+    getDescriptionStatsBy(x = aa, by=aaa, html=TRUE)
+
+  expect_match(ret["Missing","2"],
                sprintf("^%d", sum(is.na(aa[aaa == 2]))))
 })

@@ -5,8 +5,8 @@
 \usage{
 getDescriptionStatsBy(x, by, digits = 1, html = TRUE, NEJMstyle = FALSE,
   numbers_first = TRUE, statistics = FALSE, statistics.sig_lim = 10^-4,
-  statistics.two_dec_lim = 10^-2, show_missing,
-  show_missing.digits = digits, continuous_fn = describeMean,
+  statistics.two_dec_lim = 10^-2, useNA = c("ifany", "no", "always"),
+  useNA.digits = digits, continuous_fn = describeMean,
   prop_fn = describeProp, factor_fn = describeFactors,
   show_all_values = FALSE, hrzl_prop = FALSE, add_total_col,
   total_col_show_perc = TRUE, use_units = FALSE, default_ref,
@@ -50,11 +50,14 @@ getDescriptionStatsBy(x, by, digits = 1, html = TRUE, NEJMstyle = FALSE,
   package tries to adapt to the current standards in order
   to limit publication associated issues.}
 
-  \item{show_missing}{Show the missing values. This adds
-  another row if there are any missing values.}
+  \item{useNA}{This indicates if missing should be added as
+  a separate row below all other. See
+  \code{\link[base]{table}} for \code{useNA}-options.
+  \emph{Note:} defaults to ifany and not "no" as
+  \code{\link[base]{table}} does.}
 
-  \item{show_missing.digits}{The number of digits to use
-  for the missing percentage, defaults to the overall
+  \item{useNA.digits}{The number of digits to use for the
+  missing percentage, defaults to the overall
   \code{digits}.}
 
   \item{continuous_fn}{The method to describe continuous
@@ -168,23 +171,22 @@ htmlTable(rbind(gear_data, col_data),
 
 # A little more advanced
 mtcars$mpg[sample(1:NROW(mtcars), size=4)] <- NA
-getDescriptionStatsBy(mtcars$mpg, mtcars$am, statistics=TRUE,
-                      show_missing=TRUE)
+getDescriptionStatsBy(mtcars$mpg, mtcars$am, statistics=TRUE)
 
 # Do the horizontal version
-getDescriptionStatsBy(mtcars$col, mtcars$am, statistics=TRUE,
-                      show_missing=TRUE, hrzl_prop = TRUE)
+getDescriptionStatsBy(mtcars$col, mtcars$am,
+                      statistics=TRUE, hrzl_prop = TRUE)
 
 mtcars$wt_with_missing <- mtcars$wt
 mtcars$wt_with_missing[sample(1:NROW(mtcars), size=8)] <- NA
 getDescriptionStatsBy(mtcars$wt_with_missing, mtcars$am, statistics=TRUE,
-                      show_missing=TRUE, hrzl_prop = TRUE, total_col_show_perc = FALSE)
+                      hrzl_prop = TRUE, total_col_show_perc = FALSE)
 
 
 mtcars$col_with_missing <- mtcars$col
 mtcars$col_with_missing[sample(1:NROW(mtcars), size=5)] <- NA
 getDescriptionStatsBy(mtcars$col_with_missing, mtcars$am, statistics=TRUE,
-                      show_missing=TRUE, hrzl_prop = TRUE, total_col_show_perc = FALSE)
+                      hrzl_prop = TRUE, total_col_show_perc = FALSE)
 
 }
 \seealso{

@@ -5,8 +5,8 @@
 the interquartile range or the full range}
 \usage{
 describeMedian(x, iqr = TRUE, html = TRUE, digits = 1,
-  number_first = TRUE, show_missing = FALSE, show_missing.digits = digits,
-  percentage_sign = TRUE, language = "en", ...)
+  number_first = TRUE, useNA = c("ifany", "no", "always"),
+  useNA.digits = digits, percentage_sign = TRUE, language = "en", ...)
 }
 \arguments{
   \item{x}{The variable that you want the statistics for}
@@ -21,13 +21,16 @@ describeMedian(x, iqr = TRUE, html = TRUE, digits = 1,
   \item{number_first}{If the number should be given or if
   the percentage should be presented first. The second is
   encapsulated in parentheses (). This is only used
-  together with the show_missing variable.}
+  together with the useNA variable.}
 
-  \item{show_missing}{This indicates if missing should be
-  added as a separate row below all other.}
+  \item{useNA}{This indicates if missing should be added as
+  a separate row below all other. See
+  \code{\link[base]{table}} for \code{useNA}-options.
+  \emph{Note:} defaults to ifany and not "no" as
+  \code{\link[base]{table}} does.}
 
-  \item{show_missing.digits}{The number of digits to use
-  for the missing percentage, defaults to the overall
+  \item{useNA.digits}{The number of digits to use for the
+  missing percentage, defaults to the overall
   \code{digits}.}
 
   \item{percentage_sign}{If you want to suppress the
@@ -52,7 +55,7 @@ the interquartile range or the full range
 }
 \examples{
 describeMedian(1:10)
-describeMedian(c(1:10, NA), show_missing=TRUE)
+describeMedian(c(1:10, NA), useNA="ifany")
 }
 \seealso{
 \code{\link{getDescriptionStatsBy}}

@@ -11,10 +11,11 @@
 #'  it outputs LaTeX formatting
 #' @param number_first If the number should be given or if the percentage
 #'  should be presented first. The second is encapsulated in parentheses ().
-#'  This is only used together with the show_missing variable.
-#' @param show_missing This indicates if missing should be added as a separate
-#'  row below all other.
-#' @param show_missing.digits The number of digits to use for the
+#'  This is only used together with the useNA variable.
+#' @param useNA This indicates if missing should be added as a separate
+#'  row below all other. See \code{\link[base]{table}} for \code{useNA}-options.
+#'  \emph{Note:} defaults to ifany and not "no" as \code{\link[base]{table}} does.
+#' @param useNA.digits The number of digits to use for the
 #'  missing percentage, defaults to the overall \code{digits}.
 #' @param percentage_sign If you want to suppress the percentage sign you
 #'  can set this variable to FALSE. You can also choose something else that
@@ -33,7 +34,8 @@
 #'
 #' @examples
 #' describeMean(1:10)
-#' describeMean(c(1:10, NA), show_missing=TRUE)
+#' describeMean(c(1:10, NA), useNA="always")
+#' describeMean(c(1:10, NA), useNA="no")
 #'
 #' @family description functions
 #' @export
@@ -41,8 +43,8 @@ describeMean <- function(x,
                          html = TRUE,
                          digits = 1,
                          number_first = TRUE,
-                         show_missing,
-                         show_missing.digits = digits,
+                         useNA = c("ifany", "no", "always"),
+                         useNA.digits = digits,
                          percentage_sign = TRUE,
                          plusmin_str,
                          language = "en",
@@ -51,12 +53,20 @@ describeMean <- function(x,
 
   # Warnings due to interface changes in 1.0
   if ("show_missing_digits" %in% names(dot_args)){
-    show_missing.digits <- dot_args$show_missing_digits
+    useNA.digits <- dot_args$show_missing_digits
     dot_args$show_missing_digits <- NULL
-    warning("Deprecated: show_missing_digits argument is now show_missing.digits as of ver. 1.0")
+    warning("Deprecated: show_missing_digits argument is now useNA.digits as of ver. 1.0")
   }
 
-  show_missing <- prConvertShowMissing(show_missing)
+  if ("show_missing" %in% names(dot_args)){
+    if (missing(useNA)){
+      useNA <- prConvertShowMissing(dot_args$show_missing)
+    }
+    dot_args$show_missing <- NULL
+    warning("Deprecated: show_missing argument is now useNA as of ver. 1.0")
+  }
+
+  useNA <- match.arg(useNA)
 
   if (missing(plusmin_str))
     if (html)
@@ -71,17 +81,17 @@ describeMean <- function(x,
   if (html == FALSE)
     ret <- sprintf("$%s$", ret)
 
-  if (show_missing %in% c("ifany", "always") & sum(is.na(x))>0){
+  if (useNA %in% c("ifany", "always") & sum(is.na(x))>0){
     ret <- rbind(ret,
                  prDescGetMissing(x = x,
                                   html = html,
                                   number_first = number_first,
                                   percentage_sign = percentage_sign,
                                   language = language,
-                                  show_missing.digits = show_missing.digits,
+                                  useNA.digits = useNA.digits,
                                   dot_args = dot_args))
     rownames(ret) <- c("Mean (SD)", "Missing")
-  } else if (show_missing == "always"){
+  } else if (useNA == "always"){
     if(percentage_sign == TRUE)
       percentage_sign <- ifelse (html, "%", "\\%")
     else if(is.character(percentage_sign) == FALSE)
@@ -109,7 +119,7 @@ describeMean <- function(x,
 #'
 #' @examples
 #' describeMedian(1:10)
-#' describeMedian(c(1:10, NA), show_missing=TRUE)
+#' describeMedian(c(1:10, NA), useNA="ifany")
 #'
 #' @family description functions
 #' @export
@@ -118,8 +128,8 @@ describeMedian <- function(x,
                            html = TRUE,
                            digits = 1,
                            number_first = TRUE,
-                           show_missing = FALSE,
-                           show_missing.digits = digits,
+                           useNA = c("ifany", "no", "always"),
+                           useNA.digits = digits,
                            percentage_sign = TRUE,
                            language = "en",
                            ...){
@@ -132,6 +142,16 @@ describeMedian <- function(x,
     warning("Deprecated: show_missing_digits argument is now show_missing.digits as of ver. 1.0")
   }
 
+  if ("show_missing" %in% names(dot_args)){
+    if (missing(useNA)){
+      useNA <- prConvertShowMissing(dot_args$show_missing)
+    }
+    dot_args$show_missing <- NULL
+    warning("Deprecated: show_missing argument is now useNA as of ver. 1.0")
+  }
+
+  useNA <- match.arg(useNA)
+
   if (iqr)
     range_quantiles = c(1/4, 3/4)
   else
@@ -142,20 +162,20 @@ describeMedian <- function(x,
                    quantile(x, probs=range_quantiles[1], na.rm=TRUE),
                    quantile(x, probs=range_quantiles[2], na.rm=TRUE))
 
-  if (show_missing %in% c("ifany", "always") & sum(is.na(x))>0){
+  if (useNA %in% c("ifany", "always") & sum(is.na(x))>0){
     ret <- rbind(ret,
                  prDescGetMissing(x = x,
                                   html = html,
                                   number_first = number_first,
                                   percentage_sign = percentage_sign,
                                   language = language,
-                                  show_missing.digits = show_missing.digits,
+                                  useNA.digits = useNA.digits,
                                   dot_args = dot_args))
 
     rownames(ret) <- c(
       ifelse(iqr, "Median (IQR)", "Median (range)"),
       "Missing")
-  } else if (show_missing == "always"){
+  } else if (useNA == "always"){
     if(percentage_sign == TRUE)
       percentage_sign <- ifelse (html, "%", "\\%")
     else if(is.character(percentage_sign) == FALSE)
@@ -181,8 +201,7 @@ describeMedian <- function(x,
 #' @inheritParams describeMean
 #' @inheritParams prDescGetAndValidateDefaultRef
 #' @examples
-#' describeProp(factor(sample(50, x=c("A","B"), replace=TRUE)))
-#' describeProp(factor(sample(50, x=c("A","B", NA), replace=TRUE)), show_missing=TRUE)
+#' describeProp(factor(sample(50, x=c("A","B", NA), replace=TRUE)))
 #'
 #' @family description functions
 #' @export
@@ -190,8 +209,8 @@ describeProp <- function(x,
                          html = TRUE,
                          digits = 1,
                          number_first = TRUE,
-                         show_missing = FALSE,
-                         show_missing.digits = digits,
+                         useNA = c("ifany", "no", "always"),
+                         useNA.digits = digits,
                          default_ref,
                          percentage_sign = TRUE,
                          language = "en",
@@ -200,12 +219,20 @@ describeProp <- function(x,
 
   # Warnings due to interface changes in 1.0
   if ("show_missing_digits" %in% names(dot_args)){
-    show_missing.digits <- dot_args$show_missing_digits
+    useNA.digits <- dot_args$show_missing_digits
     dot_args$show_missing_digits <- NULL
-    warning("Deprecated: show_missing_digits argument is now show_missing.digits as of ver. 1.0")
+    warning("Deprecated: show_missing_digits argument is now useNA.digits as of ver. 1.0")
   }
 
-  show_missing <- prConvertShowMissing(show_missing)
+  if ("show_missing" %in% names(dot_args)){
+    if (missing(useNA)){
+      useNA <- prConvertShowMissing(dot_args$show_missing)
+    }
+    dot_args$show_missing <- NULL
+    warning("Deprecated: show_missing argument is now useNA as of ver. 1.0")
+  }
+
+  useNA <- match.arg(useNA)
 
   default_ref <- prDescGetAndValidateDefaultRef(x, default_ref)
 
@@ -216,9 +243,9 @@ describeProp <- function(x,
   # to just report one percentage as it suddenly uncertain
   # for what percentage the number applies to
   if("horizontal_proportions" %in% names(dot_args) ||
-       (show_missing == "ifany" &&
+       (useNA == "ifany" &&
           any(is.na(x))) ||
-       show_missing == "always"){
+       useNA == "always"){
 
     df_arg_list <- list(x = x,
                         html = html,
@@ -226,8 +253,8 @@ describeProp <- function(x,
                         percentage_sign=percentage_sign,
                         language = language,
                         digits = digits,
-                        show_missing = show_missing,
-                        show_missing.digits = show_missing.digits)
+                        useNA = useNA,
+                        useNA.digits = useNA.digits)
     for (n in names(dot_args)){
       if (!n %in% names(df_arg_list)){
         df_arg_list[[n]] <- dot_args[[n]]
@@ -275,7 +302,7 @@ describeProp <- function(x,
 #' factir that contains the number of times a variable and the percentage
 #'
 #' @param ... Passed on to \code{\link{outputInt}}
-#' @param horizontal_proportions Is only active if show_missing since this is
+#' @param horizontal_proportions Is only active if useNA since this is
 #'  the only case of a proportion among continuous variables. This is default NULL and indicates
 #'  that the proportions are to be interpreted in a vertical manner.
 #'  If we want the data to be horizontal, i.e. the total should be shown
@@ -292,7 +319,6 @@ describeProp <- function(x,
 #' @examples
 #' set.seed(1)
 #' describeFactors(sample(50, x=c("A","B", "C"), replace=TRUE))
-#' describeFactors(sample(50, x=c("A","B", "C", NA), replace=TRUE), show_missing=TRUE)
 #'
 #' n <- 500
 #' my_var <- factor(sample(size=n, x=c("A","B", "C", NA), replace=TRUE))
@@ -301,7 +327,7 @@ describeProp <- function(x,
 #' by(my_var,
 #'    INDICES=my_exp,
 #'    FUN=describeFactors,
-#'    show_missing="ifany",
+#'    useNA="ifany",
 #'    horizontal_proportions = total)
 #'
 #' @export
@@ -309,8 +335,8 @@ describeFactors <- function(x,
                             html = TRUE,
                             digits = 1,
                             number_first = TRUE,
-                            show_missing = FALSE,
-                            show_missing.digits = digits,
+                            useNA = c("ifany", "no", "always"),
+                            useNA.digits = digits,
                             horizontal_proportions,
                             percentage_sign = TRUE,
                             language = "en",
@@ -319,15 +345,23 @@ describeFactors <- function(x,
 
   # Warnings due to interface changes in 1.0
   if ("show_missing_digits" %in% names(dot_args)){
-    show_missing.digits <- dot_args$show_missing_digits
+    useNA.digits <- dot_args$show_missing_digits
     dot_args$show_missing_digits <- NULL
-    warning("Deprecated: show_missing_digits argument is now show_missing.digits as of ver. 1.0")
+    warning("Deprecated: show_missing_digits argument is now useNA.digits as of ver. 1.0")
   }
 
-  show_missing <- prConvertShowMissing(show_missing)
+  if ("show_missing" %in% names(dot_args)){
+    if (missing(useNA)){
+      useNA <- prConvertShowMissing(dot_args$show_missing)
+    }
+    dot_args$show_missing <- NULL
+    warning("Deprecated: show_missing argument is now useNA as of ver. 1.0")
+  }
+
+  useNA <- match.arg(useNA)
 
   # Get basic data
-  table_results <- table(x, useNA= show_missing)
+  table_results <- table(x, useNA= useNA)
 
   # Check if we should relate to an external total
   if (!missing(horizontal_proportions)){
@@ -414,7 +448,7 @@ describeFactors <- function(x,
   if (number_first)
     ret <- matrix(
       sprintf(ifelse(is.na(names(table_results)),
-                     sprintf("%%s (%%.%df%%s)", show_missing.digits),
+                     sprintf("%%s (%%.%df%%s)", useNA.digits),
                      sprintf("%%s (%%.%df%%s)", digits)),
               values,
               percentages,
@@ -422,7 +456,7 @@ describeFactors <- function(x,
   else
     ret <- matrix(
       sprintf(ifelse(is.na(names(table_results)),
-                     sprintf("%%.%df%%s (%%s)", show_missing.digits),
+                     sprintf("%%.%df%%s (%%s)", useNA.digits),
                      sprintf("%%.%df%%s (%%s)", digits)),
               percentages,
               percentage_sign,

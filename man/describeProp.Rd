@@ -5,7 +5,7 @@
 the number and the percentage}
 \usage{
 describeProp(x, html = TRUE, digits = 1, number_first = TRUE,
-  show_missing = FALSE, show_missing.digits = digits, default_ref,
+  useNA = c("ifany", "no", "always"), useNA.digits = digits, default_ref,
   percentage_sign = TRUE, language = "en", ...)
 }
 \arguments{
@@ -19,13 +19,16 @@ describeProp(x, html = TRUE, digits = 1, number_first = TRUE,
   \item{number_first}{If the number should be given or if
   the percentage should be presented first. The second is
   encapsulated in parentheses (). This is only used
-  together with the show_missing variable.}
+  together with the useNA variable.}
 
-  \item{show_missing}{This indicates if missing should be
-  added as a separate row below all other.}
+  \item{useNA}{This indicates if missing should be added as
+  a separate row below all other. See
+  \code{\link[base]{table}} for \code{useNA}-options.
+  \emph{Note:} defaults to ifany and not "no" as
+  \code{\link[base]{table}} does.}
 
-  \item{show_missing.digits}{The number of digits to use
-  for the missing percentage, defaults to the overall
+  \item{useNA.digits}{The number of digits to use for the
+  missing percentage, defaults to the overall
   \code{digits}.}
 
   \item{default_ref}{The default reference, either first,
@@ -53,8 +56,7 @@ A function that returns a description proportion that
 contains the number and the percentage
 }
 \examples{
-describeProp(factor(sample(50, x=c("A","B"), replace=TRUE)))
-describeProp(factor(sample(50, x=c("A","B", NA), replace=TRUE)), show_missing=TRUE)
+describeProp(factor(sample(50, x=c("A","B", NA), replace=TRUE)))
 }
 \seealso{
 Other description functions: \code{\link{describeFactors}};

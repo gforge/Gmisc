@@ -19,15 +19,14 @@ prGetStatistics <- function(x,
                             html = TRUE,
                             digits = 1,
                             numbers_first = TRUE,
-                            show_missing = TRUE,
-                            show_missing.digits = digits,
+                            useNA = c("ifany", "no", "always"),
+                            useNA.digits = digits,
                             show_all_values = FALSE,
                             continuous_fn = describeMean,
                             factor_fn = describeFactors,
                             prop_fn = factor_fn,
                             percentage_sign = percentage_sign)
 {
-  show_missing <- prConvertShowMissing(show_missing)
   # All the describe functions have the same interface
   # so it is useful to gather all the arguments here
   describe_args <-
@@ -35,8 +34,8 @@ prGetStatistics <- function(x,
          html = html,
          digits = digits,
          number_first = numbers_first,
-         show_missing = show_missing,
-         show_missing.digits = show_missing.digits,
+         useNA = useNA,
+         useNA.digits = useNA.digits,
          percentage_sign = percentage_sign)
 
   if (is.factor(x) ||
@@ -46,7 +45,7 @@ prGetStatistics <- function(x,
       if (show_perc){
         total_table <- fastDoCall(prop_fn, describe_args)
       }else{
-        total_table <- table(x, useNA=show_missing)
+        total_table <- table(x, useNA=useNA)
         names(total_table)[is.na(names(total_table))] <- "Missing"
         # Choose only the reference level
         if (show_all_values == FALSE)
@@ -58,7 +57,7 @@ prGetStatistics <- function(x,
       if (show_perc)
         total_table <- fastDoCall(factor_fn, describe_args)
       else{
-        total_table <- table(x, useNA=show_missing)
+        total_table <- table(x, useNA=useNA)
         names(total_table)[is.na(names(total_table))] <- "Missing"
       }
     }
@@ -74,11 +73,13 @@ prGetStatistics <- function(x,
 }
 
 
-#' A functuon for converting a show_missing variable
+#' A functuon for converting a show_missing variable.
 #'
 #' The variable is suppose to be directly compatible with
 #' \code{\link[base]{table}}(..., useNA=show_missing). It throughs an error
-#' if not compatible
+#' if not compatible. \emph{Deprecated:} This function will be deprecated
+#' as all functions now use the useNA style in order to comply
+#' with standard R naming.
 #'
 #' @param show_missing Boolean or "no", "ifany", "always"
 #' @return string
@@ -146,14 +147,14 @@ prDescGetMissing <- function (x,
                               number_first,
                               percentage_sign,
                               language,
-                              show_missing.digits,
+                              useNA.digits,
                               dot_args) {
   df_arg_list <- list(x = is.na(x),
                       html = html,
                       number_first = number_first,
                       percentage_sign=percentage_sign,
                       language = language,
-                      digits = show_missing.digits)
+                      digits = useNA.digits)
   for (n in names(dot_args)){
     if (!n %in% names(df_arg_list)){
       df_arg_list[[n]] <- dot_args[[n]]

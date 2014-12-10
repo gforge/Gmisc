@@ -4,8 +4,8 @@
 \title{Describe the mean}
 \usage{
 describeMean(x, html = TRUE, digits = 1, number_first = TRUE,
-  show_missing, show_missing.digits = digits, percentage_sign = TRUE,
-  plusmin_str, language = "en", ...)
+  useNA = c("ifany", "no", "always"), useNA.digits = digits,
+  percentage_sign = TRUE, plusmin_str, language = "en", ...)
 }
 \arguments{
   \item{x}{The variable that you want the statistics for}
@@ -18,13 +18,16 @@ describeMean(x, html = TRUE, digits = 1, number_first = TRUE,
   \item{number_first}{If the number should be given or if
   the percentage should be presented first. The second is
   encapsulated in parentheses (). This is only used
-  together with the show_missing variable.}
+  together with the useNA variable.}
 
-  \item{show_missing}{This indicates if missing should be
-  added as a separate row below all other.}
+  \item{useNA}{This indicates if missing should be added as
+  a separate row below all other. See
+  \code{\link[base]{table}} for \code{useNA}-options.
+  \emph{Note:} defaults to ifany and not "no" as
+  \code{\link[base]{table}} does.}
 
-  \item{show_missing.digits}{The number of digits to use
-  for the missing percentage, defaults to the overall
+  \item{useNA.digits}{The number of digits to use for the
+  missing percentage, defaults to the overall
   \code{digits}.}
 
   \item{percentage_sign}{If you want to suppress the
@@ -57,7 +60,8 @@ not because it's the only option.
 }
 \examples{
 describeMean(1:10)
-describeMean(c(1:10, NA), show_missing=TRUE)
+describeMean(c(1:10, NA), useNA="always")
+describeMean(c(1:10, NA), useNA="no")
 }
 \seealso{
 \code{\link{getDescriptionStatsBy}}

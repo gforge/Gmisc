@@ -15,9 +15,10 @@
 #' @param NEJMstyle Adds - no (\%) at the end to proportions
 #' @param numbers_first If the number should be given or if the percentage
 #'  should be presented first. The second is encapsulated in parentheses ().
-#' @param show_missing Show the missing values. This adds another row if
-#'  there are any missing values.
-#' @param show_missing.digits The number of digits to use for the
+#' @param useNA This indicates if missing should be added as a separate
+#'  row below all other. See \code{\link[base]{table}} for \code{useNA}-options.
+#'  \emph{Note:} defaults to ifany and not "no" as \code{\link[base]{table}} does.
+#' @param useNA.digits The number of digits to use for the
 #'  missing percentage, defaults to the overall \code{digits}.
 #' @param continuous_fn The method to describe continuous variables. The
 #'  default is \code{\link{describeMean}}.
@@ -84,8 +85,8 @@ getDescriptionStatsBy <- function(x,
                                   statistics=FALSE,
                                   statistics.sig_lim=10^-4,
                                   statistics.two_dec_lim= 10^-2,
-                                  show_missing,
-                                  show_missing.digits = digits,
+                                  useNA = c("ifany", "no", "always"),
+                                  useNA.digits = digits,
                                   continuous_fn = describeMean,
                                   prop_fn = describeProp,
                                   factor_fn = describeFactors,
@@ -105,6 +106,16 @@ getDescriptionStatsBy <- function(x,
     dot_args$show_missing_digits <- NULL
     warning("Deprecated: show_missing_digits argument is now show_missing.digits as of ver. 1.0")
   }
+
+  if ("show_missing" %in% names(dot_args)){
+    if (missing(useNA)){
+      useNA <- prConvertShowMissing(dot_args$show_missing)
+    }
+    dot_args$show_missing <- NULL
+    warning("Deprecated: show_missing argument is now useNA as of ver. 1.0")
+  }
+
+  useNA <- match.arg(useNA)
 
   if ("sig.limit" %in% names(dot_args)){
     statistics.sig_lim <- dot_args$sig.limit
@@ -160,10 +171,9 @@ getDescriptionStatsBy <- function(x,
     }
   }
 
-  show_missing <- prConvertShowMissing(show_missing)
-  if (show_missing == "ifany" &&
+  if (useNA == "ifany" &&
         any(is.na(x)))
-    show_missing <- "always"
+    useNA <- "always"
 
   # If all values are to be shown then simply use
   # the factors function
@@ -226,15 +236,15 @@ getDescriptionStatsBy <- function(x,
     if (hrzl_prop)
       t <- by(x, by, FUN=continuous_fn, html=html, digits=digits,
               number_first=numbers_first,
-              show_missing = show_missing,
-              show_missing.digits = show_missing.digits,
-              horizontal_proportions = table(is.na(x), useNA=show_missing),
+              useNA = useNA,
+              useNA.digits = useNA.digits,
+              horizontal_proportions = table(is.na(x), useNA=useNA),
               percentage_sign = percentage_sign)
     else
       t <- by(x, by, FUN=continuous_fn, html=html, digits=digits,
               number_first=numbers_first,
-              show_missing = show_missing,
-              show_missing.digits = show_missing.digits,
+              useNA = useNA,
+              useNA.digits = useNA.digits,
               percentage_sign = percentage_sign)
 
 
@@ -259,8 +269,8 @@ getDescriptionStatsBy <- function(x,
 
     t <- by(x, by, FUN=prop_fn, html=html, digits=digits,
             number_first=numbers_first,
-            show_missing = show_missing,
-            show_missing.digits = show_missing.digits,
+            useNA = useNA,
+            useNA.digits = useNA.digits,
             default_ref = default_ref, percentage_sign = percentage_sign)
 
     # Set the rowname to a special format
@@ -296,15 +306,15 @@ getDescriptionStatsBy <- function(x,
     if (hrzl_prop){
       t <- by(x, by, FUN=factor_fn, html=html, digits=digits,
               number_first=numbers_first,
-              show_missing = show_missing,
-              show_missing.digits = show_missing.digits,
-              horizontal_proportions = table(x, useNA=show_missing),
+              useNA = useNA,
+              useNA.digits = useNA.digits,
+              horizontal_proportions = table(x, useNA=useNA),
               percentage_sign = percentage_sign)
     }else{
       t <- by(x, by, FUN=factor_fn, html=html, digits=digits,
               number_first=numbers_first,
-              show_missing = show_missing,
-              show_missing.digits = show_missing.digits,
+              useNA = useNA,
+              useNA.digits = useNA.digits,
               percentage_sign = percentage_sign)
     }
 
@@ -347,8 +357,8 @@ getDescriptionStatsBy <- function(x,
                                    numbers_first=numbers_first,
                                    show_perc=total_col_show_perc,
                                    show_all_values = show_all_values,
-                                   show_missing=show_missing,
-                                   show_missing.digits = show_missing.digits,
+                                   useNA=useNA,
+                                   useNA.digits = useNA.digits,
                                    html=html,
                                    digits=digits,
                                    continuous_fn = continuous_fn,

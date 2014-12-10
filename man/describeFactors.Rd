@@ -4,7 +4,7 @@
 \title{Describes factor variables}
 \usage{
 describeFactors(x, html = TRUE, digits = 1, number_first = TRUE,
-  show_missing = FALSE, show_missing.digits = digits,
+  useNA = c("ifany", "no", "always"), useNA.digits = digits,
   horizontal_proportions, percentage_sign = TRUE, language = "en", ...)
 }
 \arguments{
@@ -18,25 +18,28 @@ describeFactors(x, html = TRUE, digits = 1, number_first = TRUE,
   \item{number_first}{If the number should be given or if
   the percentage should be presented first. The second is
   encapsulated in parentheses (). This is only used
-  together with the show_missing variable.}
+  together with the useNA variable.}
 
-  \item{show_missing}{This indicates if missing should be
-  added as a separate row below all other.}
+  \item{useNA}{This indicates if missing should be added as
+  a separate row below all other. See
+  \code{\link[base]{table}} for \code{useNA}-options.
+  \emph{Note:} defaults to ifany and not "no" as
+  \code{\link[base]{table}} does.}
 
-  \item{show_missing.digits}{The number of digits to use
-  for the missing percentage, defaults to the overall
+  \item{useNA.digits}{The number of digits to use for the
+  missing percentage, defaults to the overall
   \code{digits}.}
 
-  \item{horizontal_proportions}{Is only active if
-  show_missing since this is the only case of a proportion
-  among continuous variables. This is default NULL and
-  indicates that the proportions are to be interpreted in a
-  vertical manner. If we want the data to be horizontal,
-  i.e. the total should be shown and then how these differ
-  in the different groups then supply the function with the
-  total number in each group, i.e. if done in a by manner
-  as in \code{\link{getDescriptionStatsBy}} it needs to
-  provide the number before the by() command.}
+  \item{horizontal_proportions}{Is only active if useNA
+  since this is the only case of a proportion among
+  continuous variables. This is default NULL and indicates
+  that the proportions are to be interpreted in a vertical
+  manner. If we want the data to be horizontal, i.e. the
+  total should be shown and then how these differ in the
+  different groups then supply the function with the total
+  number in each group, i.e. if done in a by manner as in
+  \code{\link{getDescriptionStatsBy}} it needs to provide
+  the number before the by() command.}
 
   \item{percentage_sign}{If you want to suppress the
   percentage sign you can set this variable to FALSE. You
@@ -62,7 +65,6 @@ percentage
 \examples{
 set.seed(1)
 describeFactors(sample(50, x=c("A","B", "C"), replace=TRUE))
-describeFactors(sample(50, x=c("A","B", "C", NA), replace=TRUE), show_missing=TRUE)
 
 n <- 500
 my_var <- factor(sample(size=n, x=c("A","B", "C", NA), replace=TRUE))
@@ -71,7 +73,7 @@ total <- table(my_var, useNA="ifany")
 by(my_var,
    INDICES=my_exp,
    FUN=describeFactors,
-   show_missing="ifany",
+   useNA="ifany",
    horizontal_proportions = total)
 }
 \seealso{
