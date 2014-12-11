@@ -1,14 +1,13 @@
 #' Outputting HTML tables
 #'
 #' This is a function for outputting a more advanced
-#' table than xtable allows. It's aim is to provide the \pkg{Hmisc}
-#' \code{\link[Hmisc]{latex}()} colgroup and rowgroup functions in HTML. The
-#' code outputted is perhaps a little raw compared to fully
-#' CSS formatted HTML. The reason for this is that I've chosen
-#' maximum compatibility with LibreOffice/OpenOffice that lacks any more
-#' advanced understanding of HTML & CSS.
+#' table than \pkg{xtable} or \pkg{knitr}'s \code{kable} allows.
+#' It's aim is to provide the \pkg{Hmisc} \code{\link[Hmisc]{latex}()}
+#' colgroup and rowgroup functions in HTML. The html-output is designed for
+#' maximum compatibility with LibreOffice/OpenOffice.
 #'
 #' @section Important \pkg{knitr}-note:
+#'
 #' This funciton will only work with \pkg{knitr} outputting html, i.e.
 #' markdown mode. For each section where you want a table to be outputted
 #' you need to specify: \code{results="asis"}. As the function returns
@@ -35,14 +34,6 @@
 #' webkit browser seems to have issues with this and a
 #' \href{http://code.google.com/p/chromium/issues/detail?id=305130}{bug has been filed}.
 #'
-#' If you in your knitr html-document get a "structure" noted under
-#' the rowlabel heading then this is an effect from the automated
-#' rowlabel name. It is copied from the title that in turn uses the
-#'
-#' \code{x} to find an apropriate name: \code{title=first.word(deparse(substitute(x)))}.
-#' All you need to do is simply set either the \code{title} or the \code{rowlabel}
-#' arguments to get rid of this "bug".
-#'
 #' As the table uses html for rendering you need to be aware of that headers,
 #' rownames, and cell values should try respect this for optimal display. Browsers
 #' try to compensate and frequently the tables still turn out OK but it is
@@ -52,7 +43,6 @@
 #' of html characters \href{http://ascii.cl/htmlcodes.htm}{here}.
 #'
 #' @param x The matrix/data.frame with the data
-#' @param title The title of the table. Used for labeling etc.
 #' @param headings a vector of character strings specifying column
 #' headings, defaulting to \code{x}'s 	\code{colnames}
 #' @param align a character strings specifying column alignments, defaulting to
@@ -74,17 +64,6 @@
 #'  \code{rowlabel} does not count in the column numbers. You can omit \code{n.cgroup}
 #'  if all groups have the same number of columns.
 #' @param cgroup.just The justification of the c.groups
-#' @param rgroup A vector of character strings containing headings for row groups.
-#'  \code{n.rgroup} must be present when \code{rgroup} is given. The first
-#'  \code{n.rgroup[1]}rows are sectioned off and \code{rgroup[1]} is used as a bold
-#'  heading for them. The usual row dimnames (which must be present if \code{rgroup} is)
-#'  are indented. The next \code{n.rgroup[2]} rows are treated likewise, etc. If you don't
-#'  want a row to be part of a row group then you just put "" for that row, remember to add
-#'  the corresponding number of rows in n.rgroup.
-#' @param n.rgroup integer vector giving the number of rows in each grouping. If \code{rgroup}
-#'  is not specified, \code{n.rgroup} is just used to divide off blocks of rows by horizontal
-#'  lines. If \code{rgroup} is given but \code{n.rgroup} is omitted, \code{n.rgroup} will
-#'  default so that each row group contains the same number of rows.
 #' @param rgroup.padding Generally two non-breakings spaces, i.e. \code{&nbsp;&nbsp;}, but some
 #'  journals only have a bold face for the rgroup and leaves the subelements unindented.
 #' @param rgroupCSSstyle CSS style for the rgorup, if different styles are wanted for each of the
@@ -145,16 +124,52 @@
 #'
 #' @example inst/examples/htmlTable_example.R
 #'
-#' @seealso \code{\link[Hmisc]{latex}}, \code{\link{getDescriptionStatsBy}}, \code{\link{splitLines4Table}}
+#' @seealso \code{\link{getDescriptionStatsBy}},
+#'          \code{\link{descMerger}},
+#'          \code{\link{splitLines4Table}},
+#'          \code{\link[Hmisc]{latex}}
 #'
+#'
+#' @export
+#' @rdname htmlTable
+htmlTable <- function(x, ...){
+  UseMethod("htmlTable")
+}
+
+#' @rdname htmlTable
+#' @export
+htmlTable.descMrg <- function(x, ...)
+{
+  dots <- list(...)
+  if (!"rgroup" %in% names(dots)){
+    return(NextMethod(generic = NULL, object = x,
+                      rgroup = attr(x, "rgroup"),
+                      n.rgroup = attr(x, "n.rgroup"),
+                      ...))
+  }
+
+  return(NextMethod(generic = NULL, object = x,
+                    ...))
+}
+
+#' @param rgroup A vector of character strings containing headings for row groups.
+#'  \code{n.rgroup} must be present when \code{rgroup} is given. The first
+#'  \code{n.rgroup[1]}rows are sectioned off and \code{rgroup[1]} is used as a bold
+#'  heading for them. The usual row dimnames (which must be present if \code{rgroup} is)
+#'  are indented. The next \code{n.rgroup[2]} rows are treated likewise, etc. If you don't
+#'  want a row to be part of a row group then you just put "" for that row, remember to add
+#'  the corresponding number of rows in n.rgroup.
+#' @param n.rgroup integer vector giving the number of rows in each grouping. If \code{rgroup}
+#'  is not specified, \code{n.rgroup} is just used to divide off blocks of rows by horizontal
+#'  lines. If \code{rgroup} is given but \code{n.rgroup} is omitted, \code{n.rgroup} will
+#'  default so that each row group contains the same number of rows.
 #' @importFrom stringr str_trim
 #' @importFrom stringr str_replace
 #' @importFrom Hmisc first.word
 #' @importFrom Hmisc format.df
-#' @export
 #' @rdname htmlTable
-htmlTable <- function(x,
-                      title=first.word(deparse(substitute(x))),
+#' @export
+htmlTable.default <- function(x,
                       headings,
                       align =paste(c("l", rep('c',ncol(x)-1)),collapse=''),
                       halign=paste(rep('c',ncol(x)),collapse=''),
