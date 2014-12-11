@@ -59,6 +59,10 @@
 #' @param percentage_sign If you want to surpress the percentage sign you
 #'  can set this variable to FALSE. You can also choose something else that
 #'  the default \% if you so wish by setting this variable.
+#' @param header_count Set to \code{TRUE} if you want to add a header count,
+#'  e.g. Smoking; No. 25 observations, where there is a new line after the
+#'  factor name. If you want a different text for the second line you can
+#'  speficy use the \code{\link[base]{sprintf}} formatting, e.g. "No. \%s patients".
 #' @param ... Currently only used for generating warnings of deprecated call
 #'  parameters.
 #' @return Returns a vector if vars wasn't specified and it's a
@@ -72,6 +76,7 @@
 #' @seealso \code{\link{describeMean}}, \code{\link{describeProp}}, \code{\link{describeFactors}}, \code{\link{htmlTable}}
 #'
 #' @importFrom Hmisc label
+#' @importFrom Hmisc label<-
 #' @importFrom Hmisc units
 #' @importFrom Hmisc capitalize
 #'
@@ -97,6 +102,7 @@ getDescriptionStatsBy <- function(x,
                                   use_units = FALSE,
                                   default_ref,
                                   percentage_sign = TRUE,
+                                  header_count,
                                   ...){
 
   dot_args <- list(...)
@@ -338,7 +344,34 @@ getDescriptionStatsBy <- function(x,
   # Convert into a matrix
   results <- matrix(unlist(t), ncol=length(t))
 
-  cn <- names(t)
+
+  getHeader <- function (tbl_cnt, header_count, html) {
+    if (missing(header_count) ||
+          !header_count){
+      return(names(tbl_cnt))
+    }
+
+    if (is.character(header_count)){
+      if (!grepl("%s", header_count, fixed = TRUE))
+        stop("Your header_count must accept a string character",
+             " or it will fail to add the count, i.e. use the ",
+             " format: 'Text before %s text after'")
+      cnt_str <-
+        sprintf(header_count,
+                outputInt(tbl_cnt))
+
+    }else{
+      cnt_str <- paste("No.", outputInt(tbl_cnt))
+    }
+
+    return(mapply(splitLines4Table,
+                  names(tbl_cnt),
+                  cnt_str,
+                  html=html))
+  }
+
+  cn <- getHeader(table(by), header_count, html)
+
 
   # Add the proper rownames
   if (class(t[[1]]) == "matrix")
@@ -376,12 +409,15 @@ getDescriptionStatsBy <- function(x,
            "\n Rows total:", paste(rownames(total_table), collapse=", "),
            "\n Rows results:", paste(rownames(results), collapse=", "))
     }
+
+    cn_tot <- getHeader(c(Total=length(x[is.na(by) == FALSE])),
+                        header_count, html)
     if (add_total_col != "last"){
       results <- cbind(total_table, results)
-      cn <- c("Total", cn)
+      cn <- c(cn_tot, cn)
     }else{
       results <- cbind(results, total_table)
-      cn <- c(cn, "Total")
+      cn <- c(cn, cn_tot)
     }
   }
 
