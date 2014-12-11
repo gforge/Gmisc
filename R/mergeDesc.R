@@ -5,6 +5,23 @@
 #' automatically merge everything and create an object ready for the
 #' htmlTable.
 #'
+#' @section The \code{rgroup} value:
+#'
+#' The value for the rgroup is by default the name of the list element. If you have
+#' passed a list without a name for that particular element or if you have passed a
+#' matrix it will look for a label set by the \pkg{Hmisc}\code{::\link[Hmisc]{label}} function.
+#' For those elements that have only one row no rgroup is set, and the naming sequence
+#' is the same as above but with an additional \code{\link[base]{rownames}} if the previous
+#' two turn out empty. All this behaviour is exemplified in the example.
+#'
+#' The \code{rgroup} value can be overridden by simply specifying a custom rgroup when
+#' calling the \code{\link{htmlTable}} function.
+#'
+#' @section The \code{colnames} of the matrix:
+#'
+#' The function chooses the \code{\link[base]{colnames}} from the first element in
+#' the \code{tlist}.
+#'
 #' @param tlist A list where each element comes from \code{\link{getDescriptionStatsBy}}.
 #'  You can also provide pure output from the \code{\link{getDescriptionStatsBy}} function
 #'  and have the function merge this together with the \code{...} argument.
@@ -14,7 +31,7 @@
 #' @return \code{matrix} Returns a matrix object of class descList
 #' @export
 #' @example inst/examples/getDescriptionStatsBy_example.R
-descMerger <- function(tlist, ...){
+mergeDesc <- function(tlist, ...){
   if (!is.list(tlist))
     tlist <- list(tlist)
   dots <- list(...)

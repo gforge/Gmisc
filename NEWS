@@ -10,7 +10,7 @@ Changes for 1.0.0
 * htmlTable can now handle rowname = FALSE in order to surpress rownames
 * htmlTable now defaults to the layout of ctable as this is the more commonly found layout among medical papers
 * htmlTable rgroup has the additional rgroup.padding for those that want to change the no-breaking space padding
-* added the descMerger in order to merge lists from getDescriptionStatsBy for
+* added the mergeDesc in order to merge lists from getDescriptionStatsBy for
 * show_missing is now useNA in order to match the table() call handling of missing
 * Fixed a few bugs
 

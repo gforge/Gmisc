@@ -410,7 +410,7 @@ htmlTable(output_data, align = 'rccc',
 }
 \seealso{
 \code{\link{getDescriptionStatsBy}},
-\code{\link{descMerger}}, \code{\link{splitLines4Table}},
+\code{\link{mergeDesc}}, \code{\link{splitLines4Table}},
 \code{\link[Hmisc]{latex}}
 }
 

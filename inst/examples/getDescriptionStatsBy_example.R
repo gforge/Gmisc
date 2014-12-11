@@ -17,7 +17,7 @@ mtcars$col <- factor(sample(c("red", "black", "silver"),
                      size=NROW(mtcars), replace=TRUE))
 label(mtcars$col) <- "Car color"
 
-htmlTable(descMerger(getDescriptionStatsBy(mtcars$mpg, mtcars$am,
+htmlTable(mergeDesc(getDescriptionStatsBy(mtcars$mpg, mtcars$am,
                                            header_count = TRUE,
                                            use_units = TRUE),
                      getDescriptionStatsBy(mtcars$wt, mtcars$am,
@@ -30,7 +30,7 @@ tll[["Gear (3 to 5)"]] <- getDescriptionStatsBy(mtcars$gear, mtcars$am)
 tll <- c(tll,
          list(getDescriptionStatsBy(mtcars$col, mtcars$am)))
 
-htmlTable(descMerger(tll),
+htmlTable(mergeDesc(tll),
           caption  = "Factored variables")
 
 tl_no_units <- list()
@@ -40,7 +40,7 @@ tl_no_units[["Gas (mile/gallons)"]] <-
 tl_no_units[["Weight (10<sup>3</sup> kg)"]] <-
   getDescriptionStatsBy(mtcars$wt, mtcars$am,
                         header_count = TRUE)
-htmlTable(descMerger(tl_no_units, tll),
+htmlTable(mergeDesc(tl_no_units, tll),
           rgroupCSSstyle = "")
 
 # A little more advanced
