@@ -10,7 +10,7 @@ getDescriptionStatsBy(x, by, digits = 1, html = TRUE, NEJMstyle = FALSE,
   prop_fn = describeProp, factor_fn = describeFactors,
   show_all_values = FALSE, hrzl_prop = FALSE, add_total_col,
   total_col_show_perc = TRUE, use_units = FALSE, default_ref,
-  percentage_sign = TRUE, ...)
+  percentage_sign = TRUE, header_count, ...)
 }
 \arguments{
   \item{x}{The variable that you want the statistics for}
@@ -107,6 +107,13 @@ getDescriptionStatsBy(x, by, digits = 1, html = TRUE, NEJMstyle = FALSE,
   can also choose something else that the default \% if you
   so wish by setting this variable.}
 
+  \item{header_count}{Set to \code{TRUE} if you want to add
+  a header count, e.g. Smoking; No. 25 observations, where
+  there is a new line after the factor name. If you want a
+  different text for the second line you can speficy use
+  the \code{\link[base]{sprintf}} formatting, e.g. "No. \%s
+  patients".}
+
   \item{...}{Currently only used for generating warnings of
   deprecated call parameters.}
 }
@@ -144,33 +151,34 @@ mtcars$col <- factor(sample(c("red", "black", "silver"),
                      size=NROW(mtcars), replace=TRUE))
 label(mtcars$col) <- "Car color"
 
-mpg_data <- getDescriptionStatsBy(mtcars$mpg, mtcars$am,
-                                  use_units = TRUE)
-wt_data <- getDescriptionStatsBy(mtcars$wt, mtcars$am,
-                                 use_units = TRUE)
+htmlTable(descMerger(getDescriptionStatsBy(mtcars$mpg, mtcars$am,
+                                           header_count = TRUE,
+                                           use_units = TRUE),
+                     getDescriptionStatsBy(mtcars$wt, mtcars$am,
+                                           header_count = TRUE,
+                                           use_units = TRUE)),
+          caption  = "Basic continuous stats from the mtcars dataset")
 
-htmlTable(
-  rbind(mpg_data, wt_data),
-  caption  = "Continuous & binary variables",
-  headings = c(sprintf("\%s (SD)", levels(mtcars$am)), "Units"),
-  rowlabel = "Variable",
-  ctable   = TRUE)
+tll <- list()
+tll[["Gear (3 to 5)"]] <- getDescriptionStatsBy(mtcars$gear, mtcars$am)
+tll <- c(tll,
+         list(getDescriptionStatsBy(mtcars$col, mtcars$am)))
 
-gear_data <- getDescriptionStatsBy(mtcars$gear, mtcars$am)
-col_data <- getDescriptionStatsBy(mtcars$col, mtcars$am)
+htmlTable(descMerger(tll),
+          caption  = "Factored variables")
 
-htmlTable(rbind(gear_data, col_data),
-  caption  = "Factored variables",
-  colheads = sprintf("\%s (\%\%)", levels(mtcars$am)),
-  rowlabel = "Variable",
-  rgroup   = c(label(gear_data),
-               label(col_data)),
-  n.rgroup = c(NROW(gear_data),
-               NROW(col_data)),
-  ctable   = TRUE)
+tl_no_units <- list()
+tl_no_units[["Gas (mile/gallons)"]] <-
+  getDescriptionStatsBy(mtcars$mpg, mtcars$am,
+                        header_count = TRUE)
+tl_no_units[["Weight (10<sup>3</sup> kg)"]] <-
+  getDescriptionStatsBy(mtcars$wt, mtcars$am,
+                        header_count = TRUE)
+htmlTable(descMerger(tl_no_units, tll),
+          rgroupCSSstyle = "")
 
 # A little more advanced
-mtcars$mpg[sample(1:NROW(mtcars), size=4)] <- NA
+mtcars$mpg[sample(1:NROW(mtcars), size=5)] <- NA
 getDescriptionStatsBy(mtcars$mpg, mtcars$am, statistics=TRUE)
 
 # Do the horizontal version
