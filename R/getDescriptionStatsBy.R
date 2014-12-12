@@ -444,7 +444,7 @@ getDescriptionStatsBy <- function(x,
                             two_dec_lim= statistics.two_dec_lim,
                             html=html)
     results <- cbind(results, c(pval, rep("", nrow(results)-1)))
-    cn <- c(cn, "p-value")
+    cn <- c(cn, "P-value")
   }
 
   colnames(results) <- cn

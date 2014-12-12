@@ -37,16 +37,16 @@ test_that("Check mean function",
 
   true_wilc_pv <- pvalueFormatter(wilcox.test(Loblolly$height ~ Loblolly$young)$p.value,
                                   statistics.sig_lim=10^-4)
-  expect_equal(as.character(a[1, "p-value"]),
+  expect_equal(as.character(a[1, "P-value"]),
                true_wilc_pv)
 
-  # Check p-value without truncation
+  # Check P-value without truncation
   a <- getDescriptionStatsBy(Loblolly$height, Loblolly$age == 10,
                              statistics=TRUE,
                              html=TRUE, digits=2, statistics.sig_lim=10^-4)
   true_wilc_pv <- pvalueFormatter(wilcox.test(Loblolly$height ~ Loblolly$age == 10)$p.value,
                                   statistics.sig_lim=10^-4)
-  expect_equal(as.character(a[1, "p-value"]),
+  expect_equal(as.character(a[1, "P-value"]),
                true_wilc_pv)
 })
 
@@ -75,7 +75,7 @@ test_that("Check median function",
 
   true_wilc_pv <- pvalueFormatter(wilcox.test(Loblolly$height ~ Loblolly$young)$p.value,
                                   statistics.sig_lim=10^-4)
-  expect_equal(as.character(a[1, "p-value"]),
+  expect_equal(as.character(a[1, "P-value"]),
                true_wilc_pv)
 
   a <- getDescriptionStatsBy(Loblolly$height, Loblolly$young,
@@ -132,7 +132,7 @@ test_that("Check factor function",
   true_fisher_pval <-pvalueFormatter(fisher.test(Loblolly$fvar, Loblolly$young)$p.value,
                                      statistics.sig_lim=10^-4)
 
-  expect_equivalent(as.character(a[1, "p-value"]),
+  expect_equivalent(as.character(a[1, "P-value"]),
                     true_fisher_pval)
 
 })

@@ -17,6 +17,7 @@ A function that gets the height of an
 included by default in the \pkg{grid}-package.
 }
 \examples{
+library(grid)
 grid.newpage()
 xg <- xaxisGrob(c(1:3))
 convertY(grobHeight(xg), "lines")

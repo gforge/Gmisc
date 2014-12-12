@@ -268,6 +268,7 @@ htmlTable(mx,
 
 # A slightly more advanced example
 data(mtcars)
+library(Hmisc)
 
 label(mtcars$mpg) <- "Gas"
 units(mtcars$mpg) <- "Miles/(US) gallon"

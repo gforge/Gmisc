@@ -157,7 +157,7 @@ describeMedian <- function(x,
   else
     range_quantiles = c(0, 1)
 
-  ret <- sprintf(sprintf("%%.%df (%%3.%df - %%3.%df)", digits, digits, digits),
+  ret <- sprintf(sprintf("%%.%df (%%.%df - %%.%df)", digits, digits, digits),
                    median(x, na.rm=TRUE),
                    quantile(x, probs=range_quantiles[1], na.rm=TRUE),
                    quantile(x, probs=range_quantiles[2], na.rm=TRUE))

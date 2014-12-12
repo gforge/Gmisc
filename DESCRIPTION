@@ -1,6 +1,6 @@
 Package: Gmisc
 Version: 1.0.0
-Date: 2014-11-09
+Date: 2014-12-11
 Title: Collection of functions for plotting relations, generating tables, and
     more.
 Author: Max Gordon <max@gforge.se>
@@ -25,12 +25,13 @@ Imports:
     lattice,
     sp,
     utils,
-    methods
-Depends:
+    methods,
     Hmisc
 Suggests:
     testthat,
-    XML
+    XML,
+    knitr
 Roxygen: list(wrap = TRUE)
 Encoding: UTF-8
 NeedsCompilation: no
+VignetteBuilder: knitr

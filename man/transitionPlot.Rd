@@ -168,6 +168,7 @@ a change from one state to another
 # takes a little while to assemble the
 # arrows and RMD Check complains that this
 # is more than allowed for
+library(grid)
 par_org <- par(ask=TRUE)
 # Settings
 no_boxes <- 3

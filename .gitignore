@@ -9,3 +9,4 @@ Gmisc.RProj
 *.html
 *.md
 tests/visual_tests/FTP_test/FTP_test_files
+inst/doc

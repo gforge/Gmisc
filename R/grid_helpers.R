@@ -7,6 +7,7 @@
 #' @return \code{grid::unit} A \code{\link[grid]{unit}} object
 #'
 #' @examples
+#' library(grid)
 #' grid.newpage()
 #' xg <- xaxisGrob(c(1:3))
 #' convertY(grobHeight(xg), "lines")

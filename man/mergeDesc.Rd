@@ -50,6 +50,9 @@ htmlTable.
 }
 \examples{
 data(mtcars)
+# For labelling we use the label()
+# function from the Hmisc package
+library(Hmisc)
 
 label(mtcars$mpg) <- "Gas"
 units(mtcars$mpg) <- "Miles/(US) gallon"
