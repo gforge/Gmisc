@@ -1,3 +1,4 @@
+library(grid)
 # A bug that I found through the transitionPlot
 ag <- bezierArrowGradient(x = c(0.25, 0.5, 0.5, 0.75), 
                           y = c(0.125925925925926, 

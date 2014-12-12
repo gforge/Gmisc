@@ -1,3 +1,4 @@
+library(grid)
 # Plain test - all should be printed
 no_boxes <- 3
 # Generate test setting
