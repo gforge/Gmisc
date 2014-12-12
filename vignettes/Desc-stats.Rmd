@@ -1,58 +1,134 @@
 ---
-title: "Vignette Title"
-author: "Vignette Author"
+title: "The fastest way to compile table 1?"
+author: "Max Gordon"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{Fast descriptive statistics}
   %\VignetteEngine{knitr::rmarkdown}
   %\usepackage[utf8]{inputenc}
 ---
 
-Vignettes are long form documentation commonly included in packages. Because they are part of the distribution of the package, they need to be as compact as possible. The `html_vignette` output type provides a custom style sheet (and tweaks some options) to ensure that the resulting html is as small as possible. The `html_vignette` format:
+The purpose of the first table in a medical paper is most often to describe your population. In an RCT the table frequently compares the baseline characteristics between the randomized groups, while an observational study will often compare exposed with unexposed. In this vignette I will show how I use the functions to quickly generate a descriptive table.
 
-- Never uses retina figures
-- Has a smaller default figure size
-- Uses a custom CSS stylesheet instead of the default Twitter Bootstrap style
+We will use the mtcars dataset and compare the groups with automatic transmission to those without. First we will start by loading the dataset and labeling.
 
-## Vignette Info
 
-Note the various macros within the `vignette` setion of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the `title` field and the `\VignetteIndexEntry` to match the title of your vignette.
+```{r, message=FALSE}
+data(mtcars)
+# For labelling we use the label()
+# function from the Hmisc package
+library(Hmisc)
 
-## Styles
+label(mtcars$mpg) <- "Gas"
+units(mtcars$mpg) <- "Miles/(US) gallon"
 
-The `html_vignette` template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:
+label(mtcars$wt) <- "Weight"
+units(mtcars$wt) <- "10<sup>3</sup> kg" # not sure the unit is correct
 
-    output: 
-      rmarkdown::html_vignette:
-        css: mystyles.css
+mtcars$am <- factor(mtcars$am, levels=0:1, labels=c("Automatic", "Manual"))
+label(mtcars$am) <- "Transmission"
 
-## Figures
+mtcars$gear <- factor(mtcars$gear)
+label(mtcars$gear) <- "Gears"
 
-The figure sizes have been customised so that you can easily put two images side-by-side. 
-
-```{r, fig.show='hold'}
-plot(1:10)
-plot(10:1)
+# Make up some data for making it slightly more interesting
+mtcars$col <- factor(sample(c("red", "black", "silver"),
+                     size=NROW(mtcars), replace=TRUE))
+label(mtcars$col) <- "Car color"
 ```
 
-You can enable figure captions by `fig_caption: yes` in YAML:
+## The basics of getDescriptionStatsBy
 
-    output:
-      rmarkdown::html_vignette:
-        fig_caption: yes
+The function **getDescriptionStatsBy** is a simple way to do basic descriptive statistics. Mandatory inputs are the first two, *x* and *by*:
 
-Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
-
-## More Examples
-
-You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
-
-```{r, echo=FALSE, results='asis'}
-knitr::kable(head(mtcars, 10))
+```{r}
+library(Gmisc)
+getDescriptionStatsBy(x = mtcars$mpg, 
+                      by = mtcars$am)
 ```
 
-Also a quote using `>`:
+If we prefer median we can simply specify the statistic used with continuous variables:
 
-> "He who gives up [code] safety for [code] speed deserves neither."
-([via](https://twitter.com/hadleywickham/status/504368538874703872))
+```{r}
+getDescriptionStatsBy(x = mtcars$mpg, 
+                      by = mtcars$am,
+                      continuous_fn = describeMedian)
+```
+
+As I always have the same *by*-variable and have several customization, I often wire a small wrapper:
+
+```{r}
+getTable1Stats <- function(x, digits = 0, ...){
+  getDescriptionStatsBy(x = x, 
+                        by = mtcars$am,
+                        digits = digits,
+                        continuous_fn = describeMedian,
+                        header_count = TRUE,
+                        ...)
+  
+}
+getTable1Stats(mtcars$mpg)
+```
+
+The dot-argument (...) is useful for adding additional customization:
+
+```{r}
+getTable1Stats(mtcars$mpg, use_units = TRUE)
+```
+
+## Combining with the **htmlTable**
+
+Lists are convenient and allow a lot of customization, together with the **mergeDesc** it is easy to generate a table one:
+
+```{r, results='asis'}
+t1 <- list()
+t1[["Gas"]] <-
+  getTable1Stats(mtcars$mpg)
+  
+t1[["Weight&dagger;"]] <-
+  getTable1Stats(mtcars$wt)
+
+t1[["Color"]] <- 
+  getTable1Stats(mtcars$col)
+
+# If we want to use the labels set in the beginning
+# we add an element without a name
+t1 <- c(t1,
+        list(getTable1Stats(mtcars$gear)))
+
+htmlTable(mergeDesc(t1),
+          rgroupCSSstyle = "",
+          caption  = "Basic descriptive statistics from the mtcars dataset",
+          tfoot = "&dagger; The weight is in 10<sup>3</sup> kg")
+```
+
+Event though p-values are discouraged in the table 1, it is [not uncommon](http://cpr.sagepub.com/content/19/2/231.full). I have added basic statistics consisting of Fisher's exact test for proportions and Wilcoxon rank sum test for continuous values. Note that the Wilcoxon only works with two groups.
+
+```{r, results='asis', warning=FALSE}
+# A little more advanced input
+mtcars$mpg_w_missing <- mtcars$mpg
+mtcars$mpg_w_missing[sample(1:NROW(mtcars), size=5)] <- NA
+mtcars$wt_w_missing <- mtcars$wt
+mtcars$wt_w_missing[sample(1:NROW(mtcars), size=8)] <- NA
+
+t1 <- list()
+t1[["Gas"]] <-
+  getTable1Stats(mtcars$mpg_w_missing, statistics=TRUE)
+  
+t1[["Weight&dagger;"]] <-
+  getTable1Stats(mtcars$wt, statistics=TRUE)
+
+t1[["Color"]] <- 
+  getTable1Stats(mtcars$col, statistics=TRUE)
+
+# If we want to use the labels set in the beginning
+# we add an element without a name
+t1 <- c(t1,
+        list(getTable1Stats(mtcars$gear, statistics=TRUE)))
+
+htmlTable(mergeDesc(t1),
+          rgroupCSSstyle = "",
+          caption  = "Basic descriptive statistics from the mtcars dataset",
+          tfoot = "&dagger; The weight is in 10<sup>3</sup> kg")
+```
