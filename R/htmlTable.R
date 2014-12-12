@@ -85,7 +85,7 @@
 #'  "bottom", "header", or a integer between \code{1} and \code{nrow(cgroup) + 1}. The options
 #'  "bottom", "header" are the same, where the row label is presented at the same level as
 #'  the header.
-#' @param rowname Default is rownames of matrix or data.frame. If you
+#' @param rnames Default rownames are generated from \code{rownames(x)}. If you
 #'  provide \code{FALSE} then it will skip the rownames. Note that
 #'  even if you do \code{rownames(my_dataframe) <- NULL} it still has
 #'  rownames, thus you need to use \code{FALSE} if you want to
@@ -186,7 +186,7 @@ htmlTable.default <- function(x,
                       rowlabel.pos = "bottom",
                       ctable = TRUE,
                       compatibility = "LibreOffice",
-                      rowname,
+                      rnames,
                       caption,
                       caption.loc='top',
                       tfoot,
@@ -195,6 +195,14 @@ htmlTable.default <- function(x,
                       tableCSSclass = "gmisc_table",
                       ...)
 {
+  dots <- list(...)
+  # Warnings due to interface changes in 1.0
+  if ("rowname" %in% names(dots) && missing(rnames)){
+    rnames <- dots$rowname
+    dots$rowname <- NULL
+    warning("Deprecated: rowname argument is now rnames as of ver. 1.0")
+  }
+
   ## this will convert color names to hexadecimal (easier for user)
   ## but also leaves hex format unchanged
   altcol <- paste0('#', apply(apply(rbind(col2rgb(altcol)),
@@ -204,34 +212,24 @@ htmlTable.default <- function(x,
                               paste, collapse = '')
                    )
 
-  skip.rownames <- function(rowname){
-    if(missing(rowname))
-      return(TRUE)
-
-    if (length(rowname) == 1 &&
-         rowname == FALSE)
-      return(TRUE)
-
-    return(FALSE)
-  }
   # Unfortunately in knitr there seems to be some issue when the
-  # rowname is specified immediately as: rowname=rownames(x)
-  if (missing(rowname)){
+  # rnames is specified immediately as: rnames=rownames(x)
+  if (missing(rnames)){
     if (any(is.null(rownames(x)) == FALSE))
-      rowname <- rownames(x)
+      rnames <- rownames(x)
   }else if (any(is.null(rownames(x))) && !missing(rgroup)){
-    warning("You have not specified rownames but you seem to have rgroups.",
+    warning("You have not specified rnames but you seem to have rgroups.",
             "If you have the first column as rowname but you want the rgroups",
-            "to result in subhedings with indentation below then",
-            "you should change the rownames to the first column and then",
+            "to result in subhedings with indentation below then, ",
+            "you should change the rnames to the first column and then",
             "remove it from the table matrix (the x argument object).")
   }
 
   if (!missing(rowlabel) &&
-        skip.rownames(rowname))
+        prHtSkipRownames(rnames))
     stop("You can't have a row label and no rownames.",
          " Either remove the rowlabel argument",
-         ", set the rowname argument",
+         ", set the rnames argument",
          ", or set the rownames of the x argument.")
 
   if (missing(headings) &&
@@ -242,16 +240,15 @@ htmlTable.default <- function(x,
     stop("Your table variable seems to have the wrong dimension,",
          " length(dim(x)) = ", length(dim(x)) , " != 2")
 
-  # Just in case the user forgot that this is a string and not a vector
-  if (length(align) > 1)
-    align <- paste(align, collapse="")
+  # Fix alignment to match with the matrix
+  align <- prHtPrepareAlign(align, x, rnames)
+  halign <- prHtPrepareAlign(halign, x, rnames, default_rn = "c")
 
   if (tolower(compatibility) %in% c("libreoffice", "libre office",
                                     "open office", "openoffice",
-                                    "word", "ms word", "msword"))
+                                    "word", "ms word", "msword")){
     compatibility <- "LibreOffice"
-
-
+  }
 
   if (!missing(rgroup)){
     if (missing(n.rgroup))
@@ -380,7 +377,13 @@ htmlTable.default <- function(x,
   rowlabel.pos <- prHtGetRowlabelPos(cgroup, rowlabel.pos, headings)
 
   # Not quite as intended but close enough
-  if(length(list(...)) > 0) x <- format.df(x, numeric.dollar=FALSE, ...)
+  if(length(dots) > 0){
+    f.df_args <- dots
+    f.df_args[["x"]] <- x
+    f.df_args[["numeric.dollar"]] <- FALSE
+    x <- fastDoCall(format.df, f.df_args)
+    rm(f.df_args)
+  }
   # Remove some specifics for LaTeX
   if (is.character(x)) x <- matrix(str_replace(x, "\\\\%", "%"), ncol=ncol(x))
 
@@ -393,7 +396,7 @@ htmlTable.default <- function(x,
   }
 
   # A column counter that is used for <td colspan="">
-  total_columns <- ncol(x)+!skip.rownames(rowname)
+  total_columns <- ncol(x)+!prHtSkipRownames(rnames)
   if(!missing(cgroup)){
     if (!is.matrix(cgroup)){
       total_columns <- total_columns + length(cgroup) - 1
@@ -439,12 +442,6 @@ htmlTable.default <- function(x,
     table_str <- sprintf("%s%s</caption>", table_str, caption)
   }
 
-  rowname_align <- prHtGetAlign("l")
-  if (!skip.rownames(rowname) && nchar(align) - 1 == ncol(x)){
-    rowname_align <- prHtGetAlign(substr(align, 1,1))
-    align <- substring(align, 2)
-  }
-
   # Start the head
   table_str <- sprintf("%s\n\t<thead>", table_str)
 
@@ -469,7 +466,7 @@ htmlTable.default <- function(x,
                                               cgroup_vec.just = cgroup.just[i, ],
                                               row_no = i,
                                               top_row_style = top_row_style,
-                                              rowname = rowname,
+                                              rnames = rnames,
                                               rowlabel = rowlabel,
                                               rowlabel.pos = rowlabel.pos,
                                               cgroup_spacer_cells = cgroup_spacer_cells))
@@ -492,9 +489,11 @@ htmlTable.default <- function(x,
       table_str <- sprintf("%s\n\t\t<th style='%s'>%s</th>",
                            table_str,
                            prHtGetStyle(c(`font-weight`=900,
-                                          `border-bottom`="1px solid grey"), ts),
+                                          `border-bottom`="1px solid grey"),
+                                        ts,
+                                        align=prHtGetAlign(halign, 1)),
                            rowlabel)
-    }else if(!skip.rownames(rowname)){
+    }else if(!prHtSkipRownames(rnames)){
       table_str <- sprintf("%s\n\t\t<th style='%s'> </th>",
         table_str,
         prHtGetStyle(c(`border-bottom`="1px solid grey"), ts))
@@ -504,9 +503,13 @@ htmlTable.default <- function(x,
     if (first_row){
       cell_style=paste(cell_style, top_row_style, sep = "; ")
     }
-    table_str <- prHtAddCells(table_str = table_str, rowcells = headings,
-                              cellcode = "th", align = prHtGetAlign(halign), style=cell_style,
-                              cgroup_spacer_cells = cgroup_spacer_cells)
+    table_str <- prHtAddCells(table_str = table_str,
+                              rowcells = headings,
+                              cellcode = "th",
+                              align = halign,
+                              style=cell_style,
+                              cgroup_spacer_cells = cgroup_spacer_cells,
+                              has_rn_col = !prHtSkipRownames(rnames)*1)
 
     table_str <- sprintf("%s\n\t</tr>", table_str)
     first_row <- FALSE
@@ -617,7 +620,7 @@ htmlTable.default <- function(x,
       table_str <- sprintf("%s\n\t<tr style='%s'>", table_str, rs)
     }
 
-    if (!skip.rownames(rowname)){
+    if (!prHtSkipRownames(rnames)){
       pdng <- ""
       # Minor change from original function. If the group doesn't have
       # a group name then there shouldn't be any indentation
@@ -629,20 +632,22 @@ htmlTable.default <- function(x,
       }
 
       # The padding doesn't work well with the Word import - well nothing really works well with word...
-      # table_str <- sprintf("%s\n\t\t<td style='padding-left: .5em;'>%s</td>", table_str, rowname[row_nr])
+      # table_str <- sprintf("%s\n\t\t<td style='padding-left: .5em;'>%s</td>", table_str, rnames[row_nr])
       table_str <- sprintf("%s\n\t\t<td style='%s'>%s%s</td>",
                            table_str,
-                           prHtGetStyle(cell_style, align=rowname_align),
+                           prHtGetStyle(cell_style,
+                                        align=prHtGetAlign(align, 1)),
                            pdng,
-                           rowname[row_nr])
+                           rnames[row_nr])
     }
 
     table_str <- prHtAddCells(table_str = table_str,
                               rowcells = x[row_nr,],
                               cellcode = "td",
-                              align = prHtGetAlign(align),
+                              align = align,
                               style = cell_style,
-                              cgroup_spacer_cells = cgroup_spacer_cells)
+                              cgroup_spacer_cells = cgroup_spacer_cells,
+                              has_rn_col = !prHtSkipRownames(rnames)*1)
 
     table_str <- sprintf("%s\n\t</tr>", table_str)
   }

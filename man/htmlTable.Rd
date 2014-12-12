@@ -18,7 +18,7 @@ htmlTable(x, ...)
   tspannerCSSstyle = "font-weight: 900; text-transform: capitalize; text-align: left;",
   tspannerCSSseparator = "border-top: 1px solid grey;", rowlabel,
   rowlabel.pos = "bottom", ctable = TRUE, compatibility = "LibreOffice",
-  rowname, caption, caption.loc = "top", tfoot, label, altcol = "white",
+  rnames, caption, caption.loc = "top", tfoot, label, altcol = "white",
   tableCSSclass = "gmisc_table", ...)
 
 \method{print}{htmlTable}(x, useViewer, ...)
@@ -141,9 +141,9 @@ htmlTable(x, ...)
   layout attempts (at least that is how my 2010 version
   behaves).}
 
-  \item{rowname}{Default is rownames of matrix or
-  data.frame. If you provide \code{FALSE} then it will skip
-  the rownames. Note that even if you do
+  \item{rnames}{Default rownames are generated from
+  \code{rownames(x)}. If you provide \code{FALSE} then it
+  will skip the rownames. Note that even if you do
   \code{rownames(my_dataframe) <- NULL} it still has
   rownames, thus you need to use \code{FALSE} if you want
   to surpress those.}

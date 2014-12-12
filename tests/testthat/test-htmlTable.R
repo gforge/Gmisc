@@ -90,15 +90,15 @@ test_that("Check that dimensions are correct with rgroup usage",
                            n.rgroup=c(1,1, 0)))
 
   expect_error(htmlTable(mx,
-                           rgroup=c("test1", "test2", "test3"),
-                           n.rgroup=c(1,1, 10)))
+                         roup=c("test1", "test2", "test3"),
+                         rgroup=c(1,1, 10)))
 
   mx[2,1] <- "second row"
   table_str <- htmlTable(mx,
                          rgroup=c("test1", ""),
                          n.rgroup=c(1,1))
   expect_match(table_str, "<td[^>]*>second row",
-              info="The second row should not have any spacers")
+               info="The second row should not have any spacers")
 
   parsed_table <- readHTMLTable(table_str)[[1]]
   expect_equal(nrow(parsed_table), nrow(mx) + 1, info="Rows did not match")
@@ -110,11 +110,10 @@ test_that("Check that dimensions are correct with cgroup usage",
   colnames(mx) <- sprintf("Col %s", LETTERS[1:NCOL(mx)])
   table_str <- htmlTable(mx,
                          cgroup=c("a", "b"),
-                         n.cgroup=c(1, 2),
-                         output=FALSE)
+                         n.cgroup=c(1, 2))
   parsed_table <- readHTMLTable(table_str)[[1]]
   expect_equal(ncol(parsed_table), ncol(mx) + 1,
-                   info="Cols did not match")
+               info = "Cols did not match")
   expect_equal(nrow(parsed_table),
                nrow(mx), info="Rows did not match")
 
@@ -124,15 +123,13 @@ test_that("Check that dimensions are correct with cgroup usage",
 
   expect_error(htmlTable(mx,
                          cgroup=c("a", "b", "c"),
-                         n.cgroup=c(1, 2, 10),
-                         output=FALSE))
+                         n.cgroup=c(1, 2, 10)))
 
   table_str <- htmlTable(mx,
                          cgroup=rbind(c("aa", NA),
                                       c("a", "b")),
                          n.cgroup=rbind(c(2, NA),
-                                        c(1, 2)),
-                         output=FALSE)
+                                        c(1, 2)))
   parsed_table <- readHTMLTable(table_str)[[1]]
   expect_equal(ncol(parsed_table), ncol(mx) + 1,
                info="Cols did not match for multilevel cgroup")
@@ -142,8 +139,7 @@ test_that("Check that dimensions are correct with cgroup usage",
                          cgroup=rbind(c("aa", "bb"),
                                       c("a", "b")),
                          n.cgroup=rbind(c(2, 1),
-                                        c(1, 2)),
-                         output=FALSE)
+                                        c(1, 2)))
   parsed_table <- readHTMLTable(table_str)[[1]]
   expect_equal(ncol(parsed_table), ncol(mx) + 2,
                info="Cols did not match for multilevel cgroup")
@@ -151,19 +147,19 @@ test_that("Check that dimensions are correct with cgroup usage",
   table_str <- htmlTable(mx,
                          cgroup=c("a", "b"),
                          n.cgroup=c(2, 1),
-                         output=FALSE, tspanner=c("First spanner",
-                                                  "Secon spanner"),
+                         tspanner=c("First spanner",
+                                    "Secon spanner"),
                          n.tspanner=c(1,1))
   expect_match(table_str, "td[^>]*colspan='4'[^>]*>First spanner",
-              info="The expected number of columns should be 4")
+               info="The expected number of columns should be 4")
   expect_match(table_str, "td[^>]*colspan='4'[^>]*>Secon spanner",
-              info="The expected number of columns should be 4")
+               info="The expected number of columns should be 4")
 
   expect_error(htmlTable(mx,
                          cgroup=c("a", "b"),
                          n.cgroup=c(2, 1),
-                         output=FALSE, tspanner=c("First spanner",
-                                                  "Secon spanner"),
+                         tspanner=c("First spanner",
+                                    "Secon spanner"),
                          n.tspanner=c(1,2)))
 
 
@@ -180,13 +176,12 @@ test_that("Check that dimensions are correct with cgroup usage",
                          n.rgroup=rep(2, 4),
                          tspanner=c("First tspanner",
                                     "Second tspanner"),
-                         n.tspanner=c(4,4),
-                         output=FALSE)
+                         n.tspanner=c(4,4))
 
   expect_match(table_str, "td[^>]*colspan='5'[^>]*>1 rgroup",
-              info="The expected number of columns should be 5")
+               info="The expected number of columns should be 5")
   expect_match(table_str, "td[^>]*colspan='5'[^>]*>2 rgroup",
-              info="The expected number of columns should be 5")
+               info="The expected number of columns should be 5")
 
   parsed_table <- readHTMLTable(table_str)[[1]]
   expect_equal(as.character(parsed_table[1,1]),
@@ -199,11 +194,11 @@ test_that("Check that dimensions are correct with cgroup usage",
                "3 rgroup")
 })
 
-test_that("rowname = FALSE it should skip those",
+test_that("rnames = FALSE it should skip those",
 {
   mx <- matrix(1:6, ncol=3)
   rownames(mx) <- c("Row A", "Row B")
-  table_str <- htmlTable(mx, rowname = FALSE)
+  table_str <- htmlTable(mx, rnames = FALSE)
   expect_false(grepl("FALSE", table_str))
   expect_false(grepl("Row A", table_str))
 })
@@ -227,4 +222,79 @@ test_that("Test style formatter", {
   expect_match(prHtGetStyle(styles, c(valid= "style1", valid= "style2")), "valid: style2;")
   expect_match(prHtGetStyle(styles, c(valid= "style1", valid= "style2"), "valid: style3"), "valid: style3;")
 
+})
+
+test_that("Test align functions", {
+  expect_equivalent(nchar(prHtPrepareAlign("lr", x = matrix(1, ncol=10))),
+                    10)
+  expect_equivalent(nchar(prHtPrepareAlign("lr", x = matrix(1, ncol=2))),
+                    2)
+  expect_equivalent(nchar(prHtPrepareAlign("lr", x = matrix(1, ncol=2), rnames = TRUE)),
+                    3)
+  expect_equivalent(nchar(prHtPrepareAlign("l", x = matrix(1, ncol=2), rnames = TRUE)),
+                    3)
+  expect_equivalent(nchar(prHtPrepareAlign("", x = matrix(1, ncol=2, nrow=2), rnames = TRUE)),
+                    3)
+
+  expect_equivalent(attr(prHtPrepareAlign("r|rlt|r|", x = matrix(1, ncol=2, nrow=2), rnames = TRUE), "n"),
+                    3)
+
+  expect_equivalent(attr(prHtPrepareAlign("r|rcl|lt|r|", x = matrix(1, ncol=5, nrow=2), rnames = TRUE), "n"),
+                    6)
+  expect_match(prHtPrepareAlign("r|rcl|lt|r|", x = matrix(1, ncol=5, nrow=2), rnames = TRUE),
+               "^r")
+
+  expect_match(prHtPrepareAlign("l|r|", x = matrix(1, ncol=3, nrow=2), rnames = TRUE),
+               "^l|r|r|$")
+
+  align_str <- prHtPrepareAlign("r|rcl|lt|r|", x = matrix(1, ncol=5, nrow=2), rnames = TRUE)
+  expect_true("right" %in% prHtGetAlign(align_str, 1))
+  expect_true("right" %in% prHtGetAlign(align_str, 2))
+  expect_true("center" %in% prHtGetAlign(align_str, 3))
+  expect_true("left" %in% prHtGetAlign(align_str, 4))
+  expect_true("left" %in% prHtGetAlign(align_str, 5))
+  expect_true("right" %in% prHtGetAlign(align_str, 6))
+
+  expect_true("border-right" %in% names(prHtGetAlign(align_str, 1)))
+  expect_true("border-right" %in% names(prHtGetAlign(align_str, 4)))
+  expect_true("border-right" %in% names(prHtGetAlign(align_str, 5)))
+  expect_true("border-right" %in% names(prHtGetAlign(align_str, 6)))
+
+  expect_equivalent(length(prHtGetAlign(align_str, 1)), 2)
+  expect_equivalent(length(prHtGetAlign(align_str, 2)), 1)
+  expect_equivalent(length(prHtGetAlign(align_str, 6)), 2)
+
+  align_str <- prHtPrepareAlign("|c|rc", x = matrix(1, ncol=2, nrow=2), rnames = TRUE)
+  expect_true("border-right" %in% names(prHtGetAlign(align_str, 1)))
+  expect_true("border-left" %in% names(prHtGetAlign(align_str, 1)))
+  expect_true("center" %in% prHtGetAlign(align_str, 1))
+
+  mx <- matrix(1:6, ncol=3)
+  rownames(mx) <- c("Row A", "Row B")
+  table_str <- htmlTable(mx, rname = FALSE)
+  expect_match(table_str, "text-align: left;[^>]*>1")
+  expect_match(table_str, "text-align: center;[^>]*>3")
+  expect_match(table_str, "text-align: center;[^>]*>5")
+
+  table_str <- htmlTable(mx)
+  expect_match(table_str, "text-align: left;[^>]*>1")
+  expect_match(table_str, "text-align: center;[^>]*>3")
+  expect_match(table_str, "text-align: center;[^>]*>5")
+
+  table_str <- htmlTable(mx, align="r")
+  expect_match(table_str, "text-align: left;[^>]*>Ro")
+  expect_match(table_str, "text-align: right;[^>]*>1")
+  expect_match(table_str, "text-align: right;[^>]*>3")
+  expect_match(table_str, "text-align: right;[^>]*>5")
+
+  table_str <- htmlTable(mx, align="|ll|r|r|")
+  expect_match(table_str, "text-align: left;[^>]*>Ro")
+  expect_match(table_str, "text-align: left;[^>]*>1")
+  expect_match(table_str, "text-align: right;[^>]*>3")
+  expect_match(table_str, "text-align: right;[^>]*>5")
+
+  expect_match(table_str, "border-left:[^>]*>Ro")
+  expect_match(table_str, "border-right:[^>]*>1")
+  expect_match(table_str, "border-right:[^>]*>3")
+  expect_match(table_str, "border-right:[^>]*>5")
 })

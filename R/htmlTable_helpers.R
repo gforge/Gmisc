@@ -150,7 +150,7 @@ prHtAddSemicolon2StrEnd <- function(my_str){
 prHtGetCgroupHeader <- function(x,
                                 cgroup_vec, n.cgroup_vec, cgroup_vec.just,
                                 row_no, top_row_style,
-                                rowname,
+                                rnames,
                                 rowlabel, rowlabel.pos,
                                 cgroup_spacer_cells){
 
@@ -167,7 +167,7 @@ prHtGetCgroupHeader <- function(x,
     else
       header_str <- sprintf("%s\n\t\t<th style='%s'></th>",
                             header_str, ts)
-  }else if (!missing(rowname)){
+  }else if (!prHtSkipRownames(rnames)){
     header_str <- sprintf("%s\n\t\t<th style='%s'></th>",
                           header_str, ts)
   }
@@ -195,10 +195,15 @@ prHtGetCgroupHeader <- function(x,
                               header_str, colspan,
                               prHtGetStyle(c(`font-weight`=900),
                                            ts,
-                                           align=prHtGetAlign(strsplit(cgroup_vec.just, '')[[1]][i])))
+                                           align=prHtGetAlign(cgroup_vec.just, i)))
       else
-        header_str <- sprintf("%s\n\t\t<th colspan='%d' style='font-weight: 900; border-bottom: 1px solid grey; %s'>%s</th>",
-                              header_str, colspan, ts, cgroup_vec[i])
+        header_str <- sprintf("%s\n\t\t<th colspan='%d' style='%s'>%s</th>",
+                              header_str, colspan,
+                              prHtGetStyle(c(`font-weight`=900,
+                                             `border-bottom`="1px solid grey"),
+                                           ts,
+                                           align=prHtGetAlign(cgroup_vec.just, i)),
+                              cgroup_vec[i])
 
       # If not last then add a filler cell between the row categories
       # this is also the reason that we need the cgroup_spacer_cells
@@ -254,26 +259,25 @@ prHtPrepareCgroup <- function(x, cgroup, n.cgroup, cgroup.just){
   }
 
   if (missing(cgroup.just)){
-    cgroup.just <- matrix(paste(rep("c", times=length(n.cgroup)), collapse=""),
-                          nrow=nrow(n.cgroup))
+    cgroup.just <- apply(n.cgroup, 1,
+                         function(nc) paste(rep("c", times=sum(!is.na(nc))), collapse=""))
+    cgroup.just <- matrix(cgroup.just,
+                          ncol = 1)
   }else{
-    if (!is.matrix(cgroup.just))
-      cgroup.just <- matrix(cgroup.just, ncol=1)
-
-    if (nrow(cgroup.just) != nrow(n.cgroup))
+    if (NROW(cgroup.just) != nrow(n.cgroup))
       stop("You have different dimensions for your cgroup.just and your cgroups, ",
-           nchar(sub("\\|", "", cgroup.just[1,1])), "x", ncol(cgroup.just), " for the just while the cgroup has ",
-           nrow(cgroup), "x", ncol(cgroup))
+           NROW(cgroup.just), " (just) !=", nrow(n.cgroup), " (n.cgroup)")
 
     # An old leftover behaviour from the latex() function
-    if (ncol(cgroup.just) > 1)
-      cgroup.just <- as.matrix(apply(cgroup.just, 1, function(x) paste(ifelse(is.na(x), "", x), collapse="")), ncol=1)
+    if (NCOL(cgroup.just) > 1)
+      cgroup.just <- apply(cgroup.just, 1, function(x) paste(ifelse(is.na(x), "", x), collapse=""))
 
-    discrepancies <- which(apply(cgroup.just, 1, function(x) nchar(sub("|", "", x))) != rowSums(!is.na(cgroup)))
-    if (length(discrepancies) > 0)
-      stop("You seem to have different number of justifications in your cgroup.just as compared to your cgroup variable.",
-           " There is a discrepancy regarding rows: ", paste(discrepancies, collapse=", "))
+    cgroup.just <- mapply(prHtPrepareAlign,
+                          align = cgroup.just,
+                          x = apply(n.cgroup, 1, function(nc) sum(!is.na(nc))),
+                          rnames=FALSE)
 
+    cgroup.just <- matrix(cgroup.just, ncol=1)
   }
 
   # Go bottom up as the n.cgroup can be based on the previous
@@ -416,10 +420,13 @@ prHtGetRowlabelPos <- function (cgroup, rowlabel.pos, headings) {
 #' @param style The cell style
 #' @param cgroup_spacer_cells The number of cells that occur between
 #'  columns due to the cgroup arguments.
+#' @param has_rn_col Due to the alignment issue we need to keep track
+#'  of if there has already been printed a rowname column or not and therefore
+#'  we have this has_rn_col that is either 0 or 1.
 #' @return \code{string} Returns the string with the new cell elements
 #' @keywords internal
 #' @family hidden helper functions for \code{\link{htmlTable}}
-prHtAddCells <- function(table_str, rowcells, cellcode, align, style, cgroup_spacer_cells){
+prHtAddCells <- function(table_str, rowcells, cellcode, align, style, cgroup_spacer_cells, has_rn_col){
   style = prHtAddSemicolon2StrEnd(style)
 
   for (nr in 1:length(rowcells)){
@@ -431,7 +438,8 @@ prHtAddCells <- function(table_str, rowcells, cellcode, align, style, cgroup_spa
     table_str <- sprintf("%s\n\t\t<%s style='%s'>%s</%s>",
                          table_str,
                          cellcode,
-                         prHtGetStyle(style, align=align[nr]),
+                         prHtGetStyle(style,
+                                      align=prHtGetAlign(align, nr + has_rn_col)),
                          cell_value,
                          cellcode)
 
@@ -446,15 +454,98 @@ prHtAddCells <- function(table_str, rowcells, cellcode, align, style, cgroup_spa
 
 #' Gets alignment
 #'
-#' AVI added utility function to incorporate custom (LaTeX) column alignment
-#'
-#' @param align_req The align option from \code{\link{htmlTable}}
+#' @param index The index of the align parameter of interest
 #' @family hidden helper functions for
 #' @keywords internal
-prHtGetAlign <- function(align_req) {
-  tmp_align_req <- strsplit(align_req, "")[[1]]
-  if (length(grep('[|]', tmp_align_req)) >0 ) { # Remove pipe(s) if they exist
-    tmp_align_req <- tmp_align_req[-grep('[|]', tmp_align_req)]
+#' @inheritParams htmlTable
+prHtGetAlign <- function(align, index) {
+  segm_rgx <- "[^lrc]*[rlc][^lrc]*"
+
+  res_align <- align
+  align <- ""
+  # Loop to remove every element prior to the one of interest
+  for (i in 1:index){
+    if (nchar(res_align) == 0)
+      stop("Requested column outside of span, ", index, " > ", i)
+
+    rmatch <- regexpr(segm_rgx, res_align)
+    lrc_data <- substr(res_align, 1, rmatch + attr(rmatch, "match.length") - 1)
+    res_align <- substring(res_align, rmatch + attr(rmatch, "match.length"))
   }
-  sapply(tmp_align_req, function(f) c("center", "right", "left")[grep(f, c("c", "r", "l"))], USE.NAMES=FALSE)
+  styles <- c()
+  if (grepl("^[|]", lrc_data))
+    styles["border-left"] = "1px solid black"
+  if (grepl("[|]$", lrc_data))
+    styles["border-right"] = "1px solid black"
+
+  if (grepl("l", lrc_data))
+    styles["text-align"] = "left"
+  if (grepl("c", lrc_data))
+    styles["text-align"] = "center"
+  if (grepl("r", lrc_data))
+    styles["text-align"] = "right"
+
+  return(styles)
+}
+
+#' Prepares the align to match the columns
+#'
+#' The alignment may be tricky and this function therefore simplifies
+#' this process by extending/shortening the alignment to match the
+#' correct number of columns.
+#'
+#' @param default_rn The default rowname alignment. This is an option
+#'  as the header uses the same function and there may be differences in
+#'  how the alignments should be implemented.
+#' @keywords internal
+#' @family hidden helper functions for \code{\link{htmlTable}}
+#' @inheritParams htmlTable
+prHtPrepareAlign <- function (align, x, rnames, default_rn = "l") {
+  if (length(align) > 1)
+    align <- paste(align, collapse="")
+
+  segm_rgx <- "[^lrc]*[rlc][^lrc]*"
+  no_elements <- length(strsplit(align, split = segm_rgx)[[1]])
+  no_cols <- ifelse(is.null(dim(x)), x, ncol(x))
+  if (!prHtSkipRownames(rnames)){
+    no_cols <- no_cols + 1
+    if (no_elements < no_cols){
+      align <- paste0(default_rn, align)
+    }
+  }
+
+  res_align <- align
+  align <- ""
+  for (i in 1:no_cols){
+    rmatch <- regexpr(segm_rgx, res_align)
+    tmp_lrc <- substr(res_align, 1, rmatch + attr(rmatch, "match.length") - 1)
+    res_align <- substring(res_align, rmatch + attr(rmatch, "match.length"))
+    align <- paste0(align,
+                    tmp_lrc)
+    if (nchar(res_align) < 1 &&
+          i != no_cols){
+      align <- paste0(align,
+                      paste(rep(tmp_lrc, times=no_cols - i), collapse=""))
+      break;
+    }
+  }
+
+  structure(align,
+            n = no_cols,
+            class = class(align))
+}
+
+#' Returns if rownames should be printed for the htmlTable
+#'
+#' @inheritParams htmlTable
+#' @keywords internal
+prHtSkipRownames <- function(rnames){
+  if(missing(rnames))
+    return(TRUE)
+
+  if (length(rnames) == 1 &&
+        rnames == FALSE)
+    return(TRUE)
+
+  return(FALSE)
 }

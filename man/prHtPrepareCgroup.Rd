@@ -43,7 +43,8 @@ Other hidden helper functions for \code{\link{htmlTable}}:
 \code{\link{prHtAddSemicolon2StrEnd}};
 \code{\link{prHtGetCgroupHeader}};
 \code{\link{prHtGetRowlabelPos}};
-\code{\link{prHtGetStyle}}; \code{\link{prHtGetTableCntr}}
+\code{\link{prHtGetStyle}}; \code{\link{prHtGetTableCntr}};
+\code{\link{prHtPrepareAlign}}
 }
 \keyword{internal}
 

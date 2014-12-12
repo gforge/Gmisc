@@ -40,6 +40,7 @@ Other hidden helper functions for \code{\link{htmlTable}}:
 \code{\link{prHtAddSemicolon2StrEnd}};
 \code{\link{prHtGetCgroupHeader}};
 \code{\link{prHtGetStyle}}; \code{\link{prHtGetTableCntr}};
+\code{\link{prHtPrepareAlign}};
 \code{\link{prHtPrepareCgroup}}
 }
 \keyword{internal}

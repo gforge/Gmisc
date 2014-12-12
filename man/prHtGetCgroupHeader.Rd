@@ -4,7 +4,7 @@
 \title{Retrieve a header row}
 \usage{
 prHtGetCgroupHeader(x, cgroup_vec, n.cgroup_vec, cgroup_vec.just, row_no,
-  top_row_style, rowname, rowlabel, rowlabel.pos, cgroup_spacer_cells)
+  top_row_style, rnames, rowlabel, rowlabel.pos, cgroup_spacer_cells)
 }
 \arguments{
   \item{x}{The matrix/data.frame with the data}
@@ -26,9 +26,9 @@ prHtGetCgroupHeader(x, cgroup_vec, n.cgroup_vec, cgroup_vec.just, row_no,
   depending on the \code{ctable} option in the
   \code{htmlTable} call.}
 
-  \item{rowname}{Default is rownames of matrix or
-  data.frame. If you provide \code{FALSE} then it will skip
-  the rownames. Note that even if you do
+  \item{rnames}{Default rownames are generated from
+  \code{rownames(x)}. If you provide \code{FALSE} then it
+  will skip the rownames. Note that even if you do
   \code{rownames(my_dataframe) <- NULL} it still has
   rownames, thus you need to use \code{FALSE} if you want
   to surpress those.}
@@ -65,6 +65,7 @@ Other hidden helper functions for \code{\link{htmlTable}}:
 \code{\link{prHtAddSemicolon2StrEnd}};
 \code{\link{prHtGetRowlabelPos}};
 \code{\link{prHtGetStyle}}; \code{\link{prHtGetTableCntr}};
+\code{\link{prHtPrepareAlign}};
 \code{\link{prHtPrepareCgroup}}
 }
 \keyword{internal}

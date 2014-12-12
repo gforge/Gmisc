@@ -3,15 +3,21 @@
 \alias{prHtGetAlign}
 \title{Gets alignment}
 \usage{
-prHtGetAlign(align_req)
+prHtGetAlign(align, index)
 }
 \arguments{
-  \item{align_req}{The align option from
-  \code{\link{htmlTable}}}
+  \item{align}{a character strings specifying column
+  alignments, defaulting to \code{paste(c("l",
+  rep('c',ncol(n_table)-1)),collapse='')} to center. Valid
+  alignments are l = left, c = center and r = right. You
+  can also specify \code{align='c|c'} and other LaTeX
+  tabular formatting.}
+
+  \item{index}{The index of the align parameter of
+  interest}
 }
 \description{
-AVI added utility function to incorporate custom (LaTeX)
-column alignment
+Gets alignment
 }
 \keyword{internal}
 

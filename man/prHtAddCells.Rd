@@ -3,7 +3,8 @@
 \alias{prHtAddCells}
 \title{Add a cell}
 \usage{
-prHtAddCells(table_str, rowcells, cellcode, align, style, cgroup_spacer_cells)
+prHtAddCells(table_str, rowcells, cellcode, align, style, cgroup_spacer_cells,
+  has_rn_col)
 }
 \arguments{
   \item{table_str}{The string to add the cell to}
@@ -25,6 +26,11 @@ prHtAddCells(table_str, rowcells, cellcode, align, style, cgroup_spacer_cells)
 
   \item{cgroup_spacer_cells}{The number of cells that occur
   between columns due to the cgroup arguments.}
+
+  \item{has_rn_col}{Due to the alignment issue we need to
+  keep track of if there has already been printed a rowname
+  column or not and therefore we have this has_rn_col that
+  is either 0 or 1.}
 }
 \value{
 \code{string} Returns the string with the new cell elements
@@ -39,6 +45,7 @@ Other hidden helper functions for \code{\link{htmlTable}}:
 \code{\link{prHtGetCgroupHeader}};
 \code{\link{prHtGetRowlabelPos}};
 \code{\link{prHtGetStyle}}; \code{\link{prHtGetTableCntr}};
+\code{\link{prHtPrepareAlign}};
 \code{\link{prHtPrepareCgroup}}
 }
 \keyword{internal}
