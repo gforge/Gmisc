@@ -1,0 +1,190 @@
+---
+title: "Table mania"
+author: "Max Gordon"
+date: "`r Sys.Date()`"
+output: 
+  rmarkdown::html_vignette:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{Table mania}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\usepackage[utf8]{inputenc}
+---
+
+Introduction
+============
+
+Tables are an essential part of publishing, well... anything. I therefore want to explore the options available for generating these in markdown. It is important to remember that there are two ways principal ways of generating tables in markdown:
+
+1. Markdown adapted table
+2. HTML tables
+
+Mardkown tables
+===============
+
+Raw tables
+----------
+
+A markdown table is fairly straight forward and are simple to manually create. Just write the plain text below:
+
+<pre>
+1st Header  | 2nd Header
+----------- | -------------
+Content A   | Content B
+Content C   | Content D
+</pre>
+
+And you will end up with this beauty:
+
+1st Header  | 2nd Header
+----------- | -------------
+Content A   | Content B
+Content C   | Content D
+
+The `knitr::kable` function
+---------------------------
+
+Now this is not the R way, we want to use a function that does this. The **knitr** comes with a table function well suited for this, **kable**:
+
+```{r, results='asis'}
+# First generate the corresponding
+# matrix to the above example
+output <- 
+  matrix(sprintf("Content %s", LETTERS[1:4]),
+         ncol=2, byrow=TRUE)
+colnames(output) <- 
+  c("1st header", "2nd header")
+rownames(output) <- 
+  c("1st row", "2nd row")
+
+library(knitr)
+kable(output, 
+      caption="A test table", 
+      align = c("c", "r"))
+```
+
+The advantage with the `kable` function is that it outputs true markdown tables and these can through the [pandoc](http://johnmacfarlane.net/pandoc/README.html#tables) system be converted to any document format. Some of the downsides are:
+
+* Lack of adding row groups and column groups
+* No control over cell formatting
+* No control over borders
+* ...
+
+HTML tables
+===========
+
+Tables are possibly the most tested HTML-element out there. In early web design this was the only feature that browsers handled uniformly, and became therefore for a long period the standard way of doing layout. They are thereby an excellent template for generating advanced tables in statistics. There are currently three different implementations that I've encountered, the **xtable**, the **format.tables**, and my own **htmlTable** function. 
+
+The `xtable`-package
+--------------------
+
+The `xtable` is a solution that delivers both html and LaTeX. The syntaxt is very similar to `kable`:
+
+```{r, results='asis'}
+library(xtable)
+print(xtable(output, 
+             caption="A test table", 
+             align = c("l", "c", "r")), 
+      type="html")
+```
+
+The downside with the function is that you need to change output depending on your target and there is not that much advantage compared to `kable`.
+
+The `format.tables`-package
+-------------------------
+
+The Swedish Pension Agency has been a pioneer here in Sweden when it comes to implementing R in their daily work. They currently produce their annual report in markdown, a very impressive piece of work. As part of this Cedric Perriard has developed a table solution that allows both html and LaTeX output, `format.tables`. The package needs to be installed from GitGub:
+
+```{r, eval=FALSE}
+# If you haven't installed it before, you need devtools
+install.packages("devtools")
+devtools::install_github(repo = "format.tables",
+                         username = "SwedishPensionsAgency")
+```
+
+It allows both simple and advanced formatting, here is a basic example:
+
+```{r, results='asis'}
+library(format.tables)
+
+x <- format.tables(data=head(cars, 3), 
+                    styles=rep("plain", 3), 
+                    column.names = names(cars), 
+                    names.style = "header", 
+                    header=list(caption = "Caption", subcaption="subcaption")
+                    )
+cat(x$render(type="html"))
+```
+
+The `htmlTable` in the `Gmisc`-package
+--------------------------------------
+
+I developed the `htmlTable` inorder to get tables matching those available in top medical journals. After finding no html-alternative to the `Hmisc::latex` function on [Stack Overflow](http://stackoverflow.com/questions/11950703/html-with-multicolumn-table-in-markdown-using-knitr) I wrote a basic function allowing column spanners and row groups. Below is a basic example on these two:
+
+```{r, results='asis'}
+output <- 
+  matrix(paste("Content", LETTERS[1:16]), 
+         ncol=4, byrow = TRUE)
+
+library(Gmisc)
+htmlTable(output,
+          rgroup = c("Group A-H",
+                     "Group I-P"),
+          n.rgroup = c(2,2),
+          rnames = paste(c("1st", "2nd",
+                           "3rd", "4th"), "row"),
+          cgroup = c("Cgroup 1", "Cgroup 2&dagger;"),
+          n.cgroup = c(2,2), 
+          caption="Basic table with both column spanners (groups) and row groups",
+          tfoot="&dagger; A table footer commment"
+          )
+```
+
+More *raw* markdown tables
+========================
+
+There are a few more text alternatives available when desiging tables. I included these from the manual for completeness.
+
+<pre>
+| Right | Left | Default | Center |
+|------:|:-----|---------|:------:|
+|   12  |  12  |    12   |    12  |
+|  123  |  123 |   123   |   123  |
+|    1  |    1 |     1   |     1  |
+
+: Demonstration of pipe table syntax.
+</pre>
+
+| Right | Left | Default | Center |
+|------:|:-----|---------|:------:|
+|   12  |  12  |    12   |    12  |
+|  123  |  123 |   123   |   123  |
+|    1  |    1 |     1   |     1  |
+
+  : Demonstration of pipe table syntax.
+
+<pre>
+: Sample grid table.
+
++---------------+---------------+--------------------+
+| Fruit         | Price         | Advantages         |
++===============+===============+====================+
+| Bananas       | $1.34         | - built-in wrapper |
+|               |               | - bright color     |
++---------------+---------------+--------------------+
+| Oranges       | $2.10         | - cures scurvy     |
+|               |               | - tasty            |
++---------------+---------------+--------------------+
+</pre>
+
+: Sample grid table.
+
++---------------+---------------+--------------------+
+| Fruit         | Price         | Advantages         |
++===============+===============+====================+
+| Bananas       | $1.34         | - built-in wrapper |
+|               |               | - bright color     |
++---------------+---------------+--------------------+
+| Oranges       | $2.10         | - cures scurvy     |
+|               |               | - tasty            |
++---------------+---------------+--------------------+
