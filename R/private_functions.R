@@ -25,7 +25,7 @@ prGetStatistics <- function(x,
                             continuous_fn = describeMean,
                             factor_fn = describeFactors,
                             prop_fn = factor_fn,
-                            percentage_sign = percentage_sign)
+                            percentage_sign = TRUE)
 {
   # All the describe functions have the same interface
   # so it is useful to gather all the arguments here
@@ -41,7 +41,7 @@ prGetStatistics <- function(x,
   if (is.factor(x) ||
         is.logical(x) ||
         is.character(x)){
-    if (length(unique(x)) == 2){
+    if (length(unique(na.omit(x))) == 2){
       if (show_perc){
         total_table <- fastDoCall(prop_fn, describe_args)
       }else{
@@ -50,7 +50,7 @@ prGetStatistics <- function(x,
         # Choose only the reference level
         if (show_all_values == FALSE)
           total_table <- total_table[names(total_table) %in%
-                                       c(levels(x)[1], "Missing")]
+                                       c(levels(as.factor(x))[1], "Missing")]
       }
 
     } else {

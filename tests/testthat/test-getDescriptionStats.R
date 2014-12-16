@@ -261,6 +261,23 @@ test_that("Check factor function with missing",
     }
   }
 
+  
+  # When
+  # - `x` has exactly 2 levels and some NAs
+  # - add_total_col=TRUE
+  # - show_missing="no"
+  # - show_all_values=F
+  # Then prGetStatistics should return the count of just the first factor level
+  # use example:
+  #   a <- getDescriptionStatsBy(Loblolly$young_w_missing, Loblolly$fvar,
+  #                              useNA="no", html=TRUE, digits=2, 
+  #                              add_total_col=TRUE)
+  a <- prGetStatistics(Loblolly$young_w_missing, 
+                       useNA ="no", show_all_values=FALSE)
+  lvl = levels(Loblolly$young_w_missing)[1]
+  target = sum(stats[, lvl])
+  names(target) = lvl
+  expect_equal(a, target)
 })
 
 test_that("Problem with boolean x", {
