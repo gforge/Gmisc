@@ -44,7 +44,7 @@ prGetStatistics <- function(x,
         names(total_table)[is.na(names(total_table))] <- "Missing"
         # Choose only the reference level
         if (show_all_values == FALSE)
-          total_table <- total_table[names(total_table) %in% c(levels(x)[1], "Missing")]
+          total_table <- total_table[names(total_table) %in% c(levels(as.factor(x))[1], "Missing")]
       }
 
     } else {
