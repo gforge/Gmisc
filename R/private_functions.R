@@ -31,7 +31,7 @@ prGetStatistics <- function(x,
   if (is.factor(x) ||
         is.logical(x) ||
         is.character(x)){
-    if (length(unique(x)) == 2){
+    if (length(unique(na.omit(x))) == 2){
       if (show_perc){
         total_table <- prop_fn(x,
             html=html,
@@ -44,7 +44,7 @@ prGetStatistics <- function(x,
         names(total_table)[is.na(names(total_table))] <- "Missing"
         # Choose only the reference level
         if (show_all_values == FALSE)
-          total_table <- total_table[names(total_table) %in% c(levels(x)[1], "Missing")]
+          total_table <- total_table[names(total_table) %in% c(levels(as.factor(x))[1], "Missing")]
       }
 
     } else {
