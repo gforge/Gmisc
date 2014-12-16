@@ -31,7 +31,7 @@ prGetStatistics <- function(x,
   if (is.factor(x) ||
         is.logical(x) ||
         is.character(x)){
-    if (length(unique(x)) == 2){
+    if (length(unique(x)) == 2 || nlevels(x) == 2){
       if (show_perc){
         total_table <- prop_fn(x,
             html=html,
