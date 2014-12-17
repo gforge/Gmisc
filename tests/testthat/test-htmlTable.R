@@ -301,3 +301,24 @@ test_that("Test align functions", {
   expect_match(table_str, "border-right:[^>]*>3")
   expect_match(table_str, "border-right:[^>]*>5")
 })
+
+test_that("Check color function",{
+  expect_equivalent(prHtPrepareColors(c("white", "#444444"), 2),
+                    c("#ffffff", "#444444"))
+  expect_equivalent(prHtPrepareColors(c("white", "#444444"), 3),
+                    c("#ffffff", "#444444", "#ffffff"))
+
+  expect_null(attr(prHtPrepareColors(c("white", "#444444"), 3), "groups"))
+  expect_equivalent(attr(prHtPrepareColors(c("white", "#444444"), 3, c(2, 3, 1)), "groups")[[1]],
+                    c("#ffffff", "#ffffff"))
+  expect_equivalent(attr(prHtPrepareColors(c("white", "#444444"), 3, c(2, 3, 1)), "groups")[[2]],
+                    c("#444444", "#444444", "#444444"))
+  expect_equivalent(attr(prHtPrepareColors(c("white", "#444444"), 3, c(2, 3, 1)), "groups")[[3]],
+                    c("#ffffff"))
+
+  expect_equivalent(attr(prHtPrepareColors(c("white", "#444444", "none"), 3, c(2, 3, 1)), "groups")[[3]],
+                    c("none"))
+
+  expect_equivalent(attr(prHtPrepareColors(c("white", "none"), 3, c(2, 3, 1)), "groups")[[2]],
+                    c("none", "none", "none"))
+})

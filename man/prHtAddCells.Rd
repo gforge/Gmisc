@@ -4,7 +4,7 @@
 \title{Add a cell}
 \usage{
 prHtAddCells(table_str, rowcells, cellcode, align, style, cgroup_spacer_cells,
-  has_rn_col)
+  has_rn_col, col.columns)
 }
 \arguments{
   \item{table_str}{The string to add the cell to}
@@ -34,6 +34,8 @@ prHtAddCells(table_str, rowcells, cellcode, align, style, cgroup_spacer_cells,
   keep track of if there has already been printed a rowname
   column or not and therefore we have this has_rn_col that
   is either 0 or 1.}
+
+  \item{col.columns}{Alternating colors for each column.}
 }
 \value{
 \code{string} Returns the string with the new cell elements

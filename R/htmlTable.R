@@ -133,11 +133,9 @@
 #' @param ... Passed on to \code{print.htmlTable} function and any argument except the
 #'  \code{useViewer} will be passed on to the \code{\link[base]{cat}} functions arguments.
 #'
-#' @param col.rgroup alternating colors for each \code{rgroup}; one or two colors
-#'  is recommended and will be recycled (will throw warning if the number of
-#'  \code{rgroup}s is not a multiple of \code{length(col.rgroup)}). Note that
-#'  the col.rgroup currently only works when copy-pasting from the browser and
-#'  not when opening directly in LibreOffice.
+#' @param col.rgroup Alternating colors for each \code{rgroup}; one or two colors
+#'  is recommended and will be recycled.
+#' @param col.columns Alternating colors for each column.
 #'
 #' @param padding.rgroup Generally two non-breakings spaces, i.e. \code{&nbsp;&nbsp;}, but some
 #'  journals only have a bold face for the rgroup and leaves the subelements unindented.
@@ -225,7 +223,8 @@ htmlTable.default <- function(x,
                               pos.caption='top',
 
                               # Colors
-                              col.rgroup = 'white',
+                              col.rgroup = 'none',
+                              col.columns =  'none',
 
                               # More alternatives
                               padding.rgroup = "&nbsp;&nbsp;",
@@ -269,12 +268,8 @@ htmlTable.default <- function(x,
 
   ## this will convert color names to hexadecimal (easier for user)
   ## but also leaves hex format unchanged
-  col.rgroup <- paste0('#', apply(apply(rbind(col2rgb(col.rgroup)),
-                                    2,
-                                    function(x) as.character(as.hexmode(x))),
-                              2,
-                              paste, collapse = '')
-                   )
+  col.rgroup <- prHtPrepareColors(col.rgroup, nrow(x), n.rgroup)
+  col.columns <- prHtPrepareColors(col.columns, ncol(x))
 
   # Unfortunately in knitr there seems to be some issue when the
   # rnames is specified immediately as: rnames=rownames(x)
@@ -587,8 +582,11 @@ htmlTable.default <- function(x,
   # Close head and start the body #
   #################################
   table_str <- sprintf("%s\n\t</thead><tbody>", table_str)
-  ## background colors for rows, by rgroup
-  if (!missing(rgroup)){ rs2 <- unlist(Map(rep, col.rgroup, n.rgroup)) }
+
+  if (missing(rgroup))
+    row_clrs <- col.rgroup
+  else
+    row_clrs <- unlist(attr(col.rgroup, "group"))
 
   rgroup_iterator <- 0
   tspanner_iterator <- 0
@@ -632,7 +630,8 @@ htmlTable.default <- function(x,
         row_nr > sum(n.rgroup[1:rgroup_iterator]))){
       rgroup_iterator = rgroup_iterator + 1
 
-      rs <- css.rgroup[rgroup_iterator]
+      rs <- prHtGetStyle(css.rgroup[rgroup_iterator],
+                         `background-color` = col.rgroup[rgroup_iterator])
 
       # Use a separator from the one above if this
       # at least the second group. Graphically this
@@ -653,8 +652,7 @@ htmlTable.default <- function(x,
 
         ## this will allow either css.rgroup or col.rgroup to
         ## color the rgroup label rows
-        table_str <- sprintf("%s\n\t<tr style='background-color:%s;'><td colspan='%d' style='%s'>%s</td></tr>", table_str,
-                             rep(unique(rs2), length(rgroup))[rgroup_iterator],
+        table_str <- sprintf("%s\n\t<tr><td colspan='%d' style='%s'>%s</td></tr>", table_str,
                              total_columns,
                              rs,
                              rgroup[rgroup_iterator])
@@ -664,17 +662,12 @@ htmlTable.default <- function(x,
     }
 
 
-    if (!missing(rgroup)){
-      ## this will change the bgcolor of the rows, by rgroup
-      rs <- c(`background-color` = rs2[row_nr])
-    }else{
-      rs <- ""
-    }
-
-    cell_style = "";
+    cell_style <- rs <- paste("background-color:", row_clrs[row_nr])
     if (first_row){
-      rs <- prHtGetStyle(rs, top_row_style)
-      cell_style <- prHtGetStyle(top_row_style)
+      rs <- prHtGetStyle(rs,
+                         top_row_style)
+      cell_style <- prHtGetStyle(cell_style,
+                                 top_row_style)
     }
     first_row <- FALSE
 
@@ -715,7 +708,8 @@ htmlTable.default <- function(x,
                               align = align,
                               style = cell_style,
                               cgroup_spacer_cells = cgroup_spacer_cells,
-                              has_rn_col = !prHtSkipRownames(rnames)*1)
+                              has_rn_col = !prHtSkipRownames(rnames)*1,
+                              col.columns = col.columns)
 
     table_str <- sprintf("%s\n\t</tr>", table_str)
   }

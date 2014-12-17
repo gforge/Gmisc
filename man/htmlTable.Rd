@@ -18,7 +18,7 @@ htmlTable(x, ...)
   css.tspanner = "font-weight: 900; text-transform: capitalize; text-align: left;",
   css.tspanner.sep = "border-top: 1px solid grey;",
   css.table.class = "gmisc_table", pos.rowlabel = "bottom",
-  pos.caption = "top", col.rgroup = "white",
+  pos.caption = "top", col.rgroup = "none", col.columns = "none",
   padding.rgroup = "&nbsp;&nbsp;", ctable = TRUE,
   compatibility = "LibreOffice", ...)
 
@@ -158,13 +158,11 @@ htmlTable(x, ...)
   caption below the table instead of the default of
   \code{"top"}.}
 
-  \item{col.rgroup}{alternating colors for each
+  \item{col.rgroup}{Alternating colors for each
   \code{rgroup}; one or two colors is recommended and will
-  be recycled (will throw warning if the number of
-  \code{rgroup}s is not a multiple of
-  \code{length(col.rgroup)}). Note that the col.rgroup
-  currently only works when copy-pasting from the browser
-  and not when opening directly in LibreOffice.}
+  be recycled.}
+
+  \item{col.columns}{Alternating colors for each column.}
 
   \item{padding.rgroup}{Generally two non-breakings spaces,
   i.e. \code{&nbsp;&nbsp;}, but some journals only have a

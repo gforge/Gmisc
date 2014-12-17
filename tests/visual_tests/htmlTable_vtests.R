@@ -48,13 +48,27 @@ htmlTable(mx_3_times,
 
 htmlTable(mx_3_times,
           css.tspanner.sep=c("border-top: 2px solid red;",
-                                 "border-top: 12px solid blue;"),
+                             "border-top: 2px solid blue;"),
           rgroup = rep(c("Group a", "Group b and c"), times=3),
           n.rgroup = rep(c(1,2), times=3),
           tspanner=c("First", "Second", "Third"),
           n.tspanner=rep(nrow(mx), times=3),
           rowlabel = '',
           col.rgroup = c('white','lightblue1'),
+          tfoot = "Some footer text",
+          caption="Caption text")
+
+
+htmlTable(mx_3_times,
+          css.tspanner.sep=c("border-top: 2px solid red;",
+                             "border-top: 2px solid blue;"),
+          rgroup = rep(c("Group a", "Group b and c"), times=3),
+          n.rgroup = rep(c(1,2), times=3),
+          tspanner=c("First", "Second", "Third"),
+          n.tspanner=rep(nrow(mx), times=3),
+          rowlabel = '',
+          col.rgroup = c('white','lightblue1'),
+          col.columns = c('none','#CCCCCC'),
           tfoot = "Some footer text",
           caption="Caption text")
 

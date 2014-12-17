@@ -89,6 +89,23 @@ prHtGetStyle <- function(styles, ...){
     stop("Invalid styles detected, one or more styles lack the needed style 'name: value': ",
          paste(paste0("'", styles[!grepl("^[^:]+:.+", styles)], "'"), collapse=", "))
 
+  # Remove empty background colors
+  if (any(grepl("^background-color: none", styles))){
+    styles <- styles[-grep("^background-color: none", styles)]
+  }
+
+  # Merge background colors
+  if (sum(grepl("^background-color:", styles)) == 2){
+    clrs <- styles[grep("^background-color:", styles)]
+    clrs <- gsub("^background-color:[ ]*([^;]+);*", "\\1", clrs)
+    # Pick a color merge
+    styles <- styles[-grep("^background-color:", styles)]
+    styles <-
+      c(styles,
+        paste0("background-color: ",
+               colorRampPalette(clrs)(3)[2]))
+  }
+
   style_names <- gsub("^([^:]+).+", "\\1", styles)
   if (!any(duplicated(style_names))){
     unique_styles <- styles
@@ -435,7 +452,7 @@ prHtGetRowlabelPos <- function (cgroup, pos.rowlabel, header) {
 #' @return \code{string} Returns the string with the new cell elements
 #' @keywords internal
 #' @family hidden helper functions for \code{\link{htmlTable}}
-prHtAddCells <- function(table_str, rowcells, cellcode, align, style, cgroup_spacer_cells, has_rn_col){
+prHtAddCells <- function(table_str, rowcells, cellcode, align, style, cgroup_spacer_cells, has_rn_col, col.columns){
   style = prHtAddSemicolon2StrEnd(style)
 
   for (nr in 1:length(rowcells)){
@@ -444,11 +461,18 @@ prHtAddCells <- function(table_str, rowcells, cellcode, align, style, cgroup_spa
     if (is.na(cell_value))
       cell_value <- ""
 
+    if (!missing(col.columns)){
+      cell_style <- prHtGetStyle(style,
+                                 align=prHtGetAlign(align, nr + has_rn_col),
+                                 paste("background-color:", col.columns[nr]))
+    }else{
+      cell_style <- prHtGetStyle(style,
+                                 align=prHtGetAlign(align, nr + has_rn_col))
+    }
     table_str <- sprintf("%s\n\t\t<%s style='%s'>%s</%s>",
                          table_str,
                          cellcode,
-                         prHtGetStyle(style,
-                                      align=prHtGetAlign(align, nr + has_rn_col)),
+                         cell_style,
                          cell_value,
                          cellcode)
 
@@ -557,4 +581,32 @@ prHtSkipRownames <- function(rnames){
     return(TRUE)
 
   return(FALSE)
+}
+
+#' Prepares the alternating colors
+#'
+#' @param clr The colors
+#' @param n The number of rows/columns applicable to the color
+#' @param ng The n.rgroup argument if applicable
+#' @return \code{character} A vector containing hexadecimal colors
+#' @keywords internal
+prHtPrepareColors <- function(clr, n, ng){
+  clr <- sapply(clr, function(a_clr){
+    if(a_clr == "none")
+      return(a_clr)
+    paste0('#',
+           paste(as.character(as.hexmode(col2rgb(a_clr))),
+                 collapse=""))
+  }, USE.NAMES=FALSE)
+
+  if(!missing(ng)){
+    clr <- rep(clr, length.out = length(ng))
+
+    attr(clr, "groups") <-
+      Map(rep, clr, length.out = ng)
+  }else if(!missing(n)){
+    clr <- rep(clr, length.out = n)
+  }
+
+  return(clr)
 }
