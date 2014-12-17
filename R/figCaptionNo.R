@@ -103,7 +103,7 @@ figCapNoLast <- function(roman = getOption("fig_caption_no_roman",
 #' @export
 #' @examples
 #' org_opts <- options(fig_caption_no=1)
-#' figCapNoLast()
+#' figCapNoNext()
 #' options(org_opts)
 #' @family figure caption functions
 figCapNoNext <- function(roman = getOption("fig_caption_no_roman",

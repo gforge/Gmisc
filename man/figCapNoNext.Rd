@@ -16,7 +16,7 @@ order to keep track of the last number.
 }
 \examples{
 org_opts <- options(fig_caption_no=1)
-figCapNoLast()
+figCapNoNext()
 options(org_opts)
 }
 \seealso{
