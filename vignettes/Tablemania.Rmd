@@ -110,8 +110,49 @@ htmlTable(output,
           cgroup = c("Cgroup 1", "Cgroup 2&dagger;"),
           n.cgroup = c(2,2), 
           caption="Basic table with both column spanners (groups) and row groups",
-          tfoot="&dagger; A table footer commment"
-          )
+          tfoot="&dagger; A table footer commment")
+```
+
+```{r, results='asis'}
+data(SCB)
+rownames(SCB) <- SCB$year
+SCB$year <- NULL
+
+cgroup <- c("Men", "Women")
+n.cgroup <- 
+  sapply(tolower(cgroup),
+         function(x) sum(grepl(sprintf("^%s_", x),
+                               names(SCB))))
+names(SCB) <- 
+  gsub("^(men|women)_", "", names(SCB))
+
+names(SCB) <- 
+  gsub("[ ]county$", "", names(SCB))
+
+# The problem with round is that 39.0 becomes
+# 39 in the table, we want to keep the change
+mx <- NULL
+for (n in names(SCB)){
+  mx <- cbind(mx,
+              cbind(SCB[[n]], 
+                    SCB[[n]] - SCB[[n]][1]))
+}
+mx <- t(apply(mx, 1, function(x) sprintf("%.1f", x)))
+rownames(mx) <- rownames(SCB)
+colnames(mx) <- rep(c("Age", "&Delta;"), times = ncol(SCB))
+cgroup <- rbind(c(cgroup, rep(NA, ncol(SCB) - 2)),
+                names(SCB))
+n.cgroup <- rbind(c(n.cgroup*2, rep(NA, ncol(SCB) - 2)),
+                  rep(2, length(n.cgroup)))
+
+htmlTable(mx, 
+          col.columns = c("#EEEEEE", "#EEEEEE", "white", "white"),
+          cgroup = cgroup,
+          n.cgroup = n.cgroup,
+          rgroup = c("00:s", "10:s"),
+          n.rgroup = c(grep("2009", rownames(mx)),
+                        nrow(mx) - grep("2009", rownames(mx))),
+          cspan.rgroup = 1)
 ```
 
 More *raw* markdown tables
