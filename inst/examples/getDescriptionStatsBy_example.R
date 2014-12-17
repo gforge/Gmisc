@@ -65,3 +65,14 @@ mtcars$col_with_missing[sample(1:NROW(mtcars), size=5)] <- NA
 getDescriptionStatsBy(mtcars$col_with_missing, mtcars$am, statistics=TRUE,
                       hrzl_prop = TRUE, total_col_show_perc = FALSE)
 
+
+\dontrun{
+  ## There is also a LaTeX wrapper
+  tll <- list(
+    getDescriptionStatsBy(mtcars$gear, mtcars$am),
+    getDescriptionStatsBy(mtcars$col, mtcars$am))
+  
+  latex(mergeDesc(tll),
+        caption  = "Factored variables",
+        file="")  
+}
