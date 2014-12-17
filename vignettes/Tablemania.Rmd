@@ -73,7 +73,7 @@ The advantage with the `kable` function is that it outputs true markdown tables 
 HTML tables
 ===========
 
-Tables are possibly the most tested HTML-element out there. In early web design this was the only feature that browsers handled uniformly, and became therefore for a long period the standard way of doing layout. They are thereby an excellent template for generating advanced tables in statistics. There are currently three different implementations that I've encountered, the **xtable**, the **format.tables**, and my own **htmlTable** function. 
+Tables are possibly the most tested HTML-element out there. In early web design this was the only feature that browsers handled uniformly, and became therefore for a long period the standard way of doing layout. They are thereby an excellent template for generating advanced tables in statistics. There are currently three different implementations that I've encountered, the **xtable**, the **format.tables**, and my own **htmlTable** function. The `format.tables` is unfortunately not yet on CRAN and will not be part of this vignette due to CRAN rules. If you are interested you can find it [here](https://github.com/SwedishPensionsAgency/format.tables).
 
 The `xtable`-package
 --------------------
@@ -89,32 +89,6 @@ print(xtable(output,
 ```
 
 The downside with the function is that you need to change output depending on your target and there is not that much advantage compared to `kable`.
-
-The `format.tables`-package
--------------------------
-
-The Swedish Pension Agency has been a pioneer here in Sweden when it comes to implementing R in their daily work. They currently produce their annual report in markdown, a very impressive piece of work. As part of this Cedric Perriard has developed a table solution that allows both html and LaTeX output, `format.tables`. The package needs to be installed from GitGub:
-
-```{r, eval=FALSE}
-# If you haven't installed it before, you need devtools
-install.packages("devtools")
-devtools::install_github(repo = "format.tables",
-                         username = "SwedishPensionsAgency")
-```
-
-It allows both simple and advanced formatting, here is a basic example:
-
-```{r, results='asis'}
-library(format.tables)
-
-x <- format.tables(data=head(cars, 3), 
-                    styles=rep("plain", 3), 
-                    column.names = names(cars), 
-                    names.style = "header", 
-                    header=list(caption = "Caption", subcaption="subcaption")
-                    )
-cat(x$render(type="html"))
-```
 
 The `htmlTable` in the `Gmisc`-package
 --------------------------------------
