@@ -37,4 +37,5 @@ with an arrow at the limit indicating that it continues. If
 the lower limit is not below the upper limit the line is
 not drawn.
 }
+\keyword{internal}
 

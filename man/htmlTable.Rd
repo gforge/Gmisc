@@ -413,5 +413,8 @@ htmlTable(output_data, align = 'rccc',
 \code{\link{getDescriptionStatsBy}},
 \code{\link{mergeDesc}}, \code{\link{txtMergeLines}},
 \code{\link[Hmisc]{latex}}
+
+Other table functions: \code{\link{mergeDesc}};
+\code{\link{tblNoLast}}; \code{\link{tblNoNext}}
 }
 

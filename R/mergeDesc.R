@@ -31,6 +31,7 @@
 #' @return \code{matrix} Returns a matrix object of class descList
 #' @export
 #' @example inst/examples/getDescriptionStatsBy_example.R
+#' @family table functions
 mergeDesc <- function(tlist, ...){
   if (!is.list(tlist))
     tlist <- list(tlist)

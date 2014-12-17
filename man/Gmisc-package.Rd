@@ -36,13 +36,13 @@ and \pkg{knitr}-integration.
   preparation of publication-ready manuscripts through the
   \pkg{\href{http://yihui.name/knitr/}{knitr}}-package. The
   \code{\link{figCapNo}} can be used for automated figure
-  counting. The \code{\link{pvalueFormatter}} tries to
-  simplify rounding of p-values, e.g. you may be ok with
-  just 0.0005 as a p-value but when you come close to the
-  "magic" 0.05 value you may want to have two significant
-  digits, i.e. 0.048 instead of just 0.05. The
-  \code{\link{outputInt}} simply transforms a large integer
-  digit to proper formatting.
+  counting. The \code{\link{txtPval}} tries to simplify
+  rounding of p-values, e.g. you may be ok with just 0.0005
+  as a p-value but when you come close to the "magic" 0.05
+  value you may want to have two significant digits, i.e.
+  0.048 instead of just 0.05. The \code{\link{txtInt}}
+  simply transforms a large integer digit to proper
+  formatting.
 }
 
 \section{Some fancy plots}{

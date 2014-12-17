@@ -5,15 +5,19 @@
 #' and \code{table_counter_roman} to produce the final string. You
 #' can set each option by simply calling \code{options()}.
 #'
+#' @param The caption
 #' @return \code{string} Returns a string formatted according to
 #'  the table_counter_str and table_counter_roman. The number is
 #'  decided by the table_counter variable
 #' @keywords internal
 #' @family hidden helper functions for \code{\link{htmlTable}}
-prHtGetTableCntr <- function () {
+prHtTblNo <- function (caption) {
   tc <- getOption("table_counter")
   if (is.null(tc)){
-    return("")
+    if (missing(caption))
+      return("")
+    else
+      return(caption)
   }
 
   # Count which table it currently is
@@ -23,9 +27,14 @@ prHtGetTableCntr <- function () {
     tc <- 1
   options(table_counter = tc)
   table_template <- getOption("table_counter_str", "Table %s: ")
-  sprintf(table_template, ifelse(getOption("table_counter_roman", FALSE),
-                                 as.character(as.roman(tc)),
-                                 as.character(tc)))
+  out <- sprintf(table_template, 
+                 ifelse(getOption("table_counter_roman", FALSE),
+                        as.character(as.roman(tc)),
+                        as.character(tc)))
+  if (!missing(caption))
+    out <- paste(out, caption)
+  
+  return(out)
 }
 
 #' Gets the CSS style element
