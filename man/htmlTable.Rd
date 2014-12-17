@@ -20,7 +20,7 @@ htmlTable(x, ...)
   css.table.class = "gmisc_table", pos.rowlabel = "bottom",
   pos.caption = "top", col.rgroup = "none", col.columns = "none",
   padding.rgroup = "&nbsp;&nbsp;", ctable = TRUE,
-  compatibility = "LibreOffice", ...)
+  compatibility = "LibreOffice", cspan.rgroup = "all", ...)
 
 \method{print}{htmlTable}(x, useViewer, ...)
 }
@@ -182,6 +182,11 @@ htmlTable(x, ...)
   difficult as Word ignores most settings and destroys all
   layout attempts (at least that is how my 2010 version
   behaves).}
+
+  \item{cspan.rgroup}{The number of columns that an
+  \code{rgroup} should span. It spans by default all
+  columns but you may want to limit this if you have column
+  colors that you want to retain.}
 
   \item{useViewer}{If you are using RStudio there is a
   viewer thar can render the table within that is envoced

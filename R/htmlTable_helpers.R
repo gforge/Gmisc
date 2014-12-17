@@ -449,13 +449,15 @@ prHtGetRowlabelPos <- function (cgroup, pos.rowlabel, header) {
 #' @param has_rn_col Due to the alignment issue we need to keep track
 #'  of if there has already been printed a rowname column or not and therefore
 #'  we have this has_rn_col that is either 0 or 1.
+#' @param offset For rgroup rows there may be an offset != 1
 #' @return \code{string} Returns the string with the new cell elements
 #' @keywords internal
 #' @family hidden helper functions for \code{\link{htmlTable}}
-prHtAddCells <- function(table_str, rowcells, cellcode, align, style, cgroup_spacer_cells, has_rn_col, col.columns){
+prHtAddCells <- function(table_str, rowcells, cellcode, align, style, cgroup_spacer_cells, has_rn_col, col.columns,
+                         offset = 1){
   style = prHtAddSemicolon2StrEnd(style)
 
-  for (nr in 1:length(rowcells)){
+  for (nr in offset:length(rowcells)){
     cell_value <- rowcells[nr]
     # We don't want missing to be NA in a table, it should be empty
     if (is.na(cell_value))

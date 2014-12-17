@@ -4,7 +4,7 @@
 \title{Add a cell}
 \usage{
 prHtAddCells(table_str, rowcells, cellcode, align, style, cgroup_spacer_cells,
-  has_rn_col, col.columns)
+  has_rn_col, col.columns, offset = 1)
 }
 \arguments{
   \item{table_str}{The string to add the cell to}
@@ -36,6 +36,9 @@ prHtAddCells(table_str, rowcells, cellcode, align, style, cgroup_spacer_cells,
   is either 0 or 1.}
 
   \item{col.columns}{Alternating colors for each column.}
+
+  \item{offset}{For rgroup rows there may be an offset !=
+  1}
 }
 \value{
 \code{string} Returns the string with the new cell elements

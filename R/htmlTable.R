@@ -129,6 +129,9 @@
 #'  the header.
 #' @param pos.caption Set to \code{"bottom"} to position a caption below the table
 #'  instead of the default of \code{"top"}.
+#' @param cspan.rgroup The number of columns that an \code{rgroup} should span. It spans
+#'  by default all columns but you may want to limit this if you have column colors
+#'  that you want to retain.
 #'
 #' @param ... Passed on to \code{print.htmlTable} function and any argument except the
 #'  \code{useViewer} will be passed on to the \code{\link[base]{cat}} functions arguments.
@@ -230,6 +233,7 @@ htmlTable.default <- function(x,
                               padding.rgroup = "&nbsp;&nbsp;",
                               ctable = TRUE,
                               compatibility = "LibreOffice",
+                              cspan.rgroup = "all",
                               ...)
 {
   # Warnings due to interface changes in 1.0
@@ -359,6 +363,8 @@ htmlTable.default <- function(x,
       for (i in 1:length(css.rgroup.sep))
         css.rgroup.sep[i] <- prHtAddSemicolon2StrEnd(css.rgroup.sep[i])
     }
+
+    cspan.rgroup <- rep(cspan.rgroup, length.out = length(rgroup))
   }
 
   if (!missing(tspanner)){
@@ -652,10 +658,37 @@ htmlTable.default <- function(x,
 
         ## this will allow either css.rgroup or col.rgroup to
         ## color the rgroup label rows
-        table_str <- sprintf("%s\n\t<tr><td colspan='%d' style='%s'>%s</td></tr>", table_str,
-                             total_columns,
-                             rs,
-                             rgroup[rgroup_iterator])
+        if (is.numeric(cspan.rgroup[rgroup_iterator]) &&
+              cspan.rgroup[rgroup_iterator] < ncol(x)){
+
+          true_span <- cspan.rgroup[rgroup_iterator] +
+            sum(cgroup_spacer_cells[0:(cspan.rgroup[rgroup_iterator]-
+                                         1*!prHtSkipRownames(rnames))])
+          table_str <- sprintf("%s\n\t<tr><td colspan='%d' style='%s'>%s</td>",
+                               table_str,
+                               true_span,
+                               rs,
+                               rgroup[rgroup_iterator])
+          cols_left <- ncol(x) - (cspan.rgroup[rgroup_iterator] - 1*!prHtSkipRownames(rnames))
+          table_str <- prHtAddCells(table_str = table_str,
+                                    rowcells = rep("", ncol(x)),
+                                    cellcode = "td",
+                                    align = align,
+                                    style = rs,
+                                    cgroup_spacer_cells = cgroup_spacer_cells,
+                                    has_rn_col = !prHtSkipRownames(rnames)*1,
+                                    col.columns = col.columns,
+                                    offset = ncol(x) - cols_left + 1)
+
+          table_str <- paste0(table_str, "</tr>")
+
+        }else{
+          table_str <- sprintf("%s\n\t<tr><td colspan='%d' style='%s'>%s</td></tr>",
+                               table_str,
+                               total_columns,
+                               rs,
+                               rgroup[rgroup_iterator])
+        }
 
         first_row <- FALSE
       }
