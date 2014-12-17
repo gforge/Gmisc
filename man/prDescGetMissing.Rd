@@ -26,7 +26,7 @@ prDescGetMissing(x, html, number_first, percentage_sign, language, useNA.digits,
   \item{language}{The ISO-639-1 two-letter code for the
   language of interest. Currently only english is
   distinguished from the ISO format using a ',' as the
-  separator in the \code{\link{outputInt}} function.}
+  separator in the \code{\link{txtInt}} function.}
 
   \item{useNA.digits}{The number of digits to use for the
   missing percentage, defaults to the overall

@@ -25,7 +25,7 @@
 #'  suited for the given output format.
 #' @param language The ISO-639-1 two-letter code for the language of
 #'  interest. Currently only english is distinguished from the ISO
-#'  format using a ',' as the separator in the \code{\link{outputInt}}
+#'  format using a ',' as the separator in the \code{\link{txtInt}}
 #'  function.
 #' @param ... Passed on to \code{\link{describeFactors}}
 #' @return \code{string} Returns a string formatted for either LaTeX or HTML
@@ -279,7 +279,7 @@ describeProp <- function(x,
       oi_args[[n]] <- dot_args[[n]]
     }
   }
-  no <- fastDoCall(outputInt, oi_args)
+  no <- fastDoCall(txtInt, oi_args)
 
   # The LaTeX treats % as comments unless it's properly escaped
   if(percentage_sign == TRUE)
@@ -301,7 +301,7 @@ describeProp <- function(x,
 #' A function that returns a description proportion in a
 #' factir that contains the number of times a variable and the percentage
 #'
-#' @param ... Passed on to \code{\link{outputInt}}
+#' @param ... Passed on to \code{\link{txtInt}}
 #' @param horizontal_proportions Is only active if useNA since this is
 #'  the only case of a proportion among continuous variables. This is default NULL and indicates
 #'  that the proportions are to be interpreted in a vertical manner.
@@ -428,7 +428,7 @@ describeFactors <- function(x,
 
   # Format the values
   sa_args <- list(X = table_results,
-                 FUN = outputInt,
+                 FUN = txtInt,
                  language = language,
                  html = html)
   for (n in names(dot_args)){

@@ -42,7 +42,7 @@ describeMedian(x, iqr = TRUE, html = TRUE, digits = 1,
   \item{language}{The ISO-639-1 two-letter code for the
   language of interest. Currently only english is
   distinguished from the ISO format using a ',' as the
-  separator in the \code{\link{outputInt}} function.}
+  separator in the \code{\link{txtInt}} function.}
 
   \item{...}{Passed on to \code{\link{describeFactors}}}
 }

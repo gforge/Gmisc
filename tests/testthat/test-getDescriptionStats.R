@@ -35,8 +35,8 @@ test_that("Check mean function",
   expect_true(grepl(round(stats[["Yes"]], 2), a[1,"Yes"]),
               info="Expected the sd")
 
-  true_wilc_pv <- pvalueFormatter(wilcox.test(Loblolly$height ~ Loblolly$young)$p.value,
-                                  statistics.sig_lim=10^-4)
+  true_wilc_pv <- txtPval(wilcox.test(Loblolly$height ~ Loblolly$young)$p.value,
+                          statistics.sig_lim=10^-4)
   expect_equal(as.character(a[1, "P-value"]),
                true_wilc_pv)
 
@@ -44,8 +44,8 @@ test_that("Check mean function",
   a <- getDescriptionStatsBy(Loblolly$height, Loblolly$age == 10,
                              statistics=TRUE,
                              html=TRUE, digits=2, statistics.sig_lim=10^-4)
-  true_wilc_pv <- pvalueFormatter(wilcox.test(Loblolly$height ~ Loblolly$age == 10)$p.value,
-                                  statistics.sig_lim=10^-4)
+  true_wilc_pv <- txtPval(wilcox.test(Loblolly$height ~ Loblolly$age == 10)$p.value,
+                          statistics.sig_lim=10^-4)
   expect_equal(as.character(a[1, "P-value"]),
                true_wilc_pv)
 })
@@ -73,7 +73,7 @@ test_that("Check median function",
   expect_true(grepl(stats[["Yes"]], a[1,"Yes"]),
               info="Expected the iqr range")
 
-  true_wilc_pv <- pvalueFormatter(wilcox.test(Loblolly$height ~ Loblolly$young)$p.value,
+  true_wilc_pv <- txtPval(wilcox.test(Loblolly$height ~ Loblolly$young)$p.value,
                                   statistics.sig_lim=10^-4)
   expect_equal(as.character(a[1, "P-value"]),
                true_wilc_pv)
@@ -129,8 +129,8 @@ test_that("Check factor function",
                   info="Factor percentagess don't match in horizontal mode")
   }
 
-  true_fisher_pval <-pvalueFormatter(fisher.test(Loblolly$fvar, Loblolly$young)$p.value,
-                                     statistics.sig_lim=10^-4)
+  true_fisher_pval <- txtPval(fisher.test(Loblolly$fvar, Loblolly$young)$p.value,
+                              statistics.sig_lim=10^-4)
 
   expect_equivalent(as.character(a[1, "P-value"]),
                     true_fisher_pval)

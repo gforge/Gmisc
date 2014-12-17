@@ -358,10 +358,10 @@ getDescriptionStatsBy <- function(x,
              " format: 'Text before %s text after'")
       cnt_str <-
         sprintf(header_count,
-                outputInt(tbl_cnt))
+                txtInt(tbl_cnt))
 
     }else{
-      cnt_str <- paste("No.", outputInt(tbl_cnt))
+      cnt_str <- paste("No.", txtInt(tbl_cnt))
     }
 
     return(mapply(txtMergeLines,
@@ -439,10 +439,10 @@ getDescriptionStatsBy <- function(x,
   }
 
   if (statistics){
-    pval <- pvalueFormatter(pval,
-                            sig_lim=statistics.sig_lim,
-                            two_dec_lim= statistics.two_dec_lim,
-                            html=html)
+    pval <- txtPval(pval,
+                    sig_lim=statistics.sig_lim,
+                    two_dec_lim= statistics.two_dec_lim,
+                    html=html)
     results <- cbind(results, c(pval, rep("", nrow(results)-1)))
     cn <- c(cn, "P-value")
   }
