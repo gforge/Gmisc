@@ -83,6 +83,7 @@ fpDrawNormalCI <- function(lower_limit,
 #' the upper limit the line is not drawn.
 #'
 #' @inheritParams fpDrawNormalCI
+#' @keywords internal
 #' @return \code{void}
 prFpDrawLine <- function (lower_limit, upper_limit, clr.line, lwd, y.offset) {
   # Draw the lines if the lower limit is
