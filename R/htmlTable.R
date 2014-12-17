@@ -126,7 +126,7 @@
 #'
 #' @seealso \code{\link{getDescriptionStatsBy}},
 #'          \code{\link{mergeDesc}},
-#'          \code{\link{splitLines4Table}},
+#'          \code{\link{txtMergeLines}},
 #'          \code{\link[Hmisc]{latex}}
 #'
 #'

@@ -364,7 +364,7 @@ getDescriptionStatsBy <- function(x,
       cnt_str <- paste("No.", outputInt(tbl_cnt))
     }
 
-    return(mapply(splitLines4Table,
+    return(mapply(txtMergeLines,
                   names(tbl_cnt),
                   cnt_str,
                   html=html))

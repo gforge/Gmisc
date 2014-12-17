@@ -1,4 +1,4 @@
-#' A helper function for html/LaTeX line formatting
+#' A merges lines while preserving the line break for html/LaTeX
 #'
 #' This function helps you to do a multiline
 #' table header in both html and in LaTeX. In
@@ -13,13 +13,13 @@
 #' @return string
 #'
 #' @examples
-#' splitLines4Table("hello", "world")
-#' splitLines4Table("hello", "world", html=TRUE)
-#' splitLines4Table("hello", "world", list("A list", "is OK"))
+#' txtMergeLines("hello", "world")
+#' txtMergeLines("hello", "world", html=FALSE)
+#' txtMergeLines("hello", "world", list("A list", "is OK"))
 #'
 #'
 #' @export
-splitLines4Table <- function(..., html = TRUE){
+txtMergeLines <- function(..., html = TRUE){
   strings <- c()
   for (i in list(...)){
     if (is.list(i)){

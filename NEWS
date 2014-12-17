@@ -12,6 +12,7 @@ Changes for 1.0.0
 * htmlTable rgroup has the additional rgroup.padding for those that want to change the no-breaking space padding
 * added the mergeDesc in order to merge lists from getDescriptionStatsBy for
 * show_missing is now useNA in order to match the table() call handling of missing
+* Renamed splitLines4Table to txtMergeLines
 * Fixed a few bugs
 
 Changes for 0.6.8
