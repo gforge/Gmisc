@@ -3,29 +3,29 @@
 \alias{prHtGetRowlabelPos}
 \title{Gets the rowlabel position}
 \usage{
-prHtGetRowlabelPos(cgroup, rowlabel.pos, headings)
+prHtGetRowlabelPos(cgroup, pos.rowlabel, header)
 }
 \arguments{
-  \item{cgroup}{a vector or a matrix of character strings
-  defining major column headings. The default is to have
-  none. This is also known as "the column spanner". If you
-  want a column not to have a spanner then put that column
-  as "". If you pass cgroup and n.crgroup as matrices you
-  can have multiline cgroups. If the different levels have
-  different number of elements you need to set the ones
-  that lack elements to NA. For instance \code{cgroup =
-  rbind(c("first", "second", NA), c("a", "b", "c"))}.}
+  \item{cgroup}{A vector or a matrix of character strings
+  defining major column header. The default is to have
+  none. These elements are also known as \emph{column
+  spanners}. If you want a column \emph{not} to have a
+  spanner then put that column as "". If you pass cgroup
+  and \code{n.crgroup} as matrices you can have column
+  spanners for several rows. See cgroup section below for
+  details.}
 
-  \item{rowlabel.pos}{Where the rowlabel should be
-  positioned. This value can be "top", "bottom", "header",
-  or a integer between \code{1} and \code{nrow(cgroup) +
-  1}. The options "bottom", "header" are the same, where
+  \item{pos.rowlabel}{Where the rowlabel should be
+  positioned. This value can be \code{"top"},
+  \code{"bottom"}, \code{"header"}, or a integer between
+  \code{1} and \code{nrow(cgroup) + 1}. The options
+  \code{"bottom"} and \code{"header"} are the same, where
   the row label is presented at the same level as the
   header.}
 
-  \item{headings}{a vector of character strings specifying
-  column headings, defaulting to \code{x}'s
-  \code{colnames}}
+  \item{header}{A vector of character strings specifying
+  column header, defaulting to
+  \code{\link[base]{colnames}(x)}}
 }
 \value{
 \code{integer} Returns the position within the header rows

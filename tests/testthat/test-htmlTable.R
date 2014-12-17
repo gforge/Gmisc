@@ -89,12 +89,13 @@ test_that("Check that dimensions are correct with rgroup usage",
                            rgroup=c("test1", "test2", "test3"),
                            n.rgroup=c(1,1, 0)))
 
-  expect_error(htmlTable(mx,
-                         roup=c("test1", "test2", "test3"),
-                         rgroup=c(1,1, 10)))
+  expect_error(suppressWarnings(htmlTable(mx,
+                                          roup=c("test1", "test2", "test3"),
+                                          rgroup=c(1,1, 10))))
 
   mx[2,1] <- "second row"
   table_str <- htmlTable(mx,
+                         rnames=letters[1:2],
                          rgroup=c("test1", ""),
                          n.rgroup=c(1,1))
   expect_match(table_str, "<td[^>]*>second row",
@@ -168,6 +169,7 @@ test_that("Check that dimensions are correct with cgroup usage",
               mx,
               mx)
   table_str <- htmlTable(mx,
+                         rnames = LETTERS[1:nrow(mx)],
                          cgroup=rbind(c("aa", "bb"),
                                       c("a", "b")),
                          n.cgroup=rbind(c(2, 1),
@@ -178,10 +180,10 @@ test_that("Check that dimensions are correct with cgroup usage",
                                     "Second tspanner"),
                          n.tspanner=c(4,4))
 
-  expect_match(table_str, "td[^>]*colspan='5'[^>]*>1 rgroup",
-               info="The expected number of columns should be 5")
-  expect_match(table_str, "td[^>]*colspan='5'[^>]*>2 rgroup",
-               info="The expected number of columns should be 5")
+  expect_match(table_str, "td[^>]*colspan='6'[^>]*>1 rgroup",
+               info="The expected number of columns should be 6")
+  expect_match(table_str, "td[^>]*colspan='6'[^>]*>2 rgroup",
+               info="The expected number of columns should be 6")
 
   parsed_table <- readHTMLTable(table_str)[[1]]
   expect_equal(as.character(parsed_table[1,1]),
@@ -272,12 +274,13 @@ test_that("Test align functions", {
   mx <- matrix(1:6, ncol=3)
   rownames(mx) <- c("Row A", "Row B")
   table_str <- htmlTable(mx, rname = FALSE)
-  expect_match(table_str, "text-align: left;[^>]*>1")
+  expect_match(table_str, "text-align: center;[^>]*>1")
   expect_match(table_str, "text-align: center;[^>]*>3")
   expect_match(table_str, "text-align: center;[^>]*>5")
 
   table_str <- htmlTable(mx)
-  expect_match(table_str, "text-align: left;[^>]*>1")
+  expect_match(table_str, "text-align: left;[^>]*>Row A")
+  expect_match(table_str, "text-align: center;[^>]*>1")
   expect_match(table_str, "text-align: center;[^>]*>3")
   expect_match(table_str, "text-align: center;[^>]*>5")
 

@@ -94,8 +94,7 @@ tl_no_units[["Gas (mile/gallons)"]] <-
 tl_no_units[["Weight (10<sup>3</sup> kg)"]] <-
   getDescriptionStatsBy(mtcars$wt, mtcars$am,
                         header_count = TRUE)
-htmlTable(mergeDesc(tl_no_units, tll),
-          rgroupCSSstyle = "")
+htmlTable(mergeDesc(tl_no_units, tll))
 
 # A little more advanced
 mtcars$mpg[sample(1:NROW(mtcars), size=5)] <- NA
@@ -122,10 +121,10 @@ getDescriptionStatsBy(mtcars$col_with_missing, mtcars$am, statistics=TRUE,
   tll <- list(
     getDescriptionStatsBy(mtcars$gear, mtcars$am),
     getDescriptionStatsBy(mtcars$col, mtcars$am))
-  
+
   latex(mergeDesc(tll),
         caption  = "Factored variables",
-        file="")  
+        file="")
 }
 }
 \seealso{

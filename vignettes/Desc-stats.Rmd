@@ -98,7 +98,7 @@ t1 <- c(t1,
         list(getTable1Stats(mtcars$gear)))
 
 htmlTable(mergeDesc(t1),
-          rgroupCSSstyle = "",
+          css.rgroup = "",
           caption  = "Basic descriptive statistics from the mtcars dataset",
           tfoot = "&dagger; The weight is in 10<sup>3</sup> kg")
 ```
@@ -128,7 +128,7 @@ t1 <- c(t1,
         list(getTable1Stats(mtcars$gear, statistics=TRUE)))
 
 htmlTable(mergeDesc(t1),
-          rgroupCSSstyle = "",
+          css.rgroup = "",
           caption  = "Basic descriptive statistics from the mtcars dataset",
           tfoot = "&dagger; The weight is in 10<sup>3</sup> kg")
 ```

@@ -10,16 +10,17 @@ htmlTable(x, ...)
 
 \method{htmlTable}{descMrg}(x, ...)
 
-\method{htmlTable}{default}(x, headings, align = paste(c("l", rep("c", ncol(x)
-  - 1)), collapse = ""), halign = paste(rep("c", ncol(x)), collapse = ""),
-  cgroup, n.cgroup, cgroup.just, rgroup, n.rgroup,
-  rgroupCSSstyle = "font-weight: 900;", rgroupCSSseparator = "",
-  rgroup.padding = "&nbsp;&nbsp;", tspanner, n.tspanner,
-  tspannerCSSstyle = "font-weight: 900; text-transform: capitalize; text-align: left;",
-  tspannerCSSseparator = "border-top: 1px solid grey;", rowlabel,
-  rowlabel.pos = "bottom", ctable = TRUE, compatibility = "LibreOffice",
-  rnames, caption, caption.loc = "top", tfoot, label, altcol = "white",
-  tableCSSclass = "gmisc_table", ...)
+\method{htmlTable}{default}(x, header, rnames, rowlabel, caption, tfoot, label,
+  rgroup, n.rgroup, cgroup, n.cgroup, tspanner, n.tspanner,
+  align = paste(rep("c", ncol(x)), collapse = ""),
+  align.header = paste(rep("c", ncol(x)), collapse = ""), align.cgroup,
+  css.rgroup = "font-weight: 900;", css.rgroup.sep = "",
+  css.tspanner = "font-weight: 900; text-transform: capitalize; text-align: left;",
+  css.tspanner.sep = "border-top: 1px solid grey;",
+  css.table.class = "gmisc_table", pos.rowlabel = "bottom",
+  pos.caption = "top", col.rgroup = "white",
+  padding.rgroup = "&nbsp;&nbsp;", ctable = TRUE,
+  compatibility = "LibreOffice", ...)
 
 \method{print}{htmlTable}(x, useViewer, ...)
 }
@@ -31,40 +32,31 @@ htmlTable(x, ...)
   passed on to the \code{\link[base]{cat}} functions
   arguments.}
 
-  \item{headings}{a vector of character strings specifying
-  column headings, defaulting to \code{x}'s
-  \code{colnames}}
+  \item{header}{A vector of character strings specifying
+  column header, defaulting to
+  \code{\link[base]{colnames}(x)}}
 
-  \item{align}{a character strings specifying column
-  alignments, defaulting to \code{paste(c("l",
-  rep('c',ncol(n_table)-1)),collapse='')} to center. Valid
-  alignments are l = left, c = center and r = right. You
-  can also specify \code{align='c|c'} and other LaTeX
-  tabular formatting.}
+  \item{rnames}{Default rownames are generated from
+  \code{\link[base]{rownames}(x)}. If you provide
+  \code{FALSE} then it will skip the rownames. \emph{Note:}
+  For \code{data.frames} if you do
+  \code{\link[base]{rownames}(my_dataframe) <- NULL} it
+  still has rownames. Thus you need to use \code{FALSE} if
+  you want to surpress rownames for \code{data.frames}.}
 
-  \item{halign}{a character strings specifying alignment
-  for column headings, defaulting to centered.}
+  \item{rowlabel}{If the table has rownames or
+  \code{rnames}, rowlabel is a character string containing
+  the column heading for the \code{rnames}.}
 
-  \item{cgroup}{a vector or a matrix of character strings
-  defining major column headings. The default is to have
-  none. This is also known as "the column spanner". If you
-  want a column not to have a spanner then put that column
-  as "". If you pass cgroup and n.crgroup as matrices you
-  can have multiline cgroups. If the different levels have
-  different number of elements you need to set the ones
-  that lack elements to NA. For instance \code{cgroup =
-  rbind(c("first", "second", NA), c("a", "b", "c"))}.}
+  \item{caption}{Adds a table caption.}
 
-  \item{n.cgroup}{a vector or matrix containing the number
-  of columns for which each element in cgroup is a heading.
-  For example, specify \code{cgroup=c("Major 1","Major
-  2")}, \code{n.cgroup=c(3,3)} if \code{"Major 1"} is to
-  span columns 1-3 and \code{"Major 2"} is to span columns
-  4-6. \code{rowlabel} does not count in the column
-  numbers. You can omit \code{n.cgroup} if all groups have
-  the same number of columns.}
+  \item{tfoot}{Adds a table footer (uses the \code{<tfoot>}
+  html element).}
 
-  \item{cgroup.just}{The justification of the c.groups}
+  \item{label}{a text string representing a symbolic label
+  for the table for referencing as an anchor. All you need
+  to do is to reference the table, for instance \code{<a
+  href="#anchor_name">see table 2</a>}}
 
   \item{rgroup}{A vector of character strings containing
   headings for row groups. \code{n.rgroup} must be present
@@ -78,54 +70,106 @@ htmlTable(x, ...)
   put "" for that row, remember to add the corresponding
   number of rows in n.rgroup.}
 
-  \item{n.rgroup}{integer vector giving the number of rows
-  in each grouping. If \code{rgroup} is not specified,
+  \item{n.rgroup}{An integer vector giving the number of
+  rows in each grouping. If \code{rgroup} is not specified,
   \code{n.rgroup} is just used to divide off blocks of rows
   by horizontal lines. If \code{rgroup} is given but
   \code{n.rgroup} is omitted, \code{n.rgroup} will default
   so that each row group contains the same number of rows.}
 
-  \item{rgroupCSSstyle}{CSS style for the rgorup, if
-  different styles are wanted for each of the rgroups you
-  can just specify a vector with the number of elements}
+  \item{cgroup}{A vector or a matrix of character strings
+  defining major column header. The default is to have
+  none. These elements are also known as \emph{column
+  spanners}. If you want a column \emph{not} to have a
+  spanner then put that column as "". If you pass cgroup
+  and \code{n.crgroup} as matrices you can have column
+  spanners for several rows. See cgroup section below for
+  details.}
 
-  \item{rgroupCSSseparator}{The line between different
-  rgroups. The line is set to the TR element of the lower
-  rgroup, i.e. you have to set the border-top/padding-top
-  etc to a line with the expected function. This is only
-  used for rgroups that are printed. You can specify
-  different separators if you give a vector of rgroup - 1
-  length (this is since the first rgroup doesn't have a
-  separator).}
-
-  \item{rgroup.padding}{Generally two non-breakings spaces,
-  i.e. \code{&nbsp;&nbsp;}, but some journals only have a
-  bold face for the rgroup and leaves the subelements
-  unindented.}
+  \item{n.cgroup}{An integer vector or matrix containing
+  the number of columns for which each element in cgroup is
+  a heading. For example, specify \code{cgroup=c("Major
+  1","Major 2")}, \code{n.cgroup=c(3,3)} if \code{"Major
+  1"} is to span columns 1-3 and \code{"Major 2"} is to
+  span columns 4-6. \code{rowlabel} does not count in the
+  column numbers. You can omit \code{n.cgroup} if all
+  groups have the same number of columns.}
 
   \item{tspanner}{The table spanner is somewhat of a table
   header that you can use when you want to join different
   tables with the same columns.}
 
-  \item{n.tspanner}{The number of rows in the original
-  matrix that the table spanner should span}
+  \item{n.tspanner}{An integer vector with the number of
+  rows in the original matrix that the table spanner should
+  span.}
 
-  \item{tspannerCSSstyle}{The CSS style for the table
-  spanner}
+  \item{align}{A character strings specifying column
+  alignments, defaulting to
+  \code{\link[base]{paste}(rep('c',ncol(x)),collapse='')}
+  to center. Valid alignments are l = left, c = center and
+  r = right. You can also specify \code{align='c|c'} and
+  other LaTeX tabular formatting. If you want to set the
+  alignment of the rownames this string needst to be
+  \code{ncol(x) + 1}, otherwise it automatically pads the
+  string with a left alignment for the rownames.}
 
-  \item{tspannerCSSseparator}{The line between different
+  \item{align.header}{A character strings specifying
+  alignment for column header, defaulting to centered, i.e.
+  \code{\link[base]{paste}(rep('c',ncol(x)),collapse='')}.}
+
+  \item{align.cgroup}{The justification of the
+  \code{cgroups}}
+
+  \item{css.rgroup}{CSS style for the rgorup, if different
+  styles are wanted for each of the rgroups you can just
+  specify a vector with the number of elements}
+
+  \item{css.rgroup.sep}{The line between different rgroups.
+  The line is set to the TR element of the lower rgroup,
+  i.e. you have to set the border-top/padding-top etc to a
+  line with the expected function. This is only used for
+  rgroups that are printed. You can specify different
+  separators if you give a vector of rgroup - 1 length
+  (this is since the first rgroup doesn't have a
+  separator).}
+
+  \item{css.tspanner}{The CSS style for the table spanner}
+
+  \item{css.tspanner.sep}{The line between different
   spanners}
 
-  \item{rowlabel}{If x has row dimnames, rowlabel is a
-  character string containing the column heading for the
-  row dimnames.}
+  \item{css.table.class}{The html CSS class for the table.
+  This allows directing html formatting through
+  \href{http://www.w3schools.com/css/css_selectors.asp}{CSS}
+  directly at all instances of that class. \emph{Note:}
+  unfortunately the CSS is frequently ignored by word
+  processors. This option is mostly inteded for
+  web-presentations.}
 
-  \item{rowlabel.pos}{Where the rowlabel should be
-  positioned. This value can be "top", "bottom", "header",
-  or a integer between \code{1} and \code{nrow(cgroup) +
-  1}. The options "bottom", "header" are the same, where
+  \item{pos.rowlabel}{Where the rowlabel should be
+  positioned. This value can be \code{"top"},
+  \code{"bottom"}, \code{"header"}, or a integer between
+  \code{1} and \code{nrow(cgroup) + 1}. The options
+  \code{"bottom"} and \code{"header"} are the same, where
   the row label is presented at the same level as the
   header.}
+
+  \item{pos.caption}{Set to \code{"bottom"} to position a
+  caption below the table instead of the default of
+  \code{"top"}.}
+
+  \item{col.rgroup}{alternating colors for each
+  \code{rgroup}; one or two colors is recommended and will
+  be recycled (will throw warning if the number of
+  \code{rgroup}s is not a multiple of
+  \code{length(col.rgroup)}). Note that the col.rgroup
+  currently only works when copy-pasting from the browser
+  and not when opening directly in LibreOffice.}
+
+  \item{padding.rgroup}{Generally two non-breakings spaces,
+  i.e. \code{&nbsp;&nbsp;}, but some journals only have a
+  bold face for the rgroup and leaves the subelements
+  unindented.}
 
   \item{ctable}{If the table should have a double top
   border or a single a' la LaTeX ctable style}
@@ -140,44 +184,6 @@ htmlTable(x, ...)
   difficult as Word ignores most settings and destroys all
   layout attempts (at least that is how my 2010 version
   behaves).}
-
-  \item{rnames}{Default rownames are generated from
-  \code{rownames(x)}. If you provide \code{FALSE} then it
-  will skip the rownames. Note that even if you do
-  \code{rownames(my_dataframe) <- NULL} it still has
-  rownames, thus you need to use \code{FALSE} if you want
-  to surpress those.}
-
-  \item{caption}{a text string to use as a caption to print
-  at the top of the first page of the table. Default is no
-  caption.}
-
-  \item{caption.loc}{set to \code{"bottom"} to position a
-  caption below the table instead of the default of
-  \code{"top"}.}
-
-  \item{tfoot}{Add a table footer if needed at the bottom
-  of the table using the \code{<tfoot>} html element.}
-
-  \item{label}{a text string representing a symbolic label
-  for the table for referencing as an anchor. All you need
-  to do is to reference the table, for instance \code{<a
-  href="#anchor_name">see table 2</a>}}
-
-  \item{altcol}{alternating colors for each \code{rgroup};
-  one or two colors is recommended and will be recycled
-  (will throw warning if the number of \code{rgroup}s is
-  not a multiple of \code{length(altcol)}). Note that the
-  altcol currently only works when copy-pasting from the
-  browser and not when opening directly in LibreOffice.}
-
-  \item{tableCSSclass}{The html CSS class for the table.
-  This allows directing html formatting through
-  \href{http://www.w3schools.com/css/css_selectors.asp}{CSS}
-  directly at all instances of that class. \emph{Note:}
-  unfortunately the CSS is frequently ignored by word
-  processors. This option is mostly inteded for
-  web-presentations.}
 
   \item{useViewer}{If you are using RStudio there is a
   viewer thar can render the table within that is envoced
@@ -203,6 +209,21 @@ It's aim is to provide the \pkg{Hmisc}
 functions in HTML. The html-output is designed for maximum
 compatibility with LibreOffice/OpenOffice.
 }
+\section{Multiple rows of column spanners \code{cgroup}}{
+  If you want to have a column spanner in multiple levels
+  you can set the \code{cgroup} and \code{n.cgroup}
+  arguments to matrices. If the different levels have
+  different number of elements you need to set the ones
+  that lack elements to NA. For instance \code{cgroup =
+  rbind(c("first", "second", NA), c("a", "b", "c"))}. And
+  the corresponding n,cgroup would be \code{n.cgroup =
+  rbind(c(1, 2, NA), c(2, 1, 2))}. for a table consisting
+  of 5 columns. The "first" spans the first two columns,
+  the "second" spans the last three columns, "a" spans the
+  first two, "b" the middle column, and "c" the last two
+  columns.
+}
+
 \section{Important \pkg{knitr}-note}{
   This funciton will only work with \pkg{knitr} outputting
   html, i.e. markdown mode. For each section where you want
@@ -305,11 +326,11 @@ htmlTable(
   cgroup   = c(txtMergeLines("Results",
                              sprintf("n=\%d", NROW(mtcars)), html=TRUE),
                ""),
-  headings =c(sprintf("\%s (SD)", levels(mtcars$am)), "Units"),
+  header =c(sprintf("\%s (SD)", levels(mtcars$am)), "Units"),
   rowlabel = "Variable",
   ctable   = TRUE)
 
-## again with altcol
+## again with col.rgroup
 htmlTable(
   vars,
   caption  = "Continuous & binary variables",
@@ -318,10 +339,10 @@ htmlTable(
   cgroup   = c(txtMergeLines("Results",
                              sprintf("n=\%d", NROW(mtcars)), html=TRUE),
                ""),
-  headings =c(sprintf("\%s (SD)", levels(mtcars$am)), "Units"),
+  header =c(sprintf("\%s (SD)", levels(mtcars$am)), "Units"),
   rowlabel = "Variable",
   ctable   = TRUE,
-  altcol   = c('#f2f2f2','ivory'))
+  col.rgroup   = c('#f2f2f2','ivory'))
 
 
 ## another example
@@ -385,7 +406,6 @@ colnames(output_data) <-
 
 htmlTable(output_data, align = 'rccc',
           rgroup = rgroup, n.rgroup = n.rgroup,
-          rgroupCSSseparator = '',
           cgroup = cgroup,
           n.cgroup = n.cgroup,
           tspanner=c("Base", "Other"),
@@ -394,7 +414,7 @@ htmlTable(output_data, align = 'rccc',
           rowlabel = '',
           ctable = TRUE, # latex-style table lines
           caption = "Table 1: Patient demographics",
-          altcol = c('white','lightblue1'),
+          col.rgroup = c('white','lightblue1'),
           tfoot = paste0(
             '<span style="font-size: .6em;">',
             'Abbreviations:',

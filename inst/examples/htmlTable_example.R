@@ -54,11 +54,11 @@ htmlTable(
   cgroup   = c(txtMergeLines("Results",
                              sprintf("n=%d", NROW(mtcars)), html=TRUE),
                ""),
-  headings =c(sprintf("%s (SD)", levels(mtcars$am)), "Units"),
+  header =c(sprintf("%s (SD)", levels(mtcars$am)), "Units"),
   rowlabel = "Variable",
   ctable   = TRUE)
 
-## again with altcol
+## again with col.rgroup
 htmlTable(
   vars,
   caption  = "Continuous & binary variables",
@@ -67,10 +67,10 @@ htmlTable(
   cgroup   = c(txtMergeLines("Results",
                              sprintf("n=%d", NROW(mtcars)), html=TRUE),
                ""),
-  headings =c(sprintf("%s (SD)", levels(mtcars$am)), "Units"),
+  header =c(sprintf("%s (SD)", levels(mtcars$am)), "Units"),
   rowlabel = "Variable",
   ctable   = TRUE,
-  altcol   = c('#f2f2f2','ivory'))
+  col.rgroup   = c('#f2f2f2','ivory'))
 
 
 ## another example
@@ -134,7 +134,6 @@ colnames(output_data) <-
 
 htmlTable(output_data, align = 'rccc',
           rgroup = rgroup, n.rgroup = n.rgroup,
-          rgroupCSSseparator = '',
           cgroup = cgroup,
           n.cgroup = n.cgroup,
           tspanner=c("Base", "Other"),
@@ -143,7 +142,7 @@ htmlTable(output_data, align = 'rccc',
           rowlabel = '',
           ctable = TRUE, # latex-style table lines
           caption = "Table 1: Patient demographics",
-          altcol = c('white','lightblue1'),
+          col.rgroup = c('white','lightblue1'),
           tfoot = paste0(
             '<span style="font-size: .6em;">',
             'Abbreviations:',

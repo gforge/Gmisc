@@ -4,7 +4,7 @@
 \title{Retrieve a header row}
 \usage{
 prHtGetCgroupHeader(x, cgroup_vec, n.cgroup_vec, cgroup_vec.just, row_no,
-  top_row_style, rnames, rowlabel, rowlabel.pos, cgroup_spacer_cells)
+  top_row_style, rnames, rowlabel, pos.rowlabel, cgroup_spacer_cells)
 }
 \arguments{
   \item{x}{The matrix/data.frame with the data}
@@ -20,27 +20,29 @@ prHtGetCgroupHeader(x, cgroup_vec, n.cgroup_vec, cgroup_vec.just, row_no,
 
   \item{row_no}{The row number within the header group.
   Useful for multirow headers when we need to output the
-  rowlabel at the \code{rowlabel.pos} level.}
+  rowlabel at the \code{pos.rowlabel} level.}
 
   \item{top_row_style}{The top row has a special style
   depending on the \code{ctable} option in the
   \code{htmlTable} call.}
 
   \item{rnames}{Default rownames are generated from
-  \code{rownames(x)}. If you provide \code{FALSE} then it
-  will skip the rownames. Note that even if you do
-  \code{rownames(my_dataframe) <- NULL} it still has
-  rownames, thus you need to use \code{FALSE} if you want
-  to surpress those.}
+  \code{\link[base]{rownames}(x)}. If you provide
+  \code{FALSE} then it will skip the rownames. \emph{Note:}
+  For \code{data.frames} if you do
+  \code{\link[base]{rownames}(my_dataframe) <- NULL} it
+  still has rownames. Thus you need to use \code{FALSE} if
+  you want to surpress rownames for \code{data.frames}.}
 
-  \item{rowlabel}{If x has row dimnames, rowlabel is a
-  character string containing the column heading for the
-  row dimnames.}
+  \item{rowlabel}{If the table has rownames or
+  \code{rnames}, rowlabel is a character string containing
+  the column heading for the \code{rnames}.}
 
-  \item{rowlabel.pos}{Where the rowlabel should be
-  positioned. This value can be "top", "bottom", "header",
-  or a integer between \code{1} and \code{nrow(cgroup) +
-  1}. The options "bottom", "header" are the same, where
+  \item{pos.rowlabel}{Where the rowlabel should be
+  positioned. This value can be \code{"top"},
+  \code{"bottom"}, \code{"header"}, or a integer between
+  \code{1} and \code{nrow(cgroup) + 1}. The options
+  \code{"bottom"} and \code{"header"} are the same, where
   the row label is presented at the same level as the
   header.}
 

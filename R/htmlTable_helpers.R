@@ -27,13 +27,13 @@ prHtTblNo <- function (caption) {
     tc <- 1
   options(table_counter = tc)
   table_template <- getOption("table_counter_str", "Table %s: ")
-  out <- sprintf(table_template, 
+  out <- sprintf(table_template,
                  ifelse(getOption("table_counter_roman", FALSE),
                         as.character(as.roman(tc)),
                         as.character(tc)))
   if (!missing(caption))
     out <- paste(out, caption)
-  
+
   return(out)
 }
 
@@ -144,7 +144,7 @@ prHtAddSemicolon2StrEnd <- function(my_str){
 #' @param n.cgroup_vec The same as above but for the counter
 #' @param cgroup_vec.just The same as above bot for the justificaiton
 #' @param row_no The row number within the header group. Useful for multirow
-#'  headers when we need to output the rowlabel at the \code{rowlabel.pos}
+#'  headers when we need to output the rowlabel at the \code{pos.rowlabel}
 #'  level.
 #' @param top_row_style The top row has a special style depending on
 #'  the \code{ctable} option in the \code{htmlTable} call.
@@ -160,7 +160,7 @@ prHtGetCgroupHeader <- function(x,
                                 cgroup_vec, n.cgroup_vec, cgroup_vec.just,
                                 row_no, top_row_style,
                                 rnames,
-                                rowlabel, rowlabel.pos,
+                                rowlabel, pos.rowlabel,
                                 cgroup_spacer_cells){
 
   header_str <- "\n\t<tr>"
@@ -170,7 +170,7 @@ prHtGetCgroupHeader <- function(x,
     ts <- ""
 
   if (!missing(rowlabel)){
-    if (row_no == rowlabel.pos)
+    if (row_no == pos.rowlabel)
       header_str <- sprintf("%s\n\t\t<th style='font-weight: 900; %s'>%s</th>",
                             header_str, ts, rowlabel)
     else
@@ -231,10 +231,10 @@ prHtGetCgroupHeader <- function(x,
 #' some preparation for the cgroup options is required.
 #'
 #' @inheritParams htmlTable
-#' @return \code{list(cgroup, n.cgroup, cgroup.just, cgroup_spacer_cells)}
+#' @return \code{list(cgroup, n.cgroup, align.cgroup, cgroup_spacer_cells)}
 #' @keywords internal
 #' @family hidden helper functions for \code{\link{htmlTable}}
-prHtPrepareCgroup <- function(x, cgroup, n.cgroup, cgroup.just){
+prHtPrepareCgroup <- function(x, cgroup, n.cgroup, align.cgroup){
   cgroup_spacer_cells <- rep(0, times=(ncol(x)-1))
 
   # The cgroup is by for compatibility reasons handled as a matrix
@@ -267,26 +267,26 @@ prHtPrepareCgroup <- function(x, cgroup, n.cgroup, cgroup.just){
          " at the same time specify the n.cgroup argument.")
   }
 
-  if (missing(cgroup.just)){
-    cgroup.just <- apply(n.cgroup, 1,
+  if (missing(align.cgroup)){
+    align.cgroup <- apply(n.cgroup, 1,
                          function(nc) paste(rep("c", times=sum(!is.na(nc))), collapse=""))
-    cgroup.just <- matrix(cgroup.just,
+    align.cgroup <- matrix(align.cgroup,
                           ncol = 1)
   }else{
-    if (NROW(cgroup.just) != nrow(n.cgroup))
-      stop("You have different dimensions for your cgroup.just and your cgroups, ",
-           NROW(cgroup.just), " (just) !=", nrow(n.cgroup), " (n.cgroup)")
+    if (NROW(align.cgroup) != nrow(n.cgroup))
+      stop("You have different dimensions for your align.cgroup and your cgroups, ",
+           NROW(align.cgroup), " (just) !=", nrow(n.cgroup), " (n.cgroup)")
 
     # An old leftover behaviour from the latex() function
-    if (NCOL(cgroup.just) > 1)
-      cgroup.just <- apply(cgroup.just, 1, function(x) paste(ifelse(is.na(x), "", x), collapse=""))
+    if (NCOL(align.cgroup) > 1)
+      align.cgroup <- apply(align.cgroup, 1, function(x) paste(ifelse(is.na(x), "", x), collapse=""))
 
-    cgroup.just <- mapply(prHtPrepareAlign,
-                          align = cgroup.just,
+    align.cgroup <- mapply(prHtPrepareAlign,
+                          align = align.cgroup,
                           x = apply(n.cgroup, 1, function(nc) sum(!is.na(nc))),
                           rnames=FALSE)
 
-    cgroup.just <- matrix(cgroup.just, ncol=1)
+    align.cgroup <- matrix(align.cgroup, ncol=1)
   }
 
   # Go bottom up as the n.cgroup can be based on the previous
@@ -376,7 +376,7 @@ prHtPrepareCgroup <- function(x, cgroup, n.cgroup, cgroup.just){
   }
   return(list(cgroup = cgroup,
               n.cgroup = n.cgroup,
-              cgroup.just = cgroup.just,
+              align.cgroup = align.cgroup,
               cgroup_spacer_cells = cgroup_spacer_cells))
 }
 
@@ -387,34 +387,34 @@ prHtPrepareCgroup <- function(x, cgroup, n.cgroup, cgroup.just){
 #'  to print the \code{rowlabel} argument
 #' @keywords internal
 #' @family hidden helper functions for \code{\link{htmlTable}}
-prHtGetRowlabelPos <- function (cgroup, rowlabel.pos, headings) {
+prHtGetRowlabelPos <- function (cgroup, pos.rowlabel, header) {
   no_cgroup_rows <-
     ifelse(!missing(cgroup),
            nrow(cgroup),
            0)
   no_header_rows <-
     no_cgroup_rows +
-    (!missing(headings))*1
-  if (is.numeric(rowlabel.pos)){
-    if(rowlabel.pos < 1)
-      stop("You have specified a rowlabel.pos that is less than 1: ", rowlabel.pos)
-    else if (rowlabel.pos > no_header_rows)
-      stop("You have specified a rowlabel.pos that more than the max limit, ",
+    (!missing(header))*1
+  if (is.numeric(pos.rowlabel)){
+    if(pos.rowlabel < 1)
+      stop("You have specified a pos.rowlabel that is less than 1: ", pos.rowlabel)
+    else if (pos.rowlabel > no_header_rows)
+      stop("You have specified a pos.rowlabel that more than the max limit, ",
            no_header_rows,
-           ", you have provided: ", rowlabel.pos)
+           ", you have provided: ", pos.rowlabel)
   }else{
-    rowlabel.pos <- tolower(rowlabel.pos)
-    if (rowlabel.pos %in% c("top"))
-      rowlabel.pos <- 1
-    else if (rowlabel.pos %in% c("bottom", "header"))
-      rowlabel.pos <- no_header_rows
+    pos.rowlabel <- tolower(pos.rowlabel)
+    if (pos.rowlabel %in% c("top"))
+      pos.rowlabel <- 1
+    else if (pos.rowlabel %in% c("bottom", "header"))
+      pos.rowlabel <- no_header_rows
     else
-      stop("You have provided an invalid rowlabel.pos text,",
+      stop("You have provided an invalid pos.rowlabel text,",
            " only 'top', 'bottom' or 'header' are allowed,",
-           " can't interpret '", rowlabel.pos, "'")
+           " can't interpret '", pos.rowlabel, "'")
   }
 
-  return(rowlabel.pos)
+  return(pos.rowlabel)
 }
 
 #' Add a cell

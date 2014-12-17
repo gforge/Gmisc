@@ -1,10 +1,10 @@
 mx <- matrix(1:6, ncol=3)
 colnames(mx) <- c("A", "B", "C")
 rownames(mx) <- letters[1:2]
-## altcol does not break rgroupCSSstyle
+## col.rgroup does not break css.group
 htmlTable(mx, n.rgroup=c(2), rgroup=c("Nice!"),
           n.cgroup=c(2,1), cgroup=c("First", "Second"),
-          rgroupCSSstyle = "font-weight:900; background-color:#f2f2f2;")
+          css.group = "font-weight:900; background-color:#f2f2f2;")
 
 
 colnames(mx) <- NULL
@@ -15,7 +15,7 @@ htmlTable(mx, tspanner = "AA", n.tspanner = 2,
           n.rgroup=2, rgroup="A")
 htmlTable(mx, tspanner = "AA", n.tspanner = 2)
 
-htmlTable(mx, n.rgroup=2, rgroup="A", rgroup.padding = "")
+htmlTable(mx, n.rgroup=2, rgroup="A", padding.rgroup = "")
 
 
 # This will cause the table to look strange
@@ -36,30 +36,30 @@ mx_3_times <- rbind(mx,
                     mx,
                     mx)
 htmlTable(mx_3_times,
-          tspannerCSSseparator="border-top: 2px solid red;",
+          css.tspanner.sep="border-top: 2px solid red;",
           rgroup = rep(c("Group a", "Group b and c"), times=3),
           n.rgroup = rep(c(1,2), times=3),
           tspanner=c("First", "Second", "Third"),
           n.tspanner=rep(nrow(mx), times=3),
           rowlabel = '',
-          altcol = c('white','lightblue1'),
+          col.rgroup = c('white','lightblue1'),
           tfoot = "Some footer text",
           caption="Caption text")
 
 htmlTable(mx_3_times,
-          tspannerCSSseparator=c("border-top: 2px solid red;",
+          css.tspanner.sep=c("border-top: 2px solid red;",
                                  "border-top: 12px solid blue;"),
           rgroup = rep(c("Group a", "Group b and c"), times=3),
           n.rgroup = rep(c(1,2), times=3),
           tspanner=c("First", "Second", "Third"),
           n.tspanner=rep(nrow(mx), times=3),
           rowlabel = '',
-          altcol = c('white','lightblue1'),
+          col.rgroup = c('white','lightblue1'),
           tfoot = "Some footer text",
           caption="Caption text")
 
 htmlTable(mx_3_times,
-          tspannerCSSseparator=c("border-top: 2px solid red;",
+          css.tspanner.sep=c("border-top: 2px solid red;",
                                  "border-top: 12px solid blue;"),
           rgroup = rep(c("Group a", "Group b and c"), times=3),
           n.rgroup = rep(c(1,2), times=3),
@@ -71,8 +71,8 @@ htmlTable(mx_3_times,
 
 
 htmlTable(mx_3_times,
-          tspannerCSSstyle = "color: purple; font-weight: bold;",
-          tspannerCSSseparator="border-top: 2px solid red;",
+          css.tspanner = "color: purple; font-weight: bold;",
+          css.tspanner.sep="border-top: 2px solid red;",
           rgroup = rep(c("Group a", "Group b and c"), times=3),
           n.rgroup = rep(c(1,2), times=3),
           tspanner=c("First", "Second", "Third"),

@@ -3,34 +3,34 @@
 \alias{prHtPrepareCgroup}
 \title{Prepares the cgroup argument}
 \usage{
-prHtPrepareCgroup(x, cgroup, n.cgroup, cgroup.just)
+prHtPrepareCgroup(x, cgroup, n.cgroup, align.cgroup)
 }
 \arguments{
   \item{x}{The matrix/data.frame with the data}
 
-  \item{cgroup}{a vector or a matrix of character strings
-  defining major column headings. The default is to have
-  none. This is also known as "the column spanner". If you
-  want a column not to have a spanner then put that column
-  as "". If you pass cgroup and n.crgroup as matrices you
-  can have multiline cgroups. If the different levels have
-  different number of elements you need to set the ones
-  that lack elements to NA. For instance \code{cgroup =
-  rbind(c("first", "second", NA), c("a", "b", "c"))}.}
+  \item{cgroup}{A vector or a matrix of character strings
+  defining major column header. The default is to have
+  none. These elements are also known as \emph{column
+  spanners}. If you want a column \emph{not} to have a
+  spanner then put that column as "". If you pass cgroup
+  and \code{n.crgroup} as matrices you can have column
+  spanners for several rows. See cgroup section below for
+  details.}
 
-  \item{n.cgroup}{a vector or matrix containing the number
-  of columns for which each element in cgroup is a heading.
-  For example, specify \code{cgroup=c("Major 1","Major
-  2")}, \code{n.cgroup=c(3,3)} if \code{"Major 1"} is to
-  span columns 1-3 and \code{"Major 2"} is to span columns
-  4-6. \code{rowlabel} does not count in the column
-  numbers. You can omit \code{n.cgroup} if all groups have
-  the same number of columns.}
+  \item{n.cgroup}{An integer vector or matrix containing
+  the number of columns for which each element in cgroup is
+  a heading. For example, specify \code{cgroup=c("Major
+  1","Major 2")}, \code{n.cgroup=c(3,3)} if \code{"Major
+  1"} is to span columns 1-3 and \code{"Major 2"} is to
+  span columns 4-6. \code{rowlabel} does not count in the
+  column numbers. You can omit \code{n.cgroup} if all
+  groups have the same number of columns.}
 
-  \item{cgroup.just}{The justification of the c.groups}
+  \item{align.cgroup}{The justification of the
+  \code{cgroups}}
 }
 \value{
-\code{list(cgroup, n.cgroup, cgroup.just,
+\code{list(cgroup, n.cgroup, align.cgroup,
 cgroup_spacer_cells)}
 }
 \description{

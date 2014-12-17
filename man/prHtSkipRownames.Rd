@@ -7,11 +7,12 @@ prHtSkipRownames(rnames)
 }
 \arguments{
   \item{rnames}{Default rownames are generated from
-  \code{rownames(x)}. If you provide \code{FALSE} then it
-  will skip the rownames. Note that even if you do
-  \code{rownames(my_dataframe) <- NULL} it still has
-  rownames, thus you need to use \code{FALSE} if you want
-  to surpress those.}
+  \code{\link[base]{rownames}(x)}. If you provide
+  \code{FALSE} then it will skip the rownames. \emph{Note:}
+  For \code{data.frames} if you do
+  \code{\link[base]{rownames}(my_dataframe) <- NULL} it
+  still has rownames. Thus you need to use \code{FALSE} if
+  you want to surpress rownames for \code{data.frames}.}
 }
 \description{
 Returns if rownames should be printed for the htmlTable
