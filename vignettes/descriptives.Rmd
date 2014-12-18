@@ -2,9 +2,11 @@
 title: "The fastest way to compile table 1?"
 author: "Max Gordon"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output: 
+  rmarkdown::html_vignette:
+    toc: true
 vignette: >
-  %\VignetteIndexEntry{Fast descriptive statistics}
+  %\VignetteIndexEntry{Gmisc for generating descriptive statistics}
   %\VignetteEngine{knitr::rmarkdown}
   %\usepackage[utf8]{inputenc}
 ---
