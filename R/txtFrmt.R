@@ -28,11 +28,11 @@ txtMergeLines <- function(..., html = TRUE){
     }else{
       strings <- append(strings, i)
     }
-    
+
   }
   if (length(strings) < 2)
     return(strings)
-  
+
   ret <- ifelse(html, "", "\\vbox{")
   first <- TRUE
   for (line in strings){
@@ -44,7 +44,7 @@ txtMergeLines <- function(..., html = TRUE){
     first <- FALSE
   }
   ret <- ifelse(html, ret, paste0(ret, "}"))
-  
+
   return(ret)
 }
 
@@ -68,8 +68,8 @@ txtMergeLines <- function(..., html = TRUE){
 #' txtInt(1234)
 #' txtInt(12345)
 #' txtInt(123456)
-#' 
-#' @family text formatters#' 
+#'
+#' @family text formatters#'
 #' @export
 txtInt <- function(x, language = "en", html = TRUE, ...){
   if (length(x) > 1){
@@ -85,15 +85,15 @@ txtInt <- function(x, language = "en", html = TRUE, ...){
         !"nsmall" %in% names(list(...)))
     warning("The function can only be served integers, '", x, "' is not an integer.",
             " There will be issues with decimals being lost if you don't add the nsmall parameter.")
-  
+
   if (language == "en")
     return(format(x, big.mark=",", scientific=FALSE, ...))
-  
+
   if(x >= 10^4)
     return(format(x,
                   big.mark=ifelse(html, "&nbsp;", " "),
                   scientific=FALSE, ...))
-  
+
   return(format(x, scientific=FALSE, ...))
 }
 
@@ -125,7 +125,7 @@ txtInt <- function(x, language = "en", html = TRUE, ...){
 #'  parameters.
 #' @return vector
 #'
-#' @examples 
+#' @examples
 #' txtPval(c(0.10234,0.010234, 0.0010234, 0.000010234))
 #' @family text formatters
 #' @export
@@ -133,18 +133,18 @@ txtPval <- function(pvalues,
                             two_dec_lim = 10^-2,
                             sig_lim = 10^-4,
                             html=TRUE, ...){
-  
+
   dot_args <- list(...)
   if ("sig.limit" %in% names(dot_args)){
     sig_lim <- dot_args$sig.limit
     warning("Deprecated: sig.limit argument is now sig_lim as of ver. 1.0")
   }
-  
+
   if ("two_dec.limit" %in% names(dot_args)){
     two_dec_lim <- dot_args$two_dec.limit
     warning("Deprecated: two_dec.limit argument is now two_dec_lim as of ver. 1.0")
   }
-  
+
   if (is.logical(html))
     html <- ifelse(html, "&lt; ", "< ")
   sapply(pvalues, function(x, two_dec_lim, sig_lim, lt_sign){
@@ -153,15 +153,15 @@ txtPval <- function(pvalues,
               " can't therfore handle it")
       return (x)
     }
-    
+
     if (x < sig_lim)
       return(sprintf("%s%s", lt_sign, format(sig_lim, scientific=FALSE)))
-    
+
     if (x > two_dec_lim)
       return(format(x,
                     digits=2,
                     nsmall=-floor(log10(x))+1))
-    
+
     return(format(x, digits=1, scientific=FALSE))
   }, sig_lim=sig_lim,
   two_dec_lim = two_dec_lim,
@@ -169,66 +169,66 @@ txtPval <- function(pvalues,
 }
 
 #' A convenient rounding function
-#' 
+#'
 #' @param x The data.frame/matrix to be rounded
 #' @param digits The number of digits to round each element to.
-#'  If you provide a vector each element for corresponding columns. 
-#' @param cols2exclude Rows to exclude from the rounding procedure.
+#'  If you provide a vector each element for corresponding columns.
+#' @param cols_2_excl Rows to exclude from the rounding procedure.
 #'  This can be either a number or regular expression.
-#' @param rows2exclude Columns to exclude from the rounding procedure.
+#' @param rows_2_excl Columns to exclude from the rounding procedure.
 #'  This can be either a number or regular expression.
 #' @return \code{matrix/data.frame}
-#' 
+#'
 #' @examples
-#' mx <- matrix(c(1, 1.11, 1.25, 
+#' mx <- matrix(c(1, 1.11, 1.25,
 #'                2.50, 2.55, 2.45,
 #'                3.2313, 3, pi),
 #'              ncol = 3, byrow=TRUE)
 #' txtRound(mx, 1)
 #' @export
 #' @family text formatters
-txtRound <- function(x, digits, cols2exclude, rows2exclude){
+txtRound <- function(x, digits, cols_2_excl, rows_2_excl){
   if (is.null(dim(x)) ||
         length(dim(x)) > 2)
     stop("The function only accepts matrices/data.frames as primary argument")
-  
+
   rows <- 1L:nrow(x)
-  if (!missing(rows2exclude)){
-    if (is.character(rows2exclude)){
-      rows2exclude <- grep(rows2exclude, rownames(x))
+  if (!missing(rows_2_excl)){
+    if (is.character(rows_2_excl)){
+      rows_2_excl <- grep(rows_2_excl, rownames(x))
     }
-    
-    if (length(rows2exclude) > 0)
-      rows <- rows[-rows2exclude]
+
+    if (length(rows_2_excl) > 0)
+      rows <- rows[-rows_2_excl]
   }
-  
+
   cols <- 1L:ncol(x)
-  if (!missing(cols2exclude)){
-    if (is.character(cols2exclude)){
-      cols2exclude <- grep(cols2exclude, colnames(x))
+  if (!missing(cols_2_excl)){
+    if (is.character(cols_2_excl)){
+      cols_2_excl <- grep(cols_2_excl, colnames(x))
     }
-    
-    if (length(cols2exclude) > 0)
-      cols <- cols[-cols2exclude]
+
+    if (length(cols_2_excl) > 0)
+      cols <- cols[-cols_2_excl]
   }
-  
+
   if (length(cols) == 0)
     stop("No columns to round")
 
   if (length(rows) == 0)
     stop("No rows to round")
-  
+
   ret_x <- x
   for (col in cols){
     ret_x[rows, col] <-
       sapply(x[rows, col], function(elmnt){
         if(!is.numeric(elmnt))
           return(elmnt)
-        sprintf(paste0("%.", digits, "f"), 
+        sprintf(paste0("%.", digits, "f"),
                 elmnt)
       },
       USE.NAMES = FALSE)
   }
-  
+
   return(ret_x)
 }

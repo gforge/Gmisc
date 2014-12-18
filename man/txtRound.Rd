@@ -3,7 +3,7 @@
 \alias{txtRound}
 \title{A convenient rounding function}
 \usage{
-txtRound(x, digits, cols2exclude, rows2exclude)
+txtRound(x, digits, cols_2_excl, rows_2_excl)
 }
 \arguments{
   \item{x}{The data.frame/matrix to be rounded}
@@ -12,11 +12,11 @@ txtRound(x, digits, cols2exclude, rows2exclude)
   to. If you provide a vector each element for
   corresponding columns.}
 
-  \item{cols2exclude}{Rows to exclude from the rounding
+  \item{cols_2_excl}{Rows to exclude from the rounding
   procedure. This can be either a number or regular
   expression.}
 
-  \item{rows2exclude}{Columns to exclude from the rounding
+  \item{rows_2_excl}{Columns to exclude from the rounding
   procedure. This can be either a number or regular
   expression.}
 }
