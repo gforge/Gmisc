@@ -3,19 +3,16 @@
 \alias{mergeDesc}
 \title{Prepares a matrix for htmlTable from a list}
 \usage{
-mergeDesc(tlist, ...)
+mergeDesc(...)
 }
 \arguments{
-  \item{tlist}{A list where each element comes from
+  \item{...}{One or more elements coming from
   \code{\link{getDescriptionStatsBy}}. You can also provide
   pure output from the \code{\link{getDescriptionStatsBy}}
   function and have the function merge this together with
   the \code{...} argument. \emph{Note} that all elements
   myst have the same \code{by} argument or you will not be
   able to merge it into a list.}
-
-  \item{...}{Additional lists/mtrx to be merged with the
-  \code{tlist}}
 }
 \value{
 \code{matrix} Returns a matrix object of class descList

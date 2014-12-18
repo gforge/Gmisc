@@ -22,19 +22,17 @@
 #' The function chooses the \code{\link[base]{colnames}} from the first element in
 #' the \code{tlist}.
 #'
-#' @param tlist A list where each element comes from \code{\link{getDescriptionStatsBy}}.
+#' @param ... One or more elements coming from \code{\link{getDescriptionStatsBy}}.
 #'  You can also provide pure output from the \code{\link{getDescriptionStatsBy}} function
 #'  and have the function merge this together with the \code{...} argument.
 #'  \emph{Note} that all elements myst have the same \code{by} argument or you
 #'  will not be able to merge it into a list.
-#' @param ... Additional lists/mtrx to be merged with the \code{tlist}
 #' @return \code{matrix} Returns a matrix object of class descList
 #' @export
 #' @example inst/examples/getDescriptionStatsBy_example.R
 #' @family table functions
-mergeDesc <- function(tlist, ...){
-  if (!is.list(tlist))
-    tlist <- list(tlist)
+mergeDesc <- function(...){
+  tlist <- list()
   dots <- list(...)
   if (length(dots) > 0){
     for (add_lst in dots){
@@ -103,13 +101,13 @@ mergeDesc <- function(tlist, ...){
 
 
 #' A wrapper around the \code{\link[Hmisc]{latex}} function
-#' 
+#'
 #' Calls the \code{\link[Hmisc]{latex}} after extracting the
 #' \code{rgroup}/\code{n.rgroup} arguments.
-#' 
+#'
 #' @param x The \code{\link{mergeDesc}} object
 #' @param ... Passed onto \code{\link[Hmisc]{latex}}
-#' 
+#'
 #' @importFrom Hmisc latex
 #' @keywords internal
 #' @export
@@ -122,7 +120,7 @@ latex.descMrg <- function(x, ...)
                       n.rgroup = attr(x, "n.rgroup"),
                       ...))
   }
-  
+
   return(NextMethod(generic = NULL, object = x,
                     ...))
 }
