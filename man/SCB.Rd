@@ -13,13 +13,15 @@ downloaded using:
 \dontrun{
 # The data was generated through downloading via the API
 library(pxweb)
+
+# Get the last 15 years of data (the data always lags 1 year)
+current_year <- as.integer(format(Sys.Date(), "\%Y")) -1
 SCB <- get_pxweb_data(
   url = "http://api.scb.se/OV0104/v1/doris/en/ssd/BE/BE0101/BE0101B/BefolkningMedelAlder",
-  dims = list(Region = c('01', '03', '12', '14'),
+  dims = list(Region = c('00', '01', '03', '25'),
               Kon = c('1', '2'),
               ContentsCode = c('BE0101G9'),
-              Tid = c('2000', '2001', '2002', '2003', '2004', '2005', '2006', '2007',
-                      '2008', '2009', '2010', '2011', '2012', '2013')),
+              Tid = (current_year-14):current_year),
   clean = TRUE)
 
 # Some cleaning was needed before use
@@ -35,8 +37,6 @@ for (i in 1:length(Swe_ltrs)){
               Swe_ltrs[i],
               levels(SCB$region))
 }
-
-SCB <- reshape::cast(SCB, year ~ sex + region)
 
 save(SCB, file = "data/SCB.rda")
 }
