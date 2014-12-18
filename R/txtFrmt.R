@@ -17,7 +17,7 @@
 #' txtMergeLines("hello", "world", html=FALSE)
 #' txtMergeLines("hello", "world", list("A list", "is OK"))
 #'
-#'
+#' @family text formatters
 #' @export
 txtMergeLines <- function(..., html = TRUE){
   strings <- c()
@@ -69,6 +69,7 @@ txtMergeLines <- function(..., html = TRUE){
 #' txtInt(12345)
 #' txtInt(123456)
 #' 
+#' @family text formatters#' 
 #' @export
 txtInt <- function(x, language = "en", html = TRUE, ...){
   if (length(x) > 1){
@@ -126,6 +127,7 @@ txtInt <- function(x, language = "en", html = TRUE, ...){
 #'
 #' @examples 
 #' txtPval(c(0.10234,0.010234, 0.0010234, 0.000010234))
+#' @family text formatters
 #' @export
 txtPval <- function(pvalues,
                             two_dec_lim = 10^-2,
@@ -164,4 +166,69 @@ txtPval <- function(pvalues,
   }, sig_lim=sig_lim,
   two_dec_lim = two_dec_lim,
   lt_sign = html)
+}
+
+#' A convenient rounding function
+#' 
+#' @param x The data.frame/matrix to be rounded
+#' @param digits The number of digits to round each element to.
+#'  If you provide a vector each element for corresponding columns. 
+#' @param cols2exclude Rows to exclude from the rounding procedure.
+#'  This can be either a number or regular expression.
+#' @param rows2exclude Columns to exclude from the rounding procedure.
+#'  This can be either a number or regular expression.
+#' @return \code{matrix/data.frame}
+#' 
+#' @examples
+#' mx <- matrix(c(1, 1.11, 1.25, 
+#'                2.50, 2.55, 2.45,
+#'                3.2313, 3, pi),
+#'              ncol = 3, byrow=TRUE)
+#' txtRound(mx, 1)
+#' @export
+#' @family text formatters
+txtRound <- function(x, digits, cols2exclude, rows2exclude){
+  if (is.null(dim(x)) ||
+        length(dim(x)) > 2)
+    stop("The function only accepts matrices/data.frames as primary argument")
+  
+  rows <- 1L:nrow(x)
+  if (!missing(rows2exclude)){
+    if (is.character(rows2exclude)){
+      rows2exclude <- grep(rows2exclude, rownames(x))
+    }
+    
+    if (length(rows2exclude) > 0)
+      rows <- rows[-rows2exclude]
+  }
+  
+  cols <- 1L:ncol(x)
+  if (!missing(cols2exclude)){
+    if (is.character(cols2exclude)){
+      cols2exclude <- grep(cols2exclude, colnames(x))
+    }
+    
+    if (length(cols2exclude) > 0)
+      cols <- cols[-cols2exclude]
+  }
+  
+  if (length(cols) == 0)
+    stop("No columns to round")
+
+  if (length(rows) == 0)
+    stop("No rows to round")
+  
+  ret_x <- x
+  for (col in cols){
+    ret_x[rows, col] <-
+      sapply(x[rows, col], function(elmnt){
+        if(!is.numeric(elmnt))
+          return(elmnt)
+        sprintf(paste0("%.", digits, "f"), 
+                elmnt)
+      },
+      USE.NAMES = FALSE)
+  }
+  
+  return(ret_x)
 }

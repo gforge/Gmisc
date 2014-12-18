@@ -26,4 +26,8 @@ txtMergeLines("hello", "world")
 txtMergeLines("hello", "world", html=FALSE)
 txtMergeLines("hello", "world", list("A list", "is OK"))
 }
+\seealso{
+Other text formatters: \code{\link{txtPval}};
+\code{\link{txtRound}}
+}
 
