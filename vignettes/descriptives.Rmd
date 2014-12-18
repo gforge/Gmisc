@@ -5,6 +5,7 @@ date: "`r Sys.Date()`"
 output: 
   rmarkdown::html_vignette:
     toc: true
+    css: custom.css
 vignette: >
   %\VignetteIndexEntry{Gmisc for generating descriptive statistics}
   %\VignetteEngine{knitr::rmarkdown}

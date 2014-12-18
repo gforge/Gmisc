@@ -5,6 +5,7 @@ date: "`r Sys.Date()`"
 output: 
   rmarkdown::html_vignette:
     toc: true
+    css: custom.css
 vignette: >
   %\VignetteIndexEntry{Tables using Gmisc and some competing alternatives}
   %\VignetteEngine{knitr::rmarkdown}
@@ -83,12 +84,14 @@ To convey all these layers of information will create a table with multiple leve
 
 <table>
 <tr>
-  <td colspan="6" style="text-align: center">County</td></tr>
+  <td colspan="7" style="text-align: center; border-bottom: 1px solid grey;">County</td></tr>
 <tr>
-  <td colspan="3" style="text-align: center">Men</td>
-  <td colspan="3" style="text-align: center">Women</td></tr>
+  <td colspan="3" style="text-align: center; border-bottom: 1px solid grey;">Men</td>
+  <td>&nbsp;</td>
+  <td colspan="3" style="text-align: center; border-bottom: 1px solid grey;">Women</td></tr>
 <tr>
   <td>Age</td><td>&Delta;<sub>int.</sub></td><td>&Delta;<sub>ext.</sub></td>
+  <td>&nbsp;</td>
   <td>Age</td><td>&Delta;<sub>int.</sub></td><td>&Delta;<sub>ext.</sub></td>
 </tr></table>
 
