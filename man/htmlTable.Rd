@@ -203,7 +203,7 @@ htmlTable(x, ...)
   instance not set to false when using
   \code{devtools::\link[devtools]{build_vignettes}()} and
   for these special cases you can set the
-  \code{\link[base]{options}(interactive = FALSE)}}
+  \code{\link[base]{options}(interactive = FALSE)}.}
 }
 \value{
 \code{string} Returns a string of class htmlTable

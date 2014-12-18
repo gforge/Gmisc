@@ -794,7 +794,7 @@ setClass("htmlTable", contains = "character")
 #'  set the \code{options(viewer=utils::browseUrl)} and it will default to that
 #'  particular viewer (this is how RStudio decides on a viewer). \emph{Note:} The
 #'  interactive is for instance not set to false when using \code{devtools::\link[devtools]{build_vignettes}()}
-#'  and for these special cases you can set the \code{\link[base]{options}(interactive = FALSE)}
+#'  and for these special cases you can set the \code{\link[base]{options}(interactive = FALSE)}.
 #' @export
 #' @importFrom utils browseURL
 print.htmlTable<- function(x, useViewer, ...){
