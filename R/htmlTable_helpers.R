@@ -480,8 +480,19 @@ prHtAddCells <- function(table_str, rowcells, cellcode, align, style, cgroup_spa
 
     # Add empty cell if not last column
     if (nr != length(rowcells) && cgroup_spacer_cells[nr] > 0){
+      spanner_style <- style
+      if (!missing(col.columns)){
+        if (nr != 1 && 
+              col.columns[nr] == col.columns[nr + 1]){
+          spanner_style <- prHtGetStyle(spanner_style,
+                                        paste("background-color:", col.columns[nr]))
+        }
+      }
       table_str <- sprintf("%s\n\t\t<%s style='%s' colspan='%d'>&nbsp;</%s>",
-                           table_str, cellcode, style, cgroup_spacer_cells[nr], cellcode)
+                           table_str, cellcode, 
+                           spanner_style, 
+                           cgroup_spacer_cells[nr], 
+                           cellcode)
     }
   }
   return (table_str)
