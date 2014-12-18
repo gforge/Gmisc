@@ -3,14 +3,14 @@
 \alias{getDescriptionStatsBy}
 \title{Creating of description statistics}
 \usage{
-getDescriptionStatsBy(x, by, digits = 1, html = TRUE, NEJMstyle = FALSE,
+getDescriptionStatsBy(x, by, digits = 1, html = TRUE,
   numbers_first = TRUE, statistics = FALSE, statistics.sig_lim = 10^-4,
   statistics.two_dec_lim = 10^-2, useNA = c("ifany", "no", "always"),
   useNA.digits = digits, continuous_fn = describeMean,
   prop_fn = describeProp, factor_fn = describeFactors,
   show_all_values = FALSE, hrzl_prop = FALSE, add_total_col,
   total_col_show_perc = TRUE, use_units = FALSE, default_ref,
-  percentage_sign = TRUE, header_count, ...)
+  NEJMstyle = FALSE, percentage_sign = TRUE, header_count, ...)
 }
 \arguments{
   \item{x}{The variable that you want the statistics for}
@@ -22,9 +22,6 @@ getDescriptionStatsBy(x, by, digits = 1, html = TRUE, NEJMstyle = FALSE,
 
   \item{html}{If HTML compatible output should be used. If
   \code{FALSE} it outputs LaTeX formatting}
-
-  \item{NEJMstyle}{Adds - no (\%) at the end to
-  proportions}
 
   \item{numbers_first}{If the number should be given or if
   the percentage should be presented first. The second is
@@ -101,6 +98,9 @@ getDescriptionStatsBy(x, by, digits = 1, html = TRUE, NEJMstyle = FALSE,
   \item{default_ref}{The default reference, either first,
   the level name or a number within the levels. If left out
   it defaults to the first value.}
+
+  \item{NEJMstyle}{Adds - no (\%) at the end to
+  proportions}
 
   \item{percentage_sign}{If you want to surpress the
   percentage sign you can set this variable to FALSE. You

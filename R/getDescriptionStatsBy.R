@@ -85,7 +85,6 @@ getDescriptionStatsBy <- function(x,
                                   by,
                                   digits=1,
                                   html = TRUE,
-                                  NEJMstyle = FALSE,
                                   numbers_first = TRUE,
                                   statistics=FALSE,
                                   statistics.sig_lim=10^-4,
@@ -101,39 +100,36 @@ getDescriptionStatsBy <- function(x,
                                   total_col_show_perc = TRUE,
                                   use_units = FALSE,
                                   default_ref,
+                                  NEJMstyle = FALSE,
                                   percentage_sign = TRUE,
                                   header_count,
                                   ...){
 
-  dot_args <- list(...)
-  # Warnings due to interface changes in 1.0
-  if ("show_missing_digits" %in% names(dot_args)){
-    show_missing.digits <- dot_args$show_missing_digits
-    dot_args$show_missing_digits <- NULL
-    warning("Deprecated: show_missing_digits argument is now show_missing.digits as of ver. 1.0")
-  }
-
-  if ("show_missing" %in% names(dot_args)){
-    if (missing(useNA)){
-      useNA <- prConvertShowMissing(dot_args$show_missing)
+  API_changes <-
+    c(show_missing_digits = "show_missing.digits",
+      show_missing = "useNA",
+      sig.limit = "statistics.sig_lim",
+      two_dec.limit = "statistics.two_dec_lim")
+  dots <- list(...)
+  fenv <- environment()
+  for (i in 1:length(API_changes)){
+    old_name <- names(API_changes)[i]
+    new_name <- API_changes[i]
+    if (old_name %in% names(dots)){
+      if (class(fenv[[new_name]]) == "name"){
+        fenv[[new_name]] <- dots[[old_name]]
+        dots[[old_name]] <- NULL
+        warning("Deprecated: '", old_name, "'",
+                " argument is now '", new_name ,"'",
+                " as of ver. 1.0")
+      }else{
+        stop("You have set both the old parameter name: '", old_name, "'",
+             " and the new parameter name: '", new_name, "'.")
+      }
     }
-    dot_args$show_missing <- NULL
-    warning("Deprecated: show_missing argument is now useNA as of ver. 1.0")
   }
 
   useNA <- match.arg(useNA)
-
-  if ("sig.limit" %in% names(dot_args)){
-    statistics.sig_lim <- dot_args$sig.limit
-    dot_args$sig.limit <- NULL
-    warning("Deprecated: sig.limit argument is now statistics.sig_lim as of ver. 1.0")
-  }
-
-  if ("two_dec.limit" %in% names(dot_args)){
-    statistics.two_dec_lim <- dot_args$two_dec.limit
-    dot_args$two_dec.limit <- NULL
-    warning("Deprecated: two_dec.limit argument is now statistics.two_dec_lim as of ver. 1.0")
-  }
 
   # Always have a total column if the description statistics
   # are presented in a horizontal fashion
