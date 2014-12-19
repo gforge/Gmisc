@@ -436,9 +436,9 @@ getDescriptionStatsBy <- function(x,
 
   if (statistics){
     pval <- txtPval(pval,
-                    sig_lim=statistics.sig_lim,
-                    two_dec_lim= statistics.two_dec_lim,
-                    html=html)
+                    lim.sig =statistics.sig_lim,
+                    lim.2dec = statistics.two_dec_lim,
+                    html = html)
     results <- cbind(results, c(pval, rep("", nrow(results)-1)))
     cn <- c(cn, "P-value")
   }
