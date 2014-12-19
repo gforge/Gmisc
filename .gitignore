@@ -6,7 +6,5 @@ Gmisc.RProj
 .Rproj.User/
 .settings/
 .Rproj.user
-*.html
 *.md
 tests/visual_tests/FTP_test/FTP_test_files
-inst/doc

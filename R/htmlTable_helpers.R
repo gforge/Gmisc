@@ -510,7 +510,7 @@ prHtAddCells <- function(rowcells, cellcode, align, style, cgroup_spacer_cells, 
 
     cell_style <- c(css.cell[nr],
                     style,
-                    align=prHtGetAlign(align, nr + has_rn_col))
+                    prHtGetAlign(align, nr + has_rn_col))
     if (!missing(col.columns)){
       cell_style %<>%
         c(`background-color` = col.columns[nr])
