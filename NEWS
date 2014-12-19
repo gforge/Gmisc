@@ -25,7 +25,7 @@ Changes for 1.0.0
 * htmlTable rgroup has the additional padding.rgroup for those that want to change the no-breaking space padding
 * added the mergeDesc in order to merge lists from getDescriptionStatsBy for
 * show_missing is now useNA in order to match the table() call handling of missing
-* Renamed splitLines4Table to txtMergeLines, outputInt to txtInt, pvalueFormatter to txtPval
+* Renamed splitLines4Table to txtMergeLines, outputInt to txtInt, pvalueFormatter to txtPval and these follow now the argument style of htmlTable
 * Added txtRound for rounding matrices. The problem with round() is that 1.01 rounds to 1
   instead of "1.0" that is wanted for output.
 * Fixed a few bugs

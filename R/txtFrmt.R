@@ -109,7 +109,7 @@ txtInt <- function(x, language = "en", html = TRUE, ...){
 #' to report anything below that value.
 #'
 #' @param pvalues The p-values
-#' @param two_dec_lim The limit for showing two decimals. E.g.
+#' @param lim.2dec The limit for showing two decimals. E.g.
 #'  the p-value may be 0.056 and we may want to keep the two decimals in order
 #'  to emphasize the proximity to the all-mighty 0.05 p-value and set this to
 #'  \eqn{10^-2}. This allows that a value of 0.0056 is rounded to 0.006 and this
@@ -118,7 +118,7 @@ txtInt <- function(x, language = "en", html = TRUE, ...){
 #'  0.05. \emph{Disclaimer:} The 0.05-limit is really silly and debated, unfortunately
 #'  it remains a standard and this package tries to adapt to the current standards in order
 #'  to limit publication associated issues.
-#' @param sig_lim The significance limit for the less than sign, i.e. the '<'
+#' @param lim.sig The significance limit for the less than sign, i.e. the '<'
 #' @param html If the less than sign should be < or &lt;
 #'  as needed for html output.
 #' @param ... Currently only used for generating warnings of deprecated call
@@ -130,41 +130,54 @@ txtInt <- function(x, language = "en", html = TRUE, ...){
 #' @family text formatters
 #' @export
 txtPval <- function(pvalues,
-                            two_dec_lim = 10^-2,
-                            sig_lim = 10^-4,
-                            html=TRUE, ...){
+                    lim.2dec = 10^-2,
+                    lim.sig = 10^-4,
+                    html=TRUE, ...){
 
-  dot_args <- list(...)
-  if ("sig.limit" %in% names(dot_args)){
-    sig_lim <- dot_args$sig.limit
-    warning("Deprecated: sig.limit argument is now sig_lim as of ver. 1.0")
+  API_changes <-
+    c(`sig.limit` = "lim.sig",
+      sig_lim = "lim.sig",
+      `two_dec.limit` = "lim.2dec",
+      `two_dec_lim`= "lim.2dec")
+  dots <- list(...)
+  fenv <- environment()
+  for (i in 1:length(API_changes)){
+    old_name <- names(API_changes)[i]
+    new_name <- API_changes[i]
+    if (old_name %in% names(dots)){
+      if (class(fenv[[new_name]]) == "name"){
+        fenv[[new_name]] <- dots[[old_name]]
+        dots[[old_name]] <- NULL
+        warning("Deprecated: '", old_name, "'",
+                " argument is now '", new_name ,"'",
+                " as of ver. 1.0")
+      }else{
+        stop("You have set both the old parameter name: '", old_name, "'",
+             " and the new parameter name: '", new_name, "'.")
+      }
+    }
   }
-
-  if ("two_dec.limit" %in% names(dot_args)){
-    two_dec_lim <- dot_args$two_dec.limit
-    warning("Deprecated: two_dec.limit argument is now two_dec_lim as of ver. 1.0")
-  }
-
+  
   if (is.logical(html))
     html <- ifelse(html, "&lt; ", "< ")
-  sapply(pvalues, function(x, two_dec_lim, sig_lim, lt_sign){
+  sapply(pvalues, function(x, lim.2dec, lim.sig, lt_sign){
     if (is.na(as.numeric(x))){
       warning("The value: '", x, "' is non-numeric and txtPval",
               " can't therfore handle it")
       return (x)
     }
 
-    if (x < sig_lim)
-      return(sprintf("%s%s", lt_sign, format(sig_lim, scientific=FALSE)))
+    if (x < lim.sig)
+      return(sprintf("%s%s", lt_sign, format(lim.sig, scientific=FALSE)))
 
-    if (x > two_dec_lim)
+    if (x > lim.2dec)
       return(format(x,
                     digits=2,
                     nsmall=-floor(log10(x))+1))
 
     return(format(x, digits=1, scientific=FALSE))
-  }, sig_lim=sig_lim,
-  two_dec_lim = two_dec_lim,
+  }, lim.sig=lim.sig,
+  lim.2dec = lim.2dec,
   lt_sign = html)
 }
 
@@ -173,9 +186,9 @@ txtPval <- function(pvalues,
 #' @param x The data.frame/matrix to be rounded
 #' @param digits The number of digits to round each element to.
 #'  If you provide a vector each element for corresponding columns.
-#' @param cols_2_excl Rows to exclude from the rounding procedure.
+#' @param excl.cols Rows to exclude from the rounding procedure.
 #'  This can be either a number or regular expression.
-#' @param rows_2_excl Columns to exclude from the rounding procedure.
+#' @param excl.rows Columns to exclude from the rounding procedure.
 #'  This can be either a number or regular expression.
 #' @return \code{matrix/data.frame}
 #'
@@ -187,29 +200,29 @@ txtPval <- function(pvalues,
 #' txtRound(mx, 1)
 #' @export
 #' @family text formatters
-txtRound <- function(x, digits, cols_2_excl, rows_2_excl){
+txtRound <- function(x, digits, excl.cols, excl.rows){
   if (is.null(dim(x)) ||
         length(dim(x)) > 2)
     stop("The function only accepts matrices/data.frames as primary argument")
 
   rows <- 1L:nrow(x)
-  if (!missing(rows_2_excl)){
-    if (is.character(rows_2_excl)){
-      rows_2_excl <- grep(rows_2_excl, rownames(x))
+  if (!missing(excl.rows)){
+    if (is.character(excl.rows)){
+      excl.rows <- grep(excl.rows, rownames(x))
     }
 
-    if (length(rows_2_excl) > 0)
-      rows <- rows[-rows_2_excl]
+    if (length(excl.rows) > 0)
+      rows <- rows[-excl.rows]
   }
 
   cols <- 1L:ncol(x)
-  if (!missing(cols_2_excl)){
-    if (is.character(cols_2_excl)){
-      cols_2_excl <- grep(cols_2_excl, colnames(x))
+  if (!missing(excl.cols)){
+    if (is.character(excl.cols)){
+      excl.cols <- grep(excl.cols, colnames(x))
     }
 
-    if (length(cols_2_excl) > 0)
-      cols <- cols[-cols_2_excl]
+    if (length(excl.cols) > 0)
+      cols <- cols[-excl.cols]
   }
 
   if (length(cols) == 0)

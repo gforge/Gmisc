@@ -3,14 +3,14 @@
 \alias{txtPval}
 \title{Formats the p-values}
 \usage{
-txtPval(pvalues, two_dec_lim = 10^-2, sig_lim = 10^-4, html = TRUE, ...)
+txtPval(pvalues, lim.2dec = 10^-2, lim.sig = 10^-4, html = TRUE, ...)
 }
 \arguments{
   \item{pvalues}{The p-values}
 
-  \item{two_dec_lim}{The limit for showing two decimals.
-  E.g. the p-value may be 0.056 and we may want to keep the
-  two decimals in order to emphasize the proximity to the
+  \item{lim.2dec}{The limit for showing two decimals. E.g.
+  the p-value may be 0.056 and we may want to keep the two
+  decimals in order to emphasize the proximity to the
   all-mighty 0.05 p-value and set this to \eqn{10^-2}. This
   allows that a value of 0.0056 is rounded to 0.006 and
   this makes intuitive sense as the 0.0056 level as this is
@@ -21,7 +21,7 @@ txtPval(pvalues, two_dec_lim = 10^-2, sig_lim = 10^-4, html = TRUE, ...)
   current standards in order to limit publication
   associated issues.}
 
-  \item{sig_lim}{The significance limit for the less than
+  \item{lim.sig}{The significance limit for the less than
   sign, i.e. the '<'}
 
   \item{html}{If the less than sign should be < or &lt; as

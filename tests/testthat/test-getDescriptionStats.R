@@ -21,7 +21,7 @@ test_that("Check mean function",
   stats <- by(Loblolly$height, Loblolly$young, mean)
   a <- getDescriptionStatsBy(Loblolly$height, Loblolly$young,
                              statistics=TRUE,
-                             html=TRUE, digits=2, statistics.sig_lim=10^-4)
+                             digits=2, statistics.sig_lim=10^-4)
   # Check that it contains the true mean
   expect_true(grepl(round(stats[["No"]], 2), a[1,"No"]),
               info="Expected the mean")
@@ -43,7 +43,7 @@ test_that("Check mean function",
   # Check P-value without truncation
   a <- getDescriptionStatsBy(Loblolly$height, Loblolly$age == 10,
                              statistics=TRUE,
-                             html=TRUE, digits=2, statistics.sig_lim=10^-4)
+                             digits=2, statistics.sig_lim=10^-4)
   true_wilc_pv <- txtPval(wilcox.test(Loblolly$height ~ Loblolly$age == 10)$p.value,
                           statistics.sig_lim=10^-4)
   expect_equal(as.character(a[1, "P-value"]),
@@ -56,7 +56,7 @@ test_that("Check median function",
   a <- getDescriptionStatsBy(Loblolly$height, Loblolly$young,
                              continuous_fn=describeMedian,
                              statistics=TRUE,
-                             html=TRUE, digits=2, statistics.sig_lim=10^-4)
+                             digits=2, statistics.sig_lim=10^-4)
   # Check that it contains the true mean
   expect_true(grepl(round(stats[["No"]], 2), a[1,"No"]),
               info="Expected the median")
@@ -82,7 +82,7 @@ test_that("Check median function",
                              continuous_fn=function(...)
                                describeMedian(..., iqr = FALSE),
                              statistics=TRUE,
-                             html=TRUE, digits=2, statistics.sig_lim=10^-4)
+                             digits=2, statistics.sig_lim=10^-4)
 
   # Check that it contains the sd
   stats <- by(Loblolly$height, Loblolly$young,
@@ -99,7 +99,7 @@ test_that("Check factor function",
   a <- getDescriptionStatsBy(Loblolly$fvar, Loblolly$young,
                              continuous_fn=describeMedian,
                              statistics=TRUE,
-                             html=TRUE, digits=2, statistics.sig_lim=10^-4)
+                             digits=2, statistics.sig_lim=10^-4)
   # Check that it contains the true mean
   for (rn in rownames(a)){
     for (cn in levels(Loblolly$young))
@@ -122,7 +122,7 @@ test_that("Check factor function",
   a <- getDescriptionStatsBy(Loblolly$fvar, Loblolly$young, hrzl_prop=TRUE,
                              continuous_fn=describeMedian,
                              statistics=TRUE,
-                             html=TRUE, digits=2, statistics.sig_lim=10^-4)
+                             digits=2, statistics.sig_lim=10^-4)
   for (rn in rownames(a)){
     for (cn in levels(Loblolly$young))
       expect_match(a[rn, cn], sprintf("%s%%", horizontal_perc_stats[rn, cn]),
@@ -142,7 +142,7 @@ test_that("Check total column position",{
                              hrzl_prop=TRUE,add_total_col = TRUE,
                              continuous_fn=describeMedian,
                              statistics=TRUE,
-                             html=TRUE, digits=2, statistics.sig_lim=10^-4)
+                             digits=2, statistics.sig_lim=10^-4)
   expect_equivalent(colnames(a)[1], "Total")
   expect_equivalent(ncol(a), 4)
 
@@ -150,7 +150,7 @@ test_that("Check total column position",{
                              hrzl_prop=TRUE,
                              add_total_col = "last",
                              continuous_fn=describeMedian,
-                             html=TRUE, digits=2, statistics.sig_lim=10^-4)
+                             digits=2, statistics.sig_lim=10^-4)
   expect_equivalent(tail(colnames(a),1), "Total",
                     info="The last column without statistics should be the total column when the add_total_col is set to last")
   expect_equivalent(ncol(a), 3)
@@ -169,7 +169,7 @@ test_that("Check factor function with missing",
   stats <- table(Loblolly$fvar, Loblolly$young_w_missing, useNA="ifany")
   expect_warning(a <- getDescriptionStatsBy(Loblolly$fvar, Loblolly$young_w_missing,
                                             statistics=TRUE,
-                                            html=TRUE, digits=2, statistics.sig_lim=10^-4))
+                                            digits=2, statistics.sig_lim=10^-4))
 
   for (rn in rownames(a)){
     for (cn in levels(Loblolly$young))
@@ -197,7 +197,7 @@ test_that("Check factor function with missing",
   suppressWarnings(a <- getDescriptionStatsBy(Loblolly$fvar, Loblolly$young_w_missing,
                                               hrzl_prop=TRUE,
                                               statistics=TRUE,
-                                              html=TRUE, digits=2, statistics.sig_lim=10^-4))
+                                              digits=2, statistics.sig_lim=10^-4))
 
   for (rn in rownames(a)){
     for (cn in levels(Loblolly$young))
@@ -207,7 +207,7 @@ test_that("Check factor function with missing",
 
   suppressWarnings(a <- getDescriptionStatsBy(Loblolly$fvar_w_missing, Loblolly$young_w_missing,
                                               useNA="no",
-                                              html=TRUE, digits=2, statistics.sig_lim=10^-4))
+                                              digits=2, statistics.sig_lim=10^-4))
   stats <- table(Loblolly$fvar_w_missing, Loblolly$young_w_missing, useNA="no")
   vertical_perc_stats <-
     format(apply(stats, 2, function(x){
@@ -227,7 +227,7 @@ test_that("Check factor function with missing",
 
   suppressWarnings(a <- getDescriptionStatsBy(Loblolly$fvar_w_missing,
                                               Loblolly$young_w_missing,
-                                              html=TRUE, digits=2, statistics.sig_lim=10^-4))
+                                              digits=2, statistics.sig_lim=10^-4))
   stats <- table(Loblolly$fvar_w_missing, Loblolly$young_w_missing, useNA="ifany")
   stats <- stats[,!is.na(colnames(stats))]
   rownames(stats)[is.na(rownames(stats))] <- "Missing"
@@ -247,7 +247,7 @@ test_that("Check factor function with missing",
   }
 
   suppressWarnings(a <- getDescriptionStatsBy(Loblolly$fvar_w_missing, Loblolly$young_w_missing, hrzl_prop = TRUE,
-                             html=TRUE, digits=2, statistics.sig_lim=10^-4))
+                             digits=2, statistics.sig_lim=10^-4))
   horizontal_perc_stats <-
     t(format(apply(stats, 1, function(x){
       x/sum(x)*100
@@ -270,7 +270,7 @@ test_that("Check factor function with missing",
   # Then prGetStatistics should return the count of just the first factor level
   # use example:
   #   a <- getDescriptionStatsBy(Loblolly$young_w_missing, Loblolly$fvar,
-  #                              useNA="no", html=TRUE, digits=2, 
+  #                              useNA="no", digits=2, 
   #                              add_total_col=TRUE)
   a <- prGetStatistics(Loblolly$young_w_missing, 
                        useNA ="no", show_all_values=FALSE)

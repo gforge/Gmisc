@@ -8480,19 +8480,13 @@ Age
 <span class="kw">rownames</span>(output) &lt;-<span class="st"> </span>
 <span class="st">  </span><span class="kw">c</span>(<span class="st">&quot;1st row&quot;</span>, <span class="st">&quot;2nd row&quot;</span>)
 
-<span class="kw">library</span>(xtable)</code></pre>
-<pre><code>## 
-## Attaching package: 'xtable'
-## 
-## The following objects are masked from 'package:Hmisc':
-## 
-##     label, label&lt;-</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(<span class="kw">xtable</span>(output, 
+<span class="kw">library</span>(xtable)
+<span class="kw">print</span>(<span class="kw">xtable</span>(output, 
              <span class="dt">caption=</span><span class="st">&quot;A test table&quot;</span>, 
              <span class="dt">align =</span> <span class="kw">c</span>(<span class="st">&quot;l&quot;</span>, <span class="st">&quot;c&quot;</span>, <span class="st">&quot;r&quot;</span>)), 
       <span class="dt">type=</span><span class="st">&quot;html&quot;</span>)</code></pre>
 <!-- html table generated in R 3.1.2 by xtable 1.7-4 package -->
-<!-- Fri Dec 19 16:02:55 2014 -->
+<!-- Fri Dec 19 17:26:39 2014 -->
 <table border="1">
 <caption align="bottom"> 
 A test table
