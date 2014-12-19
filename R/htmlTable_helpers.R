@@ -50,11 +50,17 @@ prHtTblNo <- function (caption) {
 #' @return \code{string} Returns the codes merged into one string with
 #'  correct CSS ; and : structure.
 #' @keywords internal
+#' @import magrittr
 #' @family hidden helper functions for \code{\link{htmlTable}}
-prHtGetStyle <- function(styles, ...){
+prHtGetStyle <- function(...){
   mergeNames <- function(sv){
     if (!is.null(names(sv))){
-      sv <- paste(names(sv), sv, sep=": ")
+      sv <-
+        mapply(function(n, v){
+          if (n == "")
+            return(v)
+          paste0(n, ": ", v)
+        }, n=names(sv), v=sv, USE.NAMES=FALSE)
     }
     return(sv)
   }
@@ -67,21 +73,39 @@ prHtGetStyle <- function(styles, ...){
     return(ret_sv)
   }
 
-  styles <- spltNames(mergeNames(styles))
+  styles <- c()
   dots <- list(...)
-  if (length(dots) > 0){
-    for (i in 1:length(dots)){
-      if (is.null(names(dots[[i]]))){
-        if  (!is.null(names(dots)) &&
-               names(dots)[i] != "" &&
-               !grepl("\\b[;:](\\b|\\W+)", dots[[i]], perl=TRUE))
-          dots[[i]] = paste0(names(dots)[i], ": ", dots[[i]])
-      }else{
-        dots[[i]] = mergeNames(dots[[i]])
-      }
-      styles <- c(styles,
-                  spltNames(dots[[i]]))
+  if (length(dots) == 0)
+    return("")
 
+  for (i in 1:length(dots)){
+    element <- dots[[i]]
+    if (length(element) == 1){
+      if (element == "")
+        next
+
+      if (!grepl("\\b[:](\\b|\\W+)", element, perl=TRUE)){
+        if(!is.null(names(element))){
+          element <-
+            paste0(names(element), ": ", element)
+        }else if(!is.null(names(dots)) &&
+                   names(dots)[i] != ""){
+          element <-
+            paste0(names(dots)[i], ": ", element)
+        }else{
+          stop("The style should be formatted according to 'style_name: value'",
+               " you have provided style '", element,"'")
+        }
+      }
+      styles %<>%
+        c(element)
+    }else{
+      if (!is.null(names(element))){
+        element <- mergeNames(element)
+      }
+
+      styles <- c(styles,
+                  spltNames(element))
     }
   }
 
@@ -95,15 +119,15 @@ prHtGetStyle <- function(styles, ...){
   }
 
   # Merge background colors
-  if (sum(grepl("^background-color:", styles)) == 2){
+  if (sum(grepl("^background-color:", styles)) > 1){
     clrs <- styles[grep("^background-color:", styles)]
     clrs <- gsub("^background-color:[ ]*([^;]+);*", "\\1", clrs)
+    clr <- prHtMergeClr(clrs)
     # Pick a color merge
     styles <- styles[-grep("^background-color:", styles)]
     styles <-
       c(styles,
-        paste0("background-color: ",
-               colorRampPalette(clrs)(3)[2]))
+        paste0("background-color: ", clr))
   }
 
   style_names <- gsub("^([^:]+).+", "\\1", styles)
@@ -136,15 +160,23 @@ prHtGetStyle <- function(styles, ...){
 #' @family hidden helper functions for \code{\link{htmlTable}}
 prHtAddSemicolon2StrEnd <- function(my_str){
   my_str <- str_trim(my_str)
-  if(my_str == "")
-    return(my_str)
+  my_str_n <- sapply(my_str, nchar, USE.NAMES = FALSE)
+  if (any(my_str_n == 0))
+    my_str <- my_str[my_str_n > 0]
+
+  if(length(my_str) == 0)
+    return("")
 
   if (tail(strsplit(my_str, "")[[1]], 1) != ";")
     my_str <- sprintf("%s;", my_str)
 
   # Remove duplicated ;
   my_str <- gsub(";;+", ";", my_str)
-  if (my_str == ";")
+  empty_str <- sapply(my_str, function(x) x == ";", USE.NAMES = FALSE)
+  if (any(empty_str))
+    my_str <- my_str[!empty_str]
+
+  if(length(my_str) == 0)
     return("")
 
   return (my_str)
@@ -178,7 +210,8 @@ prHtGetCgroupHeader <- function(x,
                                 row_no, top_row_style,
                                 rnames,
                                 rowlabel, pos.rowlabel,
-                                cgroup_spacer_cells){
+                                cgroup_spacer_cells,
+                                css.cell){
 
   header_str <- "\n\t<tr>"
   if (row_no == 1)
@@ -188,14 +221,21 @@ prHtGetCgroupHeader <- function(x,
 
   if (!missing(rowlabel)){
     if (row_no == pos.rowlabel)
-      header_str <- sprintf("%s\n\t\t<th style='font-weight: 900; %s'>%s</th>",
-                            header_str, ts, rowlabel)
+      header_str %<>% sprintf("%s\n\t\t<th style='%s'>%s</th>",
+                              .,
+                              prHtGetStyle(c(`font-weight`=900),
+                                           ts,
+                                           attr(css.cell, "rnames")[1]),
+                              rowlabel)
     else
-      header_str <- sprintf("%s\n\t\t<th style='%s'></th>",
-                            header_str, ts)
+      header_str %<>%
+      sprintf("%s\n\t\t<th style='%s'></th>",
+              .,
+              prHtGetStyle(ts))
   }else if (!prHtSkipRownames(rnames)){
-    header_str <- sprintf("%s\n\t\t<th style='%s'></th>",
-                          header_str, ts)
+    header_str %<>% sprintf("%s\n\t\t<th style='%s'></th>",
+                            .,
+                            prHtGetStyle(ts))
   }
 
   for (i in 1:length(cgroup_vec)){
@@ -217,28 +257,32 @@ prHtGetCgroupHeader <- function(x,
                              sum(cgroup_spacer_cells[start_column:((start_column-1) + (n.cgroup_vec[i]-1))]))))
 
       if (nchar(cgroup_vec[i]) == 0)# Removed as this may now be on purpose || is.na(cgroup_vec[i]))
-        header_str <- sprintf("%s\n\t\t<th colspan='%d' style='%s'></th>",
-                              header_str, colspan,
-                              prHtGetStyle(c(`font-weight`=900),
-                                           ts,
-                                           align=prHtGetAlign(cgroup_vec.just, i)))
+        header_str %<>% sprintf("%s\n\t\t<th colspan='%d' style='%s'></th>",
+                                .,
+                                colspan,
+                                prHtGetStyle(c(`font-weight`=900),
+                                             ts,
+                                             align=prHtGetAlign(cgroup_vec.just, i)))
       else
-        header_str <- sprintf("%s\n\t\t<th colspan='%d' style='%s'>%s</th>",
-                              header_str, colspan,
-                              prHtGetStyle(c(`font-weight`=900,
-                                             `border-bottom`="1px solid grey"),
-                                           ts,
-                                           align=prHtGetAlign(cgroup_vec.just, i)),
-                              cgroup_vec[i])
+        header_str %<>% sprintf("%s\n\t\t<th colspan='%d' style='%s'>%s</th>",
+                                .,
+                                colspan,
+                                prHtGetStyle(c(`font-weight`=900,
+                                               `border-bottom`="1px solid grey"),
+                                             ts,
+                                             align=prHtGetAlign(cgroup_vec.just, i)),
+                                cgroup_vec[i])
 
       # If not last then add a filler cell between the row categories
       # this is also the reason that we need the cgroup_spacer_cells
       if (i != sum(!is.na(cgroup_vec)))
-        header_str <- sprintf("%s<th style='%s; border-bottom: hidden;'>&nbsp;</th>",
-                              header_str, ts)
+        header_str %<>% sprintf("%s<th style='%s; border-bottom: hidden;'>&nbsp;</th>",
+                                ., ts)
     }
   }
-  header_str <- sprintf("%s\n\t</tr>", header_str)
+  header_str %<>%
+    paste0("\n\t</tr>")
+
   return(header_str)
 }
 
@@ -440,7 +484,6 @@ prHtGetRowlabelPos <- function (cgroup, pos.rowlabel, header) {
 #' \code{\link{htmlTable}}
 #'
 #' @inheritParams htmlTable
-#' @param table_str The string to add the cell to
 #' @param rowcells The cells with the values that are to be added
 #' @param cellcode Type of cell, can either be \code{th} or \code{td}
 #' @param style The cell style
@@ -450,11 +493,13 @@ prHtGetRowlabelPos <- function (cgroup, pos.rowlabel, header) {
 #'  of if there has already been printed a rowname column or not and therefore
 #'  we have this has_rn_col that is either 0 or 1.
 #' @param offset For rgroup rows there may be an offset != 1
+#' @param css.cell The css.cell but only for this row compared to the htmlTable matrix
 #' @return \code{string} Returns the string with the new cell elements
 #' @keywords internal
 #' @family hidden helper functions for \code{\link{htmlTable}}
-prHtAddCells <- function(table_str, rowcells, cellcode, align, style, cgroup_spacer_cells, has_rn_col, col.columns,
-                         offset = 1){
+prHtAddCells <- function(rowcells, cellcode, align, style, cgroup_spacer_cells, has_rn_col, col.columns,
+                         offset = 1, css.cell){
+  cell_str <- ""
   style = prHtAddSemicolon2StrEnd(style)
 
   for (nr in offset:length(rowcells)){
@@ -463,39 +508,41 @@ prHtAddCells <- function(table_str, rowcells, cellcode, align, style, cgroup_spa
     if (is.na(cell_value))
       cell_value <- ""
 
+    cell_style <- c(css.cell[nr],
+                    style,
+                    align=prHtGetAlign(align, nr + has_rn_col))
     if (!missing(col.columns)){
-      cell_style <- prHtGetStyle(style,
-                                 align=prHtGetAlign(align, nr + has_rn_col),
-                                 paste("background-color:", col.columns[nr]))
-    }else{
-      cell_style <- prHtGetStyle(style,
-                                 align=prHtGetAlign(align, nr + has_rn_col))
+      cell_style %<>%
+        c(`background-color` = col.columns[nr])
     }
-    table_str <- sprintf("%s\n\t\t<%s style='%s'>%s</%s>",
-                         table_str,
-                         cellcode,
-                         cell_style,
-                         cell_value,
-                         cellcode)
+
+    cell_str %<>%
+      sprintf("%s\n\t\t<%s style='%s'>%s</%s>",
+              .,
+              cellcode,
+              prHtGetStyle(cell_style),
+              cell_value,
+              cellcode)
 
     # Add empty cell if not last column
     if (nr != length(rowcells) && cgroup_spacer_cells[nr] > 0){
       spanner_style <- style
       if (!missing(col.columns)){
-        if (nr != 1 && 
-              col.columns[nr] == col.columns[nr + 1]){
-          spanner_style <- prHtGetStyle(spanner_style,
-                                        paste("background-color:", col.columns[nr]))
+        if (col.columns[nr] == col.columns[nr + 1]){
+          spanner_style %<>%
+            c(`background-color` = col.columns[nr])
         }
       }
-      table_str <- sprintf("%s\n\t\t<%s style='%s' colspan='%d'>&nbsp;</%s>",
-                           table_str, cellcode, 
-                           spanner_style, 
-                           cgroup_spacer_cells[nr], 
-                           cellcode)
+      cell_str %<>%
+        sprintf("%s\n\t\t<%s style='%s' colspan='%d'>&nbsp;</%s>",
+                .,
+                cellcode,
+                prHtGetStyle(spanner_style),
+                cgroup_spacer_cells[nr],
+                cellcode)
     }
   }
-  return (table_str)
+  return (cell_str)
 }
 
 #' Gets alignment
@@ -602,14 +649,29 @@ prHtSkipRownames <- function(rnames){
 #' @param n The number of rows/columns applicable to the color
 #' @param ng The n.rgroup argument if applicable
 #' @return \code{character} A vector containing hexadecimal colors
+#' @import magrittr
 #' @keywords internal
 prHtPrepareColors <- function(clr, n, ng){
   clr <- sapply(clr, function(a_clr){
     if(a_clr == "none")
       return(a_clr)
-    paste0('#',
-           paste(as.character(as.hexmode(col2rgb(a_clr))),
-                 collapse=""))
+    if (grepl("^#[0-9ABCDEFabcdef]{3,3}$", a_clr)){
+      a_clr %<>%
+        substring(first = 2) %>%
+        strsplit(split = "") %>%
+        unlist %>%
+        sapply(FUN = rep, times=2) %>%
+        paste(collapse="") %>%
+        tolower %>%
+        paste0("#", .)
+    }else{
+      a_clr %<>%
+        col2rgb %>%
+        as.hexmode %>%
+        as.character %>%
+        paste(collapse="") %>%
+        paste0("#", .)
+    }
   }, USE.NAMES=FALSE)
 
   if(!missing(ng)){
@@ -622,4 +684,119 @@ prHtPrepareColors <- function(clr, n, ng){
   }
 
   return(clr)
+}
+
+
+#' Merges multiple colors
+#'
+#' Uses the \code{\link[grDevices]{colorRampPalette}} for merging colors.
+#' \emph{Note:} When merging more than 2 colors the order in the color
+#' presentation matters. Each color is merged with its neigbors before
+#' merging with next. If there is an uneven number of colors the middle
+#' color is mixed with both left and right side.
+#'
+#' @param clrs The colors
+#' @return \code{character} A hexadecimal color
+#' @import magrittr
+#' @keywords internal
+prHtMergeClr<- function(clrs){
+  if (length(clrs) == 1)
+    return(clrs)
+  if (length(clrs) == 2)
+    return(colorRampPalette(clrs)(3)[2])
+
+  split_lngth <- floor(length(clrs)/2)
+  left <- head(clrs, split_lngth)
+  right <- tail(clrs, split_lngth)
+  if (length(clrs) %% 2 == 1){
+    left %<>%
+      c(clrs[split_lngth + 1])
+    right %<>%
+      c(clrs[split_lngth + 1], .)
+  }
+
+  left <- prHtMergeClr(left)
+  right <- prHtMergeClr(right)
+  return(prHtMergeClr(c(left,
+                        right)))
+}
+
+#' Prepares the cell style
+#'
+#' @inheritParams htmlTable
+#' @return \code{matrix}
+#' @keywords internal
+prHtPrepareCellStyles <- function(x, css.cell, rnames, header){
+  css.header <- rep("", times = ncol(x))
+  css.rnames <- rep("", times = nrow(x) + !missing(header))
+  if (is.matrix(css.cell)){
+    if (ncol(css.cell) == ncol(x) + 1 &&
+          !prHtSkipRownames(rnames)){
+      if (!missing(header)){
+        if (nrow(css.cell) == nrow(x) + 1){
+          css.rnames <- css.cell[,1]
+        }else if(nrow(css.cell) == nrow(x)){
+          css.rnames[2:length(css.rnames)] <- css.cell[,1]
+        }else{
+          stop("There is an invalid number of rows for the css.cell matrix.",
+               " Your x argument has '", nrow(x), "' rows",
+               " while your css.cell has '", nrow(css.cell), "' rows",
+               " and there is a header")
+        }
+      }else if(nrow(x) == nrow(css.cell)){
+        css.rnames <- css.cell[,1]
+      }else{
+        stop("There is an invalid number of rows for the css.cell matrix.",
+             " Your x argument has '", nrow(x), "' rows",
+             " while your css.cell has '", nrow(css.cell), "' rows",
+             " (there is no header)")
+      }
+
+      css.cell <-
+        css.cell[,-1]
+    }else if (ncol(css.cell) != ncol(x)){
+      stop("There is an invalid number of columns for the css.cell matrix.",
+           " Your x argument has '", ncol(x), "' columns",
+           " while your css.cell has '", ncol(css.cell), "' columns",
+           " and there are ", ifelse(prHtSkipRownames(rnames),
+                                     "no", ""),
+           " rownames.")
+    }
+
+    if (nrow(css.cell) == nrow(x) + 1 &&
+          !missing(header)){
+      css.header <- css.cell[1,]
+      css.cell <- css.cell[-1,]
+    }else if(nrow(css.cell) != nrow(x)){
+      stop("There is an invalid number of rows for the css.cell matrix.",
+           " Your x argument has '", nrow(x), "' rows",
+           " while your css.cell has '", nrow(css.cell), "' rows",
+           " and there is ", ifelse(missing(header),
+                                    "no", "a"),
+           " header")
+    }
+  }else if(is.vector(css.cell)){
+    if (length(css.cell) == ncol(x) + 1){
+      css.rnames = rep(css.cell[1], nrow(x) + prHtSkipRownames(rnames))
+      css.cell <-
+        css.cell[-1]
+    }else if(length(css.cell) != ncol(x) &&
+               length(css.cell) != 1){
+      stop("The length of your css.cell vector '", length(css.cell) ,"'",
+           " does not correspond to the column length '", ncol(x) ,"'",
+           " (there are ", ifelse(prHtSkipRownames(rnames),
+                                    "no", ""),
+           " rownames)")
+    }
+
+    css.cell <- matrix(css.cell,
+                       nrow=nrow(x),
+                       ncol=ncol(x),
+                       byrow = TRUE)
+  }
+
+  return(structure(css.cell,
+                   rnames = css.rnames,
+                   header = css.header,
+                   class=class(css.cell)))
 }

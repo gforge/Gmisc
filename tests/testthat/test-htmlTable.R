@@ -69,9 +69,10 @@ test_that("Check that dimensions are correct with rgroup usage",
 {
   mx <- matrix(1:6, ncol=3)
   colnames(mx) <- sprintf("Col %s", LETTERS[1:NCOL(mx)])
-  table_str <- htmlTable(mx,
-                         rgroup=c("test1", "test2"),
-                         n.rgroup=c(1,1))
+  table_str <-
+    suppressWarnings(htmlTable(mx,
+                               rgroup=c("test1", "test2"),
+                               n.rgroup=c(1,1)))
   parsed_table <- readHTMLTable(table_str)[[1]]
   expect_equal(ncol(parsed_table), ncol(mx), info="Cols did not match")
   expect_equal(nrow(parsed_table), nrow(mx) + 2, info="Rows did not match")
@@ -307,6 +308,8 @@ test_that("Check color function",{
                     c("#ffffff", "#444444"))
   expect_equivalent(prHtPrepareColors(c("white", "#444444"), 3),
                     c("#ffffff", "#444444", "#ffffff"))
+  expect_equivalent(prHtPrepareColors(c("white", "#444"), 3),
+                    c("#ffffff", "#444444", "#ffffff"))
 
   expect_null(attr(prHtPrepareColors(c("white", "#444444"), 3), "groups"))
   expect_equivalent(attr(prHtPrepareColors(c("white", "#444444"), 3, c(2, 3, 1)), "groups")[[1]],
@@ -321,4 +324,60 @@ test_that("Check color function",{
 
   expect_equivalent(attr(prHtPrepareColors(c("white", "none"), 3, c(2, 3, 1)), "groups")[[2]],
                     c("none", "none", "none"))
+
+  ## Test the merge colors
+  expect_equal(prHtMergeClr(c("white", "#444444")),
+               colorRampPalette(c("#FFFFFF", "#444444"))(3)[2])
+
+  expect_equal(prHtMergeClr(c("red", "#444444")),
+               colorRampPalette(c("red", "#444444"))(3)[2])
+
+  expect_equal(prHtMergeClr(c("#444444", "red")),
+               colorRampPalette(c("red", "#444444"))(3)[2])
+
+  expect_equal(prHtMergeClr(c("#FFFFFF", "#FFFFFF", "#FFFFFF")),
+               "#FFFFFF")
+
+  expect_equal(prHtMergeClr(c("#FFFFFF", "#FFFFFF", "#000000", "#000000")),
+               prHtMergeClr(c("#FFFFFF", "#000000")))
+
+  expect_equal(prHtMergeClr(c("#000000", "#FFFFFF", "#FFFFFF")),
+               prHtMergeClr(c("#FFFFFF", "#FFFFFF", "#000000")))
+
+  expect_equal(prHtMergeClr(c("#000000", "#FFFFFF", "#000000")),
+               prHtMergeClr(c("#FFFFFF", "#000000", "#FFFFFF")))
+
+})
+
+test_that("Test cell styles",{
+  mx <- matrix(1:3, nrow=2, ncol=3, byrow = TRUE)
+  mx_head <- LETTERS[1:ncol(mx)]
+  mx_rnames <- LETTERS[1:nrow(mx)]
+  expect_equal(dim(prHtPrepareCellStyles(mx, "")),
+               dim(mx))
+  expect_equal(dim(prHtPrepareCellStyles(mx, "", header = mx_head, rnames = mx_rnames)),
+               dim(mx))
+
+  expect_equal(dim(prHtPrepareCellStyles(mx, "", header = mx_head, rnames = mx_rnames)),
+               dim(mx))
+
+  expect_equal(dim(prHtPrepareCellStyles(mx, rep("", times=ncol(mx)))),
+               dim(mx))
+
+  expect_error(prHtPrepareCellStyles(mx, rep("", times=nrow(mx))))
+
+
+  mx_cell.style <- matrix(c("a", "b", "c", "d"), nrow=2, ncol=4, byrow = TRUE)
+  expect_equal(prHtPrepareCellStyles(mx, mx_cell.style, rnames = mx_rnames)[2,1],
+               "b")
+
+  expect_error(prHtPrepareCellStyles(mx, mx_cell.style))
+
+  mx_cell.style <- matrix(c("a", "b", "c", "d"), nrow=3, ncol=4, byrow = TRUE)
+  expect_equal(prHtPrepareCellStyles(mx, mx_cell.style,
+                                     header = mx_head,
+                                     rnames = mx_rnames)[2,1],
+               "b")
+
+  expect_error(prHtPrepareCellStyles(mx, mx_cell.style, rnames = mx_rnames))
 })

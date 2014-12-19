@@ -16,9 +16,9 @@ htmlTable(x, ...)
   align.header = paste(rep("c", ncol(x)), collapse = ""), align.cgroup,
   css.rgroup = "font-weight: 900;", css.rgroup.sep = "",
   css.tspanner = "font-weight: 900; text-transform: capitalize; text-align: left;",
-  css.tspanner.sep = "border-top: 1px solid grey;",
-  css.table.class = "gmisc_table", pos.rowlabel = "bottom",
-  pos.caption = "top", col.rgroup = "none", col.columns = "none",
+  css.tspanner.sep = "border-top: 1px solid grey;", css.cell = "",
+  css.class = "gmisc_table", pos.rowlabel = "bottom", pos.caption = "top",
+  col.rgroup = "none", col.columns = "none",
   padding.rgroup = "&nbsp;&nbsp;", ctable = TRUE,
   compatibility = "LibreOffice", cspan.rgroup = "all", ...)
 
@@ -138,8 +138,18 @@ htmlTable(x, ...)
   \item{css.tspanner.sep}{The line between different
   spanners}
 
-  \item{css.table.class}{The html CSS class for the table.
-  This allows directing html formatting through
+  \item{css.cell}{The css.cell element allows you to add
+  any possible CSS style to your table cells. If you
+  provide a vector the vector it is assummed that the
+  styles should be repeated throughout the columns. If you
+  provide a matrix of the same size as your \code{x}
+  argument. If have \code{ncol(x) + 1} the first row will
+  correspond to the rowname style. Correspondingly if the
+  size is \code{nrow(x) + 1} it is assummed that the first
+  row is the header row.}
+
+  \item{css.class}{The html CSS class for the table. This
+  allows directing html formatting through
   \href{http://www.w3schools.com/css/css_selectors.asp}{CSS}
   directly at all instances of that class. \emph{Note:}
   unfortunately the CSS is frequently ignored by word

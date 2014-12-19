@@ -23,7 +23,8 @@ Imports:
     sp,
     utils,
     methods,
-    Hmisc
+    Hmisc,
+    magrittr
 Suggests:
     testthat,
     XML,

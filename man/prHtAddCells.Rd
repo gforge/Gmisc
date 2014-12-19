@@ -3,12 +3,10 @@
 \alias{prHtAddCells}
 \title{Add a cell}
 \usage{
-prHtAddCells(table_str, rowcells, cellcode, align, style, cgroup_spacer_cells,
-  has_rn_col, col.columns, offset = 1)
+prHtAddCells(rowcells, cellcode, align, style, cgroup_spacer_cells, has_rn_col,
+  col.columns, offset = 1, css.cell)
 }
 \arguments{
-  \item{table_str}{The string to add the cell to}
-
   \item{rowcells}{The cells with the values that are to be
   added}
 
@@ -39,6 +37,9 @@ prHtAddCells(table_str, rowcells, cellcode, align, style, cgroup_spacer_cells,
 
   \item{offset}{For rgroup rows there may be an offset !=
   1}
+
+  \item{css.cell}{The css.cell but only for this row
+  compared to the htmlTable matrix}
 }
 \value{
 \code{string} Returns the string with the new cell elements

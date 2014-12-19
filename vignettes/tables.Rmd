@@ -15,7 +15,7 @@ vignette: >
 Introduction
 ============
 
-Tables are an essential part of publishing, well... anything. I therefore want to explore the options available for generating these in markdown. It is important to remember that there are two ways principal ways of generating tables in markdown:
+Tables are an essential part of publishing, well... anything. I therefore want to explore the options available for generating these in markdown. It is important to remember that there are two ways of generating tables in markdown:
 
 1. Markdown tables
 2. HTML tables
@@ -25,7 +25,7 @@ As the `Gmisc`-package is all about HTML tables we will start with these.
 HTML tables
 ===========
 
-Tables are possibly the most tested HTML-element out there. In early web design this was the only feature that browsers handled uniformly, and became therefore for a long period the standard way of doing layout. They are thereby an excellent template for generating advanced tables in statistics. There are currently three different implementations that I've encountered, the **xtable**, the **format.tables**, and my own **htmlTable** function. The `format.tables` is unfortunately not yet on CRAN and will not be part of this vignette due to CRAN rules. If you are interested you can find it [here](https://github.com/SwedishPensionsAgency/format.tables).
+Tables are possibly the most tested HTML-element out there. In early web design this was the only feature that browsers handled uniformly, and therefore became the standard way of doing layout for a long period. HTML-tables are thereby an excellent template for generating advanced tables in statistics. There are currently three different implementations that I've encountered, the **xtable**, the **format.tables**, and my own **htmlTable** function. The `format.tables` is unfortunately not yet on CRAN and will not be part of this vignette due to CRAN rules. If you are interested you can find it [here](https://github.com/SwedishPensionsAgency/format.tables).
 
 
 The `htmlTable` in the `Gmisc`-package
@@ -40,8 +40,8 @@ output <-
 
 library(Gmisc)
 htmlTable(output,
-          rgroup = c("Group A-H",
-                     "Group I-P"),
+          rgroup = c("Group A",
+                     "Group B"),
           n.rgroup = c(2,2),
           rnames = paste(c("1st", "2nd",
                            "3rd", "4th"), "row"),

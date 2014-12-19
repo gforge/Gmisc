@@ -117,7 +117,13 @@
 #'  rgroup doesn't have a separator).
 #' @param css.tspanner The CSS style for the table spanner
 #' @param css.tspanner.sep The line between different spanners
-#' @param css.table.class The html CSS class for the table. This allows directing html
+#' @param css.cell The css.cell element allows you to add any possible CSS style to your
+#'  table cells. If you provide a vector the vector it is assummed that the styles should
+#'  be repeated throughout the columns. If you provide a matrix of the same size as your
+#'  \code{x} argument. If have \code{ncol(x) + 1} the first row will correspond to the
+#'  rowname style. Correspondingly if the size is \code{nrow(x) + 1} it is assummed that the
+#'  first row is the header row.
+#' @param css.class The html CSS class for the table. This allows directing html
 #'  formatting through \href{http://www.w3schools.com/css/css_selectors.asp}{CSS}
 #'  directly at all instances of that class. \emph{Note:} unfortunately the
 #'  CSS is frequently ignored by word processors. This option
@@ -187,6 +193,7 @@ htmlTable.descMrg <- function(x, ...)
 #' @importFrom stringr str_replace
 #' @importFrom Hmisc first.word
 #' @importFrom Hmisc format.df
+#' @import magrittr
 #' @rdname htmlTable
 #' @export
 htmlTable.default <- function(x,
@@ -219,7 +226,9 @@ htmlTable.default <- function(x,
                               css.tspanner = "font-weight: 900; text-transform: capitalize; text-align: left;",
                               css.tspanner.sep = "border-top: 1px solid grey;",
 
-                              css.table.class = "gmisc_table",
+                              css.cell = "",
+
+                              css.class = "gmisc_table",
 
                               # Positions
                               pos.rowlabel = "bottom",
@@ -250,7 +259,7 @@ htmlTable.default <- function(x,
       rowlabel.pos =  "pos.rowlabel",
       caption.loc  = "pos.caption",
       altcol = "col.rgroup",
-      tableCSSclass = "css.table.class")
+      tableCSSclass = "css.class")
   dots <- list(...)
   fenv <- environment()
   for (i in 1:length(API_changes)){
@@ -474,11 +483,14 @@ htmlTable.default <- function(x,
     }
   }
 
+  css.cell <- prHtPrepareCellStyles(x, css.cell = css.cell,
+                                    rnames = rnames, header = header)
+
   ###############################
   # Start building table string #
   ###############################
   table_str <- sprintf("<table class='%s' style='border-collapse: collapse;' %s>",
-                       paste(css.table.class, collapse=", "),
+                       paste(css.class, collapse=", "),
                        table_id)
 
   # Theoretically this should be added to the table but the
@@ -503,42 +515,49 @@ htmlTable.default <- function(x,
   if (!missing(caption) &
         compatibility != "LibreOffice"){
     if (pos.caption == "bottom"){
-      table_str <- sprintf("%s\n\t<caption style='caption-side: bottom'>", table_str)
+      table_str %<>%
+        paste0("\n\t<caption style='caption-side: bottom'>")
     }else{
-      table_str <- sprintf("%s\n\t<caption style='caption-side: top'>", table_str)
+      table_str %<>%
+        paste0("\n\t<caption style='caption-side: top'>")
     }
 
-    table_str <- sprintf("%s%s</caption>", table_str, caption)
+    table_str %<>%
+      paste0(caption, "</caption>")
   }
 
   # Start the head
-  table_str <- sprintf("%s\n\t<thead>", table_str)
+  table_str %<>%
+    paste0("\n\t<thead>")
 
   if (!missing(caption) &
         compatibility == "LibreOffice" &
         pos.caption != "bottom"){
 
-    table_str <- sprintf("%s\n\t<tr><td colspan='%d' style='text-align: left;'>%s</td></tr>",
-                         table_str,
-                         total_columns,
-                         caption)
+    table_str %<>%
+      sprintf("%s\n\t<tr><td colspan='%d' style='text-align: left;'>%s</td></tr>",
+              .,
+              total_columns,
+              caption)
   }
 
   # Add the cgroup table header
   if (!missing(cgroup)){
 
     for (i in 1:nrow(cgroup)){
-      table_str <- paste0(table_str,
-                          prHtGetCgroupHeader(x = x,
-                                              cgroup_vec = cgroup[i,],
-                                              n.cgroup_vec = n.cgroup[i,],
-                                              cgroup_vec.just = align.cgroup[i, ],
-                                              row_no = i,
-                                              top_row_style = top_row_style,
-                                              rnames = rnames,
-                                              rowlabel = rowlabel,
-                                              pos.rowlabel = pos.rowlabel,
-                                              cgroup_spacer_cells = cgroup_spacer_cells))
+      cgrp_str <- prHtGetCgroupHeader(x = x,
+                                     cgroup_vec = cgroup[i,],
+                                     n.cgroup_vec = n.cgroup[i,],
+                                     cgroup_vec.just = align.cgroup[i, ],
+                                     row_no = i,
+                                     top_row_style = top_row_style,
+                                     rnames = rnames,
+                                     rowlabel = rowlabel,
+                                     pos.rowlabel = pos.rowlabel,
+                                     cgroup_spacer_cells = cgroup_spacer_cells,
+                                     css.cell = css.cell)
+      table_str %<>%
+        paste0(cgrp_str)
     }
     first_row <- FALSE
   }
@@ -548,46 +567,53 @@ htmlTable.default <- function(x,
   if (!missing(header)){
     # The bottom border was ment to be here but it doesn't
     # work that well in the export
-    table_str <- sprintf("%s\n\t<tr>", table_str)
+    table_str %<>%
+      paste0("\n\t<tr>")
+
     no_cgroup_rows <-
       ifelse(!missing(cgroup),
              nrow(cgroup),
              0)
     ts <- ifelse(no_cgroup_rows > 0, "", top_row_style)
     if (!missing(rowlabel) && pos.rowlabel == no_cgroup_rows + 1){
-      table_str <- sprintf("%s\n\t\t<th style='%s'>%s</th>",
-                           table_str,
-                           prHtGetStyle(c(`font-weight`=900,
-                                          `border-bottom`="1px solid grey"),
-                                        ts,
-                                        align=prHtGetAlign(align.header, 1)),
-                           rowlabel)
+      table_str %<>% sprintf("%s\n\t\t<th style='%s'>%s</th>",
+                             .,
+                             prHtGetStyle(c(`font-weight` = 900,
+                                            `border-bottom` = "1px solid grey"),
+                                          ts,
+                                          attr(css.cell, "rnames")[1],
+                                          align=prHtGetAlign(align.header, 1)),
+                             rowlabel)
     }else if(!prHtSkipRownames(rnames)){
-      table_str <- sprintf("%s\n\t\t<th style='%s'> </th>",
-        table_str,
-        prHtGetStyle(c(`border-bottom`="1px solid grey"), ts))
+      table_str %<>% sprintf("%s\n\t\t<th style='%s'> </th>",
+                             .,
+                             prHtGetStyle(c(`border-bottom`="1px solid grey"),
+                                          ts))
     }
 
     cell_style= "border-bottom: 1px solid grey;"
     if (first_row){
-      cell_style=paste(cell_style, top_row_style, sep = "; ")
+      cell_style %<>%
+        c(top_row_style)
     }
-    table_str <- prHtAddCells(table_str = table_str,
-                              rowcells = header,
-                              cellcode = "th",
-                              align = align.header,
-                              style=cell_style,
-                              cgroup_spacer_cells = cgroup_spacer_cells,
-                              has_rn_col = !prHtSkipRownames(rnames)*1)
 
-    table_str <- sprintf("%s\n\t</tr>", table_str)
+    cell_str <- prHtAddCells(rowcells = header,
+                             cellcode = "th",
+                             align = align.header,
+                             style=cell_style,
+                             cgroup_spacer_cells = cgroup_spacer_cells,
+                             has_rn_col = !prHtSkipRownames(rnames)*1,
+                             css.cell = attr(css.cell, "header"))
+    table_str %<>%
+      paste0(cell_str, "\n\t</tr>")
     first_row <- FALSE
   }
 
   #################################
   # Close head and start the body #
   #################################
-  table_str <- sprintf("%s\n\t</thead><tbody>", table_str)
+  table_str %<>%
+    paste0("\n\t</thead><tbody>")
 
   if (missing(rgroup))
     row_clrs <- col.rgroup
@@ -597,32 +623,38 @@ htmlTable.default <- function(x,
   rgroup_iterator <- 0
   tspanner_iterator <- 0
   for (row_nr in 1:nrow(x)){
+    rname_style = attr(css.cell, "rnames")[row_nr + !prHtSkipRownames(rnames)]
+
     # First check if there is a table spanner that should be applied
     if (!missing(tspanner) &&
           (row_nr == 1 ||
              row_nr > sum(n.tspanner[1:tspanner_iterator]))){
       tspanner_iterator = tspanner_iterator + 1
 
-      rs <- css.tspanner[tspanner_iterator]
+      rs <- c(rname_style,
+              css.tspanner[tspanner_iterator])
 
       # Use a separator from the one above if this
       # at least the second spanner. Graphically this
       # appears as if underneath the group while it's
       # actually above but this merges into one line
       if (tspanner_iterator > 1){
-        rs <- prHtGetStyle(rs,
-                           css.tspanner.sep[tspanner_iterator-1])
+        rs %<>%
+          c(css.tspanner.sep[tspanner_iterator-1])
       }
+
 
       if (first_row){
-        rs <- prHtGetStyle(rs,
-                           top_row_style)
+        rs %<>%
+          c(top_row_style)
       }
 
-      table_str <- sprintf("%s\n\t<tr><td colspan='%d' style='%s'>%s</td></tr>", table_str,
-                           total_columns,
-                           rs,
-                           tspanner[tspanner_iterator])
+      table_str %<>%
+        sprintf("%s\n\t<tr><td colspan='%d' style='%s'>%s</td></tr>",
+                .,
+                total_columns,
+                prHtGetStyle(rs),
+                tspanner[tspanner_iterator])
       first_row <- FALSE
     }
 
@@ -636,16 +668,17 @@ htmlTable.default <- function(x,
         row_nr > sum(n.rgroup[1:rgroup_iterator]))){
       rgroup_iterator = rgroup_iterator + 1
 
-      rs <- prHtGetStyle(css.rgroup[rgroup_iterator],
-                         `background-color` = col.rgroup[rgroup_iterator])
+      rs <- c(rname_style,
+              css.rgroup[rgroup_iterator],
+              `background-color` = col.rgroup[rgroup_iterator])
 
       # Use a separator from the one above if this
       # at least the second group. Graphically this
       # appears as if underneath the group while it's
       # actually above but this merges into one line
       if (rgroup_iterator > 1){
-        rs <- sprintf("%s %s", rs,
-          css.rgroup.sep[rgroup_iterator-1])
+        rs <- c(rs,
+                css.rgroup.sep[rgroup_iterator-1])
       }
 
       # Only add if there is anything in the group
@@ -653,7 +686,8 @@ htmlTable.default <- function(x,
             rgroup[rgroup_iterator] != ""){
 
         if (first_row){
-          rs <- paste(rs, top_row_style, sep = "; ")
+          rs <- c(rs,
+                  top_row_style)
         }
 
         ## this will allow either css.rgroup or col.rgroup to
@@ -664,30 +698,36 @@ htmlTable.default <- function(x,
           true_span <- cspan.rgroup[rgroup_iterator] +
             sum(cgroup_spacer_cells[0:(cspan.rgroup[rgroup_iterator]-
                                          1*!prHtSkipRownames(rnames))])
-          table_str <- sprintf("%s\n\t<tr><td colspan='%d' style='%s'>%s</td>",
-                               table_str,
-                               true_span,
-                               rs,
-                               rgroup[rgroup_iterator])
+          table_str %<>%
+            sprintf("%s\n\t<tr><td colspan='%d' style='%s'>%s</td>",
+                    .,
+                    true_span,
+                    prHtGetStyle(rs),
+                    rgroup[rgroup_iterator])
+
           cols_left <- ncol(x) - (cspan.rgroup[rgroup_iterator] - 1*!prHtSkipRownames(rnames))
-          table_str <- prHtAddCells(table_str = table_str,
-                                    rowcells = rep("", ncol(x)),
-                                    cellcode = "td",
-                                    align = align,
-                                    style = rs,
-                                    cgroup_spacer_cells = cgroup_spacer_cells,
-                                    has_rn_col = !prHtSkipRownames(rnames)*1,
-                                    col.columns = col.columns,
-                                    offset = ncol(x) - cols_left + 1)
+          cell_str <- prHtAddCells(rowcells = rep("", ncol(x)),
+                                   cellcode = "td",
+                                   align = align,
+                                   style = rs,
+                                   cgroup_spacer_cells = cgroup_spacer_cells,
+                                   has_rn_col = !prHtSkipRownames(rnames)*1,
+                                   col.columns = col.columns,
+                                   offset = ncol(x) - cols_left + 1,
+                                   css.cell = css.cell[row_nr,])
+          table_str %<>%
+            paste0(cell_str)
+
 
           table_str <- paste0(table_str, "</tr>")
 
         }else{
-          table_str <- sprintf("%s\n\t<tr><td colspan='%d' style='%s'>%s</td></tr>",
-                               table_str,
-                               total_columns,
-                               rs,
-                               rgroup[rgroup_iterator])
+          table_str %<>%
+            sprintf("%s\n\t<tr><td colspan='%d' style='%s'>%s</td></tr>",
+                    .,
+                    total_columns,
+                    prHtGetStyle(rs),
+                    rgroup[rgroup_iterator])
         }
 
         first_row <- FALSE
@@ -697,21 +737,26 @@ htmlTable.default <- function(x,
 
     cell_style <- rs <- paste("background-color:", row_clrs[row_nr])
     if (first_row){
-      rs <- prHtGetStyle(rs,
-                         top_row_style)
-      cell_style <- prHtGetStyle(cell_style,
-                                 top_row_style)
+      rs %<>%
+        c(top_row_style)
+      cell_style %<>%
+        c(top_row_style)
     }
     first_row <- FALSE
 
-    if (row_nr == nrow(x))
-      cell_style = prHtGetStyle(cell_style,
-                                bottom_row_style)
+    if (row_nr == nrow(x)){
+      cell_style %<>%
+        c(bottom_row_style)
+    }
 
-    if (rs == ""){
-      table_str <- paste0(table_str, "\n\t<tr>")
+    if (prHtGetStyle(rs) == ""){
+      table_str %<>%
+        paste0("\n\t<tr>")
     }else{
-      table_str <- sprintf("%s\n\t<tr style='%s'>", table_str, rs)
+      table_str %<>%
+        sprintf("%s\n\t<tr style='%s'>",
+                .,
+                prHtGetStyle(rs))
     }
 
     if (!prHtSkipRownames(rnames)){
@@ -727,53 +772,62 @@ htmlTable.default <- function(x,
 
       # The padding doesn't work well with the Word import - well nothing really works well with word...
       # table_str <- sprintf("%s\n\t\t<td style='padding-left: .5em;'>%s</td>", table_str, rnames[row_nr])
-      table_str <- sprintf("%s\n\t\t<td style='%s'>%s%s</td>",
-                           table_str,
-                           prHtGetStyle(cell_style,
-                                        align=prHtGetAlign(align, 1)),
-                           pdng,
-                           rnames[row_nr])
+      table_str %<>%
+        sprintf("%s\n\t\t<td style='%s'>%s%s</td>",
+                .,
+                prHtGetStyle(cell_style,
+                             align=prHtGetAlign(align, 1)),
+                pdng,
+                rnames[row_nr])
     }
 
-    table_str <- prHtAddCells(table_str = table_str,
-                              rowcells = x[row_nr,],
-                              cellcode = "td",
-                              align = align,
-                              style = cell_style,
-                              cgroup_spacer_cells = cgroup_spacer_cells,
-                              has_rn_col = !prHtSkipRownames(rnames)*1,
-                              col.columns = col.columns)
-
-    table_str <- sprintf("%s\n\t</tr>", table_str)
+    cell_str <- prHtAddCells(rowcells = x[row_nr,],
+                             cellcode = "td",
+                             align = align,
+                             style = cell_style,
+                             cgroup_spacer_cells = cgroup_spacer_cells,
+                             has_rn_col = !prHtSkipRownames(rnames)*1,
+                             col.columns = col.columns,
+                             css.cell = css.cell[row_nr, ])
+    table_str %<>%
+      paste0(cell_str, "\n\t</tr>")
   }
 
   # Close body
-  table_str <- sprintf("%s\n\t</tbody>", table_str)
+  table_str %<>%
+    paste0("\n\t</tbody>")
 
   if (!missing(caption) &
         compatibility == "LibreOffice" &
         pos.caption == "bottom"){
 
-    table_str <- sprintf("%s\n\t<tr><td colspan='%d' style='text-align: left;'>%s</td></tr>",
-                         table_str,
-                         total_columns,
-                         caption)
+    table_str %<>%
+      sprintf("%s\n\t<tr><td colspan='%d' style='text-align: left;'>%s</td></tr>",
+              .,
+              total_columns,
+              caption)
   }
 
   # Add footer
   if (!missing(tfoot)){
     # Initiate the tfoot
-    table_str <- sprintf("%s\n\t<tfoot><tr><td colspan='%d'>", table_str, total_columns)
+    table_str %<>%
+      sprintf("%s\n\t<tfoot><tr><td colspan='%d'>",
+              .,
+              total_columns)
 
     # Add the actual tfoot to a new row
-    table_str<- sprintf("%s\n\t%s", table_str, tfoot)
+    table_str %<>%
+      paste0("\n\t", tfoot)
 
     # Close the tfoot
-    table_str <- sprintf("%s</td></tr></tfoot>", table_str)
+    table_str %<>%
+      paste0("</td></tr></tfoot>")
   }
 
   # Close table
-  table_str <- sprintf("%s\n</table>", table_str)
+  table_str %<>%
+    paste0("\n</table>")
 
   class(table_str) <- c("htmlTable", class(table_str))
   attr(table_str, "...") <- list(...)
