@@ -124,11 +124,4 @@ getDescriptionStatsBy(mtcars$col_with_missing, mtcars$am, statistics=TRUE,
         file="")
 }
 }
-\seealso{
-Other table functions: \code{\link{htmlTable}},
-\code{\link{htmlTable.default}},
-\code{\link{htmlTable.descMrg}},
-\code{\link{print.htmlTable}}; \code{\link{tblNoLast}};
-\code{\link{tblNoNext}}
-}
 

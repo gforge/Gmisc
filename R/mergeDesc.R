@@ -100,18 +100,36 @@ mergeDesc <- function(...){
 }
 
 
-#' A wrapper around the \code{\link[Hmisc]{latex}} function
+#' A wrapper around the \code{\link[htmlTable]{htmlTable}}/\code{\link[Hmisc]{latex}} function
 #'
-#' Calls the \code{\link[Hmisc]{latex}} after extracting the
+#' Calls the \code{\link[htmlTable]{htmlTable}}/\code{\link[Hmisc]{latex}} after extracting the
 #' \code{rgroup}/\code{n.rgroup} arguments.
 #'
 #' @param x The \code{\link{mergeDesc}} object
-#' @param ... Passed onto \code{\link[Hmisc]{latex}}
+#' @param ... Passed onto \code{\link[htmlTable]{htmlTable}}/\code{\link[Hmisc]{latex}}
 #'
+#' @rdname htmlTable_latex
 #' @importFrom Hmisc latex
 #' @keywords internal
 #' @export
 latex.descMrg <- function(x, ...)
+{
+  dots <- list(...)
+  if (!"rgroup" %in% names(dots)){
+    return(NextMethod(generic = NULL, object = x,
+                      rgroup = attr(x, "rgroup"),
+                      n.rgroup = attr(x, "n.rgroup"),
+                      ...))
+  }
+
+  return(NextMethod(generic = NULL, object = x,
+                    ...))
+}
+
+
+#' @rdname htmlTable_latex
+#' @export
+htmlTable.descMrg <- function(x, ...)
 {
   dots <- list(...)
   if (!"rgroup" %in% names(dots)){

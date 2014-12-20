@@ -2,32 +2,15 @@ NEWS for the Gmisc package
 
 Changes for 1.0.0
 -----------------
-* Argument name changes for htmlTable for better consistency and logic:
-    rowname -> rnames
-    headings -> header
-    halign -> align.header
-    cgroup.just -> align.cgroup
-    rgroupCSSstyle -> css.rgroup
-    rgroupCSSseparator -> css.rgroup.sep
-    tspannerCSSstyle -> css.tspanner
-    tspannerCSSseparator -> css.tspanner.sep
-    tableCSSclass -> css.table.class
-    rowlabel.pos -> pos.rowlabel
-    caption.loc -> pos.caption
-    altcol -> col.rgroup
+* Minor argument name changes for forestplot2 and transitionplot
 * Added the fastDoCall function as an faster alternative to the do.call
 * The forestplot2 now accepts a vector of length two for the zero in case you need an
   area for the zero-effect
 * The forestplot2 now has a maximum colgap length for the box of the box height
 * All functions default to html = TRUE instead of FALSE
-* htmlTable can now handle rnames = FALSE in order to surpress rownames
-* htmlTable now defaults to the layout of ctable as this is the more commonly found layout among medical papers
-* htmlTable rgroup has the additional padding.rgroup for those that want to change the no-breaking space padding
 * added the mergeDesc in order to merge lists from getDescriptionStatsBy for
 * show_missing is now useNA in order to match the table() call handling of missing
-* Renamed splitLines4Table to txtMergeLines, outputInt to txtInt, pvalueFormatter to txtPval and these follow now the argument style of htmlTable
-* Added txtRound for rounding matrices. The problem with round() is that 1.01 rounds to 1
-  instead of "1.0" that is wanted for output.
+* htmlTable and some of the formatters have now moved to the htmlTable-package
 * Fixed a few bugs
 
 Changes for 0.6.8

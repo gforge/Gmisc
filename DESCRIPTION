@@ -1,21 +1,22 @@
 Package: Gmisc
 Version: 1.0.0
-Date: 2014-12-17
-Title: Functions for html tables, descriptive statistics, plotting relations,
-    forest plots, and more.
+Date: 2014-12-20
+Title: Functions for Descriptive Statistics, Plotting Relations,
+    Forest Plots, and More.
 Author: Max Gordon <max@gforge.se>
 Maintainer: Max Gordon <max@gforge.se>
-Description: The Gmisc package contains (1) table and (2) plot functions.
-    (1) The tables functions allow for automated descriptive statitistics,
-    outputtting html tables compatible with MS Word/LibreOffice,
-    and some text formatting for compatibility with html/LaTeX.
-    (2) The plotting functions included consist of an advanced forest plot
-    alternative, transition plot, an SVD illustration, and an bezier arrows
-    for use with the grid package.
+Description: The Gmisc package contains (1) descriptive and (2) plot functions.
+    (1) The descriptive functions allow for automated descriptive statitistics
+    aimed at making the "Table 1" in medical articles. (2) The plotting
+    functions included consist of an advanced forest plot alternative,
+    transition plot, an SVD illustration, and an bezier arrows for use with the
+    grid package.
 License: GPL (>= 3)
 URL: http://gforge.se
 BugReports: https://github.com/gforge/Gmisc/issues
 Biarch: yes
+Depends:
+    htmlTable
 Imports:
     grid,
     stringr,
