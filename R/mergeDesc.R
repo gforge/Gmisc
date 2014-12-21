@@ -129,6 +129,7 @@ latex.descMrg <- function(x, ...)
 
 #' @rdname htmlTable_latex
 #' @export
+#' @import htmlTable
 htmlTable.descMrg <- function(x, ...)
 {
   dots <- list(...)

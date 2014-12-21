@@ -19,19 +19,12 @@ Depends:
     htmlTable
 Imports:
     grid,
-    stringr,
     lattice,
     sp,
-    utils,
-    methods,
-    Hmisc,
-    magrittr
+    Hmisc
 Suggests:
     testthat,
-    XML,
-    knitr,
-    xtable,
-    reshape
+    knitr
 Roxygen: list(wrap = TRUE)
 Encoding: UTF-8
 NeedsCompilation: no
