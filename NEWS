@@ -1,16 +1,12 @@
 NEWS for the Gmisc package
 
-Changes for 1.0.0
------------------
-* Minor argument name changes for forestplot2 and transitionplot
-* Added the fastDoCall function as an faster alternative to the do.call
-* The forestplot2 now accepts a vector of length two for the zero in case you need an
-  area for the zero-effect
-* The forestplot2 now has a maximum colgap length for the box of the box height
+Changes for 1.0
+---------------
 * All functions default to html = TRUE instead of FALSE
 * added the mergeDesc in order to merge lists from getDescriptionStatsBy for
 * show_missing is now useNA in order to match the table() call handling of missing
-* htmlTable and some of the formatters have now moved to the htmlTable-package
+* htmlTable and some of the formatters have now moved to the 'htmlTable' package
+* forestplot2 has now moved to the 'forestplot' package
 * Fixed a few bugs
 
 Changes for 0.6.8

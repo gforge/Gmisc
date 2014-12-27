@@ -25,17 +25,11 @@ and \pkg{knitr}-integration.
   outputs \code{\link{getDescriptionStatsBy}} into a
   \code{\link[htmlTable]{htmlTable}} with the rgroup
   arguments automatically generated, see
-  \code{vignette(vignette("descriptives",
-  package="Gmisc"))} for a detailed workflow description.
+  \code{vignette("descriptives", package="Gmisc")} for a
+  detailed workflow description.
 }
 
 \section{Some fancy plots}{
-  The forest plot function, \code{\link{forestplot2}}, is a
-  more general version of the original \pkg{rmeta}-packages
-  \code{\link[rmeta]{forestplot}} implementation. The aim
-  is at using forest plots for more than just
-  meta-analyses.
-
   The transition plot function,
   \code{\link{transitionPlot}}, is for descriptive
   purposes. It tries to illustrate the size of change
