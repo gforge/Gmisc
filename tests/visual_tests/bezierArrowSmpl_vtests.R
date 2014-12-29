@@ -4,6 +4,7 @@ tmp <- list(x=c(.1,.3,.2,.9),
 
 ag <- bezierArrowSmpl(x = tmp$x, y = tmp$y)
 
+library(grid)
 grid.newpage()
 grid.draw(ag)
 grid.bezier(x = tmp$x,

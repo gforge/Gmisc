@@ -1,16 +1,17 @@
+library(grid)
 # Plain test - all should be printed
 no_boxes <- 3
 # Generate test setting
 transition_matrix <- matrix(NA, nrow=no_boxes, ncol=no_boxes)
 transition_matrix[1,] <- 200*c(.5, .25, .25)
 transition_matrix[2,] <- 540*c(.75, .10, .15)
-transition_matrix[3,] <- 340*c(0, .2, .80)
+transition_matrix[3,] <- 340*c(0.01, .2, .80)
 
 grid.newpage()
 transitionPlot(transition_matrix,
                box_txt = c("First", "Second", "Third"),
                type_of_arrow = "simple",
-               min_lwd = unit(1, "mm"),
+               min_lwd = unit(.01, "mm"),
                max_lwd = unit(6, "mm"),
                overlap_add_width = unit(1, "mm"))
 
@@ -107,8 +108,8 @@ tp <- table(pre, post, split)
 # A new category is generated hence there is no starter
 tp["D",,] <- 0
 transitionPlot(tp, new_page= TRUE,
-               fill_start_box=start_box_clr, 
-               fill_end_box=rbind(end_box_clr, 
+               fill_start_box=start_box_clr,
+               fill_end_box=rbind(end_box_clr,
                                   end_box_clr,
                                   end_box_clr,
                                   c("#AAAAAA", "#AAAAAA")),
@@ -125,8 +126,8 @@ transitionPlot(tp, new_page= TRUE,
                arrow_clr = c("#000000", "#000000","#000000", "#555555"))
 
 transitionPlot(tp, new_page= TRUE,
-               fill_start_box=start_box_clr, 
-               fill_end_box=rbind(end_box_clr, 
+               fill_start_box=start_box_clr,
+               fill_end_box=rbind(end_box_clr,
                                   end_box_clr,
                                   end_box_clr,
                                   c("#AAAAAA", "#AAAAAA")),
@@ -146,21 +147,21 @@ transitionPlot(tp, new_page= TRUE,
                                  c("#555555", "#555555","#555555", "#555555")))
 
 # Check with color label
-transitionPlot(table(pre, post, split), new_page= TRUE, 
+transitionPlot(table(pre, post, split), new_page= TRUE,
                fill_start_box=start_box_clr, fill_end_box=end_box_clr,
                txt_start_clr = c("#FFFFFF", "#000000"), txt_end_clr = c("#FFFFFF", "#000000"),
-               box_txt = c("First", "Second", "Third"),
+               box_txt = c("First", "Second", "Third", "Fourth"),
                type_of_arrow = "gradient",
                min_lwd = unit(1, "mm"),
                max_lwd = unit(10, "mm"),
                overlap_add_width = unit(1, "mm"),
-               color_bar_subspace=.3, 
+               color_bar_subspace=.3,
                color_bar_cex=1,
                color_bar_lab = c(" Males", "Females "))
 
 rm(list=ls())
 start <- sample(LETTERS[c(1,1,1,2)], size=20, replace=TRUE)
 end <- sample(LETTERS[c(1,2,2,2,2)], size=20, replace=TRUE)
-transitionPlot(table(start, end), new_page= TRUE, 
+transitionPlot(table(start, end), new_page= TRUE,
                type_of_arrow = "gradient", max_lwd=unit(20, "mm"),
                overlap_add_width = unit(1, "mm"))

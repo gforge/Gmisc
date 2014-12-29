@@ -83,6 +83,7 @@
 #' # takes a little while to assemble the
 #' # arrows and RMD Check complains that this
 #' # is more than allowed for
+#' library(grid)
 #' par_org <- par(ask=TRUE)
 #' # Settings
 #' no_boxes <- 3
@@ -132,7 +133,7 @@ transitionPlot <- function (transition_flow,
                             fill_end_box = fill_start_box,
                             txt_end_clr = txt_start_clr,
                             cex=2,
-                            min_lwd = if(type_of_arrow == "grid") 1 else unit(1, "mm"),
+                            min_lwd = if(type_of_arrow == "grid") 1 else unit(.1, "mm"),
                             max_lwd = if(type_of_arrow == "grid") 6 else unit(5, "mm"),
                             lwd_prop_total = TRUE,
                             arrow_clr = "#000000",

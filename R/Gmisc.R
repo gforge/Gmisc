@@ -6,15 +6,6 @@
 #'
 #' @section Awesome tables:
 #'
-#' For tables you'll find the convenient \code{\link{htmlTable}} that I have used
-#' for advanced table layout. A major focus has been to have
-#' it compatible with LibreOffice (you can copy/past from there into word)
-#' as I generally want to be able to send my documents to a
-#' journal in .doc/.docx format. \bold{Note:} it is now in
-#' \href{http://www.rstudio.com}{RStudio} possible to copy->paste
-#' directly from the viewer into a MS Word document with minimal
-#' layout loss.
-#'
 #' The \code{\link{getDescriptionStatsBy}} is a straight forward function that
 #' aims at helping you to generate descriptive table stratified by different
 #' variables. In other words, the function returns everything you need for generating
@@ -22,24 +13,12 @@
 #' \code{\link{describeMean}}, \code{\link{describeMedian}}, \code{\link{describeProp}},
 #' and \code{\link{describeFactors}} functions.
 #'
-#' @section Convenient knitr-helpers:
-#'
-#' One of the main priorities of this package is to make the preparation of
-#' publication-ready manuscripts through the
-#' \pkg{\href{http://yihui.name/knitr/}{knitr}}-package. The \code{\link{figCapNo}}
-#' can be used for automated figure counting. The \code{\link{pvalueFormatter}}
-#' tries to simplify rounding of p-values, e.g. you may be ok with just
-#' 0.0005 as a p-value but when you come close to the "magic" 0.05 value
-#' you may want to have two significant digits, i.e. 0.048 instead of just 0.05.
-#' The \code{\link{outputInt}} simply transforms a large integer digit
-#' to proper formatting.
+#' The \code{\link{mergeDesc}} allows you to merge a set of outputs \code{\link{getDescriptionStatsBy}}
+#' into a \code{\link[htmlTable]{htmlTable}} with the rgroup arguments automatically
+#' generated, see \code{vignette("descriptives", package="Gmisc")} for a
+#' detailed workflow description.
 #'
 #' @section Some fancy plots:
-#'
-#' The forest plot function, \code{\link{forestplot2}}, is a more general
-#' version of the original \pkg{rmeta}-packages \code{\link[rmeta]{forestplot}}
-#' implementation. The aim is at using forest plots for more than
-#' just meta-analyses.
 #'
 #' The transition plot function, \code{\link{transitionPlot}}, is for
 #' descriptive purposes. It tries to illustrate the size of change
@@ -54,7 +33,7 @@
 #'
 #' The \code{\link{getTicks}} tries to format ticks for plots in a nicer way.
 #' The major use is for exponentials where ticks are generated using the
-#' \eqn{2^n}{2^n} since a doubling is a concept easy to grasp even for
+#' \eqn{2^n} since a doubling is a concept easy to grasp even for
 #' non-statisticians.
 #'
 #' @section Other stuff:

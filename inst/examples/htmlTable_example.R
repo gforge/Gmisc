@@ -17,6 +17,7 @@ htmlTable(mx,
 
 # A slightly more advanced example
 data(mtcars)
+library(Hmisc)
 
 label(mtcars$mpg) <- "Gas"
 units(mtcars$mpg) <- "Miles/(US) gallon"
@@ -50,26 +51,26 @@ htmlTable(
   caption  = "Continuous & binary variables",
   n.rgroup = c(2,1), rgroup=c("Gas", "Weight"),
   n.cgroup = c(2,1),
-  cgroup   = c(splitLines4Table("Results",
-                                sprintf("n=%d", NROW(mtcars)), html=TRUE),
+  cgroup   = c(txtMergeLines("Results",
+                             sprintf("n=%d", NROW(mtcars)), html=TRUE),
                ""),
-  headings =c(sprintf("%s (SD)", levels(mtcars$am)), "Units"),
+  header =c(sprintf("%s (SD)", levels(mtcars$am)), "Units"),
   rowlabel = "Variable",
   ctable   = TRUE)
 
-## again with altcol
+## again with col.rgroup
 htmlTable(
   vars,
   caption  = "Continuous & binary variables",
   n.rgroup = c(2,1), rgroup=c("Gas", "Weight"),
   n.cgroup = c(2,1),
-  cgroup   = c(splitLines4Table("Results",
-                                sprintf("n=%d", NROW(mtcars)), html=TRUE),
+  cgroup   = c(txtMergeLines("Results",
+                             sprintf("n=%d", NROW(mtcars)), html=TRUE),
                ""),
-  headings =c(sprintf("%s (SD)", levels(mtcars$am)), "Units"),
+  header =c(sprintf("%s (SD)", levels(mtcars$am)), "Units"),
   rowlabel = "Variable",
   ctable   = TRUE,
-  altcol   = c('#f2f2f2','ivory'))
+  col.rgroup   = c('#f2f2f2','ivory'))
 
 
 ## another example
@@ -83,7 +84,6 @@ getT1stat <- function(varname, digits = 0) {
                         show_all_values = TRUE,
                         hrzl_prop = FALSE,
                         statistics = FALSE,
-                        html = TRUE,
                         digits = digits,
                         continuous_fn = describeMedian_minmax)
 }
@@ -106,7 +106,7 @@ table_data[['Sex']] <- getT1stat('sex')
 table_data[['Race']] <- getT1stat('race')
 
 ## combine into matrix
-output_data <- do.call(rbind, table_data)
+output_data <- fastDoCall(rbind, table_data)
 rgroup <- names(table_data)
 n.rgroup <- unname(sapply(rgroup, function(x) nrow(table_data[[x]])))
 
@@ -116,25 +116,24 @@ n.cgroup <- c(1, 3)
 colnames(output_data) <-
   c(paste0('Total<br />\n',
            '<span style="weight = normal; font-size: .6em;">',
-            'n = ', nrow(data),
+           'n = ', nrow(data),
            '</span>'),
     paste0('Treated A<br />\n',
            '<span style="weight = normal; font-size: .6em;">',
-            'n = ', sum(data$treat == 'Treatment A'),
+           'n = ', sum(data$treat == 'Treatment A'),
            '</span>'),
     paste0('Treatment B&Dagger;<br />\n',
            '<span style="weight = normal; font-size: .6em;">',
-            'n = ', sum(data$treat == 'Treatment B'),
+           'n = ', sum(data$treat == 'Treatment B'),
            '</span>'),
     paste0('Placebo<br />',
            '<span style="weight = normal; font-size: .6em;">',
-            'n = ', sum(data$treat == 'Placebo'),
+           'n = ', sum(data$treat == 'Placebo'),
            '</span>'))
 
 
 htmlTable(output_data, align = 'rccc',
           rgroup = rgroup, n.rgroup = n.rgroup,
-          rgroupCSSseparator = '',
           cgroup = cgroup,
           n.cgroup = n.cgroup,
           tspanner=c("Base", "Other"),
@@ -143,17 +142,17 @@ htmlTable(output_data, align = 'rccc',
           rowlabel = '',
           ctable = TRUE, # latex-style table lines
           caption = "Table 1: Patient demographics",
-          altcol = c('white','lightblue1'),
+          col.rgroup = c('white','lightblue1'),
           tfoot = paste0(
             '<span style="font-size: .6em;">',
-              'Abbreviations:',
-              ' ECOG, Eastern Cooperative Oncology Group;',
-              ' PS, performance score',
+            'Abbreviations:',
+            ' ECOG, Eastern Cooperative Oncology Group;',
+            ' PS, performance score',
             '</span><br />\n',
             '<span style="font-size: .6em;">',
-              '<sup>&dagger;</sup>',
-              ' Note 1. Trial groups for a new wonder drug</span><br />\n',
+            '<sup>&dagger;</sup>',
+            ' Note 1. Trial groups for a new wonder drug</span><br />\n',
             '<span style="font-size: .6em;">',
-              '<sup>&Dagger;</sup>',
-              ' Note 2. Twice the dosage of treatment A',
+            '<sup>&Dagger;</sup>',
+            ' Note 2. Twice the dosage of treatment A',
             '</span>'))

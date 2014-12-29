@@ -506,7 +506,7 @@ prTpGetBoxPositions <- function (no, side,
   if (is.na(transitions) || sum(transitions[-1]) == 0){
     # There are invalid transitions or it seems that
     # only one arrow exists
-    if (is.na(transitions)){
+    if (any(is.na(transitions))){
       ret$y_entry <- seq(to=ret$y - ret$height/6,
                          from=ret$y + ret$height/6,
                          length.out = no_boxes)

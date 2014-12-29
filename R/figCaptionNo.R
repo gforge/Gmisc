@@ -68,8 +68,7 @@ figCapNo <- function(str,
 #' The function relies on \code{options("fig_caption_no")}
 #' in order to keep track of the last number.
 #'
-#' @param roman Whether or not to use roman numbers instead
-#'  of arabic. Can also be set through \code{options(fig_caption_no_roman = TRUE)}
+#' @inheritParams figCapNo
 #' @export
 #' @examples
 #' org_opts <- options(fig_caption_no=1)
@@ -100,12 +99,11 @@ figCapNoLast <- function(roman = getOption("fig_caption_no_roman",
 #' The function relies on \code{options("fig_caption_no")}
 #' in order to keep track of the last number.
 #'
-#' @param roman Whether or not to use roman numbers instead
-#'  of arabic. Can also be set through \code{options(fig_caption_no_roman = TRUE)}
+#' @inheritParams figCapNo
 #' @export
 #' @examples
 #' org_opts <- options(fig_caption_no=1)
-#' figCapNoLast()
+#' figCapNoNext()
 #' options(org_opts)
 #' @family figure caption functions
 figCapNoNext <- function(roman = getOption("fig_caption_no_roman",

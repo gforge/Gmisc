@@ -19,52 +19,50 @@ prGetStatistics <- function(x,
                             html = TRUE,
                             digits = 1,
                             numbers_first = TRUE,
-                            show_missing = TRUE,
-                            show_missing_digits = digits,
+                            useNA = c("ifany", "no", "always"),
+                            useNA.digits = digits,
                             show_all_values = FALSE,
                             continuous_fn = describeMean,
                             factor_fn = describeFactors,
                             prop_fn = factor_fn,
-                            percentage_sign = percentage_sign)
+                            percentage_sign = TRUE)
 {
-  show_missing <- prConvertShowMissing(show_missing)
+  # All the describe functions have the same interface
+  # so it is useful to gather all the arguments here
+  describe_args <-
+    list(x = x,
+         html = html,
+         digits = digits,
+         number_first = numbers_first,
+         useNA = useNA,
+         useNA.digits = useNA.digits,
+         percentage_sign = percentage_sign)
+
   if (is.factor(x) ||
         is.logical(x) ||
         is.character(x)){
-    if (length(unique(x)) == 2){
+    if (length(unique(na.omit(x))) == 2){
       if (show_perc){
-        total_table <- prop_fn(x,
-            html=html,
-            digits=digits,
-            number_first=numbers_first,
-            show_missing = show_missing,
-            percentage_sign = percentage_sign)
+        total_table <- fastDoCall(prop_fn, describe_args)
       }else{
-        total_table <- table(x, useNA=show_missing)
+        total_table <- table(x, useNA=useNA)
         names(total_table)[is.na(names(total_table))] <- "Missing"
         # Choose only the reference level
         if (show_all_values == FALSE)
-          total_table <- total_table[names(total_table) %in% c(levels(x)[1], "Missing")]
+          total_table <- total_table[names(total_table) %in%
+                                       c(levels(as.factor(x))[1], "Missing")]
       }
 
     } else {
       if (show_perc)
-        total_table <- factor_fn(x,
-            html=html,
-            digits=digits,
-            number_first=numbers_first,
-            show_missing = show_missing,
-            percentage_sign = percentage_sign)
+        total_table <- fastDoCall(factor_fn, describe_args)
       else{
-        total_table <- table(x, useNA=show_missing)
+        total_table <- table(x, useNA=useNA)
         names(total_table)[is.na(names(total_table))] <- "Missing"
       }
     }
   }else{
-    total_table <- continuous_fn(x,
-      html=html, digits=digits,
-      number_first=numbers_first,
-      show_missing = show_missing)
+    total_table <- fastDoCall(continuous_fn, describe_args)
 
     # If a continuous variable has two rows then it's assumed that the second is the missing
     if (length(total_table) == 2 &&
@@ -75,11 +73,13 @@ prGetStatistics <- function(x,
 }
 
 
-#' A functuon for converting a show_missing variable
+#' A functuon for converting a show_missing variable.
 #'
 #' The variable is suppose to be directly compatible with
 #' \code{\link[base]{table}}(..., useNA=show_missing). It throughs an error
-#' if not compatible
+#' if not compatible. \emph{Deprecated:} This function will be deprecated
+#' as all functions now use the useNA style in order to comply
+#' with standard R naming.
 #'
 #' @param show_missing Boolean or "no", "ifany", "always"
 #' @return string
@@ -111,12 +111,13 @@ prConvertShowMissing <- function(show_missing){
 #'
 #' @param x The variable of interest with the levels
 #' @param default_ref The default reference, either first,
-#'  the level name or a number within the levels
+#'  the level name or a number within the levels. If left out
+#'  it defaults to the first value.
 #' @return \code{integer} The level number of interest
 #'
 #' @keywords internal
-prGetAndValidateDefaultRef <- function(x, default_ref){
-  if (default_ref == "First"){
+prDescGetAndValidateDefaultRef <- function(x, default_ref){
+  if (missing(default_ref)){
     default_ref <- 1
   }else if (is.character(default_ref)){
     if (default_ref %in% levels(x))
@@ -130,6 +131,37 @@ prGetAndValidateDefaultRef <- function(x, default_ref){
       " as this is only used for factors.")
 
   return(default_ref)
+}
+
+
+#' Gets missing stats
+#'
+#' Gets the missing row for \code{\link{describeMean}}
+#' and \code{\link{describeMedian}}.
+#'
+#' @inheritParams describeMean
+#' @return \code{vector} A vector with the missing estimate
+#' @keywords internal
+prDescGetMissing <- function (x,
+                              html,
+                              number_first,
+                              percentage_sign,
+                              language,
+                              useNA.digits,
+                              dot_args) {
+  df_arg_list <- list(x = is.na(x),
+                      html = html,
+                      number_first = number_first,
+                      percentage_sign=percentage_sign,
+                      language = language,
+                      digits = useNA.digits)
+  for (n in names(dot_args)){
+    if (!n %in% names(df_arg_list)){
+      df_arg_list[[n]] <- dot_args[[n]]
+    }
+  }
+  missing <- fastDoCall(describeFactors, df_arg_list)
+  return(missing["TRUE", ])
 }
 
 #' Pushes viewport with margins
@@ -186,9 +218,10 @@ prPushMarginViewport <- function(bottom, left, top, right, name=NULL){
 #'
 #' @keywords internal
 prGridPlotTitle <- function(title,
-  base_cex, cex_mult = 1.2,
-  fontface = "bold",
-  space_below = NULL){
+                            base_cex,
+                            cex_mult = 1.2,
+                            fontface = "bold",
+                            space_below = NULL){
   titleGrob <- textGrob(title, just="center",
     gp=gpar(fontface = fontface,
       cex = base_cex*cex_mult))
