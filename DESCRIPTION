@@ -1,8 +1,8 @@
 Package: Gmisc
 Version: 1.0
-Date: 2014-12-27
+Date: 2014-12-31
 Title: Functions for Descriptive Statistics, Plotting Transitions,
-       and More.
+       and More
 Author: Max Gordon <max@gforge.se>
 Maintainer: Max Gordon <max@gforge.se>
 Description: The package contains (1) descriptive and (2) plot functions.
