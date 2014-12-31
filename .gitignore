@@ -1,5 +1,5 @@
 # Can ignore specific files
-Gmisc.RProj
+Gmisc.Rproj
 .project
 # .RBuildignore
 .Rhistory
