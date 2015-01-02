@@ -2,11 +2,11 @@ NEWS for the Gmisc package
 
 Changes for 1.0
 ---------------
-* All functions default to html = TRUE instead of FALSE
-* added the mergeDesc in order to merge lists from getDescriptionStatsBy for
-* show_missing is now useNA in order to match the table() call handling of missing
 * htmlTable and some of the formatters have now moved to the 'htmlTable' package
 * forestplot2 has now moved to the 'forestplot' package
+* added the mergeDesc in order to merge lists from getDescriptionStatsBy for
+* All functions default to html = TRUE instead of FALSE
+* show_missing is now useNA in order to match the table() call handling of missing
 * Fixed a few bugs
 
 Changes for 0.6.8
