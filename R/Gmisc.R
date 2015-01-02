@@ -31,11 +31,6 @@
 #' function tries to remedy that by identifying the most influential
 #' elements from the \code{V}-matrix.
 #'
-#' The \code{\link{getTicks}} tries to format ticks for plots in a nicer way.
-#' The major use is for exponentials where ticks are generated using the
-#' \eqn{2^n} since a doubling is a concept easy to grasp even for
-#' non-statisticians.
-#'
 #' @section Other stuff:
 #'
 #' The \code{\link{insertRowAndKeepAttr}} simply adds a row while remembering
