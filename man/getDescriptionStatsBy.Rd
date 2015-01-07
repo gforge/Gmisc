@@ -29,7 +29,8 @@ getDescriptionStatsBy(x, by, digits = 1, html = TRUE,
   encapsulated in parentheses ().}
 
   \item{statistics}{Add statistics, fisher test for
-  proportions and Wilcoxon for continuous variables}
+  proportions and Wilcoxon for continuous variables. See
+  details below for more customization.}
 
   \item{statistics.sig_lim}{The significance limit for <
   sign, i.e. p-value 0.0000312 should be < 0.0001 with the
@@ -132,6 +133,24 @@ by groups. The function identifies if the variable is a
 continuous, binary or a factored variable. The format is
 inspired by NEJM, Lancet & BMJ.
 }
+\section{Customizing statistics}{
+  You can specify what function that you want for statistic
+  by providing a function that takes two arguments \code{x}
+  and \code{by} and returns a p-value. There are a few
+  functions already prepared for this see
+  \code{\link{getPvalAnova}}, \code{\link{getPvalChiSq}}
+  \code{\link{getPvalFisher}} \code{\link{getPvalKruskal}}
+  \code{\link{getPvalWilcox}}. The default functions used
+  are \code{getPvalFisher} and \code{getPvalWilcox} (unless
+  the by argument has more than three unique levels where
+  it defaults to \code{getPvalAnova}).
+
+  If you want the function to select functions depending on
+  the type of input you can provide a list with the names
+  'numeric', 'proportion', 'factor' and the function will
+  choose accordingly. If you fail to define a certain
+  category it will default to the above.
+}
 \examples{
 data(mtcars)
 # For labelling we use the label()
@@ -212,7 +231,10 @@ getDescriptionStatsBy(mtcars$col_with_missing, mtcars$am, statistics=TRUE,
 }
 }
 \seealso{
-\code{\link{describeMean}}, \code{\link{describeProp}},
-\code{\link{describeFactors}}, \code{\link{htmlTable}}
+Other descriptive functions: \code{\link{describeFactors}};
+\code{\link{describeMean}}; \code{\link{describeMedian}};
+\code{\link{describeProp}}; \code{\link{getPvalAnova}},
+\code{\link{getPvalChiSq}}, \code{\link{getPvalFisher}},
+\code{\link{getPvalKruskal}}, \code{\link{getPvalWilcox}}
 }
 

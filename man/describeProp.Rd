@@ -60,7 +60,11 @@ contains the number and the percentage
 describeProp(factor(sample(50, x=c("A","B", NA), replace=TRUE)))
 }
 \seealso{
-Other description functions: \code{\link{describeFactors}};
-\code{\link{describeMean}}; \code{\link{describeMedian}}
+Other descriptive functions: \code{\link{describeFactors}};
+\code{\link{describeMean}}; \code{\link{describeMedian}};
+\code{\link{getDescriptionStatsBy}};
+\code{\link{getPvalAnova}}, \code{\link{getPvalChiSq}},
+\code{\link{getPvalFisher}}, \code{\link{getPvalKruskal}},
+\code{\link{getPvalWilcox}}
 }
 

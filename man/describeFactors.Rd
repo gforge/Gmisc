@@ -80,7 +80,11 @@ by(my_var,
 \seealso{
 \code{\link{getDescriptionStatsBy}}
 
-Other description functions: \code{\link{describeMean}};
-\code{\link{describeMedian}}; \code{\link{describeProp}}
+Other descriptive functions: \code{\link{describeMean}};
+\code{\link{describeMedian}}; \code{\link{describeProp}};
+\code{\link{getDescriptionStatsBy}};
+\code{\link{getPvalAnova}}, \code{\link{getPvalChiSq}},
+\code{\link{getPvalFisher}}, \code{\link{getPvalKruskal}},
+\code{\link{getPvalWilcox}}
 }
 

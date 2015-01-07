@@ -1,5 +1,9 @@
 NEWS for the Gmisc package
 
+Changes for 1.0.1
+-----------------
+* Added ability to customize statistics for getDescriptionStatsBy
+
 Changes for 1.0
 ---------------
 * htmlTable and some of the formatters have now moved to the 'htmlTable' package
