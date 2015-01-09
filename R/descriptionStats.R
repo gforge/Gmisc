@@ -37,7 +37,7 @@
 #' describeMean(c(1:10, NA), useNA="always")
 #' describeMean(c(1:10, NA), useNA="no")
 #'
-#' @family description functions
+#' @family descriptive functions
 #' @export
 describeMean <- function(x,
                          html = TRUE,
@@ -121,7 +121,7 @@ describeMean <- function(x,
 #' describeMedian(1:10)
 #' describeMedian(c(1:10, NA), useNA="ifany")
 #'
-#' @family description functions
+#' @family descriptive functions
 #' @export
 describeMedian <- function(x,
                            iqr = TRUE,
@@ -203,7 +203,7 @@ describeMedian <- function(x,
 #' @examples
 #' describeProp(factor(sample(50, x=c("A","B", NA), replace=TRUE)))
 #'
-#' @family description functions
+#' @family descriptive functions
 #' @export
 describeProp <- function(x,
                          html = TRUE,
@@ -314,7 +314,7 @@ describeProp <- function(x,
 #'
 #' @inheritParams describeMean
 #' @seealso \code{\link{getDescriptionStatsBy}}
-#' @family description functions
+#' @family descriptive functions
 #'
 #' @examples
 #' set.seed(1)

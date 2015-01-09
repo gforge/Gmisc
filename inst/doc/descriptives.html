@@ -10,7 +10,7 @@
 
 <meta name="author" content="Max Gordon" />
 
-<meta name="date" content="2014-12-21" />
+<meta name="date" content="2015-01-07" />
 
 <title>The fastest way to compile table 1?</title>
 
@@ -54,7 +54,7 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <div id="header">
 <h1 class="title">The fastest way to compile table 1?</h1>
 <h4 class="author"><em>Max Gordon</em></h4>
-<h4 class="date"><em>2014-12-21</em></h4>
+<h4 class="date"><em>2015-01-07</em></h4>
 </div>
 
 <div id="TOC">
@@ -160,7 +160,8 @@ Automatic<br /> No. 19
 Manual<br /> No. 13
 </th>
     </tr>
-    </thead><tbody>
+    </thead>
+    <tbody>
     <tr>
         <td style="text-align: left;">
 Gas
@@ -202,7 +203,7 @@ Color
   red
 </td>
         <td style="text-align: center;">
-5 (26%)
+4 (21%)
 </td>
         <td style="text-align: center;">
 6 (46%)
@@ -213,7 +214,7 @@ Color
   silver
 </td>
         <td style="text-align: center;">
-8 (42%)
+9 (47%)
 </td>
         <td style="text-align: center;">
 4 (31%)
@@ -262,7 +263,7 @@ Gears
 </td></tr></tfoot>
 </table>
 
-<p>Event though p-values are discouraged in the table 1, it is <a href="http://cpr.sagepub.com/content/19/2/231.full">not uncommon</a>. I have added basic statistics consisting of Fisher’s exact test for proportions and Wilcoxon rank sum test for continuous values. Note that the Wilcoxon only works with two groups.</p>
+<p>Event though p-values are discouraged in the table 1, they are <a href="http://cpr.sagepub.com/content/19/2/231.full">not uncommon</a>. I have therefore added basic statistics consisting of Fisher’s exact test for proportions and Wilcoxon rank sum test for continuous values. Note that the Wilcoxon only works with two groups.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># A little more advanced input</span>
 mtcars$mpg_w_missing &lt;-<span class="st"> </span>mtcars$mpg
 mtcars$mpg_w_missing[<span class="kw">sample</span>(<span class="dv">1</span>:<span class="kw">NROW</span>(mtcars), <span class="dt">size=</span><span class="dv">5</span>)] &lt;-<span class="st"> </span><span class="ot">NA</span>
@@ -306,7 +307,8 @@ Manual<br /> No. 13
 P-value
 </th>
     </tr>
-    </thead><tbody>
+    </thead>
+    <tbody>
     <tr><td colspan="4" style>
 Gas
 </td></tr>
@@ -315,13 +317,13 @@ Gas
   Median (IQR)
 </td>
         <td style="text-align: center;">
-18 (15 - 20)
+17 (15 - 20)
 </td>
         <td style="text-align: center;">
-26 (21 - 30)
+24 (21 - 30)
 </td>
         <td style="text-align: center;">
-0.004
+0.002
 </td>
     </tr>
     <tr>
@@ -329,10 +331,10 @@ Gas
   Missing
 </td>
         <td style="text-align: center;">
-3 (16%)
+4 (21%)
 </td>
         <td style="text-align: center;">
-2 (15%)
+1 (8%)
 </td>
         <td style="text-align: center;"></td>
     </tr>
@@ -364,7 +366,7 @@ Color
 3 (23%)
 </td>
         <td style="text-align: center;">
-0.60
+0.35
 </td>
     </tr>
     <tr>
@@ -372,7 +374,7 @@ Color
   red
 </td>
         <td style="text-align: center;">
-5 (26%)
+4 (21%)
 </td>
         <td style="text-align: center;">
 6 (46%)
@@ -384,7 +386,7 @@ Color
   silver
 </td>
         <td style="text-align: center;">
-8 (42%)
+9 (47%)
 </td>
         <td style="text-align: center;">
 4 (31%)

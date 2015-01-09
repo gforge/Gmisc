@@ -6,6 +6,23 @@
 #' or a factored variable. The format is inspired by NEJM, Lancet &
 #' BMJ.
 #'
+#' @section Customizing statistics:
+#'
+#' You can specify what function that you want for statistic by providing a function
+#' that takes two arguments \code{x} and \code{by} and returns a p-value. There are
+#' a few functions already prepared for this see \code{\link{getPvalAnova}},
+#' \code{\link{getPvalChiSq}}
+#' \code{\link{getPvalFisher}}
+#' \code{\link{getPvalKruskal}}
+#' \code{\link{getPvalWilcox}}.
+#' The default functions used are \code{getPvalFisher} and \code{getPvalWilcox} (unless the by
+#' argument has more than three unique levels where it defaults to \code{getPvalAnova}).
+#'
+#' If you want the function to select functions depending on the type of input
+#' you can provide a list with the names 'numeric', 'proportion', 'factor' and
+#' the function will choose accordingly. If you fail to define a certain category
+#' it will default to the above.
+#'
 #' @param x The variable that you want the statistics for
 #' @param by The variable that you want to split into different
 #'  columns
@@ -25,7 +42,7 @@
 #' @param prop_fn The method used to describe proportions, see \code{\link{describeProp}}.
 #' @param factor_fn The method used to describe factors, see \code{\link{describeFactors}}.
 #' @param statistics Add statistics, fisher test for proportions and Wilcoxon
-#'  for continuous variables
+#'  for continuous variables. See details below for more customization.
 #' @param statistics.two_dec_lim The limit for showing two decimals. E.g.
 #'  the p-value may be 0.056 and we may want to keep the two decimals in order
 #'  to emphasize the proximity to the all-mighty 0.05 p-value and set this to
@@ -73,7 +90,7 @@
 #' @inheritParams prDescGetAndValidateDefaultRef
 #' @example inst/examples/getDescriptionStatsBy_example.R
 #'
-#' @seealso \code{\link{describeMean}}, \code{\link{describeProp}}, \code{\link{describeFactors}}, \code{\link{htmlTable}}
+#' @family descriptive functions
 #'
 #' @importFrom Hmisc label
 #' @importFrom Hmisc label<-
@@ -130,6 +147,51 @@ getDescriptionStatsBy <- function(x,
   }
 
   useNA <- match.arg(useNA)
+
+  if (statistics != FALSE &&
+        !is.function(statistics)){
+    if (is.list(statistics)){
+      types <- c("continuous",
+                 "proportion",
+                 "factor")
+      if (any(!names(statistics) %in% types))
+        stop("If you want to provide custom functions for generating statistics",
+             " you must either provide a function or a list with the elements:",
+             " '", paste(types, collapse="', '"), "'")
+
+      if (is.numeric(x) &&
+            length(unique(x)) != 2){
+        statistics <- statistics[["continuous"]]
+      }else if (length(unique(x)) == 2){
+        if ("proportion" %in% names(statistics)){
+          statistics <- statistics[["proportion"]]
+        }else{
+          statistics <- statistics[["factor"]]
+        }
+      }else{
+        statistics <- statistics[["factor"]]
+      }
+
+      if (is.character(statistics))
+        statistics <- get(statistics)
+    }
+
+    if (!is.function(statistics)){
+      if(length(unique(x)) == 2){
+        statistics <- getPvalFisher
+      }else if(is.numeric(x)){
+        if (length(unique(by)) == 2)
+          statistics <- getPvalWilcox
+        else
+          statistics <- getPvalAnova
+      }else{
+        statistics <- getPvalFisher
+      }
+    }
+
+    pval <- statistics(x = x,
+                       by = by)
+  }
 
   # Always have a total column if the description statistics
   # are presented in a horizontal fashion
@@ -260,8 +322,6 @@ getDescriptionStatsBy <- function(x,
         names(t[[1]][1]) = fn_name
     }
 
-    if (statistics)
-      pval <- wilcox.test(x ~ by)$p.value
 
   }else if(is.factor(x) &&
              length(levels(x)) == 2 &&
@@ -297,13 +357,6 @@ getDescriptionStatsBy <- function(x,
       names(t[[1]][1]) = name
     }
 
-    if (statistics){
-      if (length(unique(x))*length(unique(by)) < 3*3)
-        pval <- fisher.test(x, by, workspace=20)$p.value
-      else
-        pval <- fisher.test(x, by, workspace=20, simulate.p.value=TRUE)$p.value
-    }
-
   }else{
     if (hrzl_prop){
       t <- by(x, by, FUN=factor_fn, html=html, digits=digits,
@@ -318,20 +371,6 @@ getDescriptionStatsBy <- function(x,
               useNA = useNA,
               useNA.digits = useNA.digits,
               percentage_sign = percentage_sign)
-    }
-
-    if (statistics){
-      # This is a quick fix in case of large dataset
-      workspace = 10^5
-      if (length(x)*length(levels(x)) > 10^4)
-        workspace = 10^7
-      # Large statistics tend to be very heavy and therefore
-      # i need to catch errors in fisher and redo by simulation
-      pval <- tryCatch({fisher.test(x, by, workspace=workspace)$p.value},
-                       error = function(err){
-                         warning("Simulating p-value for fisher due to high computational demands on the current varible")
-                         fisher.test(x, by, simulate.p.value=TRUE, B=10^5)$p.value
-                       })
     }
   }
 
@@ -434,7 +473,7 @@ getDescriptionStatsBy <- function(x,
     cn <- c(cn, "units")
   }
 
-  if (statistics){
+  if (is.function(statistics)){
     pval <- txtPval(pval,
                     lim.sig =statistics.sig_lim,
                     lim.2dec = statistics.two_dec_lim,

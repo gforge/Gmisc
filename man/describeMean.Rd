@@ -67,7 +67,11 @@ describeMean(c(1:10, NA), useNA="no")
 \seealso{
 \code{\link{getDescriptionStatsBy}}
 
-Other description functions: \code{\link{describeFactors}};
-\code{\link{describeMedian}}; \code{\link{describeProp}}
+Other descriptive functions: \code{\link{describeFactors}};
+\code{\link{describeMedian}}; \code{\link{describeProp}};
+\code{\link{getDescriptionStatsBy}};
+\code{\link{getPvalAnova}}, \code{\link{getPvalChiSq}},
+\code{\link{getPvalFisher}}, \code{\link{getPvalKruskal}},
+\code{\link{getPvalWilcox}}
 }
 
