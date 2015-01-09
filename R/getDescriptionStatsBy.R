@@ -217,6 +217,8 @@ getDescriptionStatsBy <- function(x,
   else
     name <- label(x)
 
+  if (is.logical(x))
+    x <- factor(x, levels=c(TRUE, FALSE))
 
   # Check missing -
   # Send a warning, since the user might be unaware of this
@@ -292,9 +294,7 @@ getDescriptionStatsBy <- function(x,
     return(ret)
   }
 
-
-
-  if (!is.logical(x) && is.numeric(x)){
+  if (is.numeric(x)){
     # If the numeric has horizontal_proportions then it's only so in the
     # missing category
     if (hrzl_prop)
@@ -323,10 +323,12 @@ getDescriptionStatsBy <- function(x,
     }
 
 
-  }else if(is.factor(x) &&
-             length(levels(x)) == 2 &&
+  }else if((!is.factor(x) &&
+              length(unique(na.omit(x))) == 2) ||
+             (is.factor(x) &&
+                length(levels(x)) == 2) &&
              hrzl_prop == FALSE){
-
+    
     default_ref <- prDescGetAndValidateDefaultRef(x, default_ref)
 
     t <- by(x, by, FUN=prop_fn, html=html, digits=digits,
@@ -338,7 +340,9 @@ getDescriptionStatsBy <- function(x,
     # Set the rowname to a special format
     # if there was missing and this is an matrix
     # then we should avoid using this format
-    name <- sprintf("%s %s", capitalize(levels(x)[default_ref]), tolower(label(x)))
+    name <- sprintf("%s %s", 
+                    capitalize(levels(x)[default_ref]), 
+                    tolower(label(x)))
     if (NEJMstyle) {
       # LaTeX needs and escape before %
       # or it marks the rest of the line as

@@ -1,6 +1,6 @@
 library('testthat')
 library('stringr')
-library('Hmisc') # I need to include this for unknown reason or the test fails in R CMD check mode
+# I need to include this for unknown reason or the test fails in R CMD check mode
 context('getDescriptionStatsBy')
 
 data("Loblolly")
@@ -284,11 +284,11 @@ test_that("Problem with boolean x", {
   aa <- factor(sample(c("No", "Yes"), size = 50, replace = TRUE))
   aaa <- sample(c(TRUE, FALSE), size = 50, replace = TRUE)
   ret <- getDescriptionStatsBy(x = aaa, by=aa, numbers_first = TRUE)
-  expect_equivalent(nrow(ret), 2,
+  expect_equivalent(nrow(ret), 1,
                     info="There should only be one alternative returned")
   expect_equivalent(ncol(ret), 2,
                     info="There should be two columns")
-  expect_match(ret["TRUE", "No"], sprintf("^%d", table(aaa, aa)["TRUE", "No"]),
+  expect_match(ret[TRUE, "No"], sprintf("^%d", table(aaa, aa)["TRUE", "No"]),
                info="The value does not seem to match the raw table")
 })
 
@@ -300,11 +300,49 @@ test_that("Error when one category has no missing in it", {
   aaa <- factor(sample(1:3, size = 50, replace = TRUE))
   aa[aaa == 2 & is.na(aa)] <- "B"
   ret <-
-    getDescriptionStatsBy(x = aa, by=aaa, html=TRUE)
-
+    getDescriptionStatsBy(x = aa, by=aaa, add_total_col = TRUE)
+  
   expect_match(ret["A","2"], sprintf("^%d", table(aa, aaa)["A","2"]),
                info="The value does not seem to match the raw table")
+  expect_match(ret["B","2"], sprintf("^%d", table(aa, aaa)["B","2"]),
+               info="The value does not seem to match the raw table")
   expect_match(ret["Missing","2"], "^0")
+  
+  ret <-
+    getDescriptionStatsBy(x = aa, by=aaa, useNA="no", add_total_col = TRUE)
+  expect_match(ret[1,"2"], sprintf("^%d", table(aa, aaa)["A","2"]),
+               info="The value does not seem to match the raw table")
+  expect_equal(nrow(ret), 1)
+  
+  ret <-
+    getDescriptionStatsBy(x = aa, by=aaa, 
+                          add_total_col = TRUE,
+                          useNA="no", 
+                          prop_fn = describeFactors)
+  expect_match(ret["A","2"], sprintf("^%d", table(aa, aaa)["A","2"]),
+               info="The value does not seem to match the raw table")
+  expect_match(ret["B","2"], sprintf("^%d", table(aa, aaa)["B","2"]),
+               info="The value does not seem to match the raw table")
+  
+  cont <- rnorm(length(aa))
+  cont[sample(1:50, size = 5)] <- NA
+  cont[aaa == 2 & is.na(cont)] <- 0
+  ret <-
+    getDescriptionStatsBy(x = cont, by=aaa, useNA="no", add_total_col = TRUE)
+  expect_equal(nrow(ret), 1)
+  
+  aa <- factor(sample(LETTERS[1:3], size = 50, replace = TRUE))
+  aa[sample(1:50, size = 5)] <- NA
+  aaa <- factor(sample(1:2, size = 50, replace = TRUE))
+  aa[aaa == 2] <- "B"
+  ret <-
+    getDescriptionStatsBy(x = aa, by=aaa, useNA="no", add_total_col = TRUE)
+  expect_match(ret["A","2"], sprintf("^%d", table(aa, aaa)["A","2"]),
+               info="The value does not seem to match the raw table")
+  expect_match(ret["B","2"], sprintf("^%d", table(aa, aaa)["B","2"]),
+               info="The value does not seem to match the raw table")
+  
+  
 })
 
 test_that("Error when one continuous variable has no missing in it", {
@@ -318,4 +356,17 @@ test_that("Error when one continuous variable has no missing in it", {
 
   expect_match(ret["Missing","2"],
                sprintf("^%d", sum(is.na(aa[aaa == 2]))))
+})
+
+test_that("Error when a factor variable has an empty level", {
+  set.seed(1)
+  variable <- factor(sample(LETTERS[1:2], size = 50, replace = TRUE), 
+                     levels = LETTERS[1:3])
+  variable[sample(1:50, size = 5)] <- NA
+  by <- factor(sample(1:2, size = 50, replace = TRUE))
+  ret <-
+    getDescriptionStatsBy(x = variable, by=by, add_total_col = TRUE, useNA="no")
+  
+  expect_match(ret["B","2"],
+               sprintf("^%d", sum(variable[by == 2] == "B", na.rm=TRUE)))
 })
