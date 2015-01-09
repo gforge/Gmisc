@@ -41,7 +41,10 @@ prGetStatistics <- function(x,
   if (is.factor(x) ||
         is.logical(x) ||
         is.character(x)){
-    if (length(unique(na.omit(x))) == 2){
+    if ((is.factor(x) && 
+           length(levels(x)) == 2) ||
+          (!is.factor(x) &&
+             length(unique(na.omit(x))) == 2)){
       if (show_perc){
         total_table <- fastDoCall(prop_fn, describe_args)
       }else{
