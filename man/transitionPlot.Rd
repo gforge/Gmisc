@@ -143,7 +143,8 @@ transitionPlot(transition_flow, type_of_arrow = c("grid", "simple",
   color bar}
 
   \item{color_bar_labels}{The labels of the two proportions
-  that make up the color bar}
+  that make up the color bar. Defaults to the labels of the
+  third dimension for the \code{transition_flow} argument.}
 
   \item{color_bar_subspace}{If there is little or no
   difference exists at the low/high proportions of the

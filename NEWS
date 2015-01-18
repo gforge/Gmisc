@@ -3,9 +3,10 @@ NEWS for the Gmisc package
 Changes for 1.0.1
 -----------------
 * Added ability to customize statistics for getDescriptionStatsBy
-* Fixed bug so that the end viewport is the root for transitionPlot
-* Fixed grid arrow bug
-* When using 3D matrices and two colors there should only be a colorbar when used with gradient arrows
+* transitionPlot: The color_bar_labels are now automatically extracted from the transition_flow input
+* transitionPlot: Fixed bug so that the end viewport is the root
+* transitionPlot: Fixed grid arrow bug
+* transitionPlot: When using 3D matrices and two colors there should only be a colorbar when used with gradient arrows
 
 Changes for 1.0
 ---------------

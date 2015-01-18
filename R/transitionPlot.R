@@ -69,7 +69,9 @@
 #'  then the color_bar will automatically appear at the bottom unless you set
 #'  this to \code{FALSE}
 #' @param color_bar_cex The size of the tick labels for the color bar
-#' @param color_bar_labels The labels of the two proportions that make up the color bar
+#' @param color_bar_labels The labels of the two proportions that make up the color bar.
+#'  Defaults to the labels of the third dimension for the \code{transition_flow}
+#'  argument.
 #' @param color_bar_subspace If there is little or no difference exists
 #'  at the low/high proportions of the spectrum then it
 #'  can be of interest to focus the color change to the center
@@ -184,13 +186,19 @@ transitionPlot <- function (transition_flow,
                       apply(cbind(no_1_end, no_tot_end), 1, prop_fn))
     transition_arrow_props <- transition_flow[,,1]/(transition_flow[,,1]+transition_flow[,,2])
 
-    # Remove the third dimension
-    transition_flow <- transition_flow[,,1] + transition_flow[,,2]
     if (color_bar == FALSE){
       color_bar <- "none"
     } else if(!is.character(color_bar)){
       color_bar <- "bottom"
     }
+
+    if (missing(color_bar_labels) &&
+          !is.null(dimnames(transition_flow))){
+      color_bar_labels <- dimnames(transition_flow)[[3]]
+    }
+
+    # Remove the third dimension
+    transition_flow <- transition_flow[,,1] + transition_flow[,,2]
   }else if(!missing(box_prop)){
     transition_arrow_props <- t(sapply(box_prop[,1], function(x) rep(x, no_boxes)))
     color_bar <- "none"
@@ -431,10 +439,17 @@ transitionPlot <- function (transition_flow,
           color_bar_txt_clr <- txt_start_clr[1,]
         }
 
-        left <- textGrob(color_bar_labels[1], x=0, y=.5, just="left",
+        lab_margin <- .05
+        left <- textGrob(color_bar_labels[1],
+                         x=0 + lab_margin,
+                         just="left",
+                         y=.5,
                          gp=gpar(cex=lab_cex_adjusted,
                                  col=color_bar_txt_clr[1]))
-        right <- textGrob(color_bar_labels[2], x=1, y=.5, just="right",
+        right <- textGrob(color_bar_labels[2],
+                          x=1-lab_margin,
+                          just="right",
+                          y=.5,
                           gp=gpar(cex=lab_cex_adjusted,
                                   col=color_bar_txt_clr[2]))
         grid.draw(left)
