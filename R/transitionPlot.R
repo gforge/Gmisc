@@ -124,6 +124,7 @@
 #' par(par_org)
 #' }
 #' @import grid
+#' @import magrittr
 #' @export
 transitionPlot <- function (transition_flow,
                             type_of_arrow = c("grid", "simple", "gradient"),
