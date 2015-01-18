@@ -311,6 +311,9 @@ transitionPlot <- function (transition_flow,
 
   if (new_page) grid.newpage()
 
+  # For popViewport at the need to keep track of how
+  # many levels we have added
+  vp_depth = 1
   # Add plot margin
   prPushMarginViewport(bottom = convertY(mar[1], unitTo="npc"),
                        left = convertX(mar[2], unitTo="npc"),
@@ -320,6 +323,7 @@ transitionPlot <- function (transition_flow,
 
   if (!is.null(main) && nchar(main) > 0){
     prGridPlotTitle(main, cex[1])
+    vp_depth %<>% + 2
   }
 
   if (!is.null(box_label) && length(box_label) == 2){
@@ -369,8 +373,10 @@ transitionPlot <- function (transition_flow,
       main_row_no <- 1
     }
 
+    # Set layout
     pushViewport(viewport(layout=gl, name="Label_layout"))
 
+    # Add labels
     pushViewport(viewport(layout.pos.row=label_row_no, layout.pos.col=1, name="Left_label"))
     grid.draw(left_label)
     popViewport()
@@ -378,10 +384,13 @@ transitionPlot <- function (transition_flow,
     grid.draw(right_label)
     popViewport()
 
+    # Set the graph viewport
     pushViewport(viewport(layout.pos.row=main_row_no, layout.pos.col=1:3, name="Main_exc_label"))
+    vp_depth %<>% + 2
   }
 
-  if (color_bar != "none"){
+  if (color_bar != "none" &&
+        type_of_arrow == "gradient"){
     if (color_bar == "bottom"){
       bar_height <- unit(.05, "npc")
       colorAxis <- xaxisGrob(at=c(0,.25,.5,.75, 1),
@@ -436,7 +445,7 @@ transitionPlot <- function (transition_flow,
       pushViewport(viewport(layout.pos.row=1,
                             layout.pos.col=1:3,
                             name="Main_exc_bar"))
-
+      vp_depth %<>% + 2
     }else{
       stop("The color bar position you want, '", color_bar, "', is not yet supported")
     }
@@ -498,18 +507,8 @@ transitionPlot <- function (transition_flow,
                 color_bar_subspace = color_bar_subspace,
                 plot_arrows = TRUE,
                 proportion = TRUE)
-
   popViewport()
 
-  if (!is.null(main) && nchar(main) > 0){
-    popViewport()
-  }
-
-  if (color_bar != "none"){
-    popViewport()
-  }
-
-  if (!is.null(box_label) && length(box_label) == 2){
-    popViewport()
-  }
+  # Exit margin viewport
+  popViewport(vp_depth)
 }
