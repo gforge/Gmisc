@@ -41,7 +41,7 @@ prGetStatistics <- function(x,
   if (is.factor(x) ||
         is.logical(x) ||
         is.character(x)){
-    if ((is.factor(x) && 
+    if ((is.factor(x) &&
            length(levels(x)) == 2) ||
           (!is.factor(x) &&
              length(unique(na.omit(x))) == 2)){
@@ -259,4 +259,14 @@ prGetTextGrobCex <-  function(x) {
     cex <- x$gp$cex
 
   return(cex)
+}
+
+#' Collapses a vector for throwing errors
+#'
+#' The function collapses a vector into an output useful when throwing
+#' errors, e.g. 1:3 becomes '1', '2', '3'
+#'
+#' @param x The vector
+prPasteVec <- function(x){
+  sprintf("'%s'", paste(x, collapse="', '"))
 }
