@@ -1,28 +1,4 @@
----
-title: "Introduction to transitionPlot"
-author: "Max Gordon"
-date: "`r Sys.Date()`"
-output: 
-  rmarkdown::html_vignette:
-    toc: true
-vignette: >
-  %\VignetteIndexEntry{Gmisc for generating descriptive statistics}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\usepackage[utf8]{inputenc}
----
-
-Introduction
-============
-
-The transitionPlot function aims at illustrating the transition between classes. The original intent was to show how [self-administered the Charnley classification](http://informahealthcare.com/doi/full/10.3109/17453674.2014.931199) behaves before and after surgery. The plot is a fancier version than what can be achiewed using packages such as [*diagram*](http://informahealthcare.com.proxy.kib.ki.se/doi/full/10.3109/17453674.2014.931199) but at the cost of flexibility. The current function only allows to show a transition from one state to the next.
-
-Generate some data
-==================
-
-
-We will start by simulating some data similar to my article. Each observation has a sex and a Charnley class (A, B, or C). The transition is then dependent on both the sex and the Charnley class.
-
-```{r}
+## ------------------------------------------------------------------------
 set.seed(1)
 library(magrittr)
 n <- 100
@@ -71,51 +47,31 @@ trn_mtrx <-
              Charnley_class_after))
   
 rm(prob)
-```
 
-Basic use
-=========
-```{r, echo=FALSE, }
+## ----, echo=FALSE,-------------------------------------------------------
 knitr::opts_chunk$set(dev.args=list(type="cairo"), 
                       message=FALSE, 
                       warnings=FALSE)
-```
 
-The most simple use is to just supply the output from the `table()` call:
-
-```{r, echo=FALSE}
+## ----, echo=FALSE--------------------------------------------------------
 knitr::opts_chunk$set(fig.height = 5, fig.width=5)
-```
 
-```{r}
+## ------------------------------------------------------------------------
 library(Gmisc)
 transitionPlot(trn_mtrx)
-```
 
-The out of the box arrows are rather in my opinion not well suited and I have therefore developed a few alternatives:
-
-```{r}
+## ------------------------------------------------------------------------
 transitionPlot(trn_mtrx, 
                type_of_arrow = "simple")
-```
 
-And a fancy variant that I call *gradient* arrows as they have a colored gradient inside that fades into the arrow color:
-
-```{r}
+## ------------------------------------------------------------------------
 transitionPlot(trn_mtrx, 
                type_of_arrow = "gradient")
-```
 
-Labels and stuff
-================
-
-```{r, echo=FALSE}
+## ----, echo=FALSE--------------------------------------------------------
 knitr::opts_chunk$set(fig.height = 6)
-```
 
-Adding title, box labels, and customizing box text can easily be done using the `main`, `box_label`, and `box_txt`. If you provide the `box_txt` a vector it assumes the same text for both left and right boxes but you can also have separate texts as in the example below:
-
-```{r}
+## ------------------------------------------------------------------------
 output_perc <- 
   function(txt, n) sprintf("%s\n[%.0f%%]", txt, n)
 box_txt <- 
@@ -131,18 +87,11 @@ transitionPlot(trn_mtrx,
                box_txt = box_txt,
                cex = 1.2,
                type_of_arrow = "gradient")
-```
 
-Using 3D matrices
-=================
-
-```{r, echo=FALSE}
+## ----, echo=FALSE--------------------------------------------------------
 knitr::opts_chunk$set(fig.height = 5.5)
-```
 
-We can enhance the [data-ink ratio](http://informahealthcare.com.proxy.kib.ki.se/doi/full/10.3109/17453674.2014.931199) by adding a color split for the boxes. This works only for factors with 2 levels such as sex in our example.
-
-```{r}
+## ------------------------------------------------------------------------
 trn_mtrx_3D <-
   with(data,
        table(Charnley_class, 
@@ -152,22 +101,15 @@ trn_mtrx_3D <-
 transitionPlot(trn_mtrx_3D, 
                fill_start_box = c("#5C246E", "#00688B"),
                type_of_arrow = "simple")
-```
 
-The gradient arrow is most useful in this setting. It mixes the two colors according to the particular transition composition and adds an explaining gradient bar:
-
-```{r}
+## ------------------------------------------------------------------------
 transitionPlot(trn_mtrx_3D, 
                fill_start_box = c("#5C246E", "#00688B"),
                type_of_arrow = "gradient")
-```
 
-Mixed text colors can be useful when one background color is brighter and white text becomes unreadable:
-
-```{r}
+## ------------------------------------------------------------------------
 transitionPlot(trn_mtrx_3D, 
                txt_start_clr = c("white", "black"),
                fill_start_box = c("#5C246E", "#BFEFFF"),
                type_of_arrow = "gradient")
-```
 
