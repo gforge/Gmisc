@@ -234,7 +234,7 @@ prTpPlotArrows <- function(type,
         x_ctrl_points[4] <- x_ctrl_points[4]-.00075*adjusted_lwd
         grid.bezier(x=x_ctrl_points,
                     y=y_ctrl_points,
-                    gp=gpar(lwd=adjusted_lwd, fill=current_arrow_clr),
+                    gp=gpar(lwd=adjusted_lwd, fill=current_arrow_clr, col=current_arrow_clr),
                     arrow=arrow(type="closed", angle=a_angle, length=unit(a_l, "npc")))
 
       }else{
