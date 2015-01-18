@@ -192,7 +192,10 @@ prTpPlotArrows <- function(type,
                                       box_width=box_width)
 
       # Calculate line width
-      lwd <- min_lwd + (max_lwd-min_lwd)*transition_flow[box_row,flow]/max_flow
+      lwd <- max_lwd*transition_flow[box_row,flow]/max_flow
+      if (lwd < min_lwd)
+        lwd <- 0
+
       adjusted_lwd <- lwd
       if (is.na(add_width) == FALSE){
         if ("unit" %in% class(add_width)){
