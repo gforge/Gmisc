@@ -34,7 +34,7 @@ getPvalWilcox <- function(x, by){
 #' @rdname getPval
 #' @export
 getPvalAnova <- function(x, by){
-  anova(lm(vaiable ~ by))[["Pr(>F)"]][[1]]
+  anova(lm(variable ~ by))[["Pr(>F)"]][[1]]
 }
 
 #' @rdname getPval
