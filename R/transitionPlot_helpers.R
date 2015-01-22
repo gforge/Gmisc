@@ -47,8 +47,8 @@ prTpPlotBox <- function(bx, bx_txt, fill, txt_clr,
 
     if (bx_txt != ""){
       bx_grob <- prTpGetBoxSizedTextGrob(txt=bx_txt,
-                                     txt_clr = txt_clr,
-                                     txt_cex = cex)
+                                         txt_clr = txt_clr,
+                                         txt_cex = cex)
       if (!is.null(bx_grob))
         grid.draw(bx_grob)
     }
@@ -194,7 +194,7 @@ prTpPlotArrows <- function(type,
       # Calculate line width
       lwd <- max_lwd*transition_flow[box_row,flow]/max_flow
       if (lwd < min_lwd)
-        lwd <- 0
+        next;
 
       adjusted_lwd <- lwd
       if (is.na(add_width) == FALSE){

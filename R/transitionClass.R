@@ -1,79 +1,147 @@
 #' An object for generating transition plots
 #'
 #' @field transitions This is a 3 dimensional array storing all the transitions.
-#' @field type_of_arrow The types of arrow may be grid, simple, or gradient. Simple grid
-#'  arrows are the \code{\link[grid]{bezierGrob}} arrows (not that pretty),
-#'  simple is the \code{\link{bezierArrowSmpl}} that I've created to get a more exact
-#'  control of the arrow position and width, while gradient
-#'  corresponds to \code{\link{bezierArrowGradient}}
-#'  allowing the arrow to have a fill color that slowly turns into the color of the arrow.
-#' @field box_txt The text to appear inside of the boxes. If you need line breaks
-#'  then you need to manually add a \\n inside the string.
-#' @field tot_spacing The proportion of the vertical space that is to be left
-#'  empty. It is then split evenly between the boxes.
-#' @field box_width The width of the box. By default the box is one fourth of
-#'  the plot width.
-#' @field fill_start_box The fill color of the start boxes. This can either
-#'  be a single value ore a vector if you desire different colors for each
-#'  box. If you specify box_prop then this has to be a 2 column matrix.
-#' @field txt_start_clr The text color of the start boxes. This can either
-#'  be a single value ore a vector if you desire different colors for each
-#'  box. If you specify box_prop then this has to be a 2 column matrix.
-#' @field fill_end_box The fill color of the end boxes. This can either
-#'  be a single value ore a vector if you desire different colors for each
-#'  box. If you specify box_prop then this has to be a 2 column matrix.
-#' @field txt_end_clr The text color of the end boxes. This can either
-#'  be a single value ore a vector if you desire different colors for each
-#'  box. If you specify box_prop then this has to be a 2 column matrix.
-#' @field cex The cex \code{\link{gpar}} of the text
-#' @field min_lwd The minimum width of the line that we want to illustrate the
-#'  tranisition with.
-#' @field max_lwd The maximum width of the line that we want to illustrate the
-#'  tranisition with.
-#' @field lwd_prop_total The width of the lines may be proportional to either the
-#'  other flows from that box, or they may be related to all flows. This is a boolean
-#'  parameter that is set to true by default, i.e. relating to all flows.
-#' @field arrow_clr The color of the arrows. Usually black, can be a vector indicating each arrow
-#'  from first to last arrow (counting from the top). If the vector is of the same length as the
-#'  boxes then all box arrows will have the same color (that is all the arrows stemming from the
-#'  left boxes)
-#' @field abs_arrow_width The width can either be absolute, i.e. each arrow headed for a box
-#'  has the exact same width. The alternative is that the width is related to the line width.
-#' @field overlap_bg_clr In order to enhance the 3D perspective and to make it easier
-#'  to follow arrows the arrows have a background color to separate them from those underneath.
-#' @field overlap_order The order from first->last for the lines. This means that the last
-#'  line will be on top while the first one will appear at the bottom. This should be provided
-#'  as a vector.
-#' @field overlap_add_width The width of the white cross-over line. You can specify this as a scalar
-#'  multiplication of the current line width. In case of non-grid arrows then you can also have this
-#'  as a unit which is recommended as it looks better. If the scalar is < 1 then the overlap is ignored.
-#' @field box_prop If you want the boxes to have proportions indicating some other factors then input
-#'  a matrix with quantiles for the proportions. Note the size mus be \code{nrow(transition_flow) x 2}.
-#' @field mar A numerical vector of the form c(bottom, left, top, right) of the type \code{unit()}
-#' @field main The title of the plot if any, default \code{NULL}
-#' @field box_label A vector of length 2 if you want to label each box column
-#' @field box_label_pos The position of the label, either \code{'top'} or \code{'bottom'}
-#' @field box_label_cex The cex of the label, defaults to the default cex
-#' @field color_bar If you have proportions inside the transition_flow variable
-#'  then the color_bar will automatically appear at the bottom unless you set
-#'  this to \code{FALSE}
-#' @field color_bar_cex The size of the tick labels for the color bar
-#' @field color_bar_labels The labels of the two proportions that make up the color bar.
-#'  Defaults to the labels of the third dimension for the \code{transition_flow}
-#'  argument.
-#' @field color_bar_subspace If there is little or no difference exists
-#'  at the low/high proportions of the spectrum then it
-#'  can be of interest to focus the color change to the center
-#'  leaving the tails constant
+#'
 #' @import magrittr
 #' @importFrom methods setRefClass
 #' @import abind
+#' @export
 transitionClass <-
   setRefClass(
     "transitionClass",
-    fields = list(transitions = "array"),
+    fields = list(data = "list",
+                  transitions = function(value){
+                    if (missing(value)){
+                      return(data$transitions)
+                    }
+
+                    if (is.null(attr(value, "transition")))
+                      stop("You are only allowed to use new()/addTransitions() method for setting the transitions")
+                    if (!is.numeric(value))
+                      stop("You have provided a non-numeric matrix: '", typeof(value), "'' of class '", class(value), "'")
+                    if (!length(dim(value)) %in% 3:4)
+                      stop("The dimensions of the transition matrix has to be between 2 and 3.",
+                           " This means that the stored transitions should have an additional dimension",
+                           " in order to allow for multiple transitions.")
+                    if (ncol(value) != nrow(value))
+                      stop("The transtion matrix has to be of equal number of rows and columns.",
+                           " If a certain factor level is not present after the transition that level's",
+                           " column should sum up to 0. You have provided '", nrow(value), "' rows",
+                           " and '", ncol(value), "' columns.")
+                    data$transitions <<- value
+                  },
+                  box_width = function(value){
+                    if (missing(value))
+                      return(data$box_width)
+
+                    if (!inherits(value, "unit") &&
+                          value > 1 && value < 0)
+                      stop("The box width must be grid::unit or a double between 0 and 1")
+                    if (inherits(value, "unit")){
+                      raw_width <- convertUnit(value, unitTo = "npc", axisFrom = "x", axisTo = "x", valueOnly = TRUE)
+                    }else{
+                      raw_width <- value
+                      value <- unit(value, "npc")
+                    }
+
+                    if (raw_width * .self$noCols() * 1.1 > 1)
+                      stop("Your box_width leaves less than 10% for arrows assuming you have the current plot size")
+
+                    data$box_width <<- value
+                  },
+                  box_txt = function(value){
+                    if (missing(value))
+                      return(data$box_txt)
+
+                    if (NROW(value) != .self$noRows())
+                      stop("Your labels should match the number of rows within the transition matrix")
+                    if (is.matrix(value) &&
+                          ncol(value) > 1){
+                      if (ncol(value) != .self$noCols())
+                        stop("Your labels need to match the number of columns")
+                    }else{
+                      value <- matrix(value,
+                                      nrow = .self$noRows(),
+                                      ncol = .self$noCols())
+                    }
+                    data$box_txt <<- value
+                  },
+                  colnames = function(value){
+                    if (missing(value))
+                      return(data$colnames)
+
+                    if (length(value) != .self$noCols())
+                      stop("Your column names (colnames) should match the number of columns")
+
+                    data$colnames <<- value
+                  },
+                  vertical_space = function(value){
+                    if (missing(value))
+                      return(data$vertical_space)
+
+                    if (!inherits(value, "unit") &&
+                         value >= 1 && value < 0)
+                      stop("The box width must be grid::unit or a double at least 0 and below 1")
+                    if (inherits(value, "unit")){
+                      raw_space <- convertUnit(value, unitTo = "npc", axisFrom = "y", axisTo = "y", valueOnly = TRUE)
+                      if (raw_space >= 1)
+                        stop("Using your current graph size the provided value is as large as the graph")
+                      if (raw_space < 0)
+                        stop("You cannot have empty space smaller than 0")
+                    }else{
+                      value <- unit(value, "npc")
+                    }
+
+                    data$vertical_space <<- value
+                  },
+                  fill_clr = function(value){
+                    if (missing(value))
+                      return(data$fill_clr)
+
+                    value <- prTcValidateAndPrepClr(value, transitions, .self)
+
+                    data$fill_clr <<- value
+                  },
+                  txt_clr = function(value){
+                    if (missing(value))
+                      return(data$txt_clr)
+
+                    value <- prTcValidateAndPrepClr(value, transitions, .self)
+
+                    data$txt_clr <<- value
+                  },
+                  box_cex = function(value){
+                    if (missing(value)){
+                      if (!is.null(data$box_cex))
+                        return(data$box_cex)
+                      if (is.null(box_txt))
+                        return(1)
+
+                      all_texts <- unlist(sapply(as.vector(box_txt), function(x) strsplit(x, "\n")[[1]], USE.NAMES = FALSE))
+                      longest_txt <- all_texts[which.max(sapply(all_texts, nchar))]
+                      base_width <- convertX(grobWidth(textGrob(label = longest_txt, gp = gpar(cex = 1))), unitTo = "npc", valueOnly = TRUE)
+                      width_cex <- convertX(box_width, unitTo = "npc", valueOnly = TRUE)*.8/base_width
+
+                      min_height <- Inf
+                      for (col in 1:.self$noCols()){
+                        min_height %<>%
+                          min(getYProps(col))
+                      }
+                      max_txt_height <- min_height * .6
+                      base_height <- convertUnit(grobHeight(textGrob(label = "A", gp = gpar(cex = 1))),
+                                                 unitTo = "npc", axisFrom = "y", valueOnly = TRUE)
+                      height_cex <- max_txt_height/base_height
+
+                      return(min(width_cex, height_cex))
+                    }
+
+                    if (value < 0)
+                      stop("The cex is a multiplier of the font size and has to be at minimum 0")
+
+                    data$box_cex <<- value
+                  }) ,
     methods = list(
-      initialize = function(transitions, ...){
+      initialize = function(transitions, fill_clr, txt_clr, ...){
         "Set up a transitionClass object. The \\code{transitions} should be a 2D or 3D matrix
         as defined in the \\code{$addTransitions} section and not as later internally stored."
         if (missing(transitions))
@@ -84,6 +152,25 @@ transitionClass <-
           return(callSuper(...))
 
         .self$addTransitions(transitions)
+        if (missing(fill_clr)){
+          if (length(.self$getDim()) == 3){
+            fill_clr <<- c("#fdc086", "#386cb0")
+          }else{
+            fill_clr <<- c("darkgreen")
+          }
+        }else{
+          fill_clr <<- fill_clr
+        }
+
+        if (missing(txt_clr)){
+          if (length(.self$getDim()) == 3){
+            txt_clr <<- c("#000000", "#ffffff")
+          }else{
+            txt_clr <<- c("#ffffff")
+          }
+        }else{
+          txt_clr <<- txt_clr
+        }
         callSuper(...)
       },
       copy = function (shallow = FALSE)
@@ -105,17 +192,8 @@ transitionClass <-
         }
         value
       },
-      addTransitions = function(mtrx){
+      addTransitions = function(mtrx, txt){
         "Add a transition matrix. The input has to be a numerical matrix between 2 and 3 dimensions."
-        if (!is.numeric(mtrx))
-          stop("You have provided a non-numeric matrix: '", typeof(mtrx), "'' of class '", class(mtrx), "'")
-        if (!length(dim(mtrx)) %in% 2:3)
-          stop("The dimensions of the matrix has to be between 2 and 3")
-        if (ncol(mtrx) != nrow(mtrx))
-          stop("The transtion matrix has to be of equal number of rows and columns.",
-               " If a certain factor level is not present after the transition that level's",
-               " column should sum up to 0. You have provided '", nrow(mtrx), "' rows",
-               " and '", ncol(mtrx), "' columns.")
 
         if (length(transitions) > 0){
           if (!is.null(attr(mtrx, "transition"))){
@@ -133,13 +211,40 @@ transitionClass <-
           }
 
           mtrx <- abind(transitions, mtrx, along = length(dim(mtrx)) + 1)
+
+          raw_width <- convertUnit(box_width, unitTo = "npc", axisFrom = "x", axisTo = "x", valueOnly = TRUE)
+          shrinkage <- (.self$noCols() * 2 - 1)/((.self$noCols() + 1) * 2 - 1)
+          bw <- unit(raw_width * shrinkage, units = "npc")
         }else{
           mtrx <- abind(mtrx, along = length(dim(mtrx)) + 1)
+          bw <- unit(1/4, units = "npc")
         }
         attr(mtrx, "transition") <- TRUE
 
-        transitions <<-
-          mtrx
+        transitions <<- mtrx
+        box_width <<- bw
+        vertical_space <<- unit(.6/.self$noRows(), units = "npc")
+
+        if (missing(txt)){
+          if (all(sapply(dimnames(mtrx), is.null))){
+            txt <- rep("", times = nrow(mtrx))
+          }else if (sum(!sapply(dimnames(mtrx)[1:2], is.null)) == 1){
+            txt <- dimnames(mtrx)[[which(!sapply(dimnames(mtrx)[1:2], is.null))]]
+          }else if (.self$noCols() == 2){
+            txt <- cbind(rownames(mtrx), colnames(mtrx))
+          }else{
+            txt <- colnames(mtrx)
+          }
+        }else if (NROW(txt) != nrow(mtrx)){
+          stop("You must provide the same number of txt as rows in the transition matrix")
+        }
+
+        if (.self$noCols() > 2){
+          box_txt <<- cbind(box_txt, txt)
+        }else{
+          box_txt <<- txt
+        }
+        invisible(mtrx)
       },
       getDim = function(){
         "Gets the current dimensions of the transitions"
@@ -151,7 +256,7 @@ transitionClass <-
       },
       noCols = function(){
         "Gets the number of columns"
-        return(tail(.self$getDim(), 1) + 1)
+        return(tail(dim(transitions), 1) + 1)
       },
       boxSizes = function(col){
         "Gets the size of the boxes. Generally an integer but you can also set \\code{col = 'last'}."
@@ -180,7 +285,7 @@ transitionClass <-
             stop("Invalid dimensionality of transition matrix: '", paste(.self$getDim(), collapse="', '"), "'")
           }
         }else{
-          mtrx <- asub(transitions, col, dims = length(.self$getDim()))
+          mtrx <- asub(transitions, col, dims = length(dim(transitions)))
           if (length(.self$getDim()) == 3){
             raw_sizes <- apply(mtrx, 3, rowSums)
             sizes <- rowSums(raw_sizes)
@@ -192,6 +297,56 @@ transitionClass <-
           }else{
             stop("Invalid dimensionality of transition matrix: '", paste(.self$getDim(), collapse="', '"), "'")
           }
+        }
+      },
+      getYProps = function (col) {
+        vertical_sizes <- .self$boxSizes(col)
+        (1 - convertUnit(vertical_space, unitTo = "npc", axisFrom = "y", valueOnly = TRUE))*vertical_sizes/sum(vertical_sizes)
+      },
+      render = function(new_page = TRUE){
+        if (new_page)
+          grid.newpage()
+
+        raw_width <- convertUnit(box_width, unitTo = "npc", axisFrom = "x", valueOnly = TRUE)
+        space_between <- (1- raw_width * .self$noCols())/(.self$noCols() - 1)
+
+        shift <- unit(raw_width*.02, "snpc")
+        pushViewport(viewport(x = unit(0.5, "npc")+shift,
+                              y = unit(0.5, "npc")-shift,
+                              height= unit(1, "npc")-shift-shift,
+                              width= unit(1, "npc")-shift-shift, name="shadows"))
+        upViewport()
+        pushViewport(viewport(x = unit(0.5, "npc")-shift,
+                              y = unit(0.5, "npc")+shift,
+                              height= unit(1, "npc")-shift-shift,
+                              width= unit(1, "npc")-shift-shift,
+                              name="regular"))
+        upViewport()
+
+        for (col in 1:.self$noCols()){
+          proportions <- getYProps(col)
+
+          txt <- box_txt[,col]
+          x_offset <- (raw_width + space_between) * (col - 1)
+
+          box_args <- list(x_offset = x_offset,
+                           width = box_width,
+                           proportions = as.vector(proportions),
+                           fill = rep(grey(level = .3), times = .self$noRows()),
+                           txt = rep("", times = .self$noRows()),
+                           txt_clr = rep(grey(level = .3), times = .self$noRows()),
+                           cex = box_cex)
+          seekViewport("shadows")
+          fastDoCall(prTcPlotBoxColumn, box_args)
+          upViewport()
+
+          seekViewport("regular")
+          box_args[["proportions"]] <- proportions
+          box_args[["fill"]] <- asub(fill_clr, idx = col, dims = 2)
+          box_args[["txt"]] <- box_txt[,col]
+          box_args[["txt_clr"]] <- asub(txt_clr, idx = col, dims = 2)
+          fastDoCall(prTcPlotBoxColumn, box_args)
+          upViewport()
         }
       }
     )

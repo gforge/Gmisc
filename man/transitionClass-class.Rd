@@ -4,116 +4,25 @@
 \name{transitionClass-class}
 \alias{transitionClass}
 \alias{transitionClass-class}
-\title{A Reference Class to represent a bank account.}
+\title{An object for generating transition plots}
 \description{
-A Reference Class to represent a bank account.
+An object for generating transition plots
 }
 \section{Fields}{
 
 \describe{
 \item{\code{transitions}}{This is a 3 dimensional array storing all the transitions.}
-
-\item{\code{type_of_arrow}}{The types of arrow may be grid, simple, or gradient. Simple grid
-arrows are the \code{\link[grid]{bezierGrob}} arrows (not that pretty),
-simple is the \code{\link{bezierArrowSmpl}} that I've created to get a more exact
-control of the arrow position and width, while gradient
-corresponds to \code{\link{bezierArrowGradient}}
-allowing the arrow to have a fill color that slowly turns into the color of the arrow.}
-
-\item{\code{box_txt}}{The text to appear inside of the boxes. If you need line breaks
-then you need to manually add a \\n inside the string.}
-
-\item{\code{tot_spacing}}{The proportion of the vertical space that is to be left
-empty. It is then split evenly between the boxes.}
-
-\item{\code{box_width}}{The width of the box. By default the box is one fourth of
-the plot width.}
-
-\item{\code{fill_start_box}}{The fill color of the start boxes. This can either
-be a single value ore a vector if you desire different colors for each
-box. If you specify box_prop then this has to be a 2 column matrix.}
-
-\item{\code{txt_start_clr}}{The text color of the start boxes. This can either
-be a single value ore a vector if you desire different colors for each
-box. If you specify box_prop then this has to be a 2 column matrix.}
-
-\item{\code{fill_end_box}}{The fill color of the end boxes. This can either
-be a single value ore a vector if you desire different colors for each
-box. If you specify box_prop then this has to be a 2 column matrix.}
-
-\item{\code{txt_end_clr}}{The text color of the end boxes. This can either
-be a single value ore a vector if you desire different colors for each
-box. If you specify box_prop then this has to be a 2 column matrix.}
-
-\item{\code{cex}}{The cex \code{\link{gpar}} of the text}
-
-\item{\code{min_lwd}}{The minimum width of the line that we want to illustrate the
-tranisition with.}
-
-\item{\code{max_lwd}}{The maximum width of the line that we want to illustrate the
-tranisition with.}
-
-\item{\code{lwd_prop_total}}{The width of the lines may be proportional to either the
-other flows from that box, or they may be related to all flows. This is a boolean
-parameter that is set to true by default, i.e. relating to all flows.}
-
-\item{\code{arrow_clr}}{The color of the arrows. Usually black, can be a vector indicating each arrow
-from first to last arrow (counting from the top). If the vector is of the same length as the
-boxes then all box arrows will have the same color (that is all the arrows stemming from the
-left boxes)}
-
-\item{\code{abs_arrow_width}}{The width can either be absolute, i.e. each arrow headed for a box
-has the exact same width. The alternative is that the width is related to the line width.}
-
-\item{\code{overlap_bg_clr}}{In order to enhance the 3D perspective and to make it easier
-to follow arrows the arrows have a background color to separate them from those underneath.}
-
-\item{\code{overlap_order}}{The order from first->last for the lines. This means that the last
-line will be on top while the first one will appear at the bottom. This should be provided
-as a vector.}
-
-\item{\code{overlap_add_width}}{The width of the white cross-over line. You can specify this as a scalar
-multiplication of the current line width. In case of non-grid arrows then you can also have this
-as a unit which is recommended as it looks better. If the scalar is < 1 then the overlap is ignored.}
-
-\item{\code{box_prop}}{If you want the boxes to have proportions indicating some other factors then input
-a matrix with quantiles for the proportions. Note the size mus be \code{nrow(transition_flow) x 2}.}
-
-\item{\code{mar}}{A numerical vector of the form c(bottom, left, top, right) of the type \code{unit()}}
-
-\item{\code{main}}{The title of the plot if any, default \code{NULL}}
-
-\item{\code{box_label}}{A vector of length 2 if you want to label each box column}
-
-\item{\code{box_label_pos}}{The position of the label, either \code{'top'} or \code{'bottom'}}
-
-\item{\code{box_label_cex}}{The cex of the label, defaults to the default cex}
-
-\item{\code{color_bar}}{If you have proportions inside the transition_flow variable
-then the color_bar will automatically appear at the bottom unless you set
-this to \code{FALSE}}
-
-\item{\code{color_bar_cex}}{The size of the tick labels for the color bar}
-
-\item{\code{color_bar_labels}}{The labels of the two proportions that make up the color bar.
-Defaults to the labels of the third dimension for the \code{transition_flow}
-argument.}
-
-\item{\code{color_bar_subspace}}{If there is little or no difference exists
-at the low/high proportions of the spectrum then it
-can be of interest to focus the color change to the center
-leaving the tails constant}
 }}
 \section{Methods}{
 
 \describe{
-\item{\code{addTransitions(mtrx)}}{Add a transition matrix. The input has to be a numerical matrix between 2 and 3 dimensions.}
+\item{\code{addTransitions(mtrx, txt)}}{Add a transition matrix. The input has to be a numerical matrix between 2 and 3 dimensions.}
 
 \item{\code{boxSizes(col)}}{Gets the size of the boxes. Generally an integer but you can also set \code{col = 'last'}.}
 
 \item{\code{getDim()}}{Gets the current dimensions of the transitions}
 
-\item{\code{initialize(transitions, ...)}}{Set up a transitionClass object. The \code{transitions} should be a 2D or 3D matrix
+\item{\code{initialize(transitions, fill_clr, ...)}}{Set up a transitionClass object. The \code{transitions} should be a 2D or 3D matrix
 as defined in the \code{$addTransitions} section and not as later internally stored.}
 
 \item{\code{noCols()}}{Gets the number of columns}
