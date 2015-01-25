@@ -9,6 +9,9 @@ prTcPlotBoxColumn <- function(x_offset,
                             width = width,
                             proportions = proportions)
   for (i in 1:length(proportions)){
+    if (bx[[i]]$height == 0)
+      next;
+
     args <- list(bx = bx[[i]],
                  bx_txt = txt[i],
                  cex = cex,
@@ -30,7 +33,7 @@ prTcPlotBoxColumn <- function(x_offset,
 prTcGetBoxPositions <- function(x_offset,
                                 width,
                                 proportions){
-  vertical_space <- (1-sum(proportions))/(length(proportions) - 1)
+  vertical_space <- (1-sum(proportions))/(sum(proportions > 0) - 1)
   y_offset <- 1
   raw_width <- convertUnit(width, unitTo = "npc", axisFrom = "x", valueOnly = TRUE)
   bx <- list()
@@ -48,7 +51,9 @@ prTcGetBoxPositions <- function(x_offset,
         # Size
         height = proportions[i],
         width = raw_width)
-    y_offset <- y_offset - sum(proportions[i], vertical_space)
+    if (proportions[i] > 0){
+      y_offset <- y_offset - sum(proportions[i], vertical_space)
+    }
   }
   return(bx)
 }

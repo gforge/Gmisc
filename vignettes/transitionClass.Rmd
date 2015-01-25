@@ -90,20 +90,23 @@ knitr::opts_chunk$set(fig.height = 5, fig.width=5)
 
 ```{r}
 library(Gmisc)
-transitions <- getRefClass("transitionClass")$new(table(data$Charnley_class, data$Charnley_class_1yr))
+transitions <- getRefClass("transitionClass")$new(table(data$Charnley_class, data$Charnley_class_1yr), 
+                                                  label=c("Before surgery", "1 year after"))
 transitions$render()
 ```
 
 
 ```{r}
 library(Gmisc)
-transitions <- getRefClass("transitionClass")$new(table(data$Charnley_class, data$Charnley_class_1yr, data$Sex))
+transitions <- getRefClass("transitionClass")$new(table(data$Charnley_class, data$Charnley_class_1yr, data$Sex), 
+                                                  label=c("Before surgery", "1 year after"))
 transitions$render()
 ```
 
 ```{r}
 library(Gmisc)
-transitions <- getRefClass("transitionClass")$new(table(data$Charnley_class, data$Charnley_class_1yr, data$Sex))
-transitions$addTransitions(table(data$Charnley_class_1yr, data$Charnley_class_2yr, data$Sex))
+transitions <- getRefClass("transitionClass")$new(table(data$Charnley_class, data$Charnley_class_1yr, data$Sex), 
+                                                  label=c("Before surgery", "1 year after"))
+transitions$addTransitions(table(data$Charnley_class_1yr, data$Charnley_class_2yr, data$Sex), label="2 years after")
 transitions$render()
 ```

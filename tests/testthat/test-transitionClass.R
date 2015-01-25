@@ -81,16 +81,16 @@ data <-
                             replace = TRUE))
 getProbs <- function(Chrnl_name){
   prob <- data.frame(
-    A = 1/3 +
+    A = 1/6 +
       (data$Sex == "Male") * .25 +
       (data$Sex != "Male") * -.25 +
       (data[[Chrnl_name]] %in% "B") * -.5 +
       (data[[Chrnl_name]] %in% "C") * -2 ,
-    B = 1/3 +
+    B = 2/6 +
       (data$Sex == "Male") * .1 +
       (data$Sex != "Male") * -.05 +
       (data[[Chrnl_name]] == "C") * -2,
-    C = 1/3 +
+    C = 3/6 +
       (data$Sex == "Male") * -.25 +
       (data$Sex != "Male") * .25)
 
@@ -153,4 +153,24 @@ test_that("Check advanced matrix dimensions",{
                c(transitions$noRows(),
                  transitions$noCols()))
 
+
+  data$Charnley_class_6yr[data$Charnley_class_6yr == "A"] <- "B"
+  add_3D <- with(data, table(Charnley_class_2yr, Charnley_class_6yr, Sex))
+  transitions$addTransitions(add_3D)
+
+  expect_equal(transitions$noCols(),
+               4)
+
+  expect_equal(dim(transitions$fill_clr),
+               c(transitions$noRows(),
+                 transitions$noCols(),
+                 2))
+  expect_equal(dim(transitions$txt_clr),
+               c(transitions$noRows(),
+                 transitions$noCols(),
+                 2))
+
+  expect_equal(dim(transitions$box_txt),
+               c(transitions$noRows(),
+                 transitions$noCols()))
 })

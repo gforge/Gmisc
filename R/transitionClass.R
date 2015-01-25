@@ -67,6 +67,38 @@ transitionClass <-
         }
         data$box_txt <<- value
       },
+      box_label = function(value){
+        if (missing(value))
+          return(data$box_label)
+
+        if (length(value) != .self$noCols())
+          stop("You have provided '", length(value), "' box labels",
+               " while there are '", .self$noCols(), "' columns that require a label.")
+        data$box_label <<- value
+      },
+      box_label_pos = function(value){
+        if (missing(value))
+          return(data$box_label_pos)
+
+        value <- tolower(value)
+        if (value %in% c("top","bottom"))
+          stop("Only top/bottom are allowed for the box_label_pos")
+
+        data$box_label_pos <<- value
+      },
+      box_label_cex = function(value){
+        if (missing(value)){
+          if (!is.null(data$box_label_cex))
+            return(data$box_label_cex)
+
+          return(box_cex*1.2)
+        }
+
+        if (!is.numeric(value) && !is.null(value))
+          stop("Only numeric cex values are accepted")
+
+        data$box_label_cex <<- value
+      },
       colnames = function(value){
         if (missing(value))
           return(data$colnames)
@@ -115,34 +147,83 @@ transitionClass <-
         if (missing(value)){
           if (!is.null(data$box_cex))
             return(data$box_cex)
-          if (is.null(box_txt))
+          if (is.null(data$box_txt))
             return(1)
 
           all_texts <- unlist(sapply(as.vector(box_txt), function(x) strsplit(x, "\n")[[1]], USE.NAMES = FALSE))
           longest_txt <- all_texts[which.max(sapply(all_texts, nchar))]
-          base_width <- convertX(grobWidth(textGrob(label = longest_txt, gp = gpar(cex = 1))), unitTo = "npc", valueOnly = TRUE)
-          width_cex <- convertX(box_width, unitTo = "npc", valueOnly = TRUE)*.8/base_width
+          base_width <- convertWidth(grobWidth(textGrob(label = longest_txt, gp = gpar(cex = 1))), unitTo = "npc", valueOnly = TRUE)
+          width_cex <- convertWidth(box_width, unitTo = "npc", valueOnly = TRUE)*.8/base_width
 
           min_height <- Inf
           for (col in 1:.self$noCols()){
+            proportions <- getYProps(col)
+            proportions <- proportions[proportions > 0]
             min_height %<>%
-              min(getYProps(col))
+              min(proportions)
           }
           max_txt_height <- min_height * .6
           base_height <- convertUnit(grobHeight(textGrob(label = "A", gp = gpar(cex = 1))),
                                      unitTo = "npc", axisFrom = "y", valueOnly = TRUE)
           height_cex <- max_txt_height/base_height
 
-          return(min(width_cex, height_cex))
+          return(max(.75, min(width_cex, height_cex)))
         }
 
-        if (value < 0)
+        if (value < 0 && !is.null(value))
           stop("The cex is a multiplier of the font size and has to be at minimum 0")
 
         data$box_cex <<- value
+      },
+      title = function(value){
+        if (missing(value))
+          return(data$title)
+
+        if (is.null(value) ||
+              nchar(value) == 0){
+          data$title <<- NULL
+        }else{
+          data$title <<- value
+        }
+      },
+      title_cex = function(value){
+        if (missing(value)){
+          if (!is.null(data$title_cex))
+            return(data$title_cex)
+
+          return(box_label_cex*1.2)
+        }
+
+        if (!is.numeric(value))
+          stop("Only numeric cex values are accepted")
+
+        data$title_cex <<- value
+      },
+      mar = function(value){
+        if (missing(value)){
+          if (!is.null(data$mar))
+            return(data$mar)
+          if (is.null(data$mar))
+            return(unit(rep(3, times=4), "mm"))
+        }
+
+        if (!is.unit(value))
+          value <- unit(value, "npc")
+
+        if (length(value) == 1){
+          tmp <- value
+          for (i in 1:3)
+            tmp <- unit.c(tmp, value)
+          value <- tmp
+        }
+
+        if (length(value) != 4)
+          stop("There are 4 margins, you have supplied '", length(value), "'")
+
+        data$mar <<- value
       }) ,
     methods = list(
-      initialize = function(transitions, txt, fill_clr, txt_clr, ...){
+      initialize = function(transitions, label, txt, fill_clr, txt_clr, ...){
         "Set up a transitionClass object. The \\code{transitions} should be a 2D or 3D matrix
         as defined in the \\code{$addTransitions} section and not as later internally stored."
         if (missing(transitions))
@@ -152,7 +233,7 @@ transitionClass <-
               all(transitions == "copy"))
           return(callSuper(...))
 
-        .self$addTransitions(transitions, txt = txt, fill_clr = fill_clr, txt_clr = txt_clr)
+        .self$addTransitions(transitions, label, txt = txt, fill_clr = fill_clr, txt_clr = txt_clr)
         callSuper(...)
       },
       copy = function (shallow = FALSE)
@@ -174,7 +255,7 @@ transitionClass <-
         }
         value
       },
-      addTransitions = function(mtrx, txt, fill_clr, txt_clr){
+      addTransitions = function(mtrx, label, txt, fill_clr, txt_clr){
         "Add a transition matrix. The input has to be a numerical matrix between 2 and 3 dimensions.
         If you don't provide the txt field the box' text field will be deduced from the transition matrix'
         dimnames. The fill_clr and txt_clr are passed on to the \\code{addClr} function."
@@ -208,6 +289,14 @@ transitionClass <-
         transitions <<- mtrx
         box_width <<- bw
         vertical_space <<- unit(.6/.self$noRows(), units = "npc")
+
+        if (!missing(label)){
+          if (.self$noCols() > 2){
+            box_label <<- c(box_label, label)
+          }else{
+            box_label <<- label
+          }
+        }
 
         if (missing(txt)){
           if (all(sapply(dimnames(mtrx), is.null))){
@@ -388,8 +477,46 @@ transitionClass <-
         if (new_page)
           grid.newpage()
 
-        raw_width <- convertUnit(box_width, unitTo = "npc", axisFrom = "x", valueOnly = TRUE)
+        prPushMarginViewport(bottom = mar[1],
+                             left = mar[2],
+                             top = mar[3],
+                             right = mar[4],
+                             "main_margins")
+        on.exit(upViewport(2))
+
+
+        if (!is.null(title)){
+          prGridPlotTitle(title, title_cex, cex_mult = 1)
+          on.exit(upViewport(2))
+        }
+
+
+        raw_width <- convertWidth(box_width, unitTo = "npc", valueOnly = TRUE)
         space_between <- (1- raw_width * .self$noCols())/(.self$noCols() - 1)
+
+        if (!is.null(box_label)){
+          raw_height <- convertHeight(grobHeight(textGrob("Aj", gp=gpar(cex=box_label_cex))),
+                                      unitTo = "npc", valueOnly = TRUE)
+          widths <- c()
+          for (i in 1:.self$noCols()){
+            widths %<>% c(raw_width)
+            if (i != .self$noCols())
+              widths %<>% c(space_between)
+          }
+
+          # Add margins
+          pushViewport(viewport(layout = grid.layout(nrow = 2, ncol = length(widths),
+                                                     heights = unit(c(raw_height * 2, 1-raw_height * 2), "npc"),
+                                                     widths = unit(widths, "npc"))))
+          for (i in 1:.self$noCols()){
+            labelGrob <- textGrob(box_label[i], gp = gpar(cex = box_label_cex))
+            pushViewport(viewport(layout.pos.row = 1, layout.pos.col = i + (i-1)))
+            grid.draw(labelGrob)
+            upViewport()
+          }
+          pushViewport(viewport(layout.pos.row = 2, layout.pos.col = 1:length(widths)))
+          on.exit(upViewport(2))
+        }
 
         shift <- unit(raw_width*.02, "snpc")
         pushViewport(viewport(x = unit(0.5, "npc")+shift,
