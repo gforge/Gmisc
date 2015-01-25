@@ -59,7 +59,7 @@ prTcValidateAndPrepClr <- function (value, transitions, .self) {
     if (length(.self$getDim()) == 3){
       if (length(value) == 1){
         value <- array(value, dim = .self$getDim())
-      }else if (is.matrix(value)){
+      }else if (is.array(value)){
         if (length(dim(value)) == 3){
           if (dim(value)[3] != 2)
             stop("The third dimension of the color matrix must be of length 2, reflecting the proportions.")
@@ -113,4 +113,6 @@ prTcValidateAndPrepClr <- function (value, transitions, .self) {
       }
     }
   }
+
+  return(value)
 }

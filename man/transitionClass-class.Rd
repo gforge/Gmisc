@@ -22,7 +22,7 @@ An object for generating transition plots
 
 \item{\code{getDim()}}{Gets the current dimensions of the transitions}
 
-\item{\code{initialize(transitions, fill_clr, ...)}}{Set up a transitionClass object. The \code{transitions} should be a 2D or 3D matrix
+\item{\code{initialize(transitions, fill_clr, txt_clr, ...)}}{Set up a transitionClass object. The \code{transitions} should be a 2D or 3D matrix
 as defined in the \code{$addTransitions} section and not as later internally stored.}
 
 \item{\code{noCols()}}{Gets the number of columns}

@@ -1,4 +1,5 @@
 library(testthat)
+context("Transition class")
 
 test_that("Check initialization, copy, and dimensions",{
   expect_error(getRefClass("transitionClass")$new(),
@@ -10,6 +11,13 @@ test_that("Check initialization, copy, and dimensions",{
                length(dim(trn_mtrx)) + 1)
   expect_equal(a$getDim(),
                dim(trn_mtrx))
+
+  expect_equal(a$getDim(),
+               dim(a$fill_clr))
+  expect_equal(a$getDim(),
+               dim(a$txt_clr))
+  expect_equal(a$getDim(),
+               dim(a$box_txt))
 
   a$addTransitions(trn_mtrx)
   expect_equal(a$getDim(),
@@ -56,4 +64,93 @@ test_that("Check box size",{
                     colSums(trn_mtrx[,,1]) + colSums(trn_mtrx[,,2]))
   expect_equivalent(attr(a$boxSizes(2), "prop"),
                     colSums(trn_mtrx[,,1])/(colSums(trn_mtrx[,,1]) + colSums(trn_mtrx[,,2])))
+})
+
+# Setup test-data
+set.seed(1)
+library(magrittr)
+n <- 100
+data <-
+  data.frame(
+    Sex = sample(c("Male", "Female"),
+                 size = n,
+                 replace = TRUE,
+                 prob = c(.4, .6)),
+    Charnley_class = sample(c("A", "B", "C"),
+                            size = n,
+                            replace = TRUE))
+getProbs <- function(Chrnl_name){
+  prob <- data.frame(
+    A = 1/3 +
+      (data$Sex == "Male") * .25 +
+      (data$Sex != "Male") * -.25 +
+      (data[[Chrnl_name]] %in% "B") * -.5 +
+      (data[[Chrnl_name]] %in% "C") * -2 ,
+    B = 1/3 +
+      (data$Sex == "Male") * .1 +
+      (data$Sex != "Male") * -.05 +
+      (data[[Chrnl_name]] == "C") * -2,
+    C = 1/3 +
+      (data$Sex == "Male") * -.25 +
+      (data$Sex != "Male") * .25)
+
+  # Remove negative probabilities
+  t(apply(prob, 1, function(x) {
+    if (any(x < 0)){
+      x <- x - min(x) + .05
+    }
+    x
+  }))
+}
+
+Ch_classes <- c("Charnley_class")
+Ch_classes %<>% c(sprintf("%s_%dyr", Ch_classes, c(1,2,6)))
+for (i in 1:length(Ch_classes)){
+  if (i == 1)
+    next;
+
+  data[[Ch_classes[i]]] <-
+    apply(getProbs(Ch_classes[i-1]), 1, function(p)
+      sample(c("A", "B", "C"),
+             size = 1,
+             prob = p)) %>%
+    factor(levels = c("A", "B", "C"))
+}
+
+test_that("Check advanced matrix dimensions",{
+  test_3D <- with(data, table(Charnley_class, Charnley_class_1yr, Sex))
+  transitions <- getRefClass("transitionClass")$new(test_3D)
+
+  expect_equal(transitions$getDim(),
+               dim(test_3D))
+
+  expect_equal(dim(transitions$fill_clr),
+               c(transitions$noRows(),
+                 transitions$noCols(),
+                 2))
+  expect_equal(dim(transitions$txt_clr),
+               c(transitions$noRows(),
+                 transitions$noCols(),
+                 2))
+
+  expect_equal(dim(transitions$box_txt),
+               c(transitions$noRows(),
+                 transitions$noCols()))
+
+  add_3D <- with(data, table(Charnley_class_1yr, Charnley_class_2yr, Sex))
+  transitions$addTransitions(add_3D)
+
+  expect_equal(dim(transitions$fill_clr),
+               c(transitions$noRows(),
+                 transitions$noCols(),
+                 2))
+  expect_equal(dim(transitions$txt_clr),
+               c(transitions$noRows(),
+                 transitions$noCols(),
+                 2))
+
+  expect_equal(dim(transitions$box_txt),
+               c(transitions$noRows(),
+                 transitions$noCols()))
+
 })
