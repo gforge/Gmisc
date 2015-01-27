@@ -267,13 +267,13 @@ getLines <- function(bp, end_point,
   }
   for (i in 2:(length(bp$x)-1)){
     lr_width <- rotateWidthAccVector(x_origo=bp$x[i],
-      y_origo=bp$y[i],
-      x=bp$x[i+1],
-      y=bp$y[i+1],
-      width=width,
-      perpendicular=TRUE,
-      prev_angle=lr_width$angle,
-      default.units=default.units)
+                                     y_origo=bp$y[i],
+                                     x=bp$x[i+1],
+                                     y=bp$y[i+1],
+                                     width=width,
+                                     perpendicular=TRUE,
+                                     prev_angle=lr_width$angle,
+                                     default.units=default.units)
     if (length(lines$right$x) > 3){
       if (is_point_in_poly(lr_width$right, lines)){
         # Copy last point
