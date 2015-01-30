@@ -106,7 +106,7 @@ bezierArrowSmpl <- function(x = c(0.2, .7, .3, .9),
     tail(new_bp$lengths, 1) +
     arrow$length
   
-  lines <- calculateLinesAndArrow(x = new_bp$x, y = new_bp$y, 
+  lines <- calculateLinesAndArrow(x = new_bp$x, y = new_bp$y,
                                   offset = width/2, 
                                   end_x = end_points$end$x,
                                   end_y = end_points$end$y,
@@ -146,8 +146,8 @@ bezierArrowSmpl <- function(x = c(0.2, .7, .3, .9),
 
   # Add details that are used by the gradient version
   attr(pg, "center_points") <- new_bp
-  attr(pg, "upper_points") <- lines$left
-  attr(pg, "lower_points") <- lines$right
+  attr(pg, "left_points") <- lines$left
+  attr(pg, "right_points") <- lines$right
   attr(pg, "end_points") <- end_points
 
   return(pg)
