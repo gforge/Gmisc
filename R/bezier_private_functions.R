@@ -45,7 +45,7 @@ getBezierAdj4Arrw <- function (end_points, spline_ctrl, arrow_length,
       # length difference
       prev_el_length <- 
         with(bp,
-             sqert((x[cut_point] - x[cut_point - 1])^2 +
+             sqrt((x[cut_point] - x[cut_point - 1])^2 +
                      (y[cut_point] - y[cut_point - 1])^2))
       rel_diff <- (1+l_diff/prev_el_length)
       bp$x[bp$cut_point] <-
