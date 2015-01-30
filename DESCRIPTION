@@ -22,7 +22,7 @@ Imports:
     sp,
     Hmisc,
     forestplot,
-    Rcpp
+    Rcpp(>= 0.11.4)
 Suggests: 
     testthat,
     knitr

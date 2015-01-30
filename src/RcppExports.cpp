@@ -5,15 +5,34 @@
 
 using namespace Rcpp;
 
-// timesTwo
-int timesTwo(int x);
-RcppExport SEXP Gmisc_timesTwo(SEXP xSEXP) {
+// test
+int test();
+RcppExport SEXP Gmisc_test() {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< int >::type x(xSEXP );
-        int __result = timesTwo(x);
+        int __result = test();
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// calculateLinesAndArrow
+Rcpp::List calculateLinesAndArrow(NumericVector x, NumericVector y, double offset, double end_x = -1, double end_y = -1, double arrow_offset = -1);
+RcppExport SEXP Gmisc_calculateLinesAndArrow(SEXP xSEXP, SEXP ySEXP, SEXP offsetSEXP, SEXP end_xSEXP, SEXP end_ySEXP, SEXP arrow_offsetSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP );
+        Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP );
+        Rcpp::traits::input_parameter< double >::type offset(offsetSEXP );
+        Rcpp::traits::input_parameter< double >::type end_x(end_xSEXP );
+        Rcpp::traits::input_parameter< double >::type end_y(end_ySEXP );
+        Rcpp::traits::input_parameter< double >::type arrow_offset(arrow_offsetSEXP );
+        Rcpp::List __result = calculateLinesAndArrow(x, y, offset, end_x, end_y, arrow_offset);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);

@@ -1,3 +1,184 @@
+#' Gets the bezier points adjusted for an arrow
+#'
+#' @param end_points The start and end points
+#' @param spline_ctrl The spline control points
+#' @param arrow_length The desired length of the arrow
+#' @param internal.units The internal absolute unit that is used
+#' @param vp The viewport if any 
+#' @param rez_mltpl Increases the resolution for the final bezier
+#'  points by faking a larger line through multiplikation
+#' @return list
+#' 
+#' @import magrittr
+getBezierAdj4Arrw <- function (end_points, spline_ctrl, arrow_length, 
+                               internal.units, vp, rez_mltpl = 100) {
+  bp <- bezierGrob(x=c(end_points$start$x, spline_ctrl$x, end_points$end$x),
+                   y=c(end_points$start$y, spline_ctrl$y, end_points$end$y),
+                   default.units=internal.units, vp=vp) %>%
+    bezierPoints()
+  
+  # Change to values that we can work with arithmetically
+  bp$y <- convertY(bp$y, unitTo=internal.units, valueOnly=TRUE)
+  bp$x <- convertX(bp$x, unitTo=internal.units, valueOnly=TRUE)
+
+  bp$distance_from_end <-
+    with(bp, sqrt((x-tail(x, 1))^2 + 
+                    (y-tail(y, 1))^2))
+
+  #####################################
+  # Get the best cut point and adjust #
+  # so that it exactly matches the    #
+  # arrow length                      #
+  #####################################
+  bp$cut_point <- 
+    (bp$distance_from_end - arrow_length) %>%
+    abs %>%
+    which.min
+
+  l_diff <- arrow_length - 
+    sqrt((bp$x[bp$cut_point]-end_points$end$x)^2+
+           (bp$y[bp$cut_point]-end_points$end$y)^2)
+  if (l_diff != 0){
+    if (l_diff < 0){
+      # The arrow is a little short and we need to 
+      # shrink the distance according to the
+      # length difference
+      prev_el_length <- 
+        with(bp,
+             sqert((x[cut_point] - x[cut_point - 1])^2 +
+                     (y[cut_point] - y[cut_point - 1])^2))
+      rel_diff <- (1+l_diff/prev_el_length)
+      bp$x[bp$cut_point] <-
+        with(bp,
+             x[cut_point - 1] + 
+               (x[cut_point] - x[cut_point - 1])*
+               rel_diff)
+      bp$y[bp$cut_point] <-
+        with(bp,
+             y[cut_point - 1] + 
+               (y[cut_point] - y[cut_point - 1])*
+               rel_diff)
+    }else{
+      # Move the cut point one forward
+      # but shrink the distance according to the
+      # length difference
+      bp$cut_point <- 
+        bp$cut_point + 1
+      next_el_length <- 
+        with(bp,
+             sqrt((x[cut_point] - x[cut_point - 1])^2 +
+                     (y[cut_point] - y[cut_point - 1])^2))
+      rel_diff <- l_diff/next_el_length
+      bp$x[bp$cut_point] <-
+        with(bp,
+             x[cut_point - 1] + 
+               (x[cut_point] - x[cut_point - 1])*
+               rel_diff)
+      bp$y[bp$cut_point] <-
+        with(bp,
+             y[cut_point - 1] + 
+               (y[cut_point] - y[cut_point - 1])*
+               rel_diff)
+    }
+  }
+  
+  
+  ##############################################
+  # Now we need to adjust the spline controls. #
+  #                                            #
+  # This is done by deducing the position of   #
+  # new end, modifying the arrow spline ctrl   #
+  # according to the size and direction of the #
+  # current arrow.                             #
+  #                                            #
+  # Note that both the start and the end       #
+  # spline controls need to be adjusted since  #
+  # both are affected by the line shortening   #
+  ##############################################
+  
+  # Special case where the end spline control isn't used
+  if (spline_ctrl$end$length == 0){
+    multiplier <- 0
+  }else{
+    multiplier <- with(spline_ctrl$end,
+                       (length-arrow_length*1.1)/length)
+  }
+    
+  # Use the arrow's vector in the opposite direction as the new ctrl point
+  adjust_ctr <- function(spl_point, org_endpoint,
+                         new_endpoint, 
+                         multiplier){
+    
+    # Shorten/lengthen depending on the arrow direction
+    if (new_endpoint < org_endpoint){
+      direction <- 1
+    }else{
+      direction <- -1
+    }
+    
+    # The minimum spline control is the arrow length
+    min_adjusted <- new_endpoint-(org_endpoint-new_endpoint)
+    
+    new_sppoint <- spl_point + 
+      direction*(org_endpoint - new_endpoint)*multiplier
+    
+    if (direction*(min_adjusted - new_sppoint) < 0)
+      new_sppoint <- min_adjusted
+    
+    return(new_sppoint)
+  }
+  spline_ctrl$x[length(spline_ctrl$x)] <-
+    adjust_ctr(tail(spline_ctrl$x, 1),
+               tail(bp$x, 1),
+               bp$x[bp$cut_point], 
+               multiplier)
+  spline_ctrl$y[length(spline_ctrl$y)] <-
+    adjust_ctr(tail(spline_ctrl$y, 1),
+               tail(bp$y, 1),
+               bp$y[bp$cut_point], 
+               multiplier)
+    
+  # Relate to full length
+  tot_line_length <- 
+    with(bp, 
+         mapply(x1 = x[-length(x)], 
+                y1 = y[-length(y)], 
+                x2 = x[-1], 
+                y2 = y[-1], 
+                function(x1, y1, x2, y2) sqrt((x2-x1)^2 + (y2-y1)^2))) %>%
+    sum
+
+  simple_start_adjustment <- 1-arrow_length/tot_line_length/3
+  # Remove a fraction of the distance for the spline controles
+  spline_ctrl$x[1] <- end_points$start$x + 
+    (spline_ctrl$x[1]-end_points$start$x)*simple_start_adjustment
+  spline_ctrl$y[1] <- end_points$start$y + 
+    (spline_ctrl$y[1]-end_points$start$y)*simple_start_adjustment
+
+  ##################################
+  # Done! Calculate the bezier     #
+  # line that we want to follow    #
+  # Note that the scale multiplier #
+  # allows us to get a better      #
+  # spline resolution              #
+  ##################################
+  new_bp <- 
+    bezierGrob(x=c(end_points$start$x, spline_ctrl$x,
+                   bp$x[bp$cut_point])*rez_mltpl,
+               y=c(end_points$start$y, spline_ctrl$y, 
+                   bp$y[bp$cut_point])*rez_mltpl,
+               default.units=internal.units,
+               vp=vp) %>%
+    bezierPoints
+
+  # Get the bezier points and scale back
+  new_bp$y <- convertY(new_bp$y, unitTo=internal.units, valueOnly=TRUE)/rez_mltpl
+  new_bp$x <- convertX(new_bp$x, unitTo=internal.units, valueOnly=TRUE)/rez_mltpl
+
+  return(new_bp)
+}
+
+
 #' Checks the input of a vector
 #'
 #' It checks that a vector makes sense in its
@@ -265,31 +446,10 @@ getLines <- function(bp, end_point,
                                       unitTo="mm", valueOnly=TRUE),
                      mode.checked=TRUE)==1
   }
-  for (i in 2:(length(bp$x)-1)){
-    lr_width <- rotateWidthAccVector(x_origo=bp$x[i],
-                                     y_origo=bp$y[i],
-                                     x=bp$x[i+1],
-                                     y=bp$y[i+1],
-                                     width=width,
-                                     perpendicular=TRUE,
-                                     prev_angle=lr_width$angle,
-                                     default.units=default.units)
-    if (length(lines$right$x) > 3){
-      if (is_point_in_poly(lr_width$right, lines)){
-        # Copy last point
-        lr_width$right <- unit.c(tail(lines$right$x, 1),
-                                 tail(lines$right$y, 1))
-      }
-      if (is_point_in_poly(lr_width$left, lines)){
-        # Copy last point
-        lr_width$left <- unit.c(tail(lines$left$x, 1),
-                                   tail(lines$left$y, 1))
-      }
-    }
-    lines <- addLineOffset(bp$x[i], bp$y[i],
-      lines=lines, offset=lr_width)
-  }
-
+  
+  lines <- with(bp,
+                getLineOffset(x, y, offset = offset))
+    
   # For the last element use the arrow direction
   lr_width <- rotateWidthAccVector(x=end_point$x,
     y=end_point$y,
@@ -506,7 +666,8 @@ getLines <- function(bp, end_point,
 #' @return A list with left and right elements indicating the two lines
 #'
 #' @keywords internal
-getLinesWithArrow <- function(bp, arrow, end_points, width, default.units, align_2_axis){
+getLinesWithArrow <- function(bp, arrow, end_points, width, 
+                              default.units, align_2_axis){
   lines <- getLines(bp = bp,
     end_point=end_points$end,
     width=width,
