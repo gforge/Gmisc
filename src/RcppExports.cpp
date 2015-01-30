@@ -5,20 +5,6 @@
 
 using namespace Rcpp;
 
-// test
-int test();
-RcppExport SEXP Gmisc_test() {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        int __result = test();
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
 // calculateLinesAndArrow
 Rcpp::List calculateLinesAndArrow(NumericVector x, NumericVector y, double offset, double end_x = -1, double end_y = -1, double arrow_offset = -1);
 RcppExport SEXP Gmisc_calculateLinesAndArrow(SEXP xSEXP, SEXP ySEXP, SEXP offsetSEXP, SEXP end_xSEXP, SEXP end_ySEXP, SEXP arrow_offsetSEXP) {

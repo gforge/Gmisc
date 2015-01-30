@@ -1,44 +1,5 @@
-//[[Rcpp::depends(Gmisc)]]
-
 #include <Rcpp.h>
 using namespace Rcpp;
-
-// Below is a simple example of exporting a C++ function to R. You can
-// source this function into an R session using the Rcpp::sourceCpp
-// function (or via the Source button on the editor toolbar)
-
-// For more on using Rcpp click the Help button on the editor toolbar
-
-/*
-for (i in 2:(length(bp$x)-1)){
-    lr_width <- rotateWidthAccVector(x_origo=bp$x[i],
-                                     y_origo=bp$y[i],
-                                     x=bp$x[i+1],
-                                     y=bp$y[i+1],
-                                     width=width,
-                                     perpendicular=TRUE,
-                                     prev_angle=lr_width$angle,
-                                     default.units=default.units)
-    if (length(lines$right$x) > 3){
-      if (is_point_in_poly(lr_width$right, lines)){
-        # Copy last point
-        lr_width$right <- unit.c(tail(lines$right$x, 1),
-                                 tail(lines$right$y, 1))
-      }
-      if (is_point_in_poly(lr_width$left, lines)){
-        # Copy last point
-        lr_width$left <- unit.c(tail(lines$left$x, 1),
-                                   tail(lines$left$y, 1))
-      }
-    }
-    lines <- addLineOffset(bp$x[i], bp$y[i],
-      lines=lines, offset=lr_width)
-  }*/
-
-// [[Rcpp::export]]
-int test(){
-  return(2);
-}
 
 //' Gets offsetted lines
 //' 
@@ -57,11 +18,11 @@ int test(){
 //' @importFrom Rcpp evalCpp
 // [[Rcpp::export]]
 Rcpp::List calculateLinesAndArrow(NumericVector x, 
-    NumericVector y, 
-    double offset,
-    double end_x = -1,
-    double end_y = -1,
-    double arrow_offset = -1){
+                                  NumericVector y, 
+                                  double offset,
+                                  double end_x = -1,
+                                  double end_y = -1,
+                                  double arrow_offset = -1){
   
   if (x.size() != y.size())
     throw std::length_error("The two vectors must have the same length");
@@ -80,59 +41,94 @@ Rcpp::List calculateLinesAndArrow(NumericVector x,
   NumericVector right_y(vlen);
   double angle = 0;
   
-  double dy = 0;
-  double dx = 0;
-  double left_angle, right_angle;
-  for( int i=0; i<x.size(); i++){
-    if (i + 1 < x.size() ||
-        (arrow_offset > 1 &&
-        i + 1 == x.size())){
-      // If last element then use the arrow end instead ot the y[i + 1] that would
-      // index outside the elements
-      if (i + 1 == x.size()){
+  double dy, dx = 0;
+  for(int i=0; i<x.size(); i++){
+    
+    // If last element then use the arrow end 
+    // or the previous element instead of the y[i + 1] 
+    if (i + 1 == x.size()){
+      if (arrow_offset > 1){
         dy = (end_y - y[i]);
         dx = (end_x - x[i]);
       }else{
-        dy = (y[i+1] - y[i]);
-        dx = (x[i+1] - x[i]);
+        dy = (y[i] - y[i - 1]);
+        dx = (x[i] - x[i - 1]);
       }
-      if (dx == 0){
-        if (dy > 0)
-          angle = PI;
-        else if (dy < 0)
-          angle = -PI;
-        else
-          angle = 0;
-      }else{
-        angle = atan(dy/dx);
-      }
-        
-      if (dy > 0 && dx < 0){
-        // Upper left quadrant
-        angle -= PI;
-      }else if (dy <= 0 && dx < 0){
-        // Lower left quadrant
-        angle += PI;
-      }
+    }else{
+      dy = (y[i+1] - y[i]);
+      dx = (x[i+1] - x[i]);
     }
 
-    left_angle = angle +  PI/2;
-    left_x[i] = offset * cos(left_angle) + x[i];
-    left_y[i] = offset * sin(left_angle) + y[i];
-
-    right_angle = angle -  PI/2;
-    right_x[i] = offset * cos(right_angle) + x[i];
-    right_y[i] = offset * sin(right_angle) + y[i];
+    if (fabs(dx) < FLT_EPSILON){
+      // If there is no change in x then the line is
+      // 1. Vertical
+      // 2. Non-existant
+      left_y[i] = y[i];
+      right_y[i] = y[i];
+      if (dy == 0){
+        dy = y[y.size()] - y[1];
+        if (dy == 0)
+          throw std::length_error("There must be either a change in y or x");
+      }
+      if (dy > 0){
+        angle = -PI/2;
+        
+        left_x[i] = -offset + x[i];
+        right_x[i] = offset + x[i];
+        continue;
+      }else if (dy < 0){
+        angle = -PI/2;
+        
+        left_x[i] = offset + x[i];
+        right_x[i] = -offset + x[i];
+        continue;
+      }
+    }else if (fabs(dy) < FLT_EPSILON){
+      if (dx == 0){
+        dx = x[x.size()] - x[1];
+        if (dx == 0)
+          throw std::length_error("There must be either a change in y or x");
+      }
+      
+      left_x[i] = x[i];
+      right_x[i] = x[i];
+      if (dx < 0){
+        angle = PI;
+        left_y[i] = -offset + y[i];
+        right_y[i] = offset + y[i];
+        continue;
+      }else{
+        angle = 0;
+        left_y[i] = offset + y[i];
+        right_y[i] = -offset + y[i];
+        continue;
+      }
+    }else{
+      angle = atan(dy/dx);
+    }
+    
+    if (dy > 0 && dx < 0){
+      // Upper left quadrant
+      angle -= PI;
+    }else if (dy <= 0 && dx < 0){
+      // Lower left quadrant
+      angle += PI;
+    }
+    
+    right_x[i] = offset * cos(angle -  PI/2) + x[i];
+    right_y[i] = offset * sin(angle -  PI/2) + y[i];
+    left_x[i] = offset * cos(angle +  PI/2) + x[i];
+    left_y[i] = offset * sin(angle +  PI/2) + y[i];
   }
   
   // Add the arrow if requested
   if (arrow_offset > 0){
     // Same angle as last angle
-    left_x[x.size()] = arrow_offset * cos(left_angle) + x[x.size() - 1];
-    left_y[x.size()] = arrow_offset * sin(left_angle) + y[x.size() - 1];
+    left_x[x.size()] = arrow_offset * cos(angle +  PI/2) + x[x.size() - 1];
+    left_y[x.size()] = arrow_offset * sin(angle +  PI/2) + y[x.size() - 1];
 
-    right_x[x.size()] = arrow_offset * cos(right_angle) + x[x.size() - 1];
-    right_y[x.size()] = arrow_offset * sin(right_angle) + y[x.size() - 1];
+    right_x[x.size()] = arrow_offset * cos(angle -  PI/2) + x[x.size() - 1];
+    right_y[x.size()] = arrow_offset * sin(angle -  PI/2) + y[x.size() - 1];
     
     right_x[x.size() + 1] = end_x;
     left_x[x.size() + 1] = end_x;

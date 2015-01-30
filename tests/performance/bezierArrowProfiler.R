@@ -9,4 +9,3 @@ lineprof({
 grid.draw(arrowGrob)
 
 lineprof::shine(lp)
-sp::point.in.polygon
