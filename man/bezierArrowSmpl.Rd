@@ -6,7 +6,7 @@
 \usage{
 bezierArrowSmpl(x = c(0.2, 0.7, 0.3, 0.9), y = c(0.2, 0.2, 0.9, 0.9),
   width = 0.05, clr = "#000000", default.units = "npc",
-  arrow = list(base = unit(0.1, "npc"), length = unit(0.1, "npc")),
+  arrow = list(base = unit(0.1, "snpc"), length = unit(0.1, "snpc")),
   align_2_axis = TRUE, name = NULL, gp = gpar(), vp = NULL)
 }
 \arguments{
