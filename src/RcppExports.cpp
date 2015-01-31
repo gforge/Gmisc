@@ -6,7 +6,7 @@
 using namespace Rcpp;
 
 // calculateLinesAndArrow
-Rcpp::List calculateLinesAndArrow(NumericVector x, NumericVector y, double offset, double end_x = -1, double end_y = -1, double arrow_offset = -1);
+Rcpp::List calculateLinesAndArrow(NumericVector x, NumericVector y, NumericVector offset, double end_x = -1, double end_y = -1, double arrow_offset = -1);
 RcppExport SEXP Gmisc_calculateLinesAndArrow(SEXP xSEXP, SEXP ySEXP, SEXP offsetSEXP, SEXP end_xSEXP, SEXP end_ySEXP, SEXP arrow_offsetSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
@@ -14,7 +14,7 @@ BEGIN_RCPP
         Rcpp::RNGScope __rngScope;
         Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP );
         Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP );
-        Rcpp::traits::input_parameter< double >::type offset(offsetSEXP );
+        Rcpp::traits::input_parameter< NumericVector >::type offset(offsetSEXP );
         Rcpp::traits::input_parameter< double >::type end_x(end_xSEXP );
         Rcpp::traits::input_parameter< double >::type end_y(end_ySEXP );
         Rcpp::traits::input_parameter< double >::type arrow_offset(arrow_offsetSEXP );

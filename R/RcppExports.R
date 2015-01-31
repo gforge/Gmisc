@@ -8,7 +8,8 @@
 #' 
 #' @param x A numeric vector containing all the x-elements
 #' @param y A numeric vector containing all the y-elements
-#' @param offset The offset to add to the line
+#' @param offset The offset to add to the line, can be a vector if you
+#'  want to use different offsets.
 #' @param end_x The x end of the line where the arrow occurrs (if < 0 arrow is skipped)
 #' @param end_y The y end of the line where the arrow occurrs (if < 0 arrow is skipped)
 #' @param arrow_offset The offset to add to the arrow section if any (if <= 0 arrow is skipped)

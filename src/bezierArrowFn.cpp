@@ -8,7 +8,8 @@ using namespace Rcpp;
 //' 
 //' @param x A numeric vector containing all the x-elements
 //' @param y A numeric vector containing all the y-elements
-//' @param offset The offset to add to the line
+//' @param offset The offset to add to the line, can be a vector if you
+//'  want to use different offsets.
 //' @param end_x The x end of the line where the arrow occurrs (if < 0 arrow is skipped)
 //' @param end_y The y end of the line where the arrow occurrs (if < 0 arrow is skipped)
 //' @param arrow_offset The offset to add to the arrow section if any (if <= 0 arrow is skipped)
@@ -19,7 +20,7 @@ using namespace Rcpp;
 // [[Rcpp::export]]
 Rcpp::List calculateLinesAndArrow(NumericVector x, 
                                   NumericVector y, 
-                                  double offset,
+                                  NumericVector offset,
                                   double end_x = -1,
                                   double end_y = -1,
                                   double arrow_offset = -1){
@@ -39,10 +40,9 @@ Rcpp::List calculateLinesAndArrow(NumericVector x,
   NumericVector left_y(vlen);
   NumericVector right_x(vlen);
   NumericVector right_y(vlen);
-  double angle = 0;
-  
-  double dy, dx = 0;
-  for(int i=0; i<x.size(); i++){
+  double angle, dy, dx, offs = 0;
+  for(int i=0; i < x.size(); i++){
+    offs = offset[i % offset.size()];
     
     // If last element then use the arrow end 
     // or the previous element instead of the y[i + 1] 
@@ -59,34 +59,39 @@ Rcpp::List calculateLinesAndArrow(NumericVector x,
       dx = (x[i+1] - x[i]);
     }
 
+    // See if the dx == 0 then we can be more exact than the cos/sin
+    // functions allow for
+    // Note that FLT_EPSILON is used on purpose instead of DBL_EPSILON
+    // as I want to catch values that are slighlty larger than the DBL_EPSILON
+    // and graphics don't really need the double
     if (fabs(dx) < FLT_EPSILON){
       // If there is no change in x then the line is
       // 1. Vertical
       // 2. Non-existant
       left_y[i] = y[i];
       right_y[i] = y[i];
-      if (dy == 0){
+      if (fabs(dy) < FLT_EPSILON){
         dy = y[y.size()] - y[1];
-        if (dy == 0)
+        if (fabs(dy) < FLT_EPSILON)
           throw std::length_error("There must be either a change in y or x");
       }
       if (dy > 0){
         angle = -PI/2;
         
-        left_x[i] = -offset + x[i];
-        right_x[i] = offset + x[i];
+        left_x[i] = -offs + x[i];
+        right_x[i] = offs + x[i];
         continue;
       }else if (dy < 0){
         angle = -PI/2;
         
-        left_x[i] = offset + x[i];
-        right_x[i] = -offset + x[i];
+        left_x[i] = offs + x[i];
+        right_x[i] = -offs + x[i];
         continue;
       }
     }else if (fabs(dy) < FLT_EPSILON){
-      if (dx == 0){
+      if (fabs(dx) < FLT_EPSILON){
         dx = x[x.size()] - x[1];
-        if (dx == 0)
+        if (fabs(dx) < FLT_EPSILON)
           throw std::length_error("There must be either a change in y or x");
       }
       
@@ -94,13 +99,13 @@ Rcpp::List calculateLinesAndArrow(NumericVector x,
       right_x[i] = x[i];
       if (dx < 0){
         angle = PI;
-        left_y[i] = -offset + y[i];
-        right_y[i] = offset + y[i];
+        left_y[i] = -offs + y[i];
+        right_y[i] = offs + y[i];
         continue;
       }else{
         angle = 0;
-        left_y[i] = offset + y[i];
-        right_y[i] = -offset + y[i];
+        left_y[i] = offs + y[i];
+        right_y[i] = -offs + y[i];
         continue;
       }
     }else{
@@ -115,10 +120,10 @@ Rcpp::List calculateLinesAndArrow(NumericVector x,
       angle += PI;
     }
     
-    right_x[i] = offset * cos(angle -  PI/2) + x[i];
-    right_y[i] = offset * sin(angle -  PI/2) + y[i];
-    left_x[i] = offset * cos(angle +  PI/2) + x[i];
-    left_y[i] = offset * sin(angle +  PI/2) + y[i];
+    right_x[i] = offs * cos(angle -  PI/2) + x[i];
+    right_y[i] = offs * sin(angle -  PI/2) + y[i];
+    left_x[i] = offs * cos(angle +  PI/2) + x[i];
+    left_y[i] = offs * sin(angle +  PI/2) + y[i];
   }
   
   // Add the arrow if requested
