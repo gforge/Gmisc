@@ -54,7 +54,7 @@ bezierArrowGradient <- function(
   if (is.na(grdt_line_width)){
     grdt_line_width <- getGridVal(width, default.units)*.2
   }
-  
+
   if (!inherits(grdt_line_width, "unit")){
     grdt_line_width <- unit(grdt_line_width, default.units)
   }
@@ -105,99 +105,106 @@ bezierArrowGradient <- function(
   # Extend to the full line
   bp$x <- c(bp$x, end_points$end$x)
   bp$y <- c(bp$y, end_points$end$y)
-  
+
   grdt_line_width <- convertX(grdt_line_width, unitTo = internal.units, valueOnly = TRUE)
-  
+
   # Calculate the lengths
-  bp$lengths <- 
+  bp$lengths <-
     c(0,
-      with(bp, 
-         mapply(x1 = x[-length(x)], 
-                y1 = y[-length(y)], 
-                x2 = x[-1], 
-                y2 = y[-1], 
+      with(bp,
+         mapply(x1 = x[-length(x)],
+                y1 = y[-length(y)],
+                x2 = x[-1],
+                y2 = y[-1],
                 function(x1, y1, x2, y2) sqrt((x2-x1)^2 + (y2-y1)^2))))
   bp$cumlen <- cumsum(bp$lengths)
 
   grdt_length <- sum(bp$lengths)*(grdt_start_prop + grdt_decrease_prop)
-  end_point <- 
+  end_point <-
     (bp$cumlen - grdt_length) %>%
     abs %>%
     which.min
-  
+
   # Adjust last point if discrepancy > 10%
   if (abs(bp$cumlen[end_point] - grdt_length) > bp$length[end_point]/10){
     dx <- bp$x[end_point] - bp$x[end_point - 1]
     dy <- bp$y[end_point] - bp$y[end_point - 1]
-    
+
     # Desired length vs actual length
     adj_prop <- (grdt_length - bp$cumlen[end_point])/bp$length[end_point]
     bp$x[end_point] <- bp$x[end_point] +
       dx * adj_prop
-    bp$y[end_point] <- bp$y[end_point] + 
+    bp$y[end_point] <- bp$y[end_point] +
       dy * adj_prop
     # Adjust the lengths
     bp$lengths[end_point] <- abs(bp$cumlen[end_point] - grdt_length)
     bp$cumlen[end_point] <- bp$cumlen[end_point] + grdt_length
   }
-  
-  start_decrease <- 
+
+  start_decrease <-
     (bp$cumlen -
        sum(bp$lengths)*(grdt_start_prop)) %>%
     abs %>%
     which.min
 
   # Add start margin
-  line_start <- 
-    (bp$cumlen - 
+  line_start <-
+    (bp$cumlen -
        grdt_line_width/2) %>%
     abs %>%
     which.min
-  
+
   if (bp$cumlen[line_start + 1] - grdt_line_width/2 < 0){
     line_start <- line_start - 1
   }
-  
-  clr_start <- 
-    (bp$cumlen[line_start:end_point] - 
+
+  clr_start <-
+    (bp$cumlen[line_start:end_point] -
        bp$cumlen[end_point] * grdt_clr_prop) %>%
     abs %>%
     which.min %>%
     + 1
-  
+
   # Remove start
   if (line_start > 1){
     bp <- lapply(bp, function(x) x[-1*(1:line_start - 1)])
   }
   end_point <- end_point - line_start + 1
   start_decrease <- start_decrease - line_start + 1
-    
+
   if (abs(bp$cumlen[2] - grdt_line_width/2) > grdt_line_width/10^3){
     dx <- bp$x[2] - bp$x[1]
     dy <- bp$y[2] - bp$y[1]
-    
+
     adj_prop <- (bp$cumlen[2] - grdt_line_width/2)/bp$length[2]
     bp$x[1] <- bp$x[1] +
       dx * adj_prop
-    bp$y[1] <- bp$y[1] + 
+    bp$y[1] <- bp$y[1] +
       dy * adj_prop
   }
-  
+
   # Shorten to the end
   bp <- lapply(bp, function(x) head(x, end_point))
-  
-  # The offset decrease should be relative 
+
+  # The offset decrease should be relative
   offset <- rep(grdt_line_width/2, length(bp$x))
-  if (end_point > start_decrease && 
+  if (end_point > start_decrease &&
         grdt_type == "triangle"){
     decr_lengths <- tail(bp$lengths, end_point - start_decrease)
-    offset[start_decrease:end_point] <- 
-      grdt_line_width/2 * 
+    offset[start_decrease:end_point] <-
+      grdt_line_width/2 *
       (1 - c(0, cumsum(decr_lengths))/sum(decr_lengths))
   }
-  
+
   grdnt_lines <- calculateLinesAndArrow(x = bp$x, y = bp$y, offset = offset)
-  
+  if (attr(pg, "axis") != FALSE){
+    grdnt_lines <- align2Axis(bp = bp,
+                              lines = grdnt_lines,
+                              width = grdt_line_width,
+                              internal.units = internal.units,
+                              axis = attr(pg, "axis"))
+  }
+
   #   max_gradient_width <- getGridVal(width, default.units) -
   #     2*getGridVal(grdt_line_width, default.units)
   convGenPolyGrob <- function(x, y, d.u, i.u, gp){
@@ -210,33 +217,33 @@ bezierArrowGradient <- function(
 
   inner_gradient <- gList()
   if (clr_start > 2){
-    reg_size <- 
-      lapply(grdnt_lines, 
-             function(side) lapply(side, 
+    reg_size <-
+      lapply(grdnt_lines,
+             function(side) lapply(side,
                                    function(x) head(x, clr_start - 1)))
-    gradient_pg <- 
+    gradient_pg <-
       with(reg_size,
            convGenPolyGrob(x = c(left$x, rev(right$x)),
                            y = c(left$y, rev(right$y)),
                            d.u = default.units,
                            i.u = internal.units,
                            gp = gpar(fill = grdt_clr, col = grdt_clr, lwd = .01)))
-    
+
     inner_gradient <- gList(inner_gradient, gradient_pg)
 
     # Remove the already plotted
-    grdnt_lines <- 
-      lapply(grdnt_lines, 
-             function(side) lapply(side, 
+    grdnt_lines <-
+      lapply(grdnt_lines,
+             function(side) lapply(side,
                                    function(x) (x[-1*(1:(clr_start - 2))])))
   }
 
-  # Plot the gradient color - these need to be plotted as 
+  # Plot the gradient color - these need to be plotted as
   # one color per polygon
   if (length(bp$x) >= clr_start){
     g_clrs <- colorRampPalette(colors=c(grdt_clr, clr))(length(grdnt_lines$right$x))
     for (i in 1:(length(grdnt_lines$right$x) - 1)){
-      gradient_pg <- 
+      gradient_pg <-
         with(grdnt_lines,
              convGenPolyGrob(x = c(left$x[i:(i+1)], right$x[(i+1):i]),
                              y = c(left$y[i:(i+1)], right$y[(i+1):i]),
@@ -247,6 +254,6 @@ bezierArrowGradient <- function(
       inner_gradient <- gList(inner_gradient, gradient_pg)
     }
   }
-  
+
   return (gList(pg, inner_gradient))
 }

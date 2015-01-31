@@ -13,7 +13,7 @@ bezierArrowSmpl(x = tmp$x, y = tmp$y) %>%
 bezierArrowGradient(x = tmp$x+.05, y = tmp$y-.15) %>%
   grid.draw
 
-bezierArrowGradient(x = tmp$x-.05, y = tmp$y+.15, align_2_axis = TRUE) %>%
+bezierArrowGradient(x = tmp$x-.05, y = tmp$y+.15, align_2_axis = FALSE) %>%
   grid.draw
 
 drawBzrBasics <- function (bzrFn, ...) {
