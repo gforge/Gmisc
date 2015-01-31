@@ -35,7 +35,7 @@ bezierArrowGradient <- function(
   clr = "#000000",
   default.units = "npc",
   align_2_axis = TRUE,
-  grdt_type = c("triangle"),
+  grdt_type = c("triangle", "rectangle"),
   grdt_decrease_prop = .4,
   grdt_start_prop = .4,
   grdt_clr_prop = .7,
@@ -51,8 +51,13 @@ bezierArrowGradient <- function(
   if (class(width) != "unit")
     width <- unit(width, default.units)
 
-  if (is.na(grdt_line_width))
+  if (is.na(grdt_line_width)){
     grdt_line_width <- getGridVal(width, default.units)*.2
+  }
+  
+  if (!inherits(grdt_line_width, "unit")){
+    grdt_line_width <- unit(grdt_line_width, default.units)
+  }
 
   # Sanity check for input parameters
   if (grdt_decrease_prop > 1 &&
@@ -90,264 +95,158 @@ bezierArrowGradient <- function(
   bp <- attr(pg, "center_points")
   end_points <- attr(pg, "end_points")
 
-  end_point <- which(cumsum(bp$lengths) >= sum(bp$lengths)*(grdt_start_prop + grdt_decrease_prop))[1]-2
-  start_decrease <- which(cumsum(bp$lengths) >= sum(bp$lengths)*(grdt_start_prop))[1]
+  internal.units <- "mm"
+  end_points <- lapply(end_points, function(pt){
+    list(x = convertX(pt$x, unitTo=internal.units),
+         y = convertY(pt$y, unitTo=internal.units))
+  })
+  bp$x <- convertX(bp$x, unitTo = internal.units, valueOnly = TRUE)
+  bp$y <- convertY(bp$y, unitTo = internal.units, valueOnly = TRUE)
+  # Extend to the full line
+  bp$x <- c(bp$x, end_points$end$x)
+  bp$y <- c(bp$y, end_points$end$y)
+  
+  grdt_line_width <- convertX(grdt_line_width, unitTo = internal.units, valueOnly = TRUE)
+  
+  # Calculate the lengths
+  bp$lengths <- 
+    c(0,
+      with(bp, 
+         mapply(x1 = x[-length(x)], 
+                y1 = y[-length(y)], 
+                x2 = x[-1], 
+                y2 = y[-1], 
+                function(x1, y1, x2, y2) sqrt((x2-x1)^2 + (y2-y1)^2))))
+  bp$cumlen <- cumsum(bp$lengths)
 
-  max_gradient_width <- getGridVal(width, default.units) -
-    2*getGridVal(grdt_line_width, default.units)
+  grdt_length <- sum(bp$lengths)*(grdt_start_prop + grdt_decrease_prop)
+  end_point <- 
+    (bp$cumlen - grdt_length) %>%
+    abs %>%
+    which.min
+  
+  # Adjust last point if discrepancy > 10%
+  if (abs(bp$cumlen[end_point] - grdt_length) > bp$length[end_point]/10){
+    dx <- bp$x[end_point] - bp$x[end_point - 1]
+    dy <- bp$y[end_point] - bp$y[end_point - 1]
+    
+    # Desired length vs actual length
+    adj_prop <- (grdt_length - bp$cumlen[end_point])/bp$length[end_point]
+    bp$x[end_point] <- bp$x[end_point] +
+      dx * adj_prop
+    bp$y[end_point] <- bp$y[end_point] + 
+      dy * adj_prop
+    # Adjust the lengths
+    bp$lengths[end_point] <- abs(bp$cumlen[end_point] - grdt_length)
+    bp$cumlen[end_point] <- bp$cumlen[end_point] + grdt_length
+  }
+  
+  start_decrease <- 
+    (bp$cumlen -
+       sum(bp$lengths)*(grdt_start_prop)) %>%
+    abs %>%
+    which.min
 
-  clr_length <- which(cumsum(bp$lengths[end_point:1])/sum(bp$lengths[1:end_point]) >= grdt_clr_prop)[1]
-  g_clrs <- colorRampPalette(colors=c(clr, grdt_clr))(clr_length)
-
-  clipLinesEnd <- function(lines, no_elements_to_remove){
-    # Make sure to keep last element in case there is a mismatch,
-    # we need to preserve an attachment to the right if this is to work,
-    # removing all would cause the pie-piece to become a line
-    if (no_elements_to_remove >= length(lines$left$x) &&
-      no_elements_to_remove < length(lines$right$x)){
-      lines$left$x <- head(lines$left$x, -no_elements_to_remove)
-      lines$left$y <- head(lines$left$y, -no_elements_to_remove)
-      lines$right$x <- head(lines$right$x, 1)
-      lines$right$y <- head(lines$right$y, 1)
-    }else if (no_elements_to_remove < length(lines$left$x) &&
-      no_elements_to_remove >= length(lines$right$x)){
-      lines$left$x <- head(lines$left$x, 1)
-      lines$left$y <- head(lines$left$y, 1)
-      lines$right$x <- head(lines$right$x, -no_elements_to_remove)
-      lines$right$y <- head(lines$right$y, -no_elements_to_remove)
-    }else if (no_elements_to_remove >= length(lines$left$x) &&
-      no_elements_to_remove >= length(lines$right$x)){
-      # There are nothing left to output
-      lines$left$x <- NULL
-      lines$left$y <- NULL
-      lines$right$x <- NULL
-      lines$right$y <- NULL
-    }else{
-      lines$left$x <- head(lines$left$x, -no_elements_to_remove)
-      lines$left$y <- head(lines$left$y, -no_elements_to_remove)
-      lines$right$x <- head(lines$right$x, -no_elements_to_remove)
-      lines$right$y <- head(lines$right$y, -no_elements_to_remove)
-    }
-    return(lines)
+  # Add start margin
+  line_start <- 
+    (bp$cumlen - 
+       grdt_line_width/2) %>%
+    abs %>%
+    which.min
+  
+  if (bp$cumlen[line_start + 1] - grdt_line_width/2 < 0){
+    line_start <- line_start - 1
+  }
+  
+  clr_start <- 
+    (bp$cumlen[line_start:end_point] - 
+       bp$cumlen[end_point] * grdt_clr_prop) %>%
+    abs %>%
+    which.min %>%
+    + 1
+  
+  # Remove start
+  if (line_start > 1){
+    bp <- lapply(bp, function(x) x[-1*(1:line_start - 1)])
+  }
+  end_point <- end_point - line_start + 1
+  start_decrease <- start_decrease - line_start + 1
+    
+  if (abs(bp$cumlen[2] - grdt_line_width/2) > grdt_line_width/10^3){
+    dx <- bp$x[2] - bp$x[1]
+    dy <- bp$y[2] - bp$y[1]
+    
+    adj_prop <- (bp$cumlen[2] - grdt_line_width/2)/bp$length[2]
+    bp$x[1] <- bp$x[1] +
+      dx * adj_prop
+    bp$y[1] <- bp$y[1] + 
+      dy * adj_prop
+  }
+  
+  # Shorten to the end
+  bp <- lapply(bp, function(x) head(x, end_point))
+  
+  # The offset decrease should be relative 
+  offset <- rep(grdt_line_width/2, length(bp$x))
+  if (end_point > start_decrease && 
+        grdt_type == "triangle"){
+    decr_lengths <- tail(bp$lengths, end_point - start_decrease)
+    offset[start_decrease:end_point] <- 
+      grdt_line_width/2 * 
+      (1 - c(0, cumsum(decr_lengths))/sum(decr_lengths))
+  }
+  
+  grdnt_lines <- calculateLinesAndArrow(x = bp$x, y = bp$y, offset = offset)
+  
+  #   max_gradient_width <- getGridVal(width, default.units) -
+  #     2*getGridVal(grdt_line_width, default.units)
+  convGenPolyGrob <- function(x, y, d.u, i.u, gp){
+    x <- convertX(unit(x, units = i.u), unitTo = d.u)
+    y <- convertY(unit(y, units = i.u), unitTo = d.u)
+    polygonGrob(x = x,
+                y = y,
+                gp = gp)
   }
 
-  # Generate a list with all the elements
   inner_gradient <- gList()
-  # If the end point and the start decrease points are the same
-  # then there is no decrease
-  if (end_point != start_decrease){
-    getTriangleGrowth <- function(l){
-      f <- (1-rev(cumsum(l)/sum(l)))[-1]
-      return(f/max(f))
-    }
-    g_factor <- getTriangleGrowth(bp$lengths[start_decrease:end_point])
-
-    base <- rotateWidthAccVector(x=bp$x[end_point],
-      y=bp$y[end_point],
-      x_origo=bp$x[end_point-1],
-      y_origo=bp$y[end_point-1],
-      width=max_gradient_width*g_factor[1],
-      default.units=default.units,
-      perpendicular=TRUE)
-
-    # Draw the end of the triangle
-    gradient_pg <- polygonGrob(y=unit.c(unit(bp$y[end_point], default.units),
-        base$left[2],
-        base$right[2]),
-      x=unit.c(unit(bp$x[end_point], default.units),
-        base$left[1],
-        base$right[1]),
-      gp=gpar(fill=g_clrs[1], col=g_clrs[1]),
-      vp = vp)
-
+  if (clr_start > 2){
+    reg_size <- 
+      lapply(grdnt_lines, 
+             function(side) lapply(side, 
+                                   function(x) head(x, clr_start - 1)))
+    gradient_pg <- 
+      with(reg_size,
+           convGenPolyGrob(x = c(left$x, rev(right$x)),
+                           y = c(left$y, rev(right$y)),
+                           d.u = default.units,
+                           i.u = internal.units,
+                           gp = gpar(fill = grdt_clr, col = grdt_clr, lwd = .01)))
+    
     inner_gradient <- gList(inner_gradient, gradient_pg)
-    for (i in (end_point-2):start_decrease){
-      top <- base
 
-      base <- rotateWidthAccVector(x=bp$x[i],
-        y=bp$y[i],
-        x_origo=bp$x[i-1],
-        y_origo=bp$y[i-1],
-        width=max_gradient_width*g_factor[end_point - i],
-        perpendicular=TRUE,
-        default.units=default.units,
-        prev_angle=top$angle)
-
-      current_clr <- ifelse(end_point - i < length(g_clrs),
-        g_clrs[end_point - i],
-        tail(g_clrs, 1))
-      gradient_pg <- polygonGrob(y=unit.c(top$left[2],
-          top$right[2],
-          base$right[2],
-          base$left[2]),
-        x=unit.c(top$left[1],
-          top$right[1],
-          base$right[1],
-          base$left[1]),
-        gp=gpar(fill=current_clr,
-          col=current_clr),
-        vp = vp)
-      inner_gradient <- gList(inner_gradient, gradient_pg)
-    }
-  }else {
-    # In case we didn't have any decrease we still
-    # need to initiate the base just so that
-    # the rest will work
-    if (end_point+1 > length(bp$x)){
-      base <- rotateWidthAccVector(x=end_points$end$x,
-        y=end_points$end$y,
-        x_origo=bp$x[end_point],
-        y_origo=bp$y[end_point],
-        width=max_gradient_width*g_factor[1],
-        default.units=default.units,
-        perpendicular=TRUE)
-    }else{
-      base <- rotateWidthAccVector(x=bp$x[end_point + 1],
-        y=bp$y[end_point + 1],
-        x_origo=bp$x[end_point],
-        y_origo=bp$y[end_point],
-        width=max_gradient_width*g_factor[1],
-        default.units=default.units,
-        perpendicular=TRUE)
-
-    }
+    # Remove the already plotted
+    grdnt_lines <- 
+      lapply(grdnt_lines, 
+             function(side) lapply(side, 
+                                   function(x) (x[-1*(1:(clr_start - 2))])))
   }
 
-  if (start_decrease > 1){
-    # Select the beginning
-    if (getGridVal(bp$x[1], "mm") < getGridVal(bp$x[2], "mm")){
-      x_start_selection <-
-        getGridVal(bp$x[1:start_decrease], default.units) >
-        getGridVal(end_points$start$x, default.units) + getGridVal(grdt_line_width, default.units)
-    }else if (getGridVal(bp$x[1], "mm") > getGridVal(bp$x[2], "mm")){
-      x_start_selection <-
-        getGridVal(bp$x[1:start_decrease], default.units, axisTo="x") >
-        getGridVal(end_points$start$x, default.units) - getGridVal(grdt_line_width, default.units)
-    }
-
-    if (getGridVal(bp$y[1], "mm", axisTo="y") < getGridVal(bp$y[2], "mm", axisTo="y")){
-      y_start_selection <-
-        getGridVal(bp$y[1:start_decrease], default.units) >
-        getGridVal(end_points$start$y, default.units) + getGridVal(grdt_line_width, default.units)
-    }else{
-      y_start_selection <-
-        getGridVal(bp$y[1:start_decrease], default.units) >
-        getGridVal(end_points$start$y, default.units) - getGridVal(grdt_line_width, default.units)
-    }
-
-    # It can be either x or y that is closes to the starting point
-    start_selection <- x_start_selection | y_start_selection
-
-    selection <- which(start_selection)[1]:(start_decrease-1)
-
-    # Catch the first turn
-    getDirection <- function(vals){
-      for (i in 2:length(vals)){
-        if (vals[1] != vals[i]){
-          if (vals[1] > vals[i]){
-            return(-1)
-          }else if (vals[1] < vals[i]){
-            return(1)
-          }
-        }
-      }
-      return(0)
-    }
-
-    # Remove those that are lower/higher than the point
-    removeVals <- function(vals, point){
-      direction <- getDirection(vals)
-      for (i in 1:length(vals)){
-        if ((vals[i] - point)*direction > 0){
-          return(vals[-(1:(i-1))])
-        }
-      }
-      return(c())
-    }
-
-    angle <- getVectorAngle(x = bp$x[2],
-                            y = bp$y[2],
-                            x_origo = bp$x[1],
-                            y_origo = bp$y[1])
-
-    w <- getGridVal(grdt_line_width, default.units)
-    st_bp <- list(start_x=getGridVal(end_points$start$x, default.units) +
-                    w*cos(angle),
-                  start_y=getGridVal(end_points$start$y, default.units) +
-                    w*sin(angle))
-
-
-    # Add the remaining points
-    st_bp$add_x <- removeVals(vals=getGridVal(bp$x[selection], default.units),
-                              point=st_bp$start_x)
-    st_bp$add_y <- removeVals(vals=getGridVal(bp$y[selection], default.units),
-                              point=st_bp$start_y)
-
-    # The two vectors need to be the same - make the larger smaller
-    if (length(st_bp$add_x) < length(st_bp$add_y)){
-      st_bp$add_y <- tail(st_bp$add_y, n=length(st_bp$add_x))
-    }else if (length(st_bp$add_x) > length(st_bp$add_y)){
-      st_bp$add_x <- tail(st_bp$add_x, n=length(st_bp$add_y))
-    }
-
-    # Now merge into one x and y
-    st_bp$x <- c(st_bp$start_x, st_bp$add_x)
-    st_bp$y <- c(st_bp$start_y, st_bp$add_y)
-
-    st_bp <- lapply(st_bp, function(x) unit(x, default.units))
-
-    lines <- getLines(bp=st_bp,
-                      end_point=list(x=bp$x[start_decrease],
-                                     y=bp$y[start_decrease]),
-                      width=max_gradient_width,
-                      default.units=default.units,
-                      align_2_axis = align_2_axis)
-
-    if (length(g_clrs) > end_point-start_decrease){
-      # Continue with gradient polygons if needed
-      for (i in 2:(length(g_clrs) - (end_point-start_decrease))){
-        top <- base
-        base <- list(left = unit.c(tail(lines$left$x, i)[1],
-                                   tail(lines$left$y, i)[1]),
-                     right = unit.c(tail(lines$right$x, i)[1],
-                                    tail(lines$right$y, i)[1]))
-
-        current_clr <- g_clrs[end_point - start_decrease + i]
-        gradient_pg <- polygonGrob(y=unit.c(top$left[2],
-            top$right[2],
-            base$right[2],
-            base$left[2]),
-          x=unit.c(top$left[1],
-            top$right[1],
-            base$right[1],
-            base$left[1]),
-          gp=gpar(fill=current_clr,
-            col=current_clr),
-          vp = vp)
-
-        inner_gradient <- gList(inner_gradient, gradient_pg)
-      }
-
-      lines <- clipLinesEnd(lines, length(g_clrs) - (end_point-start_decrease))
-    }
-
-    if (length(lines$left$x) > 0){
-      gradient_pg <- polygonGrob(y=unit.c(lines$left$y,
-          base$left[2],
-          base$right[2],
-          rev(lines$right$y)),
-        x=unit.c(lines$left$x,
-          base$left[1],
-          base$right[1],
-          rev(lines$right$x)),
-        default.units=default.units,
-        gp=gpar(fill=grdt_clr, col=grdt_clr),
-        vp = vp)
+  # Plot the gradient color - these need to be plotted as 
+  # one color per polygon
+  if (length(bp$x) >= clr_start){
+    g_clrs <- colorRampPalette(colors=c(grdt_clr, clr))(length(grdnt_lines$right$x))
+    for (i in 1:(length(grdnt_lines$right$x) - 1)){
+      gradient_pg <- 
+        with(grdnt_lines,
+             convGenPolyGrob(x = c(left$x[i:(i+1)], right$x[(i+1):i]),
+                             y = c(left$y[i:(i+1)], right$y[(i+1):i]),
+                             d.u = default.units,
+                             i.u = internal.units,
+                             gp = gpar(fill = g_clrs[i], col = g_clrs[i], lwd = .01)))
 
       inner_gradient <- gList(inner_gradient, gradient_pg)
     }
   }
-
-
+  
   return (gList(pg, inner_gradient))
 }
