@@ -218,14 +218,16 @@ extendLine <- function(x, y,
 
   # Generate a grob for the remaining spline
   if (axis == "y"){
-    ctrl_x <- c(x[1],
-                mean(x[1], ref_x),
-                mean(x[1], ref_x),
-                ref_x)
-    ctrl_y <- c(y[1],
-                y[1],
-                mean(y[1], ref_y),
-                ref_y)
+    if (distanceX < 0){
+      ctrl_x <- c(x[1], max(mean(x[1], ref_x)), ref_x)
+    }else{
+      ctrl_x <- c(x[1], min(mean(x[1], ref_x)), ref_x)
+    }
+    if (distanceY < 0){
+      ctrl_y <- c(y[1], max(mean(y[1], ref_y)), ref_y)
+    }else{
+      ctrl_y <- c(y[1], min(mean(y[1], ref_y)), ref_y)
+    }
   }else{
     ctrl_x <- c(x[1],
                 x[1],
@@ -237,14 +239,9 @@ extendLine <- function(x, y,
                 ref_y)
   }
 
-  add_bg <- bezierGrob(x = ctrl_x, y = ctrl_y,
-                       default.units=internal.units)
-
-  add_bg_pt <- bezierPoints(add_bg)
-  add_x <- rev(convertX(add_bg_pt$x, unitTo=internal.units, valueOnly=TRUE))
-  add_y <- rev(convertY(add_bg_pt$y, unitTo=internal.units, valueOnly=TRUE))
-  x <- c(add_x, x)
-  y <- c(add_y, y)
+  add_bg_pt <- gnrlBezierPoints(x = ctrl_x, y = ctrl_y, length_out = 10)
+  x <- c(rev(add_bg_pt$x), x)
+  y <- c(rev(add_bg_pt$y), y)
   return(list(x=x, y=y))
 }
 
