@@ -58,7 +58,7 @@ getBezierAdj4Arrw <- function (x, y, arrow_length, length_out = 100) {
     }
   }
 
-  if (retain < 2)
+  if (is.na(retain) || retain < 2)
     retain <- 2
   x <- x[1:retain]
   y <- y[1:retain]
