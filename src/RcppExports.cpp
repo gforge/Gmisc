@@ -25,3 +25,20 @@ BEGIN_RCPP
     return __sexp_result;
 END_RCPP
 }
+// gnrlBezierPoints
+Rcpp::List gnrlBezierPoints(NumericVector x, NumericVector y, int length_out = 100);
+RcppExport SEXP Gmisc_gnrlBezierPoints(SEXP xSEXP, SEXP ySEXP, SEXP length_outSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP );
+        Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP );
+        Rcpp::traits::input_parameter< int >::type length_out(length_outSEXP );
+        Rcpp::List __result = gnrlBezierPoints(x, y, length_out);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
