@@ -97,7 +97,7 @@ getBezierAdj4Arrw <- function (end_points, spline_ctrl, arrow_length,
   ##############################################
 
   # Special case where the end spline control isn't used
-  if (spline_ctrl$end$length == 0){
+  if (length(spline_ctrl$end) == 0){
     multiplier <- 0
   }else{
     multiplier <- with(spline_ctrl$end,
