@@ -1,181 +1,91 @@
 #' Gets the bezier points adjusted for an arrow
 #'
-#' @param end_points The start and end points
-#' @param spline_ctrl The spline control points
+#' @param x The x start and end points
+#' @param y The spline control points
 #' @param arrow_length The desired length of the arrow
-#' @param internal.units The internal absolute unit that is used
-#' @param vp The viewport if any
-#' @param rez_mltpl Increases the resolution for the final bezier
-#'  points by faking a larger line through multiplikation
+#' @param length_out Increases the resolution for the final bezier
+#'  points, i.e. generating more fine-grained intervals
 #' @return list
 #'
 #' @import magrittr
-getBezierAdj4Arrw <- function (end_points, spline_ctrl, arrow_length,
-                               internal.units, vp, rez_mltpl = 100) {
-  bp <- bezierGrob(x=c(end_points$start$x, spline_ctrl$x, end_points$end$x),
-                   y=c(end_points$start$y, spline_ctrl$y, end_points$end$y),
-                   default.units=internal.units, vp=vp) %>%
-    bezierPoints()
+getBezierAdj4Arrw <- function (x, y, arrow_length, length_out = 100) {
 
-  # Change to values that we can work with arithmetically
-  bp$y <- convertY(bp$y, unitTo=internal.units, valueOnly=TRUE)
-  bp$x <- convertX(bp$x, unitTo=internal.units, valueOnly=TRUE)
-
-  bp$distance_from_end <-
-    with(bp, sqrt((x-tail(x, 1))^2 +
-                    (y-tail(y, 1))^2))
-
-  #####################################
-  # Get the best cut point and adjust #
-  # so that it exactly matches the    #
-  # arrow length                      #
-  #####################################
-  bp$cut_point <-
-    (bp$distance_from_end - arrow_length) %>%
-    abs %>%
-    which.min
-
-  l_diff <- arrow_length -
-    sqrt((bp$x[bp$cut_point]-end_points$end$x)^2+
-           (bp$y[bp$cut_point]-end_points$end$y)^2)
-  if (l_diff != 0){
-    if (l_diff < 0){
-      # The arrow is a little short and we need to
-      # shrink the distance according to the
-      # length difference
-      prev_el_length <-
-        with(bp,
-             sqrt((x[cut_point] - x[cut_point - 1])^2 +
-                     (y[cut_point] - y[cut_point - 1])^2))
-      rel_diff <- (1+l_diff/prev_el_length)
-      bp$x[bp$cut_point] <-
-        with(bp,
-             x[cut_point - 1] +
-               (x[cut_point] - x[cut_point - 1])*
-               rel_diff)
-      bp$y[bp$cut_point] <-
-        with(bp,
-             y[cut_point - 1] +
-               (y[cut_point] - y[cut_point - 1])*
-               rel_diff)
-    }else{
-      # Move the cut point one forward
-      # but shrink the distance according to the
-      # length difference
-      bp$cut_point <-
-        bp$cut_point + 1
-      next_el_length <-
-        with(bp,
-             sqrt((x[cut_point] - x[cut_point - 1])^2 +
-                     (y[cut_point] - y[cut_point - 1])^2))
-      rel_diff <- l_diff/next_el_length
-      bp$x[bp$cut_point] <-
-        with(bp,
-             x[cut_point - 1] +
-               (x[cut_point] - x[cut_point - 1])*
-               rel_diff)
-      bp$y[bp$cut_point] <-
-        with(bp,
-             y[cut_point - 1] +
-               (y[cut_point] - y[cut_point - 1])*
-               rel_diff)
-    }
-  }
-
-
-  ##############################################
-  # Now we need to adjust the spline controls. #
-  #                                            #
-  # This is done by deducing the position of   #
-  # new end, modifying the arrow spline ctrl   #
-  # according to the size and direction of the #
-  # current arrow.                             #
-  #                                            #
-  # Note that both the start and the end       #
-  # spline controls need to be adjusted since  #
-  # both are affected by the line shortening   #
-  ##############################################
-
-  # Special case where the end spline control isn't used
-  if (length(spline_ctrl$end) == 0){
-    multiplier <- 0
+  # The distance between the tail and the second last spline point is indicative
+  # of how strong the adjustment should be
+  spl_len <- sqrt((tail(x, 1) - tail(x, 2)[1])^2 +
+                    (tail(y, 1) - tail(y, 2)[1])^2)
+  if (spl_len < arrow_length * 3){
+    mult <- 1
   }else{
-    multiplier <- with(spline_ctrl$end,
-                       (length-arrow_length*1.1)/length)
+    mult <- spl_len/(arrow_length * 3)
   }
 
-  # Use the arrow's vector in the opposite direction as the new ctrl point
-  adjust_ctr <- function(spl_point, org_endpoint,
-                         new_endpoint,
-                         multiplier){
-
-    # Shorten/lengthen depending on the arrow direction
-    if (new_endpoint < org_endpoint){
-      direction <- 1
-    }else{
-      direction <- -1
+  if (length(x) >= 4){
+    # The strength of the previous elmnt is also of importance
+    # A weak second element will cause the line to be more dependent
+    # on the first element
+    scnd_spl_len <- sqrt((tail(x, 3)[1] - tail(x, 4)[1])^2 +
+                           (tail(y, 3)[1] - tail(y, 4)[1])^2)
+    if (scnd_spl_len < arrow_length * 3){
+      mult <- spl_len/(arrow_length * 2)
     }
-
-    # The minimum spline control is the arrow length
-    min_adjusted <- new_endpoint-org_endpoint
-
-    new_sppoint <- spl_point +
-      direction*(org_endpoint - new_endpoint)*multiplier
-
-    if (direction*(min_adjusted - new_sppoint) < 0)
-      new_sppoint <- min_adjusted
-
-    return(new_sppoint)
   }
-  spline_ctrl$x[length(spline_ctrl$x)] <-
-    adjust_ctr(tail(spline_ctrl$x, 1),
-               tail(bp$x, 1),
-               bp$x[bp$cut_point - 1],
-               multiplier)
-  spline_ctrl$y[length(spline_ctrl$y)] <-
-    adjust_ctr(tail(spline_ctrl$y, 1),
-               tail(bp$y, 1),
-               bp$y[bp$cut_point - 1],
-               multiplier)
 
-  # Relate to full length
-  tot_line_length <-
-    with(bp,
-         mapply(x1 = x[-length(x)],
-                y1 = y[-length(y)],
-                x2 = x[-1],
-                y2 = y[-1],
-                function(x1, y1, x2, y2) sqrt((x2-x1)^2 + (y2-y1)^2))) %>%
-    sum
+  true_bezier <- gnrlBezierPoints(x = x, y = y, length_out = length_out)
+  true_bezier$distance <-
+    with(true_bezier,
+         sqrt((x - tail(x, 1))^2 + (y - tail(y, 1))^2))
 
-  simple_start_adjustment <- 1-arrow_length/tot_line_length/3
-  # Remove a fraction of the distance for the spline controles
-  spline_ctrl$x[1] <- end_points$start$x +
-    (spline_ctrl$x[1]-end_points$start$x)*simple_start_adjustment
-  spline_ctrl$y[1] <- end_points$start$y +
-    (spline_ctrl$y[1]-end_points$start$y)*simple_start_adjustment
+  cut_point <- which.min(abs(true_bezier$distance - arrow_length))
 
-  ##################################
-  # Done! Calculate the bezier     #
-  # line that we want to follow    #
-  # Note that the scale multiplier #
-  # allows us to get a better      #
-  # spline resolution              #
-  ##################################
-  new_bp <-
-    bezierGrob(x=c(end_points$start$x, spline_ctrl$x,
-                   bp$x[bp$cut_point])*rez_mltpl,
-               y=c(end_points$start$y, spline_ctrl$y,
-                   bp$y[bp$cut_point])*rez_mltpl,
-               default.units=internal.units,
-               vp=vp) %>%
-    bezierPoints
+  dx <- tail(x, 1) - true_bezier$x[cut_point]
+  dy <- tail(y, 1) - true_bezier$y[cut_point]
+  if (dx > dy){
+    if (dx > 0){
+      retain <- which(x > true_bezier$x[cut_point])[1]
+    }else if (dx < 0){
+      retain <- which(x < true_bezier$x[cut_point])[1]
+    }else{
+      retain <- 2
+    }
+  }else{
+    if (dy > 0){
+      retain <- which(y < true_bezier$y[cut_point])[1]
+    }else if (dx < 0){
+      retain <- which(y > true_bezier$y[cut_point])[1]
+    }else{
+      retain <- 2
+    }
+  }
 
-  # Get the bezier points and scale back
-  new_bp$y <- convertY(new_bp$y, unitTo=internal.units, valueOnly=TRUE)/rez_mltpl
-  new_bp$x <- convertX(new_bp$x, unitTo=internal.units, valueOnly=TRUE)/rez_mltpl
+  if (retain < 2)
+    retain <- 2
+  x <- x[1:retain]
+  y <- y[1:retain]
 
-  return(new_bp)
+  if (length(x) >= 3){
+    x[length(x)] <- true_bezier$x[cut_point] - dx*mult
+    y[length(y)] <- true_bezier$y[cut_point] - dy*mult
+
+    x[length(x) - 1] <-  x[length(x) - 1] -
+      (x[length(x) - 1] - x[length(x) - 2])/5
+    y[length(y) - 1] <- y[length(y) - 1] -
+      (y[length(y) - 1] - y[length(y) - 2])/5
+  }else{
+    x <- c(x, true_bezier$x[cut_point] - dx*mult * 2)
+    y <- c(y, true_bezier$y[cut_point] - dy*mult * 2)
+
+  }
+
+  x <- c(x, true_bezier$x[cut_point])
+  y <- c(y, true_bezier$y[cut_point])
+
+  adjusted_bp <- gnrlBezierPoints(x = x, y = y, length_out = length_out)
+
+  structure(adjusted_bp,
+            true_bezier = true_bezier,
+            cut_point = cut_point,
+            spline_ctrl = list(x = x, y = y))
 }
 
 

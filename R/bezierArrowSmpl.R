@@ -74,23 +74,10 @@ bezierArrowSmpl <- function(x = c(0.2, .7, .3, .9),
                      end=list(x=tail(x, 1),
                               y=tail(y, 1)))
 
-  spline_ctrl <- list(x=x[2:(length(x)-1)],
-                      y=y[2:(length(y)-1)])
-
-  # Get the length of the spline control through sqrt(a^2+b^2)
-  spline_ctrl$start$length <-
-    sqrt((spline_ctrl$x[1] - end_points$start$x)^2+
-           (spline_ctrl$y[1] - end_points$start$y)^2)
-  spline_ctrl$end$length <-
-    sqrt((tail(spline_ctrl$x,1) - end_points$end$x)^2+
-           (tail(spline_ctrl$y, 1) - end_points$end$y)^2)
-
-  # TODO: extend to multiple ctrl points as regular bezier curves as they do for instance in Inkscape
   new_bp <-
-    getBezierAdj4Arrw(end_points = end_points, spline_ctrl = spline_ctrl,
+    getBezierAdj4Arrw(x = x, y = y,
                       arrow_length = arrow$length,
-                      internal.units = internal.units,
-                      vp = vp)
+                      length_out = 200)
 
   # Get lengths
   new_bp$lengths <-

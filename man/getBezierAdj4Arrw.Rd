@@ -4,24 +4,18 @@
 \alias{getBezierAdj4Arrw}
 \title{Gets the bezier points adjusted for an arrow}
 \usage{
-getBezierAdj4Arrw(end_points, spline_ctrl, arrow_length, internal.units, vp,
-  rez_mltpl = 100)
+getBezierAdj4Arrw(x, y, arrow_length, length_out = 100)
 }
 \arguments{
-  \item{end_points}{The start and end points}
+  \item{x}{The x start and end points}
 
-  \item{spline_ctrl}{The spline control points}
+  \item{y}{The spline control points}
 
   \item{arrow_length}{The desired length of the arrow}
 
-  \item{internal.units}{The internal absolute unit that is
-  used}
-
-  \item{vp}{The viewport if any}
-
-  \item{rez_mltpl}{Increases the resolution for the final
-  bezier points by faking a larger line through
-  multiplikation}
+  \item{length_out}{Increases the resolution for the final
+  bezier points, i.e. generating more fine-grained
+  intervals}
 }
 \value{
 list

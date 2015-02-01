@@ -1,76 +1,131 @@
 library(grid)
 library(magrittr)
-explorBezier <- function (x, y) {
-  grid.newpage()
-  arrow_len = .2
-  spl_len <- sqrt((tail(x, 1) - tail(x, 2)[1])^2 +
-                    (tail(y, 1) - tail(y, 2)[1])^2)
-  if (spl_len < arrow_len * 2){
-    mult <- 1
-  }else{
-    mult <- spl_len/(arrow_len * 2)
-  }
-  for (i in 1:length(x)){
-    grid.circle(x[i], y[i], r = .01, gp=gpar(fill="grey", col="grey"))
-  }
-  l <- gnrlBezierPoints(x = x, y = y)
-  grid.lines(l$x, l$y, gp = gpar(col = "darkgreen", lwd=2), arrow=arrow())
-  
-  l$distance <- 
-    with(l, 
-         sqrt((x - tail(x, 1))^2 + (y - tail(y, 1))^2))
-  
-  cut_point <- which.min(abs(l$distance - arrow_len))
-  
-  grid.circle(l$x[cut_point], l$y[cut_point], r = .01, gp=gpar(fill="black"))
-  
-  dx <- tail(x, 1) - l$x[cut_point]
-  dy <- tail(y, 1) - l$y[cut_point]
-  if (dx > dy){
-    if (dx > 0){
-      retain <- x < l$x[cut_point]
-    }else if (dx < 0){
-      retain <- x > l$x[cut_point]
-    }
-  }else{
-    if (dy > 0){
-      retain <- y > l$y[cut_point]
-    }else if (dx < 0){
-      retain <- y < l$y[cut_point]
+explorBezier <- function (x, y, arrow_length, np = FALSE) {
+  if (np) grid.newpage()
+  grid.rect(gp = gpar(col = "grey"))
+  drawPoints <- function (x, y, clr = "darkgrey", font_clr = "white") {
+    for (i in 1:length(x)){
+      tg <- textGrob(i, x = x[i], y = y[i],
+                     gp = gpar(col = font_clr, fontface = "bold", fontsize = 10))
+      dim_size <- convertY(grobHeight(tg), unitTo = "mm", valueOnly = TRUE)
+      dim_size <- c(dim_size,
+                    convertX(grobWidth(tg), unitTo = "mm", valueOnly = TRUE))
+      grid.circle(unit(x[i], "npc"), unit(y[i], "npc"),
+                  r = max(dim_size)/2*1.7,
+                  default.units = "mm",
+                  gp=gpar(fill=clr, col=clr, alpha = .6))
+      grid.draw(tg)
     }
   }
 
-  x <- x[retain]
-  y <- y[retain]
-  
-  x[length(x)] <- l$x[cut_point] - dx*mult
-  y[length(y)] <- l$y[cut_point] - dy*mult
-  if (length(x) >= 3){
-    x[length(x) - 1] <-  x[length(x) - 1] - 
-      (x[length(x) - 1] - x[length(x) - 2])/5
-    y[length(y) - 1] <- y[length(y) - 1] - 
-      (y[length(y) - 1] - y[length(y) - 2])/5
-  }
-  
-  x <- c(x, l$x[cut_point])
-  y <- c(y, l$y[cut_point])
-  
-  for (i in 1:length(x)){
-    grid.circle(x[i], y[i], r = .01, gp=gpar(fill="red", col="red"))
-    grid.text(i, x[i] + .02, y[i] + .02)
-  }
-  
-  l <- gnrlBezierPoints(x = x, y = y)
-  grid.lines(l$x, l$y, gp = gpar(col = "orange", lwd=2), arrow=arrow())
+  bp <- getBezierAdj4Arrw(x = x,
+                          y = y,
+                          arrow_length = arrow_length,
+                          length_out = 100)
+
+  grid.lines(attr(bp, "true_bezier")$x,
+             attr(bp, "true_bezier")$y,
+             gp =  gpar(col = "darkgreen", fill = "darkgreen", lwd = 2),
+             arrow = arrow(type="closed", length = unit(4, "mm")),)
+
+  # Mark starting points
+  drawPoints(x, y, clr = "darkgreen")
+
+  grid.lines(bp$x,
+             bp$y,
+             gp =  gpar(col = "darkblue", fill = "darkblue", lwd = 1),
+             arrow = arrow(type="closed", length = unit(4, "mm")),)
+
+  # Mark starting points
+  drawPoints(attr(bp, "spline_ctrl")$x,
+             attr(bp, "spline_ctrl")$y,
+             clr = "darkblue")
 }
 
+# Do the left to right arrows
+pushBzVp <- function (x, y, arrow_length, col, row) {
+  pushViewport(viewport(layout.pos.row = row, layout.pos.col = col))
+  prPushMarginViewport(unit(5, "mm"))
+  explorBezier(x, y, arrow_length)
+  upViewport(3)
+}
 
-explorBezier(c(.1, .3, .7, .9),
-             c(.95, .1, .95, .1))
-explorBezier(c(.1, .3, .7, .9),
-             c(.95, .1, .95, .5))
-explorBezier(c(.1, .3, .7, .9),
-             c(.95, .1, .95, .9))
+grid.newpage()
+pushViewport(viewport(layout = grid.layout(2,2)))
+pushBzVp(x = c(.1, .3, .7, .9),
+         y = c(.95, .1, .95, .1),
+         arrow_length = .1,
+         col = 1, row = 1)
+pushBzVp(x = c(.1, .3, 1.1, .9),
+         y = c(.95, .1, 1.1, .5),
+         arrow_length = .1,
+         col = 1, row = 2)
+pushBzVp(x = c(.1, .1, .7, .9),
+         y = c(.95, .1, .95, .9),
+         arrow_length = .1,
+         col = 2, row = 1)
+pushBzVp(x = c(.1, .9, .1, .9),
+         y = c(.1, .1, .9, .9),
+         arrow_length = .1,
+         col = 2, row = 2)
 
-explorBezier(rev(c(.1, .3, .7, .9)),
-             c(.95, .1, .95, .9))
+# Check different arrow
+grid.newpage()
+pushViewport(viewport(layout = grid.layout(2,2)))
+pushBzVp(x = c(.1, .3, .7, .9),
+         y = c(.95, .1, .95, .1),
+         arrow_length = .2,
+         col = 1, row = 1)
+pushBzVp(x = c(.1, .3, 1.1, .9),
+         y = c(.95, .1, 1.1, .5),
+         arrow_length = .2,
+         col = 1, row = 2)
+pushBzVp(x = c(.1, .1, .7, .9),
+         y = c(.95, .1, .95, .9),
+         arrow_length = .2,
+         col = 2, row = 1)
+pushBzVp(x = c(.1, .9, .1, .9),
+         y = c(.1, .1, .9, .9),
+         arrow_length = .2,
+         col = 2, row = 2)
+
+# From right to left
+grid.newpage()
+pushViewport(viewport(layout = grid.layout(2,2)))
+pushBzVp(x = rev(c(.1, .3, .7, .9)),
+         y = rev(c(.95, .1, .95, .1)),
+         arrow_length = .2,
+         col = 1, row = 1)
+pushBzVp(x = rev(c(.1, .3, 1.1, .9)),
+         y = rev(c(.95, .1, 1.1, .5)),
+         arrow_length = .2,
+         col = 1, row = 2)
+pushBzVp(x = rev(c(.1, .1, .7, .9)),
+         y = rev(c(.95, .1, .95, .9)),
+         arrow_length = .2,
+         col = 2, row = 1)
+pushBzVp(x = rev(c(.1, .9, .1, .9)),
+         y = rev(c(.1, .1, .9, .9)),
+         arrow_length = .2,
+         col = 2, row = 2)
+
+
+# Really complex elements
+grid.newpage()
+pushViewport(viewport(layout = grid.layout(2,2)))
+pushBzVp(x = c(.1, .3, .1, .1, .7, .9),
+         y = c(.95, .1, .1, .9, .95, .1),
+         arrow_length = .2,
+         col = 1, row = 1)
+pushBzVp(x = c(.9, .3, 1.1, .9),
+         y = c(.95, .1, 1.1, .5),
+         arrow_length = .2,
+         col = 1, row = 2)
+pushBzVp(x = c(.05, .1, .7, .9, .8, .1),
+         y = c(.95, .1, .9, .9, .1, .1),
+         arrow_length = .2,
+         col = 2, row = 1)
+pushBzVp(x = c(.1, 2, -1, .9),
+         y = c(.1, .1, .9, .9),
+         arrow_length = .2,
+         col = 2, row = 2)
