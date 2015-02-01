@@ -12,7 +12,8 @@ calculateLinesAndArrow(x, y, offset, end_x = -1, end_y = -1,
 
   \item{y}{A numeric vector containing all the y-elements}
 
-  \item{offset}{The offset to add to the line}
+  \item{offset}{The offset to add to the line, can be a
+  vector if you want to use different offsets.}
 
   \item{end_x}{The x end of the line where the arrow
   occurrs (if < 0 arrow is skipped)}
