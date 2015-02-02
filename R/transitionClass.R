@@ -1,14 +1,33 @@
-#' An object for generating transition plots
+#' A reference class for generating transition plots
+#' 
+#' This class simplifies the creating of transition plots. It also 
+#' allows for advanced multi-column transitions. 
 #'
-#' @field transitions This is a 3 dimensional array storing all the transitions.
-#'
+#' @field transitions This is a >= 3 dimensional array with the transitions. Should not be direcly accessed.
+#' @field box_width The box width
+#' @field box_txt The texts of each box
+#' @field box_label Box labels on top/bottom of the boxes
+#' @field box_label_pos Either "top"/"bottom"
+#' @field box_label_cex The size of the box labels
+#' @field vertical_space The space between 
+#' @field fill_clr The fill color
+#' @field txt_clr The text color within the boxes
+#' @field box_cex The fontsize multiplier for the text within the boxes
+#' @field title The plot title if any
+#' @field title_cex The fontsize multiplier for the title
+#' @field mar The margins for the plot. 
+#' @field lwd_prop_total If the line with should be proportional to the 
+#'  maximum width within the full matrix or just proportional to the
+#'  each transition set.
+#' @field data Internal storage variable. Should not be accessed directly.
+#' 
 #' @import magrittr
 #' @importFrom methods setRefClass
 #' @import abind
 #' @export
-transitionClass <-
+Transition <-
   setRefClass(
-    "transitionClass",
+    "Transition",
     fields = list(
       data = "list",
       transitions = function(value){
@@ -98,15 +117,6 @@ transitionClass <-
           stop("Only numeric cex values are accepted")
 
         data$box_label_cex <<- value
-      },
-      colnames = function(value){
-        if (missing(value))
-          return(data$colnames)
-
-        if (length(value) != .self$noCols())
-          stop("Your column names (colnames) should match the number of columns")
-
-        data$colnames <<- value
       },
       vertical_space = function(value){
         if (missing(value))
@@ -221,13 +231,27 @@ transitionClass <-
           stop("There are 4 margins, you have supplied '", length(value), "'")
 
         data$mar <<- value
-      }) ,
+      },
+      lwd_prop_total = function(value){
+        if (missing(value)){
+          if (!is.null(data$lwd_prop_total))
+            return(data$lwd_prop_total)
+          
+          return(FALSE)
+        }
+        
+        if (!is.logical(value))
+          stop("The lwd_prop_total can either be TRUE or FALSE.",
+               " While you have provided the value '", value, "'")
+        
+        data$lwd_prop_total <<- value
+      }),
     methods = list(
       initialize = function(transitions, label, txt, fill_clr, txt_clr, ...){
-        "Set up a transitionClass object. The \\code{transitions} should be a 2D or 3D matrix
+        "Set up a Transition object. The \\code{transitions} should be a 2D or 3D matrix
         as defined in the \\code{$addTransitions} section and not as later internally stored."
         if (missing(transitions))
-          stop("You must provide a transition matrix when creating a transitionClass object")
+          stop("You must provide a transition matrix when creating a Transition object")
 
         if (is.character(transitions) &&
               all(transitions == "copy"))
@@ -429,7 +453,8 @@ transitionClass <-
         return(tail(dim(transitions), 1) + 1)
       },
       boxSizes = function(col){
-        "Gets the size of the boxes. Generally an integer but you can also set \\code{col = 'last'}."
+        "Gets the size of the boxes. The \\code{col} argumente shoud
+        is either an integer or 'last'"
         if (is.character(col)){
           if(col == "last"){
             col <- .self$noCols()
@@ -470,10 +495,19 @@ transitionClass <-
         }
       },
       getYProps = function (col) {
+        "Gets the proportions after removing the \\code{vertical_space}
+         between the boxes"
         vertical_sizes <- .self$boxSizes(col)
-        (1 - convertUnit(vertical_space, unitTo = "npc", axisFrom = "y", valueOnly = TRUE))*vertical_sizes/sum(vertical_sizes)
+        (1 - convertY(vertical_space, 
+                      unitTo = "npc", 
+                      valueOnly = TRUE))*
+          vertical_sizes/sum(vertical_sizes)
       },
       render = function(new_page = TRUE){
+        "Call this to render the full graph. The \\code{new_page}} argument
+        is for creating a new plot, set this to \\code{FALSE}
+        if you want to combine this plot with another or if you have
+        additional viewports that you intend to use."
         if (new_page)
           grid.newpage()
 
@@ -548,6 +582,7 @@ transitionClass <-
           fastDoCall(prTcPlotBoxColumn, box_args)
           upViewport()
 
+          
           seekViewport("regular")
           box_args[["proportions"]] <- proportions
           box_args[["fill"]] <- asub(fill_clr, idx = col, dims = 2)

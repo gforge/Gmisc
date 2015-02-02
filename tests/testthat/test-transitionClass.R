@@ -2,11 +2,11 @@ library(testthat)
 context("Transition class")
 
 test_that("Check initialization, copy, and dimensions",{
-  expect_error(getRefClass("transitionClass")$new(),
+  expect_error(getRefClass("Transition")$new(),
                regexp = "transition matrix")
 
   trn_mtrx <- matrix(1, ncol=2, nrow=2, dimnames = list(LETTERS[1:2], letters[1:2]))
-  a <- getRefClass("transitionClass")$new(trn_mtrx)
+  a <- getRefClass("Transition")$new(trn_mtrx)
   expect_equal(length(dim(a$transitions)),
                length(dim(trn_mtrx)) + 1)
   expect_equal(a$getDim(),
@@ -47,7 +47,7 @@ test_that("Check initialization, copy, and dimensions",{
 
 test_that("Check box size",{
   trn_mtrx <- matrix(1:4, ncol=2, nrow=2)
-  a <- getRefClass("transitionClass")$new(trn_mtrx)
+  a <- getRefClass("Transition")$new(trn_mtrx)
   expect_error(a$boxSizes())
   expect_equal(a$boxSizes(1),
                rowSums(trn_mtrx))
@@ -55,7 +55,7 @@ test_that("Check box size",{
                colSums(trn_mtrx))
 
   trn_mtrx <- array(1:8, dim = c(2, 2, 2))
-  a <- getRefClass("transitionClass")$new(trn_mtrx)
+  a <- getRefClass("Transition")$new(trn_mtrx)
   expect_equivalent(a$boxSizes(1),
                     rowSums(trn_mtrx[,,1]) + rowSums(trn_mtrx[,,2]))
   expect_equivalent(attr(a$boxSizes(1), "prop"),
@@ -119,7 +119,7 @@ for (i in 1:length(Ch_classes)){
 
 test_that("Check advanced matrix dimensions",{
   test_3D <- with(data, table(Charnley_class, Charnley_class_1yr, Sex))
-  transitions <- getRefClass("transitionClass")$new(test_3D)
+  transitions <- getRefClass("Transition")$new(test_3D)
 
   expect_equal(transitions$getDim(),
                dim(test_3D))
