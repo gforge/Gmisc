@@ -1,7 +1,7 @@
 #' A reference class for generating transition plots
-#' 
-#' This class simplifies the creating of transition plots. It also 
-#' allows for advanced multi-column transitions. 
+#'
+#' This class simplifies the creating of transition plots. It also
+#' allows for advanced multi-column transitions.
 #'
 #' @field transitions This is a >= 3 dimensional array with the transitions. Should not be direcly accessed.
 #' @field box_width The box width
@@ -9,18 +9,18 @@
 #' @field box_label Box labels on top/bottom of the boxes
 #' @field box_label_pos Either "top"/"bottom"
 #' @field box_label_cex The size of the box labels
-#' @field vertical_space The space between 
+#' @field vertical_space The space between
 #' @field fill_clr The fill color
 #' @field txt_clr The text color within the boxes
 #' @field box_cex The fontsize multiplier for the text within the boxes
 #' @field title The plot title if any
 #' @field title_cex The fontsize multiplier for the title
-#' @field mar The margins for the plot. 
-#' @field lwd_prop_total If the line with should be proportional to the 
+#' @field mar The margins for the plot.
+#' @field lwd_prop_type If the line with should be proportional to the
 #'  maximum width within the full matrix or just proportional to the
 #'  each transition set.
 #' @field data Internal storage variable. Should not be accessed directly.
-#' 
+#'
 #' @import magrittr
 #' @importFrom methods setRefClass
 #' @import abind
@@ -141,7 +141,7 @@ Transition <-
         if (missing(value))
           return(data$fill_clr)
 
-        value <- prTcValidateAndPrepClr(value, transitions, .self)
+        value <- prTcValidateAndPrepClr(value, transitions, tcObject = .self)
 
         data$fill_clr <<- value
       },
@@ -149,7 +149,7 @@ Transition <-
         if (missing(value))
           return(data$txt_clr)
 
-        value <- prTcValidateAndPrepClr(value, transitions, .self)
+        value <- prTcValidateAndPrepClr(value, transitions, tcObject = .self)
 
         data$txt_clr <<- value
       },
@@ -232,19 +232,19 @@ Transition <-
 
         data$mar <<- value
       },
-      lwd_prop_total = function(value){
+      lwd_prop_type = function(value){
         if (missing(value)){
-          if (!is.null(data$lwd_prop_total))
-            return(data$lwd_prop_total)
-          
-          return(FALSE)
+          if (!is.null(data$lwd_prop_type))
+            return(data$lwd_prop_type)
+
+          return("set")
         }
-        
+
         if (!is.logical(value))
-          stop("The lwd_prop_total can either be TRUE or FALSE.",
+          stop("The lwd_prop_type can either be TRUE or FALSE.",
                " While you have provided the value '", value, "'")
-        
-        data$lwd_prop_total <<- value
+
+        data$lwd_prop_type <<- value
       }),
     methods = list(
       initialize = function(transitions, label, txt, fill_clr, txt_clr, ...){
@@ -452,6 +452,25 @@ Transition <-
         "Gets the number of columns"
         return(tail(dim(transitions), 1) + 1)
       },
+      trnstnSizes = function(set_no){
+        "Gets the transitions per box as a 2D matrix. For the proportions
+         it also adds an attribute \\code{attr('props', prop_mtrx)} that
+         is a 2D matrix with the corresponding proportions."
+        if (set_no >= .self$noCols())
+          return (NULL)
+
+        if (length(.self$getDim()) == 3){
+          mtrx <- asub(transitions, idx = set_no, dims = 4)
+          props <- mtrx[,,1]/(mtrx[,,1]+mtrx[,,2])
+          # Remove the third dimension
+          mtrx <- mtrx[,,1] + mtrx[,,2]
+          attr(mtrx, "props") <- props
+        }else{
+          mtrx <- asub(transitions, idx = set_no, dims = 3)
+        }
+
+        return(mtrx)
+      },
       boxSizes = function(col){
         "Gets the size of the boxes. The \\code{col} argumente shoud
         is either an integer or 'last'"
@@ -498,8 +517,8 @@ Transition <-
         "Gets the proportions after removing the \\code{vertical_space}
          between the boxes"
         vertical_sizes <- .self$boxSizes(col)
-        (1 - convertY(vertical_space, 
-                      unitTo = "npc", 
+        (1 - convertY(vertical_space,
+                      unitTo = "npc",
                       valueOnly = TRUE))*
           vertical_sizes/sum(vertical_sizes)
       },
@@ -565,6 +584,14 @@ Transition <-
                               name="regular"))
         upViewport()
 
+        # Get the maximum transition within the entire plot
+        if (lwd_prop_type){
+          max_flow <- -Inf
+          for(i in 2:.self$noCols()){
+            mtrx <- trnstnSizes(i - 1);
+            max_flow <- max(max_flow, mtrx)
+          }
+        }
         for (col in 1:.self$noCols()){
           proportions <- getYProps(col)
 
@@ -582,7 +609,11 @@ Transition <-
           fastDoCall(prTcPlotBoxColumn, box_args)
           upViewport()
 
-          
+          # Output the transitions
+          if (col < .self$noCols()){
+
+          }
+
           seekViewport("regular")
           box_args[["proportions"]] <- proportions
           box_args[["fill"]] <- asub(fill_clr, idx = col, dims = 2)
