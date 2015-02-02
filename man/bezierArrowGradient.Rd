@@ -5,7 +5,7 @@
 \title{A bezier arrow with gradient}
 \usage{
 bezierArrowGradient(width = 0.05, clr = "#000000", default.units = "npc",
-  align_2_axis = TRUE, grdt_type = c("triangle"),
+  align_2_axis = TRUE, grdt_type = c("triangle", "rectangle"),
   grdt_decrease_prop = 0.4, grdt_start_prop = 0.4, grdt_clr_prop = 0.7,
   grdt_line_width = NA, grdt_clr = "#2F4F2F", vp = NULL, gp = gpar(),
   ...)
