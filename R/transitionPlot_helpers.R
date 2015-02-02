@@ -193,8 +193,12 @@ prTpPlotArrows <- function(type,
 
       # Calculate line width
       lwd <- max_lwd*transition_flow[box_row,flow]/max_flow
-      if (lwd < min_lwd)
+      if (lwd < min_lwd){
+        message("The minimum width reached and the arrow at box '", box_row, "' to '", flow, "'",
+                " will not be shown. This is due to the fact that the lwd will generate a falsely
+                  strong arrow.")
         next;
+      }
 
       adjusted_lwd <- lwd
       if (is.na(add_width) == FALSE){
