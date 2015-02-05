@@ -48,130 +48,140 @@ prTcPlotBoxColumn <- function(box_positions,
 #' @param origin_boxes The origin boxes' positions to the left
 #' @param target_boxes The target boxes' positions to the right
 #' @param max_flow The maximum flow if it is common for the entire image
+#' @param abs_arrow_width If the arrow width should be the same for all arrows
 #' @inheritParams prTcPlotBoxColumn
 #' @keywords internal
 prTcPlotArrows <- function(trnstn_set,
+                           arrow_widths,
                            arrow_type =  c("grid", "simple", "gradient"),
                            origin_boxes, target_boxes,
                            left_box_clrs, add_width,
-                           max_flow, min_width, max_width){
+                           max_flow, min_width, max_width,
+                           abs_arrow_width = FALSE){
+  if (length(dim(trnstn_set)) == 4){
+    transition_arrow_props <- trnstn_set[,,1]/(trnstn_set[,,1] + trnstn_set[,,2])
+    trnstn_set <- (trnstn_set[,,1] + trnstn_set[,,2])
+  }
   for (org_row in 1:nrow(trnstn_set)){
     origin <- origin_boxes[[org_row]]
+
+    # Check what arrows that should be skipped
+    no_arrows <- sapply(arrow_widths[[org_row]], function(x) is.null(x$lwd), USE.NAMES = FALSE)
+
     # Plot the widest arrow last
     for (target_row in order(trnstn_set[org_row,])){
+      if (no_arrows[target_row])
+        next;
+
       target <- target_boxes[[target_row]]
-      if (trnstn_set[org_row,target_row] > 0){
-        a_l <- (box_width/4)
-        x_ctrl_points <- c(origin$right, .5, .5, target$left)
-        no_arrows <- trnstn_set[,target_row] > 0
-        arrow_dodge <- seq(from = -target$height/6,
-                           to = target$height/6, 
-                           length.out = sum(no_arrows))
-        y_ctrl_points <- c(rep(origin$y, 2),
-                           rep(target_boxes$y + 
-                                 arrow_dodge[org_row - 
-                                               sum(!no_arrows[0:(org_row -1)])],
-                           target_boxes$y_entry[org_row - 
-                                                  sum()]))
-        current_arrow_clr <- clr[(target_row+(org_row-1)*no_boxes)]
-        if (type=="grid"){
-          if (abs_arrow_width){
-            a_width <- target_boxes$y_entry_height/no_boxes
-          }else{
-            # Not really sure but points seem to be a reasonable
-            # unit for the lwd as a basis for this part
-            a_width <- getGridVal(unit(lwd, "pt"), "npc")+
-              target_boxes$y_entry_height/(no_boxes+1)
-          }
+      entry_length <- target$height/3
+      arrow_length <- traget$width/4
 
-          # Add line width addition if it is a background line
-          if (!missing(add_width)){
-            if (is.unit(add_width)){
-              a_width <- a_width + convertY(add_width, unitTo="npc", valueOnly=TRUE)
-            }else{
-              a_width <- a_width * add_width
-            }
-          }
-
-          a_angle <- atan(a_width/2/a_l)*180/pi
-          # Need to adjust the end of the arrow as it otherwise overwrites part of the box
-          # if it is thick
-          x_ctrl_points[4] <- x_ctrl_points[4]-.00075*adjusted_lwd
-          grid.bezier(x=x_ctrl_points,
-                      y=y_ctrl_points,
-                      gp=gpar(lwd=adjusted_lwd, fill=current_arrow_clr),
-                      arrow=arrow(type="closed", angle=a_angle, length=unit(a_l, "npc")))
-
+      adjusted_lwd <- arrow_widths[[org_row]][[target_row]]
+      x_ctrl_points <- c(origin$right, .5, .5, target$left)
+      arrow_dodge <- seq(from = -target$height/6,
+                         to = target$height/6,
+                         length.out = sum(no_arrows))
+      y_ctrl_points <- c(rep(origin$y, 2),
+                         rep(target$y +
+                               arrow_dodge[org_row -
+                                             sum(!no_arrows[0:(org_row -1)])],
+                             target$y_entry[org_row -
+                                                sum()]))
+      current_arrow_clr <- clr[(target_row+(org_row-1)*no_boxes)]
+      if (type=="grid"){
+        if (abs_arrow_width){
+          a_width <- entry_length/no_boxes
         }else{
-          # The width can be wider using the special bezier arrows
-          if (abs_arrow_width){
-            a_width <- target_boxes$y_entry_height*1.5/no_boxes
+          # Not really sure but points seem to be a reasonable
+          # unit for the lwd as a basis for this part
+          a_width <- convertHeight(unit(lwd, "pt"), "npc")+
+            entry_length/(no_boxes+1)
+        }
+
+        # Add line width addition if it is a background line
+        if (!missing(add_width)){
+          if (is.unit(add_width)){
+            a_width <- a_width + convertY(add_width, unitTo="npc", valueOnly=TRUE)
           }else{
-            a_width <- # getGridVal(lwd, "npc") +
-              target_boxes$y_entry_height*trnstn_set[org_row,target_row]/max_flow*2.2
-            # Set a maximum size in proportion to the line
-            if (getGridVal(lwd, "npc", axisTo="y")*1.66 < a_width)
-              a_width <- getGridVal(lwd, "npc", axisTo="y")*1.66
+            a_width <- a_width * add_width
           }
+        }
 
-          # Add line width addition if it is a background line
-          if (!is.na(add_width)){
-            if (is.unit(add_width)){
-              a_width <- a_width + convertY(add_width, unitTo="npc", valueOnly=TRUE)
-            }else{
-              a_width <- a_width * add_width
-            }
-          }
+        # Need to adjust the end of the arrow as it otherwise overwrites part of the box
+        # if it is thick
+        x_ctrl_points[4] <- x_ctrl_points[4]-.00075*adjusted_lwd
+        grid.bezier(x=x_ctrl_points,
+                    y=y_ctrl_points,
+                    gp=gpar(lwd=adjusted_lwd, fill=current_arrow_clr),
+                    arrow=arrow(type="closed",
+                                angle=atan((a_width/2)/arrow_length)*180/pi,
+                                length=unit(arrow_length, target$unit)))
 
+      }else{
+        # The width can be wider using the special bezier arrows
+        if (abs_arrow_width){
+          a_width <- entry_length*1.5/no_boxes
+        }else{
+          a_width <-
+            entry_length*trnstn_set[org_row,target_row]/max_flow*2.2
+          # Set a maximum size in proportion to the line
+          if (getGridVal(lwd, "npc", axisTo="y")*5/3 < a_width)
+            a_width <- getGridVal(lwd, "npc", axisTo="y")*5/3
+        }
 
-          if (a_width < adjusted_lwd){
-            sp_float_string <- sprintf("%%.%df", -floor(log10(adjusted_lwd-a_width))+1)
-            warning("The arrow width is smaller than the width of the line,",
-                    "thus not appearing as a regular arrow: ",
-                    sprintf(sp_float_string, a_width),
-                    " < ",
-                    sprintf(sp_float_string, adjusted_lwd))
-
-            # Looks really weird if this is allowed
-            a_width <- adjusted_lwd
-
-          }
-
-          if (type=="simple"){
-            bz <- bezierArrowSmpl(x=x_ctrl_points,
-                                  y=y_ctrl_points,
-                                  width=adjusted_lwd,
-                                  arrow=list(length=a_l, base=a_width),
-                                  clr=current_arrow_clr)
-            grid.draw(bz)
-          }else if (type=="gradient"){
-            if (length(box_clr) > 1){
-              # Invert order as that is the fill order
-              current_grdt_clr <- prTpGetColors(colors = box_clr,
-                                                proportion = 1-transition_arrow_props[org_row, target_row],
-                                                space = color_bar_subspace)
-            }else{
-              current_grdt_clr <- box_clr
-            }
-            bz <- bezierArrowGradient(x=x_ctrl_points,
-                                      y=y_ctrl_points,
-                                      width=adjusted_lwd,
-                                      arrow=list(length=a_l, base=a_width),
-                                      clr=current_arrow_clr,
-                                      grdt_type = "triangle",
-                                      grdt_clr_prop = 0.5,
-                                      grdt_start_prop = .3,
-                                      grdt_decrease_prop = .3,
-                                      grdt_clr = current_grdt_clr)
-            grid.draw(bz)
-
+        # Add line width addition if it is a background line
+        if (!is.na(add_width)){
+          if (is.unit(add_width)){
+            a_width <- a_width + convertY(add_width, unitTo="npc", valueOnly=TRUE)
           }else{
-            stop("The arrow type ", type, " is not yet implemented, sorry.")
+            a_width <- a_width * add_width
           }
+        }
+
+
+        if (a_width < adjusted_lwd){
+          sp_float_string <- sprintf("%%.%df", -floor(log10(adjusted_lwd-a_width))+1)
+          warning("The arrow width is smaller than the width of the line,",
+                  "thus not appearing as a regular arrow: ",
+                  sprintf(sp_float_string, a_width),
+                  " < ",
+                  sprintf(sp_float_string, adjusted_lwd))
+
+          # Looks really weird if this is allowed
+          a_width <- adjusted_lwd
+        }
+
+        if (arrow_type=="simple"){
+          bezierArrowSmpl(x=x_ctrl_points,
+                          y=y_ctrl_points,
+                          width=adjusted_lwd,
+                          arrow=list(length=arrow_length, base=a_width),
+                          clr=current_arrow_clr) %>%
+            grid.draw
+        }else{
+          if (length(box_clr) > 1){
+            # Invert order as that is the fill order
+            current_grdt_clr <- prTpGetColors(colors = box_clr,
+                                              proportion = 1-transition_arrow_props[org_row, target_row],
+                                              space = color_bar_subspace)
+          }else{
+            current_grdt_clr <- box_clr
+          }
+          bezierArrowGradient(x=x_ctrl_points,
+                              y=y_ctrl_points,
+                              width=adjusted_lwd,
+                              arrow=list(length=a_l, base=a_width),
+                              clr=current_arrow_clr,
+                              grdt_type = "triangle",
+                              grdt_clr_prop = 0.5,
+                              grdt_start_prop = .3,
+                              grdt_decrease_prop = .3,
+                              grdt_clr = current_grdt_clr) %>%
+            grid.draw
         }
       }
     }
-
   }
 }
 

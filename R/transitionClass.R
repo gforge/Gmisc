@@ -9,7 +9,7 @@
 #' @field box_label Box labels on top/bottom of the boxes
 #' @field box_label_pos Either "top"/"bottom"
 #' @field box_label_cex The size of the box labels
-#' @field arrow_type The type of arrow to use, defaults to 
+#' @field arrow_type The type of arrow to use, defaults to
 #'  "gradient", but can also be "simple" or "grid". The corresponding
 #'  functions are \code{\link{bezierArrowGradient}},
 #'  \code{\link{bezierArrowSmpl}}, and \code{\link[grid]{bezierGrob}}.
@@ -25,7 +25,8 @@
 #'  lines that are smaller than a certain amount.
 #' @field max_lwd The maximum line width to show
 #' @field lwd_prop_type The line can either be proportional to the \code{"each"} transition
-#'  set, i.e. group of two boxes, or it can be proportional to \code{"all"} transitions.
+#'  set, i.e. group of two box columns. It can also be proportional to \code{"all"} transitions,
+#'  or to each \code{"box"}.
 #' @field data Internal storage variable. Should not be accessed directly.
 #'
 #' @import magrittr
@@ -131,12 +132,12 @@ Transition <-
             return(data$box_cex)
           if (is.null(data$box_txt))
             return(1)
-          
+
           all_texts <- unlist(sapply(as.vector(box_txt), function(x) strsplit(x, "\n")[[1]], USE.NAMES = FALSE))
           longest_txt <- all_texts[which.max(sapply(all_texts, nchar))]
           base_width <- convertWidth(grobWidth(textGrob(label = longest_txt, gp = gpar(cex = 1))), unitTo = "npc", valueOnly = TRUE)
           width_cex <- convertWidth(box_width, unitTo = "npc", valueOnly = TRUE)*.8/base_width
-          
+
           min_height <- Inf
           for (col in 1:.self$noCols()){
             proportions <- getYProps(col)
@@ -148,13 +149,13 @@ Transition <-
           base_height <- convertUnit(grobHeight(textGrob(label = "A", gp = gpar(cex = 1))),
                                      unitTo = "npc", axisFrom = "y", valueOnly = TRUE)
           height_cex <- max_txt_height/base_height
-          
+
           return(max(.75, min(width_cex, height_cex)))
         }
-        
+
         if (value < 0 && !is.null(value))
           stop("The cex is a multiplier of the font size and has to be at minimum 0")
-        
+
         data$box_cex <<- value
       },
       arrow_type = function(value = c("gradient", "simple", "grid")){
@@ -163,7 +164,7 @@ Transition <-
             return(data$arrow_type)
           return("gradient")
         }
-        
+
         data$arrow_type <<- match.arg(value)
       },
       vertical_space = function(value){
@@ -216,10 +217,10 @@ Transition <-
         if (missing(value)){
           if (!is.null(data$min_lwd))
             return(data$min_lwd)
-          
-          if(type_of_arrow == "grid") 
+
+          if(type_of_arrow == "grid")
             return(1)
-          
+
           return(unit(.1, "mm"))
         }
         data$min_lwd <<- value
@@ -228,13 +229,13 @@ Transition <-
         if (missing(value)){
           if (!is.null(data$max_lwd))
             return(data$max_lwd)
-          
-          if(type_of_arrow == "grid") 
+
+          if(type_of_arrow == "grid")
             return(6)
-          
+
           return(unit(5, "mm"))
         }
-        data$min_lwd <<- value
+        data$max_lwd <<- value
       },
       title_cex = function(value){
         if (missing(value)){
@@ -272,7 +273,7 @@ Transition <-
 
         data$mar <<- value
       },
-      lwd_prop_type = function(value = c("each", "all")){
+      lwd_prop_type = function(value = c("each", "all", "box")){
         if (missing(value)){
           if (!is.null(data$lwd_prop_type))
             return(data$lwd_prop_type)
@@ -383,13 +384,13 @@ Transition <-
 
         invisible(mtrx)
       },
-      getTransitionSet(no){
+      getTransitionSet = function(no){
         if (no >= .self$noCols() ||
               no < 1)
           stop("You can only select transition sets ranging from 1 to ", .self$noCols() - 1)
-        
-        asub(transitions, 
-             idx = no, 
+
+        asub(transitions,
+             idx = no,
              dims = length(.self$getDim()) + 1)
       },
       addClr = function(fill, txt){
@@ -497,31 +498,66 @@ Transition <-
         "Gets the number of columns"
         return(tail(dim(transitions), 1) + 1)
       },
-      getArrowDetails = function(set_no){
-        arrows <- list()
-        trnsn <- .self$getTransitionSet(set_no)
-        
-        # Calculate line width
-        lwd <- max_lwd*trnstn_set[org_row,target_row]/max_flow
-        if (lwd < min_lwd){
-          message("The minimum width reached and the arrow at box '", org_row, "' to '", target_row, "'",
-                  " will not be shown. This is due to the fact that the lwd will generate a falsely
-                  strong arrow.")
-          next;
+      arrowWidths = function(set_no, add_width){
+        "Retreives the details regarding arrow sizes for each arrow within the transition
+        group"
+        trnstn_set <- .self$getTransitionSet(col)
+
+        # Get the maximum transition within the entire plot
+        if (lwd_prop_type == "all"){
+          max_flow <- -Inf
+          for(i in 2:.self$noCols()){
+            mtrx <- trnstnSizes(i - 1);
+            max_flow <- max(max_flow, mtrx)
+          }
+        }else if (lwd_prop_type == "each"){
+          max_flow <- max(trnstn_set)
         }
-        
-        adjusted_lwd <- lwd
-        if (!missing(add_width)){
-          if ("unit" %in% class(add_width)){
-            adjusted_lwd <- convertY(unit(lwd, "npc") + add_width, unitTo="npc", valueOnly=TRUE)
-          }else if (add_width > 1){
-            adjusted_lwd <- lwd*add_width
-          }else{
-            # Quit if the width isn't bigger as it won't show
-            return()
+
+        internal.unit <- "mm"
+        raw_max_lwd <- max_lwd
+        if (is.unit(raw_max_lwd)){
+          raw_max_lwd <- convertHeight(raw_max_lwd,
+                                       unitTo = internal.unit,
+                                       valueOnly = TRUE)
+        }
+        raw_min_lwd <- min_lwd
+        if (is.unit(raw_min_lwd)){
+          raw_min_lwd <- convertHeight(raw_min_lwd,
+                                       unitTo = internal.unit,
+                                       valueOnly = TRUE)
+        }
+        arrows <- list()
+        for (org_row in 1:.self$noRows()){
+          if (lwd_prop_type == "box"){
+            max_flow <- max(trnstn_set[row,])
+          }
+
+          arrows[[org_row]] <-
+            rep(list(), .self$noRows)
+
+          for (targ_row in 1:.self$noRows()){
+            # Calculate line width
+            lwd <- raw_max_lwd*trnstn_set[org_row,target_row]/max_flow
+            if (lwd < raw_min_lwd){
+              # Lines that are below the minimum should not be shown
+              next;
+            }
+
+            adjusted_lwd <- lwd
+            if (!missing(add_width)){
+              if ("unit" %in% class(add_width)){
+                adjusted_lwd <- convertY(unit(lwd, "npc") + add_width, unitTo="npc", valueOnly=TRUE)
+              }else if (add_width > 1){
+                adjusted_lwd <- lwd*add_width
+              }
+            }
+
+            arrows[[org_rod]][[targ_row]]$lwd <- unit(adjusted_lwd, internal.unit)
+            arrows[[org_rod]][[targ_row]]$adj_lwd <- unit(adjusted_lwd, internal.unit)
           }
         }
-        
+        return(arrows)
       },
       trnstnSizes = function(set_no){
         "Gets the transitions per box as a 2D matrix. For the proportions
@@ -595,15 +631,16 @@ Transition <-
       },
       boxPositions <- function(col){
         "The box positions as a list with scalars for the positions:
-        \enumerate{
-         \item \emph{x} The center x-position
-         \item \emph{y} The center y-position
-         \item \emph{right} The right edge
-         \item \emph{left} The left edge
-         \item \emph{top} The top edge
-         \item \emph{bottom} The bottom edge
-         \item \emph{height} The box height
-         \item \emph{width} The box width
+        \\enumerate{
+         \\item \\emph{x} The center x-position
+         \\item \\emph{y} The center y-position
+         \\item \\emph{right} The right edge
+         \\item \\emph{left} The left edge
+         \\item \\emph{top} The top edge
+         \\item \\emph{bottom} The bottom edge
+         \\item \\emph{height} The box height
+         \\item \\emph{width} The box width
+         \\item \\emph{unit} The unit used for the values (npc)
         }"
         raw_width <- convertWidth(box_width, unitTo = "npc", valueOnly = TRUE)
         space_between <- (1- raw_width * .self$noCols())/(.self$noCols() - 1)
@@ -627,7 +664,8 @@ Transition <-
               bottom = y_offset - proportions[i],
               # Size
               height = proportions[i],
-              width = raw_width)
+              width = raw_width,
+              unit = "npc")
           if (proportions[i] > 0){
             y_offset <- y_offset - sum(proportions[i], vertical_space)
           }
@@ -664,7 +702,7 @@ Transition <-
 
         raw_width <- convertWidth(box_width, unitTo = "npc", valueOnly = TRUE)
         space_between <- (1- raw_width * .self$noCols())/(.self$noCols() - 1)
-        
+
         if (!is.null(box_label)){
           raw_height <- convertHeight(grobHeight(textGrob("Aj", gp=gpar(cex=box_label_cex))),
                                       unitTo = "npc", valueOnly = TRUE)
@@ -702,15 +740,7 @@ Transition <-
                               name="regular"))
         upViewport()
 
-        # Get the maximum transition within the entire plot
-        if (lwd_prop_type == "all"){
-          max_flow <- -Inf
-          for(i in 2:.self$noCols()){
-            mtrx <- trnstnSizes(i - 1);
-            max_flow <- max(max_flow, mtrx)
-          }
-        }
-        
+
         for (col in 1:.self$noCols()){
           proportions <- getYProps(col)
 
@@ -723,7 +753,7 @@ Transition <-
                            txt = rep("", times = .self$noRows()),
                            txt_clr = rep(grey(level = .3), times = .self$noRows()),
                            cex = box_cex)
-          
+
           seekViewport("shadows")
           fastDoCall(prTcPlotBoxColumn, box_args)
           upViewport()
@@ -733,21 +763,19 @@ Transition <-
           box_args[["fill"]] <- asub(fill_clr, idx = col, dims = 2)
           box_args[["txt"]] <- box_txt[,col]
           box_args[["txt_clr"]] <- asub(txt_clr, idx = col, dims = 2)
-          
+
           # Output the transitions
           if (col < .self$noCols()){
             trnstn_set <- .self$getTransitionSet(col)
-            if (lwd_prop_type == "each"){
-              max_flow <- max(trnstn_set)
-            }
-            
+
+
             prTcPlotArrows(trnstn_set,
                            arrow_type = arrow_type,
-                           origin_boxes = bx_pos, 
+                           origin_boxes = bx_pos,
                            target_boxes = .self$boxPositions(col + 1),
                            left_box_clrs = box_args[["fill"]],
-                           max_flow = max_flow, 
-                           min_width = min_width, 
+                           max_flow = max_flow,
+                           min_width = min_width,
                            max_width = max_width)
           }
 
