@@ -2,22 +2,19 @@
 #'
 #' Takes a set of box settings and plots them.
 #'
+#' @param box_positions The box positions
 #' @param fill The fill colors of length equal to the proportions
 #' @param txt The texts of length equal to the proportions
 #' @param txt_clr The text colors of length equal to the proportions
 #' @param cex The fontsize multiplier
 #' @inheritParams prTcGetBoxPositions
 #' @return \code{void}
-prTcPlotBoxColumn <- function(x_offset,
-                              width,
+prTcPlotBoxColumn <- function(box_positions,
                               proportions,
                               fill,
                               txt,
                               txt_clr,
                               cex){
-  bx <- prTcGetBoxPositions(x_offset = x_offset,
-                            width = width,
-                            proportions = proportions)
   for (i in 1:length(proportions)){
     if (bx[[i]]$height == 0)
       next;
@@ -47,6 +44,7 @@ prTcPlotBoxColumn <- function(x_offset,
 #' @param arrow_type The type of arrow to be used
 #' @param min_width The minimum line width
 #' @param max_width The maximum line width
+#' @param add_width Adds a certain width - useful for background arrows
 #' @param origin_boxes The origin boxes' positions to the left
 #' @param target_boxes The target boxes' positions to the right
 #' @param max_flow The maximum flow if it is common for the entire image
@@ -55,37 +53,27 @@ prTcPlotBoxColumn <- function(x_offset,
 prTcPlotArrows <- function(trnstn_set,
                            arrow_type =  c("grid", "simple", "gradient"),
                            origin_boxes, target_boxes,
-                           left_box_clrs,
+                           left_box_clrs, add_width,
                            max_flow, min_width, max_width){
-  for (box_row in 1:nrow(trnstn_set)){
+  for (org_row in 1:nrow(trnstn_set)){
+    origin <- origin_boxes[[org_row]]
     # Plot the widest arrow last
-    for (flow in order(trnstn_set[box_row,])){
-      if (trnstn_set[box_row,flow] > 0){
-        # Calculate line width
-        lwd <- max_lwd*trnstn_set[box_row,flow]/max_flow
-        if (lwd < min_lwd){
-          message("The minimum width reached and the arrow at box '", box_row, "' to '", flow, "'",
-                  " will not be shown. This is due to the fact that the lwd will generate a falsely
-                  strong arrow.")
-          next;
-        }
-
-        adjusted_lwd <- lwd
-        if (is.na(add_width) == FALSE){
-          if ("unit" %in% class(add_width)){
-            adjusted_lwd <- convertUnit(unit(lwd, "npc") + add_width, unitTo="npc", valueOnly=TRUE)
-          }else if (add_width > 1){
-            adjusted_lwd <- lwd*add_width
-          }else{
-            # Quit if the width isn't bigger as it won't show
-            return()
-          }
-        }
+    for (target_row in order(trnstn_set[org_row,])){
+      target <- target_boxes[[target_row]]
+      if (trnstn_set[org_row,target_row] > 0){
         a_l <- (box_width/4)
-        x_ctrl_points <- c(origin_boxes$right, .5, .5, target_boxes$left)
-        y_ctrl_points <- c(origin_boxes$y_exit[flow], origin_boxes$y_exit[flow],
-                           target_boxes$y_entry[box_row], target_boxes$y_entry[box_row])
-        current_arrow_clr <- clr[(flow+(box_row-1)*no_boxes)]
+        x_ctrl_points <- c(origin$right, .5, .5, target$left)
+        no_arrows <- trnstn_set[,target_row] > 0
+        arrow_dodge <- seq(from = -target$height/6,
+                           to = target$height/6, 
+                           length.out = sum(no_arrows))
+        y_ctrl_points <- c(rep(origin$y, 2),
+                           rep(target_boxes$y + 
+                                 arrow_dodge[org_row - 
+                                               sum(!no_arrows[0:(org_row -1)])],
+                           target_boxes$y_entry[org_row - 
+                                                  sum()]))
+        current_arrow_clr <- clr[(target_row+(org_row-1)*no_boxes)]
         if (type=="grid"){
           if (abs_arrow_width){
             a_width <- target_boxes$y_entry_height/no_boxes
@@ -97,7 +85,7 @@ prTcPlotArrows <- function(trnstn_set,
           }
 
           # Add line width addition if it is a background line
-          if (!is.na(add_width)){
+          if (!missing(add_width)){
             if (is.unit(add_width)){
               a_width <- a_width + convertY(add_width, unitTo="npc", valueOnly=TRUE)
             }else{
@@ -120,7 +108,7 @@ prTcPlotArrows <- function(trnstn_set,
             a_width <- target_boxes$y_entry_height*1.5/no_boxes
           }else{
             a_width <- # getGridVal(lwd, "npc") +
-              target_boxes$y_entry_height*trnstn_set[box_row,flow]/max_flow*2.2
+              target_boxes$y_entry_height*trnstn_set[org_row,target_row]/max_flow*2.2
             # Set a maximum size in proportion to the line
             if (getGridVal(lwd, "npc", axisTo="y")*1.66 < a_width)
               a_width <- getGridVal(lwd, "npc", axisTo="y")*1.66
@@ -160,7 +148,7 @@ prTcPlotArrows <- function(trnstn_set,
             if (length(box_clr) > 1){
               # Invert order as that is the fill order
               current_grdt_clr <- prTpGetColors(colors = box_clr,
-                                                proportion = 1-transition_arrow_props[box_row, flow],
+                                                proportion = 1-transition_arrow_props[org_row, target_row],
                                                 space = color_bar_subspace)
             }else{
               current_grdt_clr <- box_clr
@@ -187,59 +175,6 @@ prTcPlotArrows <- function(trnstn_set,
   }
 }
 
-#' Gets the box positions
-#'
-#' The box positions as a list with scalars for the positions:
-#' \enumerate{
-#'  \item \emph{x} The center x-position
-#'  \item \emph{y} The center y-position
-#'  \item \emph{right} The right edge
-#'  \item \emph{left} The left edge
-#'  \item \emph{top} The top edge
-#'  \item \emph{bottom} The bottom edge
-#'  \item \emph{height} The box height
-#'  \item \emph{width} The box width
-#' }
-#' @param x_offset The x start position of the box
-#' @param width The box width
-#' @param proportions The vertical proportions that
-#'  are \code{(1-sum(proportions)) == total_vertical_space},
-#'  i.e. the sum is always <= 1.
-#' @return \code{list} Returns a list with all the elements
-#'  positions.
-prTcGetBoxPositions <- function(x_offset,
-                                width,
-                                proportions){
-  vertical_space <- (1-sum(proportions))/(sum(proportions > 0) - 1)
-  y_offset <- 1
-  raw_width <- convertX(width, unitTo = "npc", valueOnly = TRUE)
-  bx <- list()
-  for (i in 1:length(proportions)){
-    bx[[i]] <-
-      list(
-        # Center
-        y = y_offset - proportions[i]/2,
-        x = x_offset + raw_width/2,
-        # Borders
-        left = x_offset,
-        right = x_offset + raw_width,
-        top = y_offset,
-        bottom = y_offset - proportions[i],
-        # Size
-        height = proportions[i],
-        width = raw_width)
-    if (proportions[i] > 0){
-      y_offset <- y_offset - sum(proportions[i], vertical_space)
-    }
-  }
-  # If there is only one box then we center that box
-  if (length(proportions) == 1){
-    box[[1]]$y = 0.5
-    box[[1]]$top = box[[1]]$height + vertical_space/2
-    box[[1]]$bottom = vertical_space/2
-  }
-  return(bx)
-}
 
 #' Checks and prepares colors
 #'
