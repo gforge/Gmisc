@@ -24,8 +24,8 @@
 #'  not have the same fine resolution as the data and you therefore may want to hide
 #'  lines that are smaller than a certain amount.
 #' @field max_lwd The maximum line width to show
-#' @field lwd_prop_type The line can either be proportional to the \code{"each"} transition
-#'  set, i.e. group of two box columns. It can also be proportional to \code{"all"} transitions,
+#' @field lwd_prop_type The line can either be proportional to the \code{"set"} of transitions,
+#'  i.e. group of two box columns. It can also be proportional to \code{"all"} transitions,
 #'  or to each \code{"box"}.
 #' @field data Internal storage variable. Should not be accessed directly.
 #'
@@ -118,7 +118,17 @@ Transition <-
           if (!is.null(data$box_label_cex))
             return(data$box_label_cex)
 
-          return(box_cex*1.2)
+          label_cex <- box_cex*1.2
+          raw_width <- convertWidth(box_width, unitTo = "npc", valueOnly = TRUE)
+
+          for (lab in box_label){
+            r_lab_width <- convertX(unit(1, "strwidth", data=lab), "npc", valueOnly = TRUE)
+            size_ratio <- r_lab_width * label_cex * 1.05/raw_width
+            if (size_ratio > 1)
+              label_cex <- label_cex/size_ratio
+          }
+
+          return(label_cex)
         }
 
         if (!is.numeric(value) && !is.null(value))
@@ -166,6 +176,32 @@ Transition <-
         }
 
         data$arrow_type <<- match.arg(value)
+      },
+      arrow_clr = function(value){
+        if (missing(value)){
+          if (!is.null(data$arrow_clr))
+            return(data$arrow_clr)
+          clrs <- matrix("#000000", nrow = .self$noRows(), ncol = .self$noRows())
+          return(clrs)
+        }
+
+        if (is.matrix(value)){
+          if (!all(dim(value) != .self$getDim()))
+            stop("If you provide an arrow color matrix it must have the same",
+                 " rows and columns that your transition matrix has: ", paste(.self$getDim(), collapse="-"),
+                 " You have provided a matrix of the dimensions: ", paste(dim(value), collapse="-"))
+        }else if (length(value) == 1){
+          value <- matrix(value, nrow = .self$noRows(), ncol = .self$noCols())
+        }else if (value == .self$noRows()){
+          value <- matrix(value,
+                          ncol = .self$noRows(),
+                          nrow = .self$noRows())
+        }else{
+          stop("The color length '", length(value), "'",
+               " did not match rows ('", .self$noRows(), "')")
+        }
+
+        data$arrow_clr <<- value
       },
       vertical_space = function(value){
         if (missing(value))
@@ -218,7 +254,7 @@ Transition <-
           if (!is.null(data$min_lwd))
             return(data$min_lwd)
 
-          if(type_of_arrow == "grid")
+          if(arrow_type == "grid")
             return(1)
 
           return(unit(.1, "mm"))
@@ -230,7 +266,7 @@ Transition <-
           if (!is.null(data$max_lwd))
             return(data$max_lwd)
 
-          if(type_of_arrow == "grid")
+          if(arrow_type == "grid")
             return(6)
 
           return(unit(5, "mm"))
@@ -273,7 +309,7 @@ Transition <-
 
         data$mar <<- value
       },
-      lwd_prop_type = function(value = c("each", "all", "box")){
+      lwd_prop_type = function(value = c("set", "all", "box")){
         if (missing(value)){
           if (!is.null(data$lwd_prop_type))
             return(data$lwd_prop_type)
@@ -297,8 +333,7 @@ Transition <-
         .self$addTransitions(transitions, label, txt = txt, fill_clr = fill_clr, txt_clr = txt_clr)
         callSuper(...)
       },
-      copy = function (shallow = FALSE)
-      {
+      copy = function (shallow = FALSE){
         "A custom \\code{$copy} function as the initialize requires a transitions argument"
         def <- .refClassDef
         value <- new(def, "copy")
@@ -384,14 +419,21 @@ Transition <-
 
         invisible(mtrx)
       },
-      getTransitionSet = function(no){
+      getTransitionSet = function(no, reduce_dim = FALSE){
+        "Gets a specific set of transitions. If the \\code{reduce_dim} is set
+        to TRUE it will only return a 2-dimensional matrix even if the original
+        has a 3rd proportions dimension"
         if (no >= .self$noCols() ||
               no < 1)
           stop("You can only select transition sets ranging from 1 to ", .self$noCols() - 1)
 
-        asub(transitions,
-             idx = no,
-             dims = length(.self$getDim()) + 1)
+        set <- asub(transitions,
+                        idx = no,
+                        dims = length(.self$getDim()) + 1)
+        if (reduce_dim &&
+              length(dim(set)) == 3)
+          set <- set[,,1] + set[,,2]
+        return(set)
       },
       addClr = function(fill, txt){
         "Adds colors or extends existing one so that they match the transition matrix.
@@ -501,7 +543,7 @@ Transition <-
       arrowWidths = function(set_no, add_width){
         "Retreives the details regarding arrow sizes for each arrow within the transition
         group"
-        trnstn_set <- .self$getTransitionSet(col)
+        trnstn_set <- .self$getTransitionSet(set_no, reduce_dim = TRUE)
 
         # Get the maximum transition within the entire plot
         if (lwd_prop_type == "all"){
@@ -510,7 +552,7 @@ Transition <-
             mtrx <- trnstnSizes(i - 1);
             max_flow <- max(max_flow, mtrx)
           }
-        }else if (lwd_prop_type == "each"){
+        }else if (lwd_prop_type == "set"){
           max_flow <- max(trnstn_set)
         }
 
@@ -534,11 +576,11 @@ Transition <-
           }
 
           arrows[[org_row]] <-
-            rep(list(), .self$noRows)
+            lapply(1:.self$noRows(), function(x) list())
 
           for (targ_row in 1:.self$noRows()){
             # Calculate line width
-            lwd <- raw_max_lwd*trnstn_set[org_row,target_row]/max_flow
+            lwd <- raw_max_lwd*trnstn_set[org_row,targ_row]/max_flow
             if (lwd < raw_min_lwd){
               # Lines that are below the minimum should not be shown
               next;
@@ -553,8 +595,8 @@ Transition <-
               }
             }
 
-            arrows[[org_rod]][[targ_row]]$lwd <- unit(adjusted_lwd, internal.unit)
-            arrows[[org_rod]][[targ_row]]$adj_lwd <- unit(adjusted_lwd, internal.unit)
+            arrows[[org_row]][[targ_row]]$lwd <- unit(adjusted_lwd, internal.unit)
+            arrows[[org_row]][[targ_row]]$adj_lwd <- unit(adjusted_lwd, internal.unit)
           }
         }
         return(arrows)
@@ -667,7 +709,7 @@ Transition <-
               width = raw_width,
               unit = "npc")
           if (proportions[i] > 0){
-            y_offset <- y_offset - sum(proportions[i], raw_v_space)
+            y_offset <- y_offset - sum(proportions[i], raw_v_space/(sum(proportions > 0) - 1))
           }
         }
         # If there is only one box then we center that box
@@ -747,7 +789,7 @@ Transition <-
           txt <- box_txt[,col]
           bx_pos <- .self$boxPositions(col)
 
-          box_args <- list(box_positions = ,
+          box_args <- list(box_positions = bx_pos,
                            proportions = as.vector(proportions),
                            fill = rep(grey(level = .3), times = .self$noRows()),
                            txt = rep("", times = .self$noRows()),
@@ -768,9 +810,10 @@ Transition <-
           if (col < .self$noCols()){
             trnstn_set <- .self$getTransitionSet(col)
 
-
             prTcPlotArrows(trnstn_set,
-                           arrow_type = arrow_type,
+                           widths = .self$arrowWidths(col),
+                           type = arrow_type,
+                           clr = arrow_clr,
                            origin_boxes = bx_pos,
                            target_boxes = .self$boxPositions(col + 1),
                            left_box_clrs = box_args[["fill"]],

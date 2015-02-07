@@ -97,14 +97,12 @@ transitions$render()
 
 
 ```{r}
-library(Gmisc)
 transitions <- getRefClass("Transition")$new(table(data$Charnley_class, data$Charnley_class_1yr, data$Sex), 
                                                   label=c("Before surgery", "1 year after"))
 transitions$render()
 ```
 
 ```{r}
-library(Gmisc)
 transitions <- getRefClass("Transition")$new(table(data$Charnley_class, data$Charnley_class_1yr, data$Sex), 
                                                   label=c("Before surgery", "1 year after"))
 transitions$addTransitions(table(data$Charnley_class_1yr, data$Charnley_class_2yr, data$Sex), label="2 years after")
