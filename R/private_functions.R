@@ -41,7 +41,7 @@ prGetStatistics <- function(x,
   if (is.factor(x) ||
         is.logical(x) ||
         is.character(x)){
-    if ((is.factor(x) && 
+    if ((is.factor(x) &&
            length(levels(x)) == 2) ||
           (!is.factor(x) &&
              length(unique(na.omit(x))) == 2)){
@@ -173,17 +173,34 @@ prDescGetMissing <- function (x,
 #' generate the margins. A second viewport selecting the
 #' mid-row/col is used to create the effect of margins
 #'
-#' @param bottom The margin object, either in npc or a \code{\link[grid]{unit}} object
-#' @param left The margin object, either in npc or a \code{\link[grid]{unit}} object
+#' @param bottom The margin object, either in npc or a \code{\link[grid]{unit}} object,
+#'  or a vector of 4 if you want the same margins allover.
+#' @param left The margin object, either in npc or a \code{\link[grid]{unit}} object.
 #' @param top The margin object, either in npc or a \code{\link[grid]{unit}} object
 #' @param right The margin object, either in npc or a \code{\link[grid]{unit}} object
 #' @param name The name of the last viewport
 #' @return \code{void}
 #'
 #' @keywords internal
-prPushMarginViewport <- function(bottom, left, top, right, name=NULL){
+prPushMarginViewport <- function(bottom, left, top, right, name="margin"){
+
   if (!is.unit(bottom))
     bottom <- unit(bottom, "npc")
+
+  if (missing(left)  &&
+        missing(top) &&
+        missing(right)){
+    if (length(bottom) == 4){
+      left <- bottom[2]
+      top <- bottom[3]
+      right <- bottom[4]
+      bottom <- bottom[1]
+    }else{
+      left <- bottom[1]
+      top <- bottom[1]
+      right <- bottom[1]
+    }
+  }
 
   if (!is.unit(top))
     top <- unit(top, "npc")
@@ -194,9 +211,7 @@ prPushMarginViewport <- function(bottom, left, top, right, name=NULL){
   if (!is.unit(right))
     right <- unit(right, "npc")
 
-  layout_name <- NULL
-  if (!is.character(name))
-    layout_name <- sprintf("margin_grid_%s", name)
+  layout_name <- sprintf("margin_grid_%s", name)
 
   gl <- grid.layout(nrow=3, ncol=3,
     heights = unit.c(top, unit(1, "npc") - top - bottom, bottom),
