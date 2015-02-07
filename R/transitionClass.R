@@ -629,7 +629,7 @@ Transition <-
                       valueOnly = TRUE))*
           vertical_sizes/sum(vertical_sizes)
       },
-      boxPositions <- function(col){
+      boxPositions = function(col){
         "The box positions as a list with scalars for the positions:
         \\enumerate{
          \\item \\emph{x} The center x-position
@@ -646,7 +646,7 @@ Transition <-
         space_between <- (1- raw_width * .self$noCols())/(.self$noCols() - 1)
         x_offset <- (raw_width + space_between) * (col - 1)
         proportions <- .self$getYProps(col)
-        vertical_space <- convertY(vertical_space,
+        raw_v_space <- convertY(vertical_space,
                                    unitTo = "npc",
                                    valueOnly = TRUE)
         y_offset <- 1
@@ -667,14 +667,14 @@ Transition <-
               width = raw_width,
               unit = "npc")
           if (proportions[i] > 0){
-            y_offset <- y_offset - sum(proportions[i], vertical_space)
+            y_offset <- y_offset - sum(proportions[i], raw_v_space)
           }
         }
         # If there is only one box then we center that box
         if (length(proportions) == 1){
           box[[1]]$y = 0.5
-          box[[1]]$top = box[[1]]$height + vertical_space/2
-          box[[1]]$bottom = vertical_space/2
+          box[[1]]$top = box[[1]]$height + raw_v_space/2
+          box[[1]]$bottom = raw_v_space/2
         }
         return(bx)
       },
