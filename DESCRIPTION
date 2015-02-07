@@ -15,18 +15,17 @@ URL: http://gforge.se
 BugReports: https://github.com/gforge/Gmisc/issues
 Biarch: yes
 Depends:
-    htmlTable
+    Rcpp(>= 0.11.4),
+    htmlTable (>= 1.1)
 Imports:
     grid,
     lattice,
-    sp,
     Hmisc,
     forestplot,
+    knitr,
     magrittr
 Suggests:
-    Rcpp(>= 0.11.4),
-    testthat,
-    knitr
+    testthat
 Roxygen: list(wrap = TRUE)
 Encoding: UTF-8
 NeedsCompilation: no

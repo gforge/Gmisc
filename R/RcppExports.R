@@ -22,27 +22,28 @@ calculateLinesAndArrow <- function(x, y, offset, end_x = -1, end_y = -1, arrow_o
 }
 
 #' Generates a generalized Bezier line
-#' 
-#' This is a general form of bezier line that can be used for cubic, quadratic, 
-#' and more advanced Bezier lines. 
-#' 
+#'
+#' This is a general form of bezier line that can be used for cubic, quadratic,
+#' and more advanced Bezier lines.
+#'
 #' @param x The x-values for the bezier control points. The first
 #'  is the starting point and the last the stop point.
 #' @param y The y-values for the bezier control points. The first
 #'  is the starting point and the last the stop point.
 #' @param length_out The length of the return points, i.e. how fine
 #'  detailed the points should be.
-#' 
+#'
 #' @export
 #' @examples
+#' library(grid)
 #' grid.newpage()
 #' out_sizes <- 4:20
 #' clrs <- colorRampPalette(c("orange", "darkblue"))(length(out_sizes))
 #' for (i in out_sizes){
-#'   l <- gnrlBezierPoints(x = c(.1, -.1, .7, 1, 1, 0.1), 
-#'                         y = c(.9, 0, 1, .8, .4, .1), 
+#'   l <- gnrlBezierPoints(x = c(.1, -.1, .7, 1, 1, 0.1),
+#'                         y = c(.9, 0, 1, .8, .4, .1),
 #'                         length_out = i)
-#'   grid.lines(l$x, l$y, 
+#'   grid.lines(l$x, l$y,
 #'              gp=gpar(col=clrs[which(i == out_sizes)]))
 #' }
 gnrlBezierPoints <- function(x, y, length_out = 100L) {

@@ -4,7 +4,7 @@
 \alias{mergeDesc}
 \title{Prepares a matrix for htmlTable from a list}
 \usage{
-mergeDesc(..., htmlTable_args)
+mergeDesc(..., htmlTable_args = list(css.rgroup = ""))
 }
 \arguments{
   \item{...}{One or more elements coming from
@@ -16,7 +16,8 @@ mergeDesc(..., htmlTable_args)
   able to merge it into a list.}
 
   \item{htmlTable_args}{Any arguments that should be passed
-  to \code{\link[htmlTable]{htmlTable}} function.}
+  to \code{\link[htmlTable]{htmlTable}} function. The
+  default is to remove any css formatting for the rgroup.}
 }
 \value{
 \code{matrix} Returns a matrix object of class descList

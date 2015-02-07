@@ -2,6 +2,7 @@
 % Please edit documentation in R/mergeDesc.R
 \name{latex.descMrg}
 \alias{htmlTable.descMrg}
+\alias{knit_print.descMrg}
 \alias{latex.descMrg}
 \alias{print.descMrg}
 \title{A wrapper around the \code{\link[htmlTable]{htmlTable}}/\code{\link[Hmisc]{latex}} function}
@@ -11,6 +12,8 @@
 \method{htmlTable}{descMrg}(x, ...)
 
 \method{print}{descMrg}(x, ...)
+
+\method{knit_print}{descMrg}(x, ...)
 }
 \arguments{
   \item{x}{The \code{\link{mergeDesc}} object}

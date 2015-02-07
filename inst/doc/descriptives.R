@@ -46,7 +46,7 @@ getTable1Stats(mtcars$mpg)
 ## ------------------------------------------------------------------------
 getTable1Stats(mtcars$mpg, use_units = TRUE)
 
-## ----, results='asis'----------------------------------------------------
+## ------------------------------------------------------------------------
 t1 <- list()
 t1[["Gas"]] <-
   getTable1Stats(mtcars$mpg)
@@ -62,35 +62,76 @@ t1[["Color"]] <-
 t1 <- c(t1,
         list(getTable1Stats(mtcars$gear)))
 
-htmlTable(mergeDesc(t1),
-          css.rgroup = "",
-          caption  = "Basic descriptive statistics from the mtcars dataset",
-          tfoot = "&dagger; The weight is in 10<sup>3</sup> kg")
+mergeDesc(t1,
+          htmlTable_args = list(css.rgroup = "",
+                                caption  = "Basic descriptive statistics from the mtcars dataset",
+                                tfoot = "&dagger; The weight is in 10<sup>3</sup> kg"))
 
-## ----, results='asis', warning=FALSE-------------------------------------
-# A little more advanced input
-mtcars$mpg_w_missing <- mtcars$mpg
-mtcars$mpg_w_missing[sample(1:NROW(mtcars), size=5)] <- NA
-mtcars$wt_w_missing <- mtcars$wt
-mtcars$wt_w_missing[sample(1:NROW(mtcars), size=8)] <- NA
+## ------------------------------------------------------------------------
+mergeDesc(getTable1Stats(mtcars$mpg),
+          `Weight&dagger;` = getTable1Stats(mtcars$wt),
+          Color = getTable1Stats(mtcars$col),
+          getTable1Stats(mtcars$gear),
+          htmlTable_args = list(css.rgroup = "",
+                                caption  = "Basic descriptive statistics from the mtcars dataset",
+                                tfoot = "&dagger; The weight is in 10<sup>3</sup> kg"))
+
+## ----, warning=FALSE-----------------------------------------------------
+getTable1Stats <- function(x, digits = 0, ...){
+  getDescriptionStatsBy(x = x, 
+                        by = mtcars$am,
+                        digits = digits,
+                        continuous_fn = describeMedian,
+                        header_count = TRUE,
+                        statistics = TRUE,
+                        ...)
+  
+}
 
 t1 <- list()
 t1[["Gas"]] <-
-  getTable1Stats(mtcars$mpg_w_missing, statistics=TRUE)
+  getTable1Stats(mtcars$mpg)
   
 t1[["Weight&dagger;"]] <-
-  getTable1Stats(mtcars$wt, statistics=TRUE)
+  getTable1Stats(mtcars$wt)
 
 t1[["Color"]] <- 
-  getTable1Stats(mtcars$col, statistics=TRUE)
+  getTable1Stats(mtcars$col)
 
-# If we want to use the labels set in the beginning
-# we add an element without a name
-t1 <- c(t1,
-        list(getTable1Stats(mtcars$gear, statistics=TRUE)))
+library(magrittr)
+mergeDesc(t1,
+          getTable1Stats(mtcars$gear)) %>%
+  htmlTable(css.rgroup = "",
+            caption  = "Basic descriptive statistics from the mtcars dataset",
+            tfoot = "&dagger; The weight is in 10<sup>3</sup> kg")
 
-htmlTable(mergeDesc(t1),
-          css.rgroup = "",
-          caption  = "Basic descriptive statistics from the mtcars dataset",
-          tfoot = "&dagger; The weight is in 10<sup>3</sup> kg")
+## ----, warning=FALSE-----------------------------------------------------
+getTable1Stats <- function(x, digits = 0, ...){
+  getDescriptionStatsBy(x = x, 
+                        by = mtcars$am,
+                        digits = digits,
+                        continuous_fn = describeMedian,
+                        header_count = TRUE,
+                        statistics = list(continuous = getPvalChiSq, 
+                                          factor = getPvalChiSq, 
+                                          proportion = getPvalFisher),
+                        ...)
+  
+}
+
+t1 <- list()
+t1[["Gas"]] <-
+  getTable1Stats(mtcars$mpg)
+  
+t1[["Weight&dagger;"]] <-
+  getTable1Stats(mtcars$wt)
+
+t1[["Color"]] <- 
+  getTable1Stats(mtcars$col)
+
+mergeDesc(t1,
+          getTable1Stats(mtcars$gear)) %>%
+  htmlTable(css.rgroup = "",
+            caption  = "P-values generated from a custom set of values",
+            tfoot = "&dagger; The weight is in 10<sup>3</sup> kg")
 
