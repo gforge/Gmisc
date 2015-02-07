@@ -1,10 +1,10 @@
 Package: Gmisc
-Version: 1.0.1
-Date: 2015-01-18
+Version: 1.0.2
+Date: 2015-02-07
 Title: Descriptive Statistics, Transition Plots, and More
 Author: Max Gordon <max@gforge.se>
 Maintainer: Max Gordon <max@gforge.se>
-Description: 
+Description:
    Tools for making the descriptive "Table 1" used in medical articles,
    a transition plot for showing changes between categories,
    a method for variable selection based on the SVD,
@@ -14,19 +14,18 @@ License: GPL (>= 3)
 URL: http://gforge.se
 BugReports: https://github.com/gforge/Gmisc/issues
 Biarch: yes
-Depends: 
-    htmlTable
-Imports: 
+Depends:
+    Rcpp(>= 0.11.4),
+    htmlTable (>= 1.1)
+Imports:
     grid,
     lattice,
-    sp,
     Hmisc,
     forestplot,
     abind,
     methods,
-    magrittr,
-    Rcpp(>= 0.11.4)
-Suggests: 
+    magrittr
+Suggests:
     testthat,
     knitr
 Roxygen: list(wrap = TRUE)

@@ -4,7 +4,7 @@
 \alias{mergeDesc}
 \title{Prepares a matrix for htmlTable from a list}
 \usage{
-mergeDesc(...)
+mergeDesc(..., htmlTable_args = list(css.rgroup = ""))
 }
 \arguments{
   \item{...}{One or more elements coming from
@@ -14,6 +14,10 @@ mergeDesc(...)
   the \code{...} argument. \emph{Note} that all elements
   myst have the same \code{by} argument or you will not be
   able to merge it into a list.}
+
+  \item{htmlTable_args}{Any arguments that should be passed
+  to \code{\link[htmlTable]{htmlTable}} function. The
+  default is to remove any css formatting for the rgroup.}
 }
 \value{
 \code{matrix} Returns a matrix object of class descList
@@ -69,21 +73,21 @@ mtcars$col <- factor(sample(c("red", "black", "silver"),
                      size=NROW(mtcars), replace=TRUE))
 label(mtcars$col) <- "Car color"
 
-htmlTable(mergeDesc(getDescriptionStatsBy(mtcars$mpg, mtcars$am,
-                                           header_count = TRUE,
-                                           use_units = TRUE),
-                     getDescriptionStatsBy(mtcars$wt, mtcars$am,
-                                           header_count = TRUE,
-                                           use_units = TRUE)),
-          caption  = "Basic continuous stats from the mtcars dataset")
+mergeDesc(getDescriptionStatsBy(mtcars$mpg, mtcars$am,
+                                header_count = TRUE,
+                                use_units = TRUE),
+          getDescriptionStatsBy(mtcars$wt, mtcars$am,
+                                header_count = TRUE,
+                                use_units = TRUE),
+          htmlTable_args = list(caption  = "Basic continuous stats from the mtcars dataset"))
 
 tll <- list()
 tll[["Gear (3 to 5)"]] <- getDescriptionStatsBy(mtcars$gear, mtcars$am)
 tll <- c(tll,
          list(getDescriptionStatsBy(mtcars$col, mtcars$am)))
 
-htmlTable(mergeDesc(tll),
-          caption  = "Factored variables")
+mergeDesc(tll,
+          htmlTable_args = list(caption  = "Factored variables"))
 
 tl_no_units <- list()
 tl_no_units[["Gas (mile/gallons)"]] <-
@@ -92,7 +96,10 @@ tl_no_units[["Gas (mile/gallons)"]] <-
 tl_no_units[["Weight (10<sup>3</sup> kg)"]] <-
   getDescriptionStatsBy(mtcars$wt, mtcars$am,
                         header_count = TRUE)
-htmlTable(mergeDesc(tl_no_units, tll))
+mergeDesc(tl_no_units, tll,
+          # Remove the formatting for the groups
+          htmlTable_args = list(css.rgroup = ""))
+
 
 # A little more advanced
 mtcars$mpg[sample(1:NROW(mtcars), size=5)] <- NA

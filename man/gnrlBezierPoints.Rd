@@ -21,6 +21,7 @@ This is a general form of bezier line that can be used for
 cubic, quadratic, and more advanced Bezier lines.
 }
 \examples{
+library(grid)
 grid.newpage()
 out_sizes <- 4:20
 clrs <- colorRampPalette(c("orange", "darkblue"))(length(out_sizes))

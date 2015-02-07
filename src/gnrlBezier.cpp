@@ -2,27 +2,28 @@
 using namespace Rcpp;
 
 //' Generates a generalized Bezier line
-//' 
-//' This is a general form of bezier line that can be used for cubic, quadratic, 
-//' and more advanced Bezier lines. 
-//' 
+//'
+//' This is a general form of bezier line that can be used for cubic, quadratic,
+//' and more advanced Bezier lines.
+//'
 //' @param x The x-values for the bezier control points. The first
 //'  is the starting point and the last the stop point.
 //' @param y The y-values for the bezier control points. The first
 //'  is the starting point and the last the stop point.
 //' @param length_out The length of the return points, i.e. how fine
 //'  detailed the points should be.
-//' 
+//'
 //' @export
 //' @examples
+//' library(grid)
 //' grid.newpage()
 //' out_sizes <- 4:20
 //' clrs <- colorRampPalette(c("orange", "darkblue"))(length(out_sizes))
 //' for (i in out_sizes){
-//'   l <- gnrlBezierPoints(x = c(.1, -.1, .7, 1, 1, 0.1), 
-//'                         y = c(.9, 0, 1, .8, .4, .1), 
+//'   l <- gnrlBezierPoints(x = c(.1, -.1, .7, 1, 1, 0.1),
+//'                         y = c(.9, 0, 1, .8, .4, .1),
 //'                         length_out = i)
-//'   grid.lines(l$x, l$y, 
+//'   grid.lines(l$x, l$y,
 //'              gp=gpar(col=clrs[which(i == out_sizes)]))
 //' }
 // [[Rcpp::export]]
@@ -40,15 +41,15 @@ Rcpp::List gnrlBezierPoints(NumericVector x, NumericVector y, int length_out = 1
   ret_x[0] = x[0];
   ret_y[0] = y[0];
   length_out -= 1;
-  
+
   double t = 0.0;
   for(int i = 0; i < length_out; i++){
     if (i + 1 == length_out)
       t = 1.0;
     else
       t += 1.0/double(length_out);
-      
-    // Now we need to sum up the elements according to the 
+
+    // Now we need to sum up the elements according to the
     // 1962 Pierre Bézier formula
     // Note that P0 -> Pn the n in the formula is actually n - 1
     int n = x.size() - 1;
@@ -57,18 +58,18 @@ Rcpp::List gnrlBezierPoints(NumericVector x, NumericVector y, int length_out = 1
         pow(1-t, n - ii) *
         pow(t, ii) *
         x[ii];
-        
-      ret_y[i + 1] += R::choose(n, ii) * 
+
+      ret_y[i + 1] += R::choose(n, ii) *
         pow(1-t, n - ii) *
         pow(t, ii) *
         y[ii];
-    } 
+    }
   };
 
   Rcpp::List ret;
   ret["x"] = ret_x;
   ret["y"] = ret_y;
-  
+
   return(ret);
 }
 

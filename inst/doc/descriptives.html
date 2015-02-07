@@ -10,7 +10,7 @@
 
 <meta name="author" content="Max Gordon" />
 
-<meta name="date" content="2015-01-18" />
+<meta name="date" content="2015-02-07" />
 
 <title>The fastest way to compile table 1?</title>
 
@@ -54,13 +54,16 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <div id="header">
 <h1 class="title">The fastest way to compile table 1?</h1>
 <h4 class="author"><em>Max Gordon</em></h4>
-<h4 class="date"><em>2015-01-18</em></h4>
+<h4 class="date"><em>2015-02-07</em></h4>
 </div>
 
 <div id="TOC">
 <ul>
 <li><a href="#the-basics-of-getdescriptionstatsby">The basics of getDescriptionStatsBy</a></li>
-<li><a href="#combining-with-the-htmltable">Combining with the <strong>htmlTable</strong></a></li>
+<li><a href="#magic-with-mergedesc">Magic with <strong>mergeDesc</strong></a></li>
+<li><a href="#p-values">P-values</a><ul>
+<li><a href="#custom-p-values">Custom p-values</a></li>
+</ul></li>
 </ul>
 </div>
 
@@ -87,9 +90,9 @@ mtcars$gear &lt;-<span class="st"> </span><span class="kw">factor</span>(mtcars$
 mtcars$col &lt;-<span class="st"> </span><span class="kw">factor</span>(<span class="kw">sample</span>(<span class="kw">c</span>(<span class="st">&quot;red&quot;</span>, <span class="st">&quot;black&quot;</span>, <span class="st">&quot;silver&quot;</span>),
                      <span class="dt">size=</span><span class="kw">NROW</span>(mtcars), <span class="dt">replace=</span><span class="ot">TRUE</span>))
 <span class="kw">label</span>(mtcars$col) &lt;-<span class="st"> &quot;Car color&quot;</span></code></pre>
-<div id="the-basics-of-getdescriptionstatsby" class="section level2">
-<h2>The basics of getDescriptionStatsBy</h2>
-<p>The function <strong>getDescriptionStatsBy</strong> is a simple way to do basic descriptive statistics. Mandatory inputs are the first two, <em>x</em> and <em>by</em>:</p>
+<div id="the-basics-of-getdescriptionstatsby" class="section level1">
+<h1>The basics of getDescriptionStatsBy</h1>
+<p>The function <code>getDescriptionStatsBy</code> is a simple way to do basic descriptive statistics. Mandatory inputs are the first two, <em>x</em> and <em>by</em>:</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(Gmisc)
 <span class="kw">getDescriptionStatsBy</span>(<span class="dt">x =</span> mtcars$mpg, 
                       <span class="dt">by =</span> mtcars$am)</code></pre>
@@ -123,9 +126,9 @@ mtcars$col &lt;-<span class="st"> </span><span class="kw">factor</span>(<span cl
 ##     Automatic&lt;br /&gt; No. 19 Manual&lt;br /&gt; No. 13 units              
 ## Gas &quot;17 (15 - 19)&quot;         &quot;23 (21 - 30)&quot;      &quot;Miles/(US) gallon&quot;</code></pre>
 </div>
-<div id="combining-with-the-htmltable" class="section level2">
-<h2>Combining with the <strong>htmlTable</strong></h2>
-<p>Lists are convenient and allow a lot of customization, together with the <strong>mergeDesc</strong> it is easy to generate a table one:</p>
+<div id="magic-with-mergedesc" class="section level1">
+<h1>Magic with <strong>mergeDesc</strong></h1>
+<p>In order to quickly assemble a “Table 1” I’ve generated a helper function <code>mergeDesc</code> that closely integrates with the <code>htmlTable</code>:</p>
 <pre class="sourceCode r"><code class="sourceCode r">t1 &lt;-<span class="st"> </span><span class="kw">list</span>()
 t1[[<span class="st">&quot;Gas&quot;</span>]] &lt;-
 <span class="st">  </span><span class="kw">getTable1Stats</span>(mtcars$mpg)
@@ -141,10 +144,10 @@ t1[[<span class="st">&quot;Color&quot;</span>]] &lt;-<span class="st"> </span>
 t1 &lt;-<span class="st"> </span><span class="kw">c</span>(t1,
         <span class="kw">list</span>(<span class="kw">getTable1Stats</span>(mtcars$gear)))
 
-<span class="kw">htmlTable</span>(<span class="kw">mergeDesc</span>(t1),
-          <span class="dt">css.rgroup =</span> <span class="st">&quot;&quot;</span>,
-          <span class="dt">caption  =</span> <span class="st">&quot;Basic descriptive statistics from the mtcars dataset&quot;</span>,
-          <span class="dt">tfoot =</span> <span class="st">&quot;&amp;dagger; The weight is in 10&lt;sup&gt;3&lt;/sup&gt; kg&quot;</span>)</code></pre>
+<span class="kw">mergeDesc</span>(t1,
+          <span class="dt">htmlTable_args =</span> <span class="kw">list</span>(<span class="dt">css.rgroup =</span> <span class="st">&quot;&quot;</span>,
+                                <span class="dt">caption  =</span> <span class="st">&quot;Basic descriptive statistics from the mtcars dataset&quot;</span>,
+                                <span class="dt">tfoot =</span> <span class="st">&quot;&amp;dagger; The weight is in 10&lt;sup&gt;3&lt;/sup&gt; kg&quot;</span>))</code></pre>
 <table class="gmisc_table" style="border-collapse: collapse;">
 <thead>
 <tr><td colspan="3" style="text-align: left;">
@@ -191,7 +194,7 @@ Color
   black
 </td>
 <td style="text-align: center;">
-6 (32%)
+8 (42%)
 </td>
 <td style="text-align: center;">
 3 (23%)
@@ -202,10 +205,10 @@ Color
   red
 </td>
 <td style="text-align: center;">
-7 (37%)
+5 (26%)
 </td>
 <td style="text-align: center;">
-3 (23%)
+6 (46%)
 </td>
 </tr>
 <tr>
@@ -216,7 +219,7 @@ Color
 6 (32%)
 </td>
 <td style="text-align: center;">
-7 (54%)
+4 (31%)
 </td>
 </tr> 
 <tr><td colspan="3" style>
@@ -261,32 +264,162 @@ Gears
 </td></tr></tfoot>
 </table>
 
-<p>Event though p-values are discouraged in the table 1, they are <a href="http://cpr.sagepub.com/content/19/2/231.full">not uncommon</a>. I have therefore added basic statistics consisting of Fisher’s exact test for proportions and Wilcoxon rank sum test for continuous values. Note that the Wilcoxon only works with two groups.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># A little more advanced input</span>
-mtcars$mpg_w_missing &lt;-<span class="st"> </span>mtcars$mpg
-mtcars$mpg_w_missing[<span class="kw">sample</span>(<span class="dv">1</span>:<span class="kw">NROW</span>(mtcars), <span class="dt">size=</span><span class="dv">5</span>)] &lt;-<span class="st"> </span><span class="ot">NA</span>
-mtcars$wt_w_missing &lt;-<span class="st"> </span>mtcars$wt
-mtcars$wt_w_missing[<span class="kw">sample</span>(<span class="dv">1</span>:<span class="kw">NROW</span>(mtcars), <span class="dt">size=</span><span class="dv">8</span>)] &lt;-<span class="st"> </span><span class="ot">NA</span>
+
+<p>I like generating lists but it is optional, you can achieve the same through:</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mergeDesc</span>(<span class="kw">getTable1Stats</span>(mtcars$mpg),
+          <span class="st">`</span><span class="dt">Weight&amp;dagger;</span><span class="st">`</span> =<span class="st"> </span><span class="kw">getTable1Stats</span>(mtcars$wt),
+          <span class="dt">Color =</span> <span class="kw">getTable1Stats</span>(mtcars$col),
+          <span class="kw">getTable1Stats</span>(mtcars$gear),
+          <span class="dt">htmlTable_args =</span> <span class="kw">list</span>(<span class="dt">css.rgroup =</span> <span class="st">&quot;&quot;</span>,
+                                <span class="dt">caption  =</span> <span class="st">&quot;Basic descriptive statistics from the mtcars dataset&quot;</span>,
+                                <span class="dt">tfoot =</span> <span class="st">&quot;&amp;dagger; The weight is in 10&lt;sup&gt;3&lt;/sup&gt; kg&quot;</span>))</code></pre>
+<table class="gmisc_table" style="border-collapse: collapse;">
+<thead>
+<tr><td colspan="3" style="text-align: left;">
+Basic descriptive statistics from the mtcars dataset
+</td></tr>
+<tr>
+<th style="border-bottom: 1px solid grey; border-top: 2px solid grey;"> </th>
+<th style="border-bottom: 1px solid grey; border-top: 2px solid grey; text-align: center;">
+Automatic<br /> No. 19
+</th>
+<th style="border-bottom: 1px solid grey; border-top: 2px solid grey; text-align: center;">
+Manual<br /> No. 13
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">
+Gas
+</td>
+<td style="text-align: center;">
+17 (15 - 19)
+</td>
+<td style="text-align: center;">
+23 (21 - 30)
+</td>
+</tr>
+<tr>
+<td style="text-align: left;">
+Weight†
+</td>
+<td style="text-align: center;">
+4 (3 - 4)
+</td>
+<td style="text-align: center;">
+2 (2 - 3)
+</td>
+</tr> 
+<tr><td colspan="3" style>
+Color
+</td></tr>
+<tr>
+<td style="text-align: left;">
+  black
+</td>
+<td style="text-align: center;">
+8 (42%)
+</td>
+<td style="text-align: center;">
+3 (23%)
+</td>
+</tr>
+<tr>
+<td style="text-align: left;">
+  red
+</td>
+<td style="text-align: center;">
+5 (26%)
+</td>
+<td style="text-align: center;">
+6 (46%)
+</td>
+</tr>
+<tr>
+<td style="text-align: left;">
+  silver
+</td>
+<td style="text-align: center;">
+6 (32%)
+</td>
+<td style="text-align: center;">
+4 (31%)
+</td>
+</tr> 
+<tr><td colspan="3" style>
+Gears
+</td></tr>
+<tr>
+<td style="text-align: left;">
+  3
+</td>
+<td style="text-align: center;">
+15 (79%)
+</td>
+<td style="text-align: center;">
+0 (0%)
+</td>
+</tr>
+<tr>
+<td style="text-align: left;">
+  4
+</td>
+<td style="text-align: center;">
+4 (21%)
+</td>
+<td style="text-align: center;">
+8 (62%)
+</td>
+</tr>
+<tr>
+<td style="border-bottom: 2px solid grey; text-align: left;">
+  5
+</td>
+<td style="border-bottom: 2px solid grey; text-align: center;">
+0 (0%)
+</td>
+<td style="border-bottom: 2px solid grey; text-align: center;">
+5 (38%)
+</td>
+</tr>
+</tbody>
+<tfoot><tr><td colspan="3">
+† The weight is in 10<sup>3</sup> kg
+</td></tr></tfoot>
+</table>
+
+</div>
+<div id="p-values" class="section level1">
+<h1>P-values</h1>
+<p>Event though p-values are discouraged in the Table 1, they are <a href="http://cpr.sagepub.com/content/19/2/231.full">not uncommon</a>. I have therefore added basic statistics consisting that defaults to Fisher’s exact test for proportions and Wilcoxon rank sum test for continuous values.</p>
+<pre class="sourceCode r"><code class="sourceCode r">getTable1Stats &lt;-<span class="st"> </span>function(x, <span class="dt">digits =</span> <span class="dv">0</span>, ...){
+  <span class="kw">getDescriptionStatsBy</span>(<span class="dt">x =</span> x, 
+                        <span class="dt">by =</span> mtcars$am,
+                        <span class="dt">digits =</span> digits,
+                        <span class="dt">continuous_fn =</span> describeMedian,
+                        <span class="dt">header_count =</span> <span class="ot">TRUE</span>,
+                        <span class="dt">statistics =</span> <span class="ot">TRUE</span>,
+                        ...)
+  
+}
 
 t1 &lt;-<span class="st"> </span><span class="kw">list</span>()
 t1[[<span class="st">&quot;Gas&quot;</span>]] &lt;-
-<span class="st">  </span><span class="kw">getTable1Stats</span>(mtcars$mpg_w_missing, <span class="dt">statistics=</span><span class="ot">TRUE</span>)
+<span class="st">  </span><span class="kw">getTable1Stats</span>(mtcars$mpg)
   
 t1[[<span class="st">&quot;Weight&amp;dagger;&quot;</span>]] &lt;-
-<span class="st">  </span><span class="kw">getTable1Stats</span>(mtcars$wt, <span class="dt">statistics=</span><span class="ot">TRUE</span>)
+<span class="st">  </span><span class="kw">getTable1Stats</span>(mtcars$wt)
 
 t1[[<span class="st">&quot;Color&quot;</span>]] &lt;-<span class="st"> </span>
-<span class="st">  </span><span class="kw">getTable1Stats</span>(mtcars$col, <span class="dt">statistics=</span><span class="ot">TRUE</span>)
+<span class="st">  </span><span class="kw">getTable1Stats</span>(mtcars$col)
 
-<span class="co"># If we want to use the labels set in the beginning</span>
-<span class="co"># we add an element without a name</span>
-t1 &lt;-<span class="st"> </span><span class="kw">c</span>(t1,
-        <span class="kw">list</span>(<span class="kw">getTable1Stats</span>(mtcars$gear, <span class="dt">statistics=</span><span class="ot">TRUE</span>)))
-
-<span class="kw">htmlTable</span>(<span class="kw">mergeDesc</span>(t1),
-          <span class="dt">css.rgroup =</span> <span class="st">&quot;&quot;</span>,
-          <span class="dt">caption  =</span> <span class="st">&quot;Basic descriptive statistics from the mtcars dataset&quot;</span>,
-          <span class="dt">tfoot =</span> <span class="st">&quot;&amp;dagger; The weight is in 10&lt;sup&gt;3&lt;/sup&gt; kg&quot;</span>)</code></pre>
+<span class="kw">library</span>(magrittr)
+<span class="kw">mergeDesc</span>(t1,
+          <span class="kw">getTable1Stats</span>(mtcars$gear)) %&gt;%
+<span class="st">  </span><span class="kw">htmlTable</span>(<span class="dt">css.rgroup =</span> <span class="st">&quot;&quot;</span>,
+            <span class="dt">caption  =</span> <span class="st">&quot;Basic descriptive statistics from the mtcars dataset&quot;</span>,
+            <span class="dt">tfoot =</span> <span class="st">&quot;&amp;dagger; The weight is in 10&lt;sup&gt;3&lt;/sup&gt; kg&quot;</span>)</code></pre>
 <table class="gmisc_table" style="border-collapse: collapse;">
 <thead>
 <tr><td colspan="4" style="text-align: left;">
@@ -305,35 +438,20 @@ P-value
 </th>
 </tr>
 </thead>
-<tbody> 
-<tr><td colspan="4" style>
+<tbody>
+<tr>
+<td style="text-align: left;">
 Gas
-</td></tr>
-<tr>
-<td style="text-align: left;">
-  Median (IQR)
 </td>
 <td style="text-align: center;">
-16 (15 - 19)
+17 (15 - 19)
 </td>
 <td style="text-align: center;">
-24 (20 - 30)
+23 (21 - 30)
 </td>
 <td style="text-align: center;">
-0.01
+0.002
 </td>
-</tr>
-<tr>
-<td style="text-align: left;">
-  Missing
-</td>
-<td style="text-align: center;">
-2 (11%)
-</td>
-<td style="text-align: center;">
-3 (23%)
-</td>
-<td style="text-align: center;"></td>
 </tr>
 <tr>
 <td style="text-align: left;">
@@ -349,32 +467,33 @@ Weight†
 &lt; 0.0001
 </td>
 </tr> 
-<tr><td colspan="4" style>
+<tr><td colspan="3" style>
 Color
+</td>
+<td style="text-align: center;">
+0.45
 </td></tr>
 <tr>
 <td style="text-align: left;">
   black
 </td>
 <td style="text-align: center;">
-6 (32%)
+8 (42%)
 </td>
 <td style="text-align: center;">
 3 (23%)
 </td>
-<td style="text-align: center;">
-0.49
-</td>
+<td style="text-align: center;"></td>
 </tr>
 <tr>
 <td style="text-align: left;">
   red
 </td>
 <td style="text-align: center;">
-7 (37%)
+5 (26%)
 </td>
 <td style="text-align: center;">
-3 (23%)
+6 (46%)
 </td>
 <td style="text-align: center;"></td>
 </tr>
@@ -386,12 +505,15 @@ Color
 6 (32%)
 </td>
 <td style="text-align: center;">
-7 (54%)
+4 (31%)
 </td>
 <td style="text-align: center;"></td>
 </tr> 
-<tr><td colspan="4" style>
+<tr><td colspan="3" style>
 Gears
+</td>
+<td style="text-align: center;">
+&lt; 0.0001
 </td></tr>
 <tr>
 <td style="text-align: left;">
@@ -403,9 +525,175 @@ Gears
 <td style="text-align: center;">
 0 (0%)
 </td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">
+  4
+</td>
+<td style="text-align: center;">
+4 (21%)
+</td>
+<td style="text-align: center;">
+8 (62%)
+</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="border-bottom: 2px solid grey; text-align: left;">
+  5
+</td>
+<td style="border-bottom: 2px solid grey; text-align: center;">
+0 (0%)
+</td>
+<td style="border-bottom: 2px solid grey; text-align: center;">
+5 (38%)
+</td>
+<td style="border-bottom: 2px solid grey; text-align: center;"></td>
+</tr>
+</tbody>
+<tfoot><tr><td colspan="4">
+† The weight is in 10<sup>3</sup> kg
+</td></tr></tfoot>
+</table>
+
+<div id="custom-p-values" class="section level2">
+<h2>Custom p-values</h2>
+<p>By popular demand I’ve expanded with the option of having custom p-values. All you need to do is to provide a function that takes two values and exports a single p-value. There are several prepared functions that you can use or use as a template for your own p-value function. They all start with <code>getPval..</code>, e.g. <code>getPvalKruskal</code>. You can either provide a single function or you can set the defaults depending on the variable type:</p>
+<pre class="sourceCode r"><code class="sourceCode r">getTable1Stats &lt;-<span class="st"> </span>function(x, <span class="dt">digits =</span> <span class="dv">0</span>, ...){
+  <span class="kw">getDescriptionStatsBy</span>(<span class="dt">x =</span> x, 
+                        <span class="dt">by =</span> mtcars$am,
+                        <span class="dt">digits =</span> digits,
+                        <span class="dt">continuous_fn =</span> describeMedian,
+                        <span class="dt">header_count =</span> <span class="ot">TRUE</span>,
+                        <span class="dt">statistics =</span> <span class="kw">list</span>(<span class="dt">continuous =</span> getPvalChiSq, 
+                                          <span class="dt">factor =</span> getPvalChiSq, 
+                                          <span class="dt">proportion =</span> getPvalFisher),
+                        ...)
+  
+}
+
+t1 &lt;-<span class="st"> </span><span class="kw">list</span>()
+t1[[<span class="st">&quot;Gas&quot;</span>]] &lt;-
+<span class="st">  </span><span class="kw">getTable1Stats</span>(mtcars$mpg)
+  
+t1[[<span class="st">&quot;Weight&amp;dagger;&quot;</span>]] &lt;-
+<span class="st">  </span><span class="kw">getTable1Stats</span>(mtcars$wt)
+
+t1[[<span class="st">&quot;Color&quot;</span>]] &lt;-<span class="st"> </span>
+<span class="st">  </span><span class="kw">getTable1Stats</span>(mtcars$col)
+
+<span class="kw">mergeDesc</span>(t1,
+          <span class="kw">getTable1Stats</span>(mtcars$gear)) %&gt;%
+<span class="st">  </span><span class="kw">htmlTable</span>(<span class="dt">css.rgroup =</span> <span class="st">&quot;&quot;</span>,
+            <span class="dt">caption  =</span> <span class="st">&quot;P-values generated from a custom set of values&quot;</span>,
+            <span class="dt">tfoot =</span> <span class="st">&quot;&amp;dagger; The weight is in 10&lt;sup&gt;3&lt;/sup&gt; kg&quot;</span>)</code></pre>
+<table class="gmisc_table" style="border-collapse: collapse;">
+<thead>
+<tr><td colspan="4" style="text-align: left;">
+P-values generated from a custom set of values
+</td></tr>
+<tr>
+<th style="border-bottom: 1px solid grey; border-top: 2px solid grey;"> </th>
+<th style="border-bottom: 1px solid grey; border-top: 2px solid grey; text-align: center;">
+Automatic<br /> No. 19
+</th>
+<th style="border-bottom: 1px solid grey; border-top: 2px solid grey; text-align: center;">
+Manual<br /> No. 13
+</th>
+<th style="border-bottom: 1px solid grey; border-top: 2px solid grey; text-align: center;">
+P-value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">
+Gas
+</td>
+<td style="text-align: center;">
+17 (15 - 19)
+</td>
+<td style="text-align: center;">
+23 (21 - 30)
+</td>
+<td style="text-align: center;">
+0.27
+</td>
+</tr>
+<tr>
+<td style="text-align: left;">
+Weight†
+</td>
+<td style="text-align: center;">
+4 (3 - 4)
+</td>
+<td style="text-align: center;">
+2 (2 - 3)
+</td>
+<td style="text-align: center;">
+0.37
+</td>
+</tr> 
+<tr><td colspan="3" style>
+Color
+</td>
+<td style="text-align: center;">
+0.43
+</td></tr>
+<tr>
+<td style="text-align: left;">
+  black
+</td>
+<td style="text-align: center;">
+8 (42%)
+</td>
+<td style="text-align: center;">
+3 (23%)
+</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">
+  red
+</td>
+<td style="text-align: center;">
+5 (26%)
+</td>
+<td style="text-align: center;">
+6 (46%)
+</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">
+  silver
+</td>
+<td style="text-align: center;">
+6 (32%)
+</td>
+<td style="text-align: center;">
+4 (31%)
+</td>
+<td style="text-align: center;"></td>
+</tr> 
+<tr><td colspan="3" style>
+Gears
+</td>
 <td style="text-align: center;">
 &lt; 0.0001
+</td></tr>
+<tr>
+<td style="text-align: left;">
+  3
 </td>
+<td style="text-align: center;">
+15 (79%)
+</td>
+<td style="text-align: center;">
+0 (0%)
+</td>
+<td style="text-align: center;"></td>
 </tr>
 <tr>
 <td style="text-align: left;">
@@ -438,6 +726,9 @@ Gears
 </table>
 
 
+
+
+</div>
 </div>
 
 
