@@ -21,7 +21,8 @@ Imports:
     lattice,
     sp,
     Hmisc,
-    forestplot
+    forestplot,
+    magrittr
 Suggests:
     testthat,
     knitr

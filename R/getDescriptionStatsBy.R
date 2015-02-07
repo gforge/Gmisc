@@ -19,7 +19,7 @@
 #' argument has more than three unique levels where it defaults to \code{getPvalAnova}).
 #'
 #' If you want the function to select functions depending on the type of input
-#' you can provide a list with the names 'numeric', 'proportion', 'factor' and
+#' you can provide a list with the names \code{'continuous'}, \code{'proportion'}, \code{'factor'} and
 #' the function will choose accordingly. If you fail to define a certain category
 #' it will default to the above.
 #'
@@ -148,8 +148,9 @@ getDescriptionStatsBy <- function(x,
 
   useNA <- match.arg(useNA)
 
-  if (statistics != FALSE &&
-        !is.function(statistics)){
+  if (is.list(statistics) ||
+        (statistics != FALSE &&
+           !is.function(statistics))){
     if (is.list(statistics)){
       types <- c("continuous",
                  "proportion",
@@ -328,7 +329,7 @@ getDescriptionStatsBy <- function(x,
              (is.factor(x) &&
                 length(levels(x)) == 2) &&
              hrzl_prop == FALSE){
-    
+
     default_ref <- prDescGetAndValidateDefaultRef(x, default_ref)
 
     t <- by(x, by, FUN=prop_fn, html=html, digits=digits,
@@ -340,8 +341,8 @@ getDescriptionStatsBy <- function(x,
     # Set the rowname to a special format
     # if there was missing and this is an matrix
     # then we should avoid using this format
-    name <- sprintf("%s %s", 
-                    capitalize(levels(x)[default_ref]), 
+    name <- sprintf("%s %s",
+                    capitalize(levels(x)[default_ref]),
                     tolower(label(x)))
     if (NEJMstyle) {
       # LaTeX needs and escape before %

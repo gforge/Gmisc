@@ -100,10 +100,10 @@ t1[["Color"]] <-
 t1 <- c(t1,
         list(getTable1Stats(mtcars$gear)))
 
-htmlTable(mergeDesc(t1),
-          css.rgroup = "",
-          caption  = "Basic descriptive statistics from the mtcars dataset",
-          tfoot = "&dagger; The weight is in 10<sup>3</sup> kg")
+mergeDesc(t1,
+          htmlTable_args = list(css.rgroup = "",
+                                caption  = "Basic descriptive statistics from the mtcars dataset",
+                                tfoot = "&dagger; The weight is in 10<sup>3</sup> kg"))
 ```
 
 Event though p-values are discouraged in the table 1, they are [not uncommon](http://cpr.sagepub.com/content/19/2/231.full). I have therefore added basic statistics consisting of Fisher's exact test for proportions and Wilcoxon rank sum test for continuous values. Note that the Wilcoxon only works with two groups.
@@ -117,7 +117,7 @@ mtcars$wt_w_missing[sample(1:NROW(mtcars), size=8)] <- NA
 
 t1 <- list()
 t1[["Gas"]] <-
-  getTable1Stats(mtcars$mpg_w_missing, statistics=TRUE)
+  getTable1Stats(mtcars$mpg_w_missing, statistics=list(continuous = getPvalAnova))
   
 t1[["Weight&dagger;"]] <-
   getTable1Stats(mtcars$wt, statistics=TRUE)
@@ -130,8 +130,11 @@ t1[["Color"]] <-
 t1 <- c(t1,
         list(getTable1Stats(mtcars$gear, statistics=TRUE)))
 
-htmlTable(mergeDesc(t1),
-          css.rgroup = "",
-          caption  = "Basic descriptive statistics from the mtcars dataset",
-          tfoot = "&dagger; The weight is in 10<sup>3</sup> kg")
+# Instead of the htmlTable_args we can directly pipe the results
+# for a cleaner look
+library(magrittr)
+mergeDesc(t1) %>%
+  htmlTable(css.rgroup = "",
+            caption  = "Basic descriptive statistics from the mtcars dataset",
+            tfoot = "&dagger; The weight is in 10<sup>3</sup> kg")
 ```

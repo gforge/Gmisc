@@ -3,11 +3,14 @@
 \name{latex.descMrg}
 \alias{htmlTable.descMrg}
 \alias{latex.descMrg}
+\alias{print.descMrg}
 \title{A wrapper around the \code{\link[htmlTable]{htmlTable}}/\code{\link[Hmisc]{latex}} function}
 \usage{
 \method{latex}{descMrg}(x, ...)
 
 \method{htmlTable}{descMrg}(x, ...)
+
+\method{print}{descMrg}(x, ...)
 }
 \arguments{
   \item{x}{The \code{\link{mergeDesc}} object}
