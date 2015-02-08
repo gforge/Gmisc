@@ -18,19 +18,35 @@ also allows for advanced multi-column transitions.
 
 \item{\code{box_txt}}{The texts of each box}
 
-\item{\code{box_label}}{Box labels on top/bottom of the boxes}
+\item{\code{box_label}}{Box labels}
 
-\item{\code{box_label_pos}}{Either "top"/"bottom"}
+\item{\code{box_label_pos}}{The label's positions, either "top"/"bottom"}
 
 \item{\code{box_label_cex}}{The size of the box labels}
 
-\item{\code{vertical_space}}{The space between}
+\item{\code{box_cex}}{The fontsize multiplier for the text within the boxes}
 
-\item{\code{fill_clr}}{The fill color}
+\item{\code{arrow_type}}{The type of arrow to use, defaults to "gradient", but can also be "simple".
+The corresponding functions are \code{\link{bezierArrowGradient}}, and
+\code{\link{bezierArrowSmpl}}. \emph{Note} The bezierGrob ("grid") has been deprecated
+as it is no longer faster than the bezierArrows and there is a difference in design.}
+
+\item{\code{vertical_space}}{The space between the boxes}
+
+\item{\code{fill_clr}}{The box fill color}
+
+\item{\code{clr_bar}}{Shows a color bar if there are proportions. Can be \code{"none"}, \code{"top"}, \code{"bottom"}}
+
+\item{\code{clr_bar_clrs}}{Extracts the colors for the colorbar from the \code{fill_clr} if none is provided}
+
+\item{\code{clr_bar_cex}}{The size of the ticks in the color bar}
+
+\item{\code{clr_bar_subspace}}{If there is little or no difference exists at the low/high proportions of
+the spectrum then it can be of interest to focus the color change to the center leaving the tails constant}
+
+\item{\code{clr_bar_labels}}{The labels of the color bars. Defaults to the dimnames for the proportions.}
 
 \item{\code{txt_clr}}{The text color within the boxes}
-
-\item{\code{box_cex}}{The fontsize multiplier for the text within the boxes}
 
 \item{\code{title}}{The plot title if any}
 
@@ -38,9 +54,15 @@ also allows for advanced multi-column transitions.
 
 \item{\code{mar}}{The margins for the plot.}
 
-\item{\code{lwd_prop_total}}{If the line with should be proportional to the
-maximum width within the full matrix or just proportional to the
-each transition set.}
+\item{\code{min_lwd}}{The minimum line width that is still shown. The pixels will most likely
+not have the same fine resolution as the data and you therefore may want to hide
+lines that are smaller than a certain amount.}
+
+\item{\code{max_lwd}}{The maximum line width to show}
+
+\item{\code{lwd_prop_type}}{The line can either be proportional to the \code{"set"} of transitions,
+i.e. group of two box columns. It can also be proportional to \code{"all"} transitions,
+or to each \code{"box"}.}
 
 \item{\code{data}}{Internal storage variable. Should not be accessed directly.}
 }}
@@ -57,10 +79,30 @@ values from the previous last column will be used for the default columns.}
 If you don't provide the txt field the box' text field will be deduced from the transition matrix'
 dimnames. The fill_clr and txt_clr are passed on to the \code{addClr} function.}
 
+\item{\code{arrowWidths(set_no, add_width)}}{Retreives the details regarding arrow sizes for each arrow within the transition
+group}
+
+\item{\code{boxPositions(col)}}{The box positions as a list with scalars for the positions:
+\enumerate{
+ \item \emph{x} The center x-position
+ \item \emph{y} The center y-position
+ \item \emph{right} The right edge
+ \item \emph{left} The left edge
+ \item \emph{top} The top edge
+ \item \emph{bottom} The bottom edge
+ \item \emph{height} The box height
+ \item \emph{width} The box width
+ \item \emph{unit} The unit used for the values (npc)
+}}
+
 \item{\code{boxSizes(col)}}{Gets the size of the boxes. The \code{col} argumente shoud
 is either an integer or 'last'}
 
 \item{\code{getDim()}}{Gets the current dimensions of the transitions}
+
+\item{\code{getTransitionSet(no, reduce_dim = FALSE)}}{Gets a specific set of transitions. If the \code{reduce_dim} is set
+to TRUE it will only return a 2-dimensional matrix even if the original
+has a 3rd proportions dimension}
 
 \item{\code{getYProps(col)}}{Gets the proportions after removing the \code{vertical_space}
 between the boxes}
@@ -72,9 +114,13 @@ as defined in the \code{$addTransitions} section and not as later internally sto
 
 \item{\code{noRows()}}{Gets the number of boxes in each row}
 
-\item{\code{render(new_page = TRUE)}}{Call this to render the full graph. The \code{new_page}} argument
+\item{\code{render(new_page = TRUE)}}{Call this to render the full graph. The \code{new_page} argument
 is for creating a new plot, set this to \code{FALSE}
 if you want to combine this plot with another or if you have
 additional viewports that you intend to use.}
+
+\item{\code{trnstnSizes(set_no)}}{Gets the transitions per box as a 2D matrix. For the proportions
+it also adds an attribute \code{attr('props', prop_mtrx)} that
+is a 2D matrix with the corresponding proportions.}
 }}
 

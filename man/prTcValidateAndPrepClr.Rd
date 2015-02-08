@@ -4,14 +4,14 @@
 \alias{prTcValidateAndPrepClr}
 \title{Checks and prepares colors}
 \usage{
-prTcValidateAndPrepClr(value, transitions, .self)
+prTcValidateAndPrepClr(value, transitions, tcObject)
 }
 \arguments{
   \item{value}{The color values}
 
   \item{transitions}{The transition matrix}
 
-  \item{.self}{The Transtion-object}
+  \item{tcObject}{The Transtion-object}
 }
 \value{
 \code{matrix} Returns a matrix of the same size as the
@@ -23,4 +23,5 @@ and therefore we need to have this input check. The output
 is always a matrix of the exact same dimensions as the
 transition matrix.
 }
+\keyword{internal}
 

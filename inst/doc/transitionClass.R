@@ -1,28 +1,4 @@
----
-title: "Introduction to the Transition-class"
-author: "Max Gordon"
-date: "`r Sys.Date()`"
-output: 
-  rmarkdown::html_vignette:
-    toc: true
-vignette: >
-  %\VignetteIndexEntry{Gmisc for generating descriptive statistics}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\usepackage[utf8]{inputenc}
----
-
-Introduction
-============
-
-The *Transition*-class is the advanced version of transitionPlot that aims at illustrating the transition between classes over time. The original intent was to show how [self-administered the Charnley classification](http://informahealthcare.com/doi/full/10.3109/17453674.2014.931199) behaves before and after surgery. The plot is a fancier version than what can be achiewed using packages such as [*diagram*](http://informahealthcare.com.proxy.kib.ki.se/doi/full/10.3109/17453674.2014.931199) but at the cost of flexibility. The current function only allows to show transitions from one state to the next and there is generally no going back.
-
-Generate some data
-==================
-
-
-We will start by simulating some data similar to my article. Each observation has a sex and a Charnley class (A, B, or C). The transition is then dependent on both the sex and the Charnley class.
-
-```{r}
+## ------------------------------------------------------------------------
 set.seed(1)
 library(magrittr)
 n <- 100
@@ -72,65 +48,42 @@ for (i in 1:length(Ch_classes)){
              prob = p)) %>%
     factor(levels = c("A", "B", "C"))
 }
-```
 
-Basic use
-=========
-```{r, echo=FALSE, }
+## ----, echo=FALSE,-------------------------------------------------------
 knitr::opts_chunk$set(dev.args=list(type="cairo"), 
                       message=FALSE, 
                       warnings=FALSE)
 knitr::opts_chunk$set(fig.height = 5, fig.width=5)
-```
 
-The most simple use is to just supply the output from the `table()` call:
-
-```{r}
+## ------------------------------------------------------------------------
 library(Gmisc)
 transitions <- getRefClass("Transition")$new(table(data$Charnley_class, data$Charnley_class_1yr), 
                                                   label=c("Before surgery", "1 year after"))
 transitions$render()
-```
 
-Adding customizations are rather straight forward by setting the different field arguments:
-
-```{r}
+## ------------------------------------------------------------------------
 transitions <- getRefClass("Transition")$new(table(data$Charnley_class, data$Charnley_class_1yr), 
                                                   label=c("Before surgery", "1 year after"))
 transitions$title <- "Charnley class in relation to THR"
 transitions$arrow_type <- "simple"
 transitions$box_label_pos <- "bottom"
 transitions$render()
-```
 
-Adding a third dimension
-------------------------
-
-Underlying proportions can be visualized by splitting the box colors and blending the colors in the gradient arrows. The color blend is explained in the colorbar element at the bottom:
-
-```{r}
+## ------------------------------------------------------------------------
 transitions <- getRefClass("Transition")$new(table(data$Charnley_class, data$Charnley_class_1yr, data$Sex), 
                                                   label=c("Before surgery", "1 year after"))
 transitions$title <- "Charnley class in relation to THR"
 transitions$clr_bar <- "top"
 transitions$render()
-```
 
-Multiple transitions
-====================
-
-The major advantage with the **Transition**-class is that it allows for transitions at multiple time points. We do this by calling the **addTransitions** function as shown below:
-
-```{r, echo=FALSE}
+## ----, echo=FALSE--------------------------------------------------------
 knitr::opts_chunk$set(fig.height = 5, fig.width=7)
-```
 
-```{r}
+## ------------------------------------------------------------------------
 transitions <- getRefClass("Transition")$new(table(data$Charnley_class, data$Charnley_class_1yr, data$Sex), 
                                                   label=c("Before surgery", "1 year after"))
 transitions$title <- "Charnley class in relation to THR"
 transitions$addTransitions(table(data$Charnley_class_1yr, data$Charnley_class_2yr, data$Sex), label="2 years after")
-library(grid)
 transitions$max_lwd <- unit(.05, "npc")
 transitions$render()
-```
+

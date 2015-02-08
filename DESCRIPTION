@@ -1,6 +1,6 @@
 Package: Gmisc
-Version: 1.0.2
-Date: 2015-02-07
+Version: 1.0.3
+Date: 2015-02-08
 Title: Descriptive Statistics, Transition Plots, and More
 Author: Max Gordon <max@gforge.se>
 Maintainer: Max Gordon <max@gforge.se>
@@ -24,10 +24,10 @@ Imports:
     forestplot,
     abind,
     methods,
+    knitr,
     magrittr
 Suggests:
-    testthat,
-    knitr
+    testthat
 Roxygen: list(wrap = TRUE)
 Encoding: UTF-8
 NeedsCompilation: no

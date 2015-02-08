@@ -4,16 +4,13 @@
 \alias{prTcPlotBoxColumn}
 \title{Plots a column of boxes}
 \usage{
-prTcPlotBoxColumn(x_offset, width, proportions, fill, txt, txt_clr, cex)
+prTcPlotBoxColumn(box_positions, proportions, fill, txt, txt_clr, cex)
 }
 \arguments{
-  \item{x_offset}{The x start position of the box}
+  \item{box_positions}{The box positions}
 
-  \item{width}{The box width}
-
-  \item{proportions}{The vertical proportions that are
-  \code{(1-sum(proportions)) == total_vertical_space}, i.e.
-  the sum is always <= 1.}
+  \item{proportions}{The box vertical proportions (needed
+  for the prop attribute)}
 
   \item{fill}{The fill colors of length equal to the
   proportions}
@@ -31,4 +28,5 @@ prTcPlotBoxColumn(x_offset, width, proportions, fill, txt, txt_clr, cex)
 \description{
 Takes a set of box settings and plots them.
 }
+\keyword{internal}
 

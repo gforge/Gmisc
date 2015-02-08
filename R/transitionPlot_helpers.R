@@ -581,15 +581,15 @@ prTpGetBoxPositions <- function (no, side,
 #'  at the low/high proportions of the spectrum then it
 #'  can be of interest to focus the color change to the center
 #'  leaving the tails constant
+#' @param The color resolution to use
 #' @return \code{character} The function can return both single colors
 #'  or multiple colors as character vector (see \code{\link[grDevices]{rgb}})
 #'
 #' @keywords internal
-prTpGetColors <- function(colors, proportion, space){
+prTpGetColors <- function(colors, proportion, space = NULL, no = 101){
   start <- c()
   end <- c()
-  no <- 101
-  if (!missing(space)){
+  if (!is.null(space)){
     if(any(space > 1 | space < 0))
       stop("Your color subspace that you define should be between 0 and 1")
 
@@ -603,7 +603,7 @@ prTpGetColors <- function(colors, proportion, space){
       end_no <- ceiling(space[2]*no)
       start <- rep(colors[1], times=start_no)
       end <- rep(tail(colors, 1), times=end_no)
-      no <- no - start_no - end_no
+      no <- end_no - start_no
       if (no < 0)
         no <- 0
     }else{

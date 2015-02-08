@@ -130,7 +130,6 @@ transitions <- getRefClass("Transition")$new(table(data$Charnley_class, data$Cha
                                                   label=c("Before surgery", "1 year after"))
 transitions$title <- "Charnley class in relation to THR"
 transitions$addTransitions(table(data$Charnley_class_1yr, data$Charnley_class_2yr, data$Sex), label="2 years after")
-library(grid)
 transitions$max_lwd <- unit(.05, "npc")
 transitions$render()
 ```

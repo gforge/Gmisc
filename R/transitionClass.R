@@ -6,17 +6,23 @@
 #' @field transitions This is a >= 3 dimensional array with the transitions. Should not be direcly accessed.
 #' @field box_width The box width
 #' @field box_txt The texts of each box
-#' @field box_label Box labels on top/bottom of the boxes
-#' @field box_label_pos Either "top"/"bottom"
+#' @field box_label Box labels
+#' @field box_label_pos The label's positions, either "top"/"bottom"
 #' @field box_label_cex The size of the box labels
-#' @field arrow_type The type of arrow to use, defaults to
-#'  "gradient", but can also be "simple" or "grid". The corresponding
-#'  functions are \code{\link{bezierArrowGradient}},
-#'  \code{\link{bezierArrowSmpl}}, and \code{\link[grid]{bezierGrob}}.
-#' @field vertical_space The space between
-#' @field fill_clr The fill color
-#' @field txt_clr The text color within the boxes
 #' @field box_cex The fontsize multiplier for the text within the boxes
+#' @field arrow_type The type of arrow to use, defaults to "gradient", but can also be "simple".
+#'  The corresponding functions are \code{\link{bezierArrowGradient}}, and
+#'  \code{\link{bezierArrowSmpl}}. \emph{Note} The bezierGrob ("grid") has been deprecated
+#'  as it is no longer faster than the bezierArrows and there is a difference in design.
+#' @field vertical_space The space between the boxes
+#' @field fill_clr The box fill color
+#' @field clr_bar Shows a color bar if there are proportions. Can be \code{"none"}, \code{"top"}, \code{"bottom"}
+#' @field clr_bar_clrs Extracts the colors for the colorbar from the \code{fill_clr} if none is provided
+#' @field clr_bar_cex The size of the ticks in the color bar
+#' @field clr_bar_subspace  If there is little or no difference exists at the low/high proportions of
+#'  the spectrum then it can be of interest to focus the color change to the center leaving the tails constant
+#' @field clr_bar_labels The labels of the color bars. Defaults to the dimnames for the proportions.
+#' @field txt_clr The text color within the boxes
 #' @field title The plot title if any
 #' @field title_cex The fontsize multiplier for the title
 #' @field mar The margins for the plot.
@@ -103,15 +109,15 @@ Transition <-
                " while there are '", .self$noCols(), "' columns that require a label.")
         data$box_label <<- value
       },
-      box_label_pos = function(value){
-        if (missing(value))
-          return(data$box_label_pos)
+      box_label_pos = function(value = c("top","bottom")){
+        if (missing(value)){
+          if (!is.null(data$box_label_pos))
+            return(data$box_label_pos)
 
-        value <- tolower(value)
-        if (value %in% c("top","bottom"))
-          stop("Only top/bottom are allowed for the box_label_pos")
+          return("top")
+        }
 
-        data$box_label_pos <<- value
+        data$box_label_pos <<- match.arg(value)
       },
       box_label_cex = function(value){
         if (missing(value)){
@@ -168,7 +174,7 @@ Transition <-
 
         data$box_cex <<- value
       },
-      arrow_type = function(value = c("gradient", "simple", "grid")){
+      arrow_type = function(value = c("gradient", "simple")){
         if (missing(value)){
           if (!is.null(data$arrow_type))
             return(data$arrow_type)
@@ -230,6 +236,105 @@ Transition <-
 
         data$fill_clr <<- value
       },
+      clr_bar = function(value = c("none", "bottom", "top")){
+        if (missing(value)){
+          # Only show bar if there is actually something to show
+          if (length(.self$getDim()) == 3){
+            if (arrow_type == "gradient" &&
+                  length(clr_bar_clrs) == 2){
+              if (!is.null(data$clr_bar))
+                return(data$clr_bar)
+
+              return("bottom")
+            }
+
+          }
+
+          return("none")
+        }
+
+        data$clr_bar <<- match.arg(value)
+      },
+      clr_bar_clrs = function(value){
+        if (missing(value)){
+          if (!is.null(data$clr_bar_clrs))
+            return(data$clr_bar_clrs)
+
+          if (length(.self$getDim()) == 3){
+            return(apply(asub(fill_clr, idx = 1, dims = 2), 2, unique))
+          }
+
+          return(head(fill_clr, 1))
+        }
+
+        data$clr_bar_clrs <<- value
+      },
+      clr_bar_txt_clr = function(value){
+        if (missing(value)){
+          if (!is.null(data$clr_bar_txt_clr))
+            return(data$clr_bar_txt_clr)
+
+          if (length(.self$getDim()) == 3){
+            return(apply(asub(txt_clr, idx = 1, dims = 2), 2, unique))
+          }
+
+          return(rep(head(txt_clr, 1), length.out = 2))
+        }
+
+        data$clr_bar_txt_clr <<- rep(value, length.out = 2)
+      },
+      clr_bar_cex = function(value){
+        if (missing(value)){
+          if (!is.null(data$clr_bar_cex))
+            return(data$clr_bar_cex)
+
+          return(box_cex / 3)
+        }
+
+        data$clr_bar_cex <<- value
+      },
+      clr_bar_subspace = function(value){
+        if (missing(value)){
+          if (!is.null(data$clr_bar_subspace))
+            return(data$clr_bar_subspace)
+
+          return(c(0,1))
+        }
+
+        if (length(value) > 2 &&
+              !is.numeric(value))
+          stop("The color subspace needs to be a numeric vector of length between 1 and 2")
+        if (is.list(value))
+          value <- unlist(value)
+        if (any(sapply(value, function(x) (x > 1 || x < 0))))
+          stop("The color subspace is only defined between 1 and 0")
+
+        if (length(value) == 1){
+          if (value > 0.5){
+            value <- c((1-value)/2, 1 - (1-value)/2)
+          }else{
+            value <- c(value, 1 - value)
+          }
+        } else if (length(unique(value)) == 1){
+          stop("You have provided an undefined color space - the two values should be two unique values between 0 and 1")
+        } else {
+          value <- sort(value)
+        }
+        data$clr_bar_subspace <<- value
+      },
+      clr_bar_labels = function(value){
+        if (missing(value)){
+          if (length(.self$getDim()) == 2)
+            return(NULL)
+
+          if (!is.null(data$clr_bar_labels))
+            return(data$clr_bar_labels)
+
+          return(dimnames(transitions)[[3]])
+        }
+
+        data$clr_bar_labels <<- value
+      },
       txt_clr = function(value){
         if (missing(value))
           return(data$txt_clr)
@@ -254,10 +359,7 @@ Transition <-
           if (!is.null(data$min_lwd))
             return(data$min_lwd)
 
-          if(arrow_type == "grid")
-            return(1)
-
-          return(unit(.1, "mm"))
+          return(unit(1, "pt"))
         }
         data$min_lwd <<- value
       },
@@ -265,9 +367,6 @@ Transition <-
         if (missing(value)){
           if (!is.null(data$max_lwd))
             return(data$max_lwd)
-
-          if(arrow_type == "grid")
-            return(6)
 
           return(unit(5, "mm"))
         }
@@ -339,15 +438,15 @@ Transition <-
         value <- new(def, "copy")
         vEnv <- as.environment(value)
         selfEnv <- as.environment(.self)
-        for (field in names(def@fieldClasses)) {
-          if (shallow)
-            assign(field, get(field, envir = selfEnv), envir = vEnv)
-          else {
-            current <- get(field, envir = selfEnv)
-            if (is(current, "envRefClass"))
-              current <- current$copy(FALSE)
-            assign(field, current, envir = vEnv)
-          }
+        # This object stores everything in the data field
+        field <- "data"
+        if (shallow)
+          assign(field, get(field, envir = selfEnv), envir = vEnv)
+        else {
+          current <- get(field, envir = selfEnv)
+          if (is(current, "envRefClass"))
+            current <- current$copy(FALSE)
+          assign(field, current, envir = vEnv)
         }
         value
       },
@@ -386,12 +485,16 @@ Transition <-
         box_width <<- bw
         vertical_space <<- unit(.6/.self$noRows(), units = "npc")
 
-        if (!missing(label)){
-          if (.self$noCols() > 2){
-            box_label <<- c(box_label, label)
-          }else{
-            box_label <<- label
+        if (missing(label)){
+          label <- tail(dim(transitions), 1) + 1
+          if (label == 2){
+            label <- 1:2
           }
+        }
+        if (.self$noCols() > 2){
+          box_label <<- c(box_label, label)
+        }else{
+          box_label <<- label
         }
 
         if (missing(txt)){
@@ -721,7 +824,7 @@ Transition <-
         return(bx)
       },
       render = function(new_page = TRUE){
-        "Call this to render the full graph. The \\code{new_page}} argument
+        "Call this to render the full graph. The \\code{new_page} argument
         is for creating a new plot, set this to \\code{FALSE}
         if you want to combine this plot with another or if you have
         additional viewports that you intend to use."
@@ -755,18 +858,103 @@ Transition <-
               widths %<>% c(space_between)
           }
 
+          box_label_heights <- c(raw_height * 2, 1-raw_height * 2)
+          label_pos <- 1
+          graph_pos <- 2
+          if (box_label_pos == "bottom"){
+            box_label_heights <- rev(box_label_heights)
+            label_pos <- 2
+            graph_pos <- 1
+          }
           # Add margins
           pushViewport(viewport(layout = grid.layout(nrow = 2, ncol = length(widths),
-                                                     heights = unit(c(raw_height * 2, 1-raw_height * 2), "npc"),
+                                                     heights = unit(box_label_heights, "npc"),
                                                      widths = unit(widths, "npc"))))
           for (i in 1:.self$noCols()){
             labelGrob <- textGrob(box_label[i], gp = gpar(cex = box_label_cex))
-            pushViewport(viewport(layout.pos.row = 1, layout.pos.col = i + (i-1)))
+            pushViewport(viewport(layout.pos.row = label_pos, layout.pos.col = i + (i-1)))
             grid.draw(labelGrob)
             upViewport()
           }
-          pushViewport(viewport(layout.pos.row = 2, layout.pos.col = 1:length(widths)))
+          pushViewport(viewport(layout.pos.row = graph_pos, layout.pos.col = 1:length(widths)))
           on.exit(upViewport(2))
+        }
+
+        if (clr_bar != "none"){
+          bar_height <- unit(1, "cm")
+          colorAxis <- xaxisGrob(at=c(0,.25,.5,.75, 1),
+                                 label= sprintf("%d %%", c(0,.25,.5,.75, 1)*100),
+                                 main=FALSE, gp=gpar(cex=clr_bar_cex))
+
+          # Add a little space to the actual height
+          axis_height <- grobHeight(colorAxis)
+
+          if (clr_bar == "bottom"){
+            axis_height <- axis_height
+            clr_bar_heights <- unit.c(unit(1, "npc") -
+                                        axis_height -
+                                        bar_height,
+                                      unit(3, "mm"),
+                                      axis_height,
+                                      bar_height)
+            bar_pos <- 4
+            graph_pos <- 1
+          }else{
+            clr_bar_heights <- unit.c(axis_height,
+                                      bar_height,
+                                      unit(3, "mm"),
+                                      unit(1, "npc") -
+                                        axis_height -
+                                        bar_height)
+            bar_pos <- 2
+            graph_pos <- 4
+          }
+
+          bar_layout <- grid.layout(nrow=4, ncol=3,
+                                    heights = clr_bar_heights,
+                                    widths = unit.c(box_width,
+                                                    unit(1, "npc") -
+                                                      box_width -
+                                                      box_width,
+                                                    box_width))
+
+          pushViewport(viewport(layout=bar_layout, name="Bar_layout"))
+
+          pushViewport(viewport(layout.pos.row=bar_pos,
+                                layout.pos.col=2,
+                                name="Color_bar"))
+
+          bar_clrs <- prTpGetColors(clr_bar_clrs, space=clr_bar_subspace)
+          grid.raster(t(as.raster(bar_clrs)), width=1, height=1, interpolate=FALSE)
+          grid.draw(colorAxis)
+
+          if (!is.null(clr_bar_labels)){
+            # The height is actually oblivious to upper case and lower case letters
+            lab_height <- convertY(unit(1, units = "strheight", clr_bar_labels), "npc", valueOnly=TRUE)
+            lab_cex_adjusted <- 1/(lab_height*2)
+
+            lab_margin <- .05
+            left <- textGrob(clr_bar_labels[1],
+                             x=0 + lab_margin,
+                             just="left",
+                             y=.5,
+                             gp=gpar(cex=lab_cex_adjusted,
+                                     col=clr_bar_txt_clr[1]))
+            right <- textGrob(clr_bar_labels[2],
+                              x=1-lab_margin,
+                              just="right",
+                              y=.5,
+                              gp=gpar(cex=lab_cex_adjusted,
+                                      col=clr_bar_txt_clr[2]))
+            grid.draw(left)
+            grid.draw(right)
+          }
+          popViewport()
+
+          pushViewport(viewport(layout.pos.row=graph_pos,
+                                layout.pos.col=1:3,
+                                name="Main_exc_bar"))
+          on.exit(popViewport(2))
         }
 
         shift <- unit(raw_width*.02, "snpc")
@@ -819,7 +1007,8 @@ Transition <-
                            left_box_clrs = box_args[["fill"]],
                            max_flow = max_flow,
                            min_width = min_width,
-                           max_width = max_width)
+                           max_width = max_width,
+                           clr_bar_subspace = clr_bar_subspace)
           }
 
           fastDoCall(prTcPlotBoxColumn, box_args)
