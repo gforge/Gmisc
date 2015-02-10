@@ -31,7 +31,9 @@ getBezierAdj4Arrw <- function (x, y, arrow_length, length_out = 100) {
     }
   }
 
-  true_bezier <- gnrlBezierPoints(x = x, y = y, length_out = length_out)
+  true_bezier <- gnrlBezierPoints(cbind(x, y), length_out = length_out)
+  true_bezier <- list(x = true_bezier[,1],
+                      y = true_bezier[,2])
   true_bezier$distance <-
     with(true_bezier,
          sqrt((x - tail(x, 1))^2 + (y - tail(y, 1))^2))
@@ -80,7 +82,9 @@ getBezierAdj4Arrw <- function (x, y, arrow_length, length_out = 100) {
   x <- c(x, true_bezier$x[cut_point])
   y <- c(y, true_bezier$y[cut_point])
 
-  adjusted_bp <- gnrlBezierPoints(x = x, y = y, length_out = length_out)
+  adjusted_bp <- gnrlBezierPoints(cbind(x, y), length_out = length_out)
+  adjusted_bp <- list(x = adjusted_bp[,1],
+                      y = adjusted_bp[,2])
 
   structure(adjusted_bp,
             true_bezier = true_bezier,
@@ -239,9 +243,9 @@ extendLine <- function(x, y,
                 ref_y)
   }
 
-  add_bg_pt <- gnrlBezierPoints(x = ctrl_x, y = ctrl_y, length_out = 10)
-  x <- c(rev(add_bg_pt$x), x)
-  y <- c(rev(add_bg_pt$y), y)
+  add_bg_pt <- gnrlBezierPoints(cbind(ctrl_x, ctrl_y), length_out = 10)
+  x <- c(rev(add_bg_pt[,1]), x)
+  y <- c(rev(add_bg_pt[,2]), y)
   return(list(x=x, y=y))
 }
 

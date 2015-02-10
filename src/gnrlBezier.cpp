@@ -1,15 +1,15 @@
 #include <Rcpp.h>
 using namespace Rcpp;
 
+NumericMatrix getNumericMatrix(SEXP& x);
+
 //' Generates a generalized Bezier line
 //'
 //' This is a general form of bezier line that can be used for cubic, quadratic,
 //' and more advanced Bezier lines.
 //'
-//' @param x The x-values for the bezier control points. The first
-//'  is the starting point and the last the stop point.
-//' @param y The y-values for the bezier control points. The first
-//'  is the starting point and the last the stop point.
+//' @param ctrl_points The ctrl_points for the bezier control points. This should
+//'  either be a matrix or a data.frame.
 //' @param length_out The length of the return points, i.e. how fine
 //'  detailed the points should be.
 //'
@@ -17,29 +17,34 @@ using namespace Rcpp;
 //' @examples
 //' library(grid)
 //' grid.newpage()
+//' l <- gnrlBezierPoints(data.frame(x = c(.1, -.1, .7, 1, 1, 0.1),
+//'                                  y = c(.9, 0, 1, .8, .4, .1)),
+//'                       length_out = 100)
+//' grid.lines(l[,1], l[,2], gp=gpar(col="#550000", lwd = 4))
+//'
 //' out_sizes <- 4:20
 //' clrs <- colorRampPalette(c("orange", "darkblue"))(length(out_sizes))
 //' for (i in out_sizes){
-//'   l <- gnrlBezierPoints(x = c(.1, -.1, .7, 1, 1, 0.1),
-//'                         y = c(.9, 0, 1, .8, .4, .1),
-//'                         length_out = i)
-//'   grid.lines(l$x, l$y,
-//'              gp=gpar(col=clrs[which(i == out_sizes)]))
+//'    l <- gnrlBezierPoints(data.frame(x = c(.1, -.1, .7, 1, 1, 0.1),
+//'                                     y = c(.9, 0, 1, .8, .4, .1)),
+//'                          length_out = i)
+//'    grid.lines(l[,1], l[,2],
+//'    gp=gpar(col=clrs[which(i == out_sizes)]))
 //' }
 // [[Rcpp::export]]
-Rcpp::List gnrlBezierPoints(NumericVector x, NumericVector y, int length_out = 100) {
+NumericMatrix gnrlBezierPoints(SEXP& ctrl_points, int length_out = 100) {
+  NumericMatrix mx = getNumericMatrix(ctrl_points);
   if (length_out < 1)
     throw std::logic_error("The length.out cannot be negative");
-  if (x.size() != y.size())
-      throw std::range_error("The x and y elements need to be identical");
-  if (x.size() < 3)
+  if (mx.nrow() < 3)
       throw std::range_error("The minimum length of the control points is 3");
 
-  NumericVector ret_x(length_out, 0.0);
-  NumericVector ret_y(length_out, 0.0);
+  NumericMatrix ret(length_out, mx.ncol());
+
   // We need to set the first element to the starting point
-  ret_x[0] = x[0];
-  ret_y[0] = y[0];
+  for (int col = 0; col < mx.ncol(); col++){
+    ret(0, col) = mx(0, col);
+  }
   length_out -= 1;
 
   double t = 0.0;
@@ -49,27 +54,33 @@ Rcpp::List gnrlBezierPoints(NumericVector x, NumericVector y, int length_out = 1
     else
       t += 1.0/double(length_out);
 
-    // Now we need to sum up the elements according to the
-    // 1962 Pierre Bézier formula
-    // Note that P0 -> Pn the n in the formula is actually n - 1
-    int n = x.size() - 1;
-    for (int ii = 0; ii <= n; ii++){
-      ret_x[i + 1] += R::choose(n, ii)*
-        pow(1-t, n - ii) *
-        pow(t, ii) *
-        x[ii];
-
-      ret_y[i + 1] += R::choose(n, ii) *
-        pow(1-t, n - ii) *
-        pow(t, ii) *
-        y[ii];
+    for (int col = 0; col < mx.ncol(); col++){
+      // Now we need to sum up the elements according to the
+      // 1962 Pierre Bézier formula
+      // Note that P0 -> Pn the n in the formula is actually n - 1
+      int n = mx.nrow() - 1;
+      for (int ii = 0; ii <= n; ii++){
+        ret(i + 1, col) += R::choose(n, ii)*
+          pow(1-t, n - ii) *
+          pow(t, ii) *
+          mx(ii, col);
+      }
     }
   };
 
-  Rcpp::List ret;
-  ret["x"] = ret_x;
-  ret["y"] = ret_y;
-
   return(ret);
 }
+
+NumericMatrix getNumericMatrix(SEXP& x){
+  if( is<DataFrame>(x) ){
+    NumericMatrix mx = internal::convert_using_rfunction(x, "as.matrix");
+    return(mx);
+  } else if (is<NumericMatrix>(x)){
+    NumericMatrix mx(x);
+    return(mx);
+  } else {
+    throw std::invalid_argument("You have provided something that is neither a data.frame or a numeric matrix");
+  }
+}
+
 
