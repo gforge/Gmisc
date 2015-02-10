@@ -2,10 +2,10 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 #' Gets offsetted lines
-#' 
+#'
 #' The function calculates new points according to the offset
 #' that lie to the left/right of the provided line.
-#' 
+#'
 #' @param x A numeric vector containing all the x-elements
 #' @param y A numeric vector containing all the y-elements
 #' @param offset The offset to add to the line, can be a vector if you
@@ -13,7 +13,7 @@
 #' @param end_x The x end of the line where the arrow occurrs (if < 0 arrow is skipped)
 #' @param end_y The y end of the line where the arrow occurrs (if < 0 arrow is skipped)
 #' @param arrow_offset The offset to add to the arrow section if any (if <= 0 arrow is skipped)
-#' @return \code{list(list(x = ..., y = ...))} Returns a list with the right/left 
+#' @return \code{list(list(x = ..., y = ...))} Returns a list with the right/left
 #'  lines that in turn lists with \emph{x} and \emph{y} elements
 #' @useDynLib Gmisc
 #' @importFrom Rcpp evalCpp
