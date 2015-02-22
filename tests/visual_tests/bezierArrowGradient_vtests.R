@@ -1,33 +1,52 @@
 library(grid)
 # A bug that I found through the transitionPlot
-ag <- bezierArrowGradient(x = c(0.25, 0.5, 0.5, 0.75), 
-                          y = c(0.125925925925926, 
-                                0.125925925925926, 
-                                0.121283950617284, 
+ag <- bezierArrowGradient(x = c(0.25, 0.5, 0.5, 0.75),
+                          y = c(0.125925925925926,
+                                0.125925925925926,
+                                0.121283950617284,
                                 0.121283950617284),
-                          width = 0.039509010185427, 
-                          arrow = list(length = 0.0625, 
-                                       base = 0.069829997839748), 
-                          clr = "#000000", 
-                          grdt_type = "triangle", 
-                          grdt_clr_prop = 0.5, 
-                          grdt_start_prop = 0.3, 
-                          grdt_decrease_prop = 0.3, 
+                          width = 0.039509010185427,
+                          arrow = list(length = 0.0625,
+                                       base = 0.069829997839748),
+                          clr = "#000000",
+                          grdt_type = "triangle",
+                          grdt_clr_prop = 0.5,
+                          grdt_start_prop = 0.3,
+                          grdt_decrease_prop = 0.3,
                           grdt_clr = "#C49696")
 grid.newpage()
 grid.draw(ag)
 
 # Step off bug
-ag <- bezierArrowGradient(x = c(0.25, 0.5, 0.5, 0.75), 
+ag <- bezierArrowGradient(x = c(0.25, 0.5, 0.5, 0.75),
                           y = rep(.5, 4),
-                          width = 0.4, 
-                          arrow = list(length = 0.2, 
-                                       base = .5), 
-                          clr = "#000000", 
-                          grdt_type = "triangle", 
-                          grdt_clr_prop = 0.5, 
-                          grdt_start_prop = 0.3, 
-                          grdt_decrease_prop = 0.3, 
+                          width = 0.4,
+                          arrow = list(length = 0.2,
+                                       base = .5),
+                          clr = "#000000",
+                          grdt_type = "triangle",
+                          grdt_clr_prop = 0.5,
+                          grdt_start_prop = 0.3,
+                          grdt_decrease_prop = 0.3,
                           grdt_clr = "#C49696")
 grid.newpage()
 grid.draw(ag)
+
+
+library(magrittr)
+library(grid)
+
+# Problematic start with X shape and a triangle before the arrow at the bottom
+grid.newpage()
+bezierArrowGradient(x = c(0.25, 0.5, 0.5, 0.75),
+                    y = c(0.25, 0.5, 0.75, 0.75),
+                    width = unit(5, "cm"),
+                    arrow = list(length = 0.2,
+                                 base = .5),
+                    clr = "#000000",
+                    grdt_type = "triangle",
+                    grdt_clr_prop = 0.5,
+                    grdt_start_prop = 0.3,
+                    grdt_decrease_prop = 0.3,
+                    grdt_clr = "#C49696") %>%
+  grid.draw

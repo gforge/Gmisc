@@ -16,6 +16,15 @@ bezierArrowGradient(x = tmp$x+.05, y = tmp$y-.15) %>%
 bezierArrowGradient(x = tmp$x-.05, y = tmp$y+.15, align_2_axis = FALSE) %>%
   grid.draw
 
+grid.newpage()
+# A triangle before the arrow at the bottom
+bezierArrowSmpl(x = c(0.25, 0.5, 0.5, 0.75), rez=4,
+                y = c(0.25, 0.5, 0.75, 0.75),
+                width = unit(5, "cm"),
+                arrow = list(length = 0.2,
+                             base = .5)) %>%
+  grid.draw
+
 drawBzrBasics <- function (bzrFn, ...) {
   grid.newpage()
   tmp <- list(x=c(.1, .1, .9, .9),
