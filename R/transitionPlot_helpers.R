@@ -47,8 +47,8 @@ prTpPlotBox <- function(bx, bx_txt, fill, txt_clr,
 
     if (bx_txt != ""){
       bx_grob <- prTpGetBoxSizedTextGrob(txt=bx_txt,
-                                     txt_clr = txt_clr,
-                                     txt_cex = cex)
+                                         txt_clr = txt_clr,
+                                         txt_cex = cex)
       if (!is.null(bx_grob))
         grid.draw(bx_grob)
     }
@@ -193,8 +193,12 @@ prTpPlotArrows <- function(type,
 
       # Calculate line width
       lwd <- max_lwd*transition_flow[box_row,flow]/max_flow
-      if (lwd < min_lwd)
-        lwd <- 0
+      if (lwd < min_lwd){
+        message("The minimum width reached and the arrow at box '", box_row, "' to '", flow, "'",
+                " will not be shown. This is due to the fact that the lwd will generate a falsely
+                  strong arrow.")
+        next;
+      }
 
       adjusted_lwd <- lwd
       if (is.na(add_width) == FALSE){
@@ -577,15 +581,15 @@ prTpGetBoxPositions <- function (no, side,
 #'  at the low/high proportions of the spectrum then it
 #'  can be of interest to focus the color change to the center
 #'  leaving the tails constant
+#' @param The color resolution to use
 #' @return \code{character} The function can return both single colors
 #'  or multiple colors as character vector (see \code{\link[grDevices]{rgb}})
 #'
 #' @keywords internal
-prTpGetColors <- function(colors, proportion, space){
+prTpGetColors <- function(colors, proportion, space = NULL, no = 101){
   start <- c()
   end <- c()
-  no <- 101
-  if (!missing(space)){
+  if (!is.null(space)){
     if(any(space > 1 | space < 0))
       stop("Your color subspace that you define should be between 0 and 1")
 
@@ -599,7 +603,7 @@ prTpGetColors <- function(colors, proportion, space){
       end_no <- ceiling(space[2]*no)
       start <- rep(colors[1], times=start_no)
       end <- rep(tail(colors, 1), times=end_no)
-      no <- no - start_no - end_no
+      no <- end_no - start_no
       if (no < 0)
         no <- 0
     }else{

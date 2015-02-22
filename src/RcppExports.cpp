@@ -26,16 +26,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // gnrlBezierPoints
-Rcpp::List gnrlBezierPoints(NumericVector x, NumericVector y, int length_out = 100);
-RcppExport SEXP Gmisc_gnrlBezierPoints(SEXP xSEXP, SEXP ySEXP, SEXP length_outSEXP) {
+NumericMatrix gnrlBezierPoints(SEXP& ctrl_points, int length_out = 100);
+RcppExport SEXP Gmisc_gnrlBezierPoints(SEXP ctrl_pointsSEXP, SEXP length_outSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP );
-        Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP );
+        Rcpp::traits::input_parameter< SEXP& >::type ctrl_points(ctrl_pointsSEXP );
         Rcpp::traits::input_parameter< int >::type length_out(length_outSEXP );
-        Rcpp::List __result = gnrlBezierPoints(x, y, length_out);
+        NumericMatrix __result = gnrlBezierPoints(ctrl_points, length_out);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);

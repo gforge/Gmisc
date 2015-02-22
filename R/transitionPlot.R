@@ -124,6 +124,7 @@
 #' par(par_org)
 #' }
 #' @import grid
+#' @import magrittr
 #' @export
 transitionPlot <- function (transition_flow,
                             type_of_arrow = c("grid", "simple", "gradient"),
@@ -152,7 +153,7 @@ transitionPlot <- function (transition_flow,
                             color_bar = TRUE,
                             color_bar_cex = cex * .33,
                             color_bar_labels,
-                            color_bar_subspace,
+                            color_bar_subspace = NULL,
                             new_page = FALSE) {
   # Just for convenience
   no_boxes <- nrow(transition_flow)

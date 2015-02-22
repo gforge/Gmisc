@@ -2,10 +2,10 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 #' Gets offsetted lines
-#' 
+#'
 #' The function calculates new points according to the offset
 #' that lie to the left/right of the provided line.
-#' 
+#'
 #' @param x A numeric vector containing all the x-elements
 #' @param y A numeric vector containing all the y-elements
 #' @param offset The offset to add to the line, can be a vector if you
@@ -13,7 +13,7 @@
 #' @param end_x The x end of the line where the arrow occurrs (if < 0 arrow is skipped)
 #' @param end_y The y end of the line where the arrow occurrs (if < 0 arrow is skipped)
 #' @param arrow_offset The offset to add to the arrow section if any (if <= 0 arrow is skipped)
-#' @return \code{list(list(x = ..., y = ...))} Returns a list with the right/left 
+#' @return \code{list(list(x = ..., y = ...))} Returns a list with the right/left
 #'  lines that in turn lists with \emph{x} and \emph{y} elements
 #' @useDynLib Gmisc
 #' @importFrom Rcpp evalCpp
@@ -26,10 +26,8 @@ calculateLinesAndArrow <- function(x, y, offset, end_x = -1, end_y = -1, arrow_o
 #' This is a general form of bezier line that can be used for cubic, quadratic,
 #' and more advanced Bezier lines.
 #'
-#' @param x The x-values for the bezier control points. The first
-#'  is the starting point and the last the stop point.
-#' @param y The y-values for the bezier control points. The first
-#'  is the starting point and the last the stop point.
+#' @param ctrl_points The ctrl_points for the bezier control points. This should
+#'  either be a matrix or a data.frame.
 #' @param length_out The length of the return points, i.e. how fine
 #'  detailed the points should be.
 #'
@@ -37,16 +35,21 @@ calculateLinesAndArrow <- function(x, y, offset, end_x = -1, end_y = -1, arrow_o
 #' @examples
 #' library(grid)
 #' grid.newpage()
+#' l <- gnrlBezierPoints(data.frame(x = c(.1, -.1, .7, 1, 1, 0.1),
+#'                                  y = c(.9, 0, 1, .8, .4, .1)),
+#'                       length_out = 100)
+#' grid.lines(l[,1], l[,2], gp=gpar(col="#550000", lwd = 4))
+#'
 #' out_sizes <- 4:20
 #' clrs <- colorRampPalette(c("orange", "darkblue"))(length(out_sizes))
 #' for (i in out_sizes){
-#'   l <- gnrlBezierPoints(x = c(.1, -.1, .7, 1, 1, 0.1),
-#'                         y = c(.9, 0, 1, .8, .4, .1),
-#'                         length_out = i)
-#'   grid.lines(l$x, l$y,
-#'              gp=gpar(col=clrs[which(i == out_sizes)]))
+#'    l <- gnrlBezierPoints(data.frame(x = c(.1, -.1, .7, 1, 1, 0.1),
+#'                                     y = c(.9, 0, 1, .8, .4, .1)),
+#'                          length_out = i)
+#'    grid.lines(l[,1], l[,2],
+#'    gp=gpar(col=clrs[which(i == out_sizes)]))
 #' }
-gnrlBezierPoints <- function(x, y, length_out = 100L) {
-    .Call('Gmisc_gnrlBezierPoints', PACKAGE = 'Gmisc', x, y, length_out)
+gnrlBezierPoints <- function(ctrl_points, length_out = 100L) {
+    .Call('Gmisc_gnrlBezierPoints', PACKAGE = 'Gmisc', ctrl_points, length_out)
 }
 

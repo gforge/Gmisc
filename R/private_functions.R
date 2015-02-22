@@ -275,3 +275,13 @@ prGetTextGrobCex <-  function(x) {
 
   return(cex)
 }
+
+#' Collapses a vector for throwing errors
+#'
+#' The function collapses a vector into an output useful when throwing
+#' errors, e.g. 1:3 becomes '1', '2', '3'
+#'
+#' @param x The vector
+prPasteVec <- function(x){
+  sprintf("'%s'", paste(x, collapse="', '"))
+}

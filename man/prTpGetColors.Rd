@@ -4,7 +4,7 @@
 \alias{prTpGetColors}
 \title{Gets a set of colors or just one color}
 \usage{
-prTpGetColors(colors, proportion, space)
+prTpGetColors(colors, proportion, space = NULL, no = 101)
 }
 \arguments{
   \item{colors}{A set of min. two colors that is used for
@@ -18,6 +18,8 @@ prTpGetColors(colors, proportion, space)
   at the low/high proportions of the spectrum then it can
   be of interest to focus the color change to the center
   leaving the tails constant}
+
+  \item{The}{color resolution to use}
 }
 \value{
 \code{character} The function can return both single colors

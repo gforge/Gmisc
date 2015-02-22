@@ -16,7 +16,7 @@ transitionPlot(transition_flow, type_of_arrow = c("grid", "simple",
   box_prop, mar = unit(rep(3, times = 4), "mm"), main = NULL,
   box_label = NULL, box_label_pos = "top", box_label_cex = cex,
   color_bar = TRUE, color_bar_cex = cex * 0.33, color_bar_labels,
-  color_bar_subspace, new_page = FALSE)
+  color_bar_subspace = NULL, new_page = FALSE)
 }
 \arguments{
   \item{transition_flow}{This should be a matrix with the

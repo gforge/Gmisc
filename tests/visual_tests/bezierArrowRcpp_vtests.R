@@ -1,13 +1,14 @@
+library(grid)
 cnvrtAndOffset <- function(x, y, offset = 3){
   org_unit <- attr(x, "unit")
   if (is.null(org_unit))
-    org_unit <- "mm"  
-  
+    org_unit <- "mm"
+
   x <- convertX(x, unitTo = "mm", valueOnly = TRUE)
   y <- convertY(y, unitTo = "mm", valueOnly = TRUE)
-  
+
   a <- getLineOffset(x, y, offset = offset)
-  
+
   lapply(a, function(side) {
     list(x = convertX(unit(side$x, "mm"), unitTo = org_unit),
          y = convertY(unit(side$y, "mm"), unitTo = org_unit))
@@ -27,15 +28,15 @@ grid.lines(x = x, y = y, arrow = arrow(ends = "last"), gp = gpar(lwd=2))
 plotLines <- function (x, y) {
   a <- cnvrtAndOffset(x, y)
   with(a$right,
-       grid.lines(x, y = y, 
+       grid.lines(x, y = y,
                   gp = gpar(col="darkred"), arrow = arrow(ends = "last")))
-  
+
   with(a$left,
-       grid.lines(x, y = y, 
+       grid.lines(x, y = y,
                   gp = gpar(col="darkgreen"), arrow = arrow(ends = "last")))
 }
 
-bp <- bezierPoints(bezierGrob(x = c(0.1, 0.5, 1.5, 0.2), 
+bp <- bezierPoints(bezierGrob(x = c(0.1, 0.5, 1.5, 0.2),
                               y = c(0.5, 2, -1, 0.9)))
 grid.lines(bp$x, bp$y, gp = gpar(lwd = 2), arrow = arrow(ends = "last"))
 
@@ -43,7 +44,7 @@ scaleUnit <- function(u, scale){
   org_unit <- attr(u, "unit")
   unit(convertUnit(u, unitTo = org_unit, valueOnly = TRUE)/scale, org_unit)
 }
-bp <- bezierPoints(bezierGrob(x = c(0.1, 0.5, 1.5, 0.2)*100, 
+bp <- bezierPoints(bezierGrob(x = c(0.1, 0.5, 1.5, 0.2)*100,
                               y = c(0.5, 2, -1, 0.9)*100))
 
 bp <- lapply(bp, function(x) scaleUnit(x, 100))

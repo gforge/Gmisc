@@ -1,5 +1,9 @@
 NEWS for the Gmisc package
 
+Changes for 1.0.3
+-----------------
+* Created the Transition class that can handle multiple transitions in contrast to the previous transitionPlot
+
 Changes for 1.0.2
 -----------------
 * The bezier arrows have been rewritten with a > 20x speed increase

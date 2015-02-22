@@ -55,7 +55,7 @@ grid.newpage()
 transitionPlot(transition_matrix,
                box_txt = c("First", "Second", "Third"),
                type_of_arrow = "simple",
-               min_lwd = unit(1, "mm"),
+               min_lwd = unit(.1, "mm"),
                max_lwd = unit(6, "mm"),
                overlap_add_width = unit(1, "mm"))
 
