@@ -13,6 +13,8 @@
 #' \code{\link{bezierGrob}} function.
 #' @param align_2_axis Indicates if the arrow should be vertically/horizontally
 #'  aligned. This is useful for instance if the arrow attaches to a box.
+#' @param rez The resolution of the arrow. This specifies how many points to retrieve from the
+#'  \code{\link{gnrlBezierPoints}} function. Defaults to 200.
 #' @param name A character identifier.
 #' @return \code{grid::grob} A grob of the class polygonGrob with attributes that
 #'  correspond to the bezier points.
@@ -33,6 +35,7 @@ bezierArrowSmpl <- function(x = c(0.2, .7, .3, .9),
                             default.units = "npc",
                             arrow = list(base = unit(.1, "snpc"),
                                          length = unit(.1, "snpc")),
+                            rez = 200,
                             align_2_axis = TRUE,
                             name = NULL,
                             gp = gpar(), vp = NULL){
@@ -77,7 +80,7 @@ bezierArrowSmpl <- function(x = c(0.2, .7, .3, .9),
   new_bp <-
     getBezierAdj4Arrw(x = x, y = y,
                       arrow_length = arrow$length,
-                      length_out = 200)
+                      length_out = rez)
 
   # Get lengths
   new_bp$lengths <-
