@@ -104,7 +104,7 @@ prTcPlotArrows <- function(trnstn_set,
           a_width <- entry_length*1.5/sum(!no_trgt)
         }else{
           a_width <-
-            adjusted_lwd * 5/3
+            adjusted_lwd * 2
         }
 
         # Add line width addition if it is a background line
@@ -134,7 +134,7 @@ prTcPlotArrows <- function(trnstn_set,
           a_width <- adjusted_lwd
         }
 
-        adjusted_lwd <- unit(adjusted_lwd, target$unit)
+        adjusted_lwd <- convertY(unit(adjusted_lwd, target$unit), unitTo = "mm")
         arrow_length <- convertY(unit(arrow_length, target$unit), unitTo = "mm")
         a_width <- convertY(unit(a_width, target$unit), unitTo = "mm")
         if (type=="simple" || !is.na(add_width)){
@@ -163,8 +163,8 @@ prTcPlotArrows <- function(trnstn_set,
                               clr=arrow_clr,
                               grdt_type = "triangle",
                               grdt_clr_prop = 0.5,
-                              grdt_start_prop = .3,
-                              grdt_decrease_prop = .3,
+                              grdt_prop = .8,
+                              grdt_decrease_prop = .5,
                               grdt_clr = current_grdt_clr) %>%
             grid.draw
         }
