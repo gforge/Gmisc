@@ -4,13 +4,19 @@
 \alias{bezierArrowGradient}
 \title{A bezier arrow with gradient}
 \usage{
-bezierArrowGradient(width = 0.05, clr = "#000000", default.units = "npc",
+bezierArrowGradient(x = c(0.2, 0.7, 0.3, 0.9), y = c(0.2, 0.2, 0.9, 0.9),
+  width = 0.05, clr = "#000000", default.units = "npc",
   align_2_axis = TRUE, grdt_type = c("triangle", "rectangle"),
-  grdt_decrease_prop = 0.4, grdt_start_prop = 0.4, grdt_clr_prop = 0.7,
-  grdt_line_width = NA, grdt_clr = "#2F4F2F", vp = NULL, gp = gpar(),
-  ...)
+  grdt_prop = 0.8, grdt_decrease_prop = 0.5, grdt_clr_prop = 0.7,
+  grdt_line_width, grdt_clr = "#2F4F2F", vp = NULL, gp = gpar(), ...)
 }
 \arguments{
+  \item{x}{A numeric vector or unit object specifying
+  x-locations of spline control points.}
+
+  \item{y}{A numeric vector or unit object specifying
+  y-locations of spline control points.}
+
   \item{width}{The width of the arrow, either a numeric
   single number or a unit. \strong{Note:} The arrow does
   not rely on lwd but on actual width.}
@@ -31,22 +37,25 @@ bezierArrowGradient(width = 0.05, clr = "#000000", default.units = "npc",
   considering adding bezier curves but currently I'm a
   little tired of coding)}
 
-  \item{grdt_decrease_prop}{The proportion of the full
-  length that should be decreasing.}
+  \item{grdt_prop}{The proportion of the full length that
+  should be a the gradient. The gradient consists of three
+  things: (1) the central band, (2) the slimming of the
+  central band, (3) the color shift into the arrow color.
+  \emph{Note} that the the slimmin and color proportions
+  can be overlapping.}
 
-  \item{grdt_start_prop}{The proportion of the full length
-  that should be a constant color before decreasing.}
+  \item{grdt_decrease_prop}{The proportion of the gradient
+  that should be decreasing, i.e. narrowing according to
+  the \code{grdt_type} argument.}
 
   \item{grdt_clr_prop}{The proportion of the gradient that
-  should be decreasing. This is a proportion of the
-  grdt_decrease_prop and the grdt_start_prop combined.}
+  should be converging to the arrow color.}
 
   \item{grdt_line_width}{The width of the border line. If
   not specified it defaults to 5 \% of the original width,
   note the gradient's width is thus 90 \%.}
 
-  \item{grdt_clr}{The color of the gradient. It is the
-  color that transits into the clr of the arrow.}
+  \item{grdt_clr}{The color of the gradient.}
 
   \item{vp}{A Grid viewport object (or NULL).}
 

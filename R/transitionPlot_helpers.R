@@ -301,9 +301,9 @@ prTpPlotArrows <- function(type,
                                     arrow=list(length=a_l, base=a_width),
                                     clr=current_arrow_clr,
                                     grdt_type = "triangle",
+                                    grdt_prop = .8,
                                     grdt_clr_prop = 0.5,
-                                    grdt_start_prop = .3,
-                                    grdt_decrease_prop = .3,
+                                    grdt_decrease_prop = .5,
                                     grdt_clr = current_grdt_clr)
           grid.draw(bz)
 
