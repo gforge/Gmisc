@@ -10,6 +10,7 @@
 #' @import magrittr
 getBezierAdj4Arrw <- function (x, y, arrow_length, length_out = 100) {
 
+  org <- data.frame(x = x, y = y)
   # The distance between the tail and the second last spline point is indicative
   # of how strong the adjustment should be
   spl_len <- sqrt((tail(x, 1) - tail(x, 2)[1])^2 +
@@ -17,7 +18,7 @@ getBezierAdj4Arrw <- function (x, y, arrow_length, length_out = 100) {
   if (spl_len < arrow_length * 3){
     mult <- 1
   }else{
-    mult <- spl_len/(arrow_length * 3)
+    mult <- spl_len/arrow_length
   }
 
   if (length(x) >= 4){
@@ -42,42 +43,14 @@ getBezierAdj4Arrw <- function (x, y, arrow_length, length_out = 100) {
 
   dx <- tail(x, 1) - true_bezier$x[cut_point]
   dy <- tail(y, 1) - true_bezier$y[cut_point]
-  if (dx > dy){
-    if (dx > 0){
-      retain <- which(x > true_bezier$x[cut_point])[1]
-    }else if (dx < 0){
-      retain <- which(x < true_bezier$x[cut_point])[1]
-    }else{
-      retain <- 2
-    }
-  }else{
-    if (dy > 0){
-      retain <- which(y < true_bezier$y[cut_point])[1]
-    }else if (dx < 0){
-      retain <- which(y > true_bezier$y[cut_point])[1]
-    }else{
-      retain <- 2
-    }
-  }
 
-  if (is.na(retain) || retain < 2)
-    retain <- 2
-  x <- x[1:retain]
-  y <- y[1:retain]
+  # Fancy fixing of arrows fails. We therefore only to adjust last two points
+  retain <- 1:(length(x)-2)
+  x <- x[retain]
+  y <- y[retain]
 
-  if (length(x) >= 3){
-    x[length(x)] <- true_bezier$x[cut_point] - dx*mult
-    y[length(y)] <- true_bezier$y[cut_point] - dy*mult
-
-    x[length(x) - 1] <-  x[length(x) - 1] -
-      (x[length(x) - 1] - x[length(x) - 2])/5
-    y[length(y) - 1] <- y[length(y) - 1] -
-      (y[length(y) - 1] - y[length(y) - 2])/5
-  }else{
-    x <- c(x, true_bezier$x[cut_point] - dx*mult * 2)
-    y <- c(y, true_bezier$y[cut_point] - dy*mult * 2)
-
-  }
+  x <- c(x, true_bezier$x[cut_point] - dx*mult*.9)
+  y <- c(y, true_bezier$y[cut_point] - dy*mult*.9)
 
   x <- c(x, true_bezier$x[cut_point])
   y <- c(y, true_bezier$y[cut_point])
@@ -144,6 +117,38 @@ validateAndConvertVectorInputs <- function(x, y,
       y_origo=y_origo, x_origo=x_origo))
 }
 
+#' Translates "npc" widths into absolute units
+#'
+#' The "npc" \code{\link[grid]{unit}} is not absolute, i.e.
+#' it depends on the relation between height and  width within
+#' the current viewport. We therefore need to change these values
+#' to the value most likely intended. This is believed to be the
+#' main direction of the arrow as specified by the first and last
+#' bezier control points \code{x} and \code{y}.
+#'
+#' @inheritParams bezierArrowSmpl
+#' @param w The width that is to be changed
+#' @return The width transformed into a \code{\link[grid]{unit}} of "mm"
+#' @keywords internal
+getAbsoluteWidth <- function (w, default.units, x = x, y = y) {
+  if (!inherits(w, "unit"))
+    w <- unit(w, default.units)
+
+  horizontal <- (getGridVal(x[1], default.units = "mm", axisTo = "x") -
+                   getGridVal(tail(x, 1), default.units = "mm", axisTo = "x")) >
+    (getGridVal(y[1], default.units = "mm", axisTo = "y") -
+       getGridVal(tail(y, 1), default.units = "mm", axisTo = "y"))
+
+  if (attr(w, "unit") == "npc"){
+    if (!horizontal){
+      w <- unit(getGridVal(w, default.units = "mm", axisTo = "y"), "mm")
+    }else{
+      w <- unit(getGridVal(w, default.units = "mm", axisTo = "x"), "mm")
+    }
+  }
+  return(w)
+}
+
 #' Gets an angle
 #'
 #' Uses a vector to get an angle by \code{\link{atan2}}.
@@ -178,8 +183,8 @@ getVectorAngle <- function(x, y,
 #'
 #' @keywords internal
 isHorizontal <- function(angle_radian){
-  if ((angle_radian < pi/4 && angle_radian > -pi/4) ||
-      (angle_radian < 2*pi-pi/4 && angle_radian > pi/2+pi/4))
+  angle_prop <- abs(angle_radian/pi*180)
+  if (angle_prop < 45 || angle_prop > 135)
     return (TRUE)
   else
     return (FALSE)
@@ -204,8 +209,8 @@ shortenLine <- function(x, y,
     }
   }
 
-  x <- c(ref_x, x[keep])
-  y <- c(ref_y, y[keep])
+  x <- c(rep(ref_x, keep[1]-1 + 10), x[keep])
+  y <- c(rep(ref_y, keep[1]-1 + 10), y[keep])
 
   return(list(x=x, y=y))
 }
@@ -221,27 +226,8 @@ extendLine <- function(x, y,
   distanceY <- y[1] - ref_y
 
   # Generate a grob for the remaining spline
-  if (axis == "y"){
-    if (distanceX < 0){
-      ctrl_x <- c(x[1], max(mean(x[1], ref_x)), ref_x)
-    }else{
-      ctrl_x <- c(x[1], min(mean(x[1], ref_x)), ref_x)
-    }
-    if (distanceY < 0){
-      ctrl_y <- c(y[1], max(mean(y[1], ref_y)), ref_y)
-    }else{
-      ctrl_y <- c(y[1], min(mean(y[1], ref_y)), ref_y)
-    }
-  }else{
-    ctrl_x <- c(x[1],
-                x[1],
-                mean(x[1], ref_x),
-                ref_x)
-    ctrl_y <- c(y[1],
-                mean(y[1], ref_y),
-                mean(y[1], ref_y),
-                ref_y)
-  }
+  ctrl_x <- c(x[1], ref_x, ref_x)
+  ctrl_y <- c(y[1], ref_y, ref_y)
 
   add_bg_pt <- gnrlBezierPoints(cbind(ctrl_x, ctrl_y), length_out = 10)
   x <- c(rev(add_bg_pt[,1]), x)
