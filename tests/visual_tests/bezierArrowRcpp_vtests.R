@@ -7,7 +7,7 @@ cnvrtAndOffset <- function(x, y, offset = 3){
   x <- convertX(x, unitTo = "mm", valueOnly = TRUE)
   y <- convertY(y, unitTo = "mm", valueOnly = TRUE)
 
-  a <- getLineOffset(x, y, offset = offset)
+  a <- calculateLinesAndArrow(x, y, offset = offset)
 
   lapply(a, function(side) {
     list(x = convertX(unit(side$x, "mm"), unitTo = org_unit),

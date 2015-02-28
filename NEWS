@@ -3,6 +3,7 @@ NEWS for the Gmisc package
 Changes for 1.0.3
 -----------------
 * Created the Transition class that can handle multiple transitions in contrast to the previous transitionPlot
+* The bezierArrowGradient has a simpler handling of the gradient proportion
 
 Changes for 1.0.2
 -----------------

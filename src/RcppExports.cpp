@@ -7,8 +7,8 @@
 using namespace Rcpp;
 
 // calculateLinesAndArrow
-Rcpp::List calculateLinesAndArrow(NumericVector x, NumericVector y, NumericVector offset, double end_x = -1, double end_y = -1, double arrow_offset = -1);
-RcppExport SEXP Gmisc_calculateLinesAndArrow(SEXP xSEXP, SEXP ySEXP, SEXP offsetSEXP, SEXP end_xSEXP, SEXP end_ySEXP, SEXP arrow_offsetSEXP) {
+Rcpp::List calculateLinesAndArrow(NumericVector x, NumericVector y, NumericVector offset, double end_x = -1, double end_y = -1, double arrow_offset = -1, int rm_intersect = 3);
+RcppExport SEXP Gmisc_calculateLinesAndArrow(SEXP xSEXP, SEXP ySEXP, SEXP offsetSEXP, SEXP end_xSEXP, SEXP end_ySEXP, SEXP arrow_offsetSEXP, SEXP rm_intersectSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
@@ -19,7 +19,8 @@ BEGIN_RCPP
         Rcpp::traits::input_parameter< double >::type end_x(end_xSEXP );
         Rcpp::traits::input_parameter< double >::type end_y(end_ySEXP );
         Rcpp::traits::input_parameter< double >::type arrow_offset(arrow_offsetSEXP );
-        Rcpp::List __result = calculateLinesAndArrow(x, y, offset, end_x, end_y, arrow_offset);
+        Rcpp::traits::input_parameter< int >::type rm_intersect(rm_intersectSEXP );
+        Rcpp::List __result = calculateLinesAndArrow(x, y, offset, end_x, end_y, arrow_offset, rm_intersect);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);

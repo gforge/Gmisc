@@ -5,9 +5,8 @@
 \title{A simple bezier arrow}
 \usage{
 bezierArrowSmpl(x = c(0.2, 0.7, 0.3, 0.9), y = c(0.2, 0.2, 0.9, 0.9),
-  width = 0.05, clr = "#000000", default.units = "npc",
-  arrow = list(base = unit(0.1, "snpc"), length = unit(0.1, "snpc")),
-  align_2_axis = TRUE, name = NULL, gp = gpar(), vp = NULL)
+  width = 0.05, clr = "#000000", default.units = "npc", arrow = list(),
+  rez = 200, align_2_axis = TRUE, name = NULL, gp = gpar(), vp = NULL)
 }
 \arguments{
   \item{x}{A numeric vector or unit object specifying
@@ -30,6 +29,11 @@ bezierArrowSmpl(x = c(0.2, 0.7, 0.3, 0.9), y = c(0.2, 0.2, 0.9, 0.9),
   (width) and the desired \strong{length} for the arrow.
   \strong{Note:} This differs from the original
   \code{\link{bezierGrob}} function.}
+
+  \item{rez}{The resolution of the arrow. This specifies
+  how many points to retrieve from the
+  \code{\link{gnrlBezierPoints}} function. Defaults to
+  200.}
 
   \item{align_2_axis}{Indicates if the arrow should be
   vertically/horizontally aligned. This is useful for
