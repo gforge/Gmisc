@@ -165,7 +165,6 @@ surgery but it can be used in any situation where you have
 a change from one state to another
 }
 \examples{
-\dontrun{
 # This example does not run since it
 # takes a little while to assemble the
 # arrows and RMD Check complains that this
@@ -207,6 +206,5 @@ transitionPlot(transition_matrix, box_prop=box_prop,
                max_lwd = unit(10, "mm"),
                overlap_add_width = unit(1, "mm"))
 par(par_org)
-}
 }
 

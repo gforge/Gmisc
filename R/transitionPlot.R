@@ -80,7 +80,6 @@
 #'  default it is \code{FALSE}.
 #' @return void
 #' @examples
-#' \dontrun{
 #' # This example does not run since it
 #' # takes a little while to assemble the
 #' # arrows and RMD Check complains that this
@@ -122,7 +121,6 @@
 #'                max_lwd = unit(10, "mm"),
 #'                overlap_add_width = unit(1, "mm"))
 #' par(par_org)
-#' }
 #' @import grid
 #' @import magrittr
 #' @export
