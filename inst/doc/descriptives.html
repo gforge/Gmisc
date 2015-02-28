@@ -10,7 +10,7 @@
 
 <meta name="author" content="Max Gordon" />
 
-<meta name="date" content="2015-02-08" />
+<meta name="date" content="2015-03-01" />
 
 <title>The fastest way to compile table 1?</title>
 
@@ -54,7 +54,7 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <div id="header">
 <h1 class="title">The fastest way to compile table 1?</h1>
 <h4 class="author"><em>Max Gordon</em></h4>
-<h4 class="date"><em>2015-02-08</em></h4>
+<h4 class="date"><em>2015-03-01</em></h4>
 </div>
 
 <div id="TOC">
@@ -150,11 +150,14 @@ t1 &lt;-<span class="st"> </span><span class="kw">c</span>(t1,
                                 <span class="dt">tfoot =</span> <span class="st">&quot;&amp;dagger; The weight is in 10&lt;sup&gt;3&lt;/sup&gt; kg&quot;</span>))</code></pre>
 <table class="gmisc_table" style="border-collapse: collapse;">
 <thead>
-<tr><td colspan="3" style="text-align: left;">
-Basic descriptive statistics from the mtcars dataset
-</td></tr>
 <tr>
-<th style="border-bottom: 1px solid grey; border-top: 2px solid grey;"> </th>
+<td colspan="3" style="text-align: left;">
+Basic descriptive statistics from the mtcars dataset
+</td>
+</tr>
+<tr>
+<th style="border-bottom: 1px solid grey; border-top: 2px solid grey;">
+</th>
 <th style="border-bottom: 1px solid grey; border-top: 2px solid grey; text-align: center;">
 Automatic<br /> No. 19
 </th>
@@ -185,19 +188,21 @@ Weight†
 <td style="text-align: center;">
 2 (2 - 3)
 </td>
-</tr> 
-<tr><td colspan="3" style>
+</tr>
+<tr>
+<td colspan="3" style>
 Color
-</td></tr>
+</td>
+</tr>
 <tr>
 <td style="text-align: left;">
   black
 </td>
 <td style="text-align: center;">
-6 (32%)
+8 (42%)
 </td>
 <td style="text-align: center;">
-3 (23%)
+6 (46%)
 </td>
 </tr>
 <tr>
@@ -205,10 +210,10 @@ Color
   red
 </td>
 <td style="text-align: center;">
-7 (37%)
+3 (16%)
 </td>
 <td style="text-align: center;">
-3 (23%)
+1 (8%)
 </td>
 </tr>
 <tr>
@@ -216,15 +221,17 @@ Color
   silver
 </td>
 <td style="text-align: center;">
-6 (32%)
+8 (42%)
 </td>
 <td style="text-align: center;">
-7 (54%)
+6 (46%)
 </td>
-</tr> 
-<tr><td colspan="3" style>
+</tr>
+<tr>
+<td colspan="3" style>
 Gears
-</td></tr>
+</td>
+</tr>
 <tr>
 <td style="text-align: left;">
   3
@@ -259,12 +266,14 @@ Gears
 </td>
 </tr>
 </tbody>
-<tfoot><tr><td colspan="3">
+<tfoot>
+<tr>
+<td colspan="3">
 † The weight is in 10<sup>3</sup> kg
-</td></tr></tfoot>
+</td>
+</tr>
+</tfoot>
 </table>
-
-
 <p>I like generating lists but it is optional, you can achieve the same through:</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mergeDesc</span>(<span class="kw">getTable1Stats</span>(mtcars$mpg),
           <span class="st">`</span><span class="dt">Weight&amp;dagger;</span><span class="st">`</span> =<span class="st"> </span><span class="kw">getTable1Stats</span>(mtcars$wt),
@@ -275,11 +284,14 @@ Gears
                                 <span class="dt">tfoot =</span> <span class="st">&quot;&amp;dagger; The weight is in 10&lt;sup&gt;3&lt;/sup&gt; kg&quot;</span>))</code></pre>
 <table class="gmisc_table" style="border-collapse: collapse;">
 <thead>
-<tr><td colspan="3" style="text-align: left;">
-Basic descriptive statistics from the mtcars dataset
-</td></tr>
 <tr>
-<th style="border-bottom: 1px solid grey; border-top: 2px solid grey;"> </th>
+<td colspan="3" style="text-align: left;">
+Basic descriptive statistics from the mtcars dataset
+</td>
+</tr>
+<tr>
+<th style="border-bottom: 1px solid grey; border-top: 2px solid grey;">
+</th>
 <th style="border-bottom: 1px solid grey; border-top: 2px solid grey; text-align: center;">
 Automatic<br /> No. 19
 </th>
@@ -310,19 +322,21 @@ Weight†
 <td style="text-align: center;">
 2 (2 - 3)
 </td>
-</tr> 
-<tr><td colspan="3" style>
+</tr>
+<tr>
+<td colspan="3" style>
 Color
-</td></tr>
+</td>
+</tr>
 <tr>
 <td style="text-align: left;">
   black
 </td>
 <td style="text-align: center;">
-6 (32%)
+8 (42%)
 </td>
 <td style="text-align: center;">
-3 (23%)
+6 (46%)
 </td>
 </tr>
 <tr>
@@ -330,10 +344,10 @@ Color
   red
 </td>
 <td style="text-align: center;">
-7 (37%)
+3 (16%)
 </td>
 <td style="text-align: center;">
-3 (23%)
+1 (8%)
 </td>
 </tr>
 <tr>
@@ -341,15 +355,17 @@ Color
   silver
 </td>
 <td style="text-align: center;">
-6 (32%)
+8 (42%)
 </td>
 <td style="text-align: center;">
-7 (54%)
+6 (46%)
 </td>
-</tr> 
-<tr><td colspan="3" style>
+</tr>
+<tr>
+<td colspan="3" style>
 Gears
-</td></tr>
+</td>
+</tr>
 <tr>
 <td style="text-align: left;">
   3
@@ -384,11 +400,14 @@ Gears
 </td>
 </tr>
 </tbody>
-<tfoot><tr><td colspan="3">
+<tfoot>
+<tr>
+<td colspan="3">
 † The weight is in 10<sup>3</sup> kg
-</td></tr></tfoot>
+</td>
+</tr>
+</tfoot>
 </table>
-
 </div>
 <div id="p-values" class="section level1">
 <h1>P-values</h1>
@@ -422,11 +441,14 @@ t1[[<span class="st">&quot;Color&quot;</span>]] &lt;-<span class="st"> </span>
             <span class="dt">tfoot =</span> <span class="st">&quot;&amp;dagger; The weight is in 10&lt;sup&gt;3&lt;/sup&gt; kg&quot;</span>)</code></pre>
 <table class="gmisc_table" style="border-collapse: collapse;">
 <thead>
-<tr><td colspan="4" style="text-align: left;">
-Basic descriptive statistics from the mtcars dataset
-</td></tr>
 <tr>
-<th style="border-bottom: 1px solid grey; border-top: 2px solid grey;"> </th>
+<td colspan="4" style="text-align: left;">
+Basic descriptive statistics from the mtcars dataset
+</td>
+</tr>
+<tr>
+<th style="border-bottom: 1px solid grey; border-top: 2px solid grey;">
+</th>
 <th style="border-bottom: 1px solid grey; border-top: 2px solid grey; text-align: center;">
 Automatic<br /> No. 19
 </th>
@@ -466,55 +488,62 @@ Weight†
 <td style="text-align: center;">
 &lt; 0.0001
 </td>
-</tr> 
-<tr><td colspan="3" style>
+</tr>
+<tr>
+<td colspan="3" style>
 Color
 </td>
 <td style="text-align: center;">
-0.49
-</td></tr>
+1.0
+</td>
+</tr>
 <tr>
 <td style="text-align: left;">
   black
 </td>
 <td style="text-align: center;">
-6 (32%)
+8 (42%)
 </td>
 <td style="text-align: center;">
-3 (23%)
+6 (46%)
 </td>
-<td style="text-align: center;"></td>
+<td style="text-align: center;">
+</td>
 </tr>
 <tr>
 <td style="text-align: left;">
   red
 </td>
 <td style="text-align: center;">
-7 (37%)
+3 (16%)
 </td>
 <td style="text-align: center;">
-3 (23%)
+1 (8%)
 </td>
-<td style="text-align: center;"></td>
+<td style="text-align: center;">
+</td>
 </tr>
 <tr>
 <td style="text-align: left;">
   silver
 </td>
 <td style="text-align: center;">
-6 (32%)
+8 (42%)
 </td>
 <td style="text-align: center;">
-7 (54%)
+6 (46%)
 </td>
-<td style="text-align: center;"></td>
-</tr> 
-<tr><td colspan="3" style>
+<td style="text-align: center;">
+</td>
+</tr>
+<tr>
+<td colspan="3" style>
 Gears
 </td>
 <td style="text-align: center;">
 &lt; 0.0001
-</td></tr>
+</td>
+</tr>
 <tr>
 <td style="text-align: left;">
   3
@@ -525,7 +554,8 @@ Gears
 <td style="text-align: center;">
 0 (0%)
 </td>
-<td style="text-align: center;"></td>
+<td style="text-align: center;">
+</td>
 </tr>
 <tr>
 <td style="text-align: left;">
@@ -537,7 +567,8 @@ Gears
 <td style="text-align: center;">
 8 (62%)
 </td>
-<td style="text-align: center;"></td>
+<td style="text-align: center;">
+</td>
 </tr>
 <tr>
 <td style="border-bottom: 2px solid grey; text-align: left;">
@@ -549,14 +580,18 @@ Gears
 <td style="border-bottom: 2px solid grey; text-align: center;">
 5 (38%)
 </td>
-<td style="border-bottom: 2px solid grey; text-align: center;"></td>
+<td style="border-bottom: 2px solid grey; text-align: center;">
+</td>
 </tr>
 </tbody>
-<tfoot><tr><td colspan="4">
+<tfoot>
+<tr>
+<td colspan="4">
 † The weight is in 10<sup>3</sup> kg
-</td></tr></tfoot>
+</td>
+</tr>
+</tfoot>
 </table>
-
 <div id="custom-p-values" class="section level2">
 <h2>Custom p-values</h2>
 <p>By popular demand I’ve expanded with the option of having custom p-values. All you need to do is to provide a function that takes two values and exports a single p-value. There are several prepared functions that you can use or use as a template for your own p-value function. They all start with <code>getPval..</code>, e.g. <code>getPvalKruskal</code>. You can either provide a single function or you can set the defaults depending on the variable type:</p>
@@ -590,11 +625,14 @@ t1[[<span class="st">&quot;Color&quot;</span>]] &lt;-<span class="st"> </span>
             <span class="dt">tfoot =</span> <span class="st">&quot;&amp;dagger; The weight is in 10&lt;sup&gt;3&lt;/sup&gt; kg&quot;</span>)</code></pre>
 <table class="gmisc_table" style="border-collapse: collapse;">
 <thead>
-<tr><td colspan="4" style="text-align: left;">
-P-values generated from a custom set of values
-</td></tr>
 <tr>
-<th style="border-bottom: 1px solid grey; border-top: 2px solid grey;"> </th>
+<td colspan="4" style="text-align: left;">
+P-values generated from a custom set of values
+</td>
+</tr>
+<tr>
+<th style="border-bottom: 1px solid grey; border-top: 2px solid grey;">
+</th>
 <th style="border-bottom: 1px solid grey; border-top: 2px solid grey; text-align: center;">
 Automatic<br /> No. 19
 </th>
@@ -634,55 +672,62 @@ Weight†
 <td style="text-align: center;">
 0.37
 </td>
-</tr> 
-<tr><td colspan="3" style>
+</tr>
+<tr>
+<td colspan="3" style>
 Color
 </td>
 <td style="text-align: center;">
-0.45
-</td></tr>
+0.79
+</td>
+</tr>
 <tr>
 <td style="text-align: left;">
   black
 </td>
 <td style="text-align: center;">
-6 (32%)
+8 (42%)
 </td>
 <td style="text-align: center;">
-3 (23%)
+6 (46%)
 </td>
-<td style="text-align: center;"></td>
+<td style="text-align: center;">
+</td>
 </tr>
 <tr>
 <td style="text-align: left;">
   red
 </td>
 <td style="text-align: center;">
-7 (37%)
+3 (16%)
 </td>
 <td style="text-align: center;">
-3 (23%)
+1 (8%)
 </td>
-<td style="text-align: center;"></td>
+<td style="text-align: center;">
+</td>
 </tr>
 <tr>
 <td style="text-align: left;">
   silver
 </td>
 <td style="text-align: center;">
-6 (32%)
+8 (42%)
 </td>
 <td style="text-align: center;">
-7 (54%)
+6 (46%)
 </td>
-<td style="text-align: center;"></td>
-</tr> 
-<tr><td colspan="3" style>
+<td style="text-align: center;">
+</td>
+</tr>
+<tr>
+<td colspan="3" style>
 Gears
 </td>
 <td style="text-align: center;">
 &lt; 0.0001
-</td></tr>
+</td>
+</tr>
 <tr>
 <td style="text-align: left;">
   3
@@ -693,7 +738,8 @@ Gears
 <td style="text-align: center;">
 0 (0%)
 </td>
-<td style="text-align: center;"></td>
+<td style="text-align: center;">
+</td>
 </tr>
 <tr>
 <td style="text-align: left;">
@@ -705,7 +751,8 @@ Gears
 <td style="text-align: center;">
 8 (62%)
 </td>
-<td style="text-align: center;"></td>
+<td style="text-align: center;">
+</td>
 </tr>
 <tr>
 <td style="border-bottom: 2px solid grey; text-align: left;">
@@ -717,17 +764,18 @@ Gears
 <td style="border-bottom: 2px solid grey; text-align: center;">
 5 (38%)
 </td>
-<td style="border-bottom: 2px solid grey; text-align: center;"></td>
+<td style="border-bottom: 2px solid grey; text-align: center;">
+</td>
 </tr>
 </tbody>
-<tfoot><tr><td colspan="4">
+<tfoot>
+<tr>
+<td colspan="4">
 † The weight is in 10<sup>3</sup> kg
-</td></tr></tfoot>
+</td>
+</tr>
+</tfoot>
 </table>
-
-
-
-
 </div>
 </div>
 
