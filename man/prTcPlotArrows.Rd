@@ -4,7 +4,7 @@
 \alias{prTcPlotArrows}
 \title{Plots the arrows within a single transition set}
 \usage{
-prTcPlotArrows(trnstn_set, widths, type = c("simple", "gradient"), clr,
+prTcPlotArrows(trnstn_set, widths, type = c("simple", "gradient"), clr, rez,
   origin_boxes, target_boxes, left_box_clrs, add_width, max_flow, min_width,
   max_width, abs_arrow_width = FALSE, clr_bar_subspace)
 }
@@ -16,6 +16,8 @@ prTcPlotArrows(trnstn_set, widths, type = c("simple", "gradient"), clr,
   \item{type}{The type of arrow to be used}
 
   \item{clr}{The arrow colors (a matrix)}
+
+  \item{rez}{The arrow rezolution}
 
   \item{origin_boxes}{The origin boxes' positions to the
   left}

@@ -45,6 +45,7 @@ prTcPlotBoxColumn <- function(box_positions,
 #' @param type The type of arrow to be used
 #' @param widths The arrow widths
 #' @param clr The arrow colors (a matrix)
+#' @param rez The arrow rezolution
 #' @param min_width The minimum line width
 #' @param max_width The maximum line width
 #' @param add_width Adds a certain width - useful for background arrows
@@ -58,6 +59,7 @@ prTcPlotArrows <- function(trnstn_set,
                            widths,
                            type =  c("simple", "gradient"),
                            clr,
+                           rez,
                            origin_boxes, target_boxes,
                            left_box_clrs, add_width,
                            max_flow, min_width, max_width,
@@ -142,7 +144,8 @@ prTcPlotArrows <- function(trnstn_set,
                           y=y_ctrl_points,
                           width=adjusted_lwd,
                           arrow=list(length=arrow_length, base=a_width),
-                          clr=arrow_clr) %>%
+                          clr=arrow_clr,
+                          rez = rez) %>%
             grid.draw
         }else{
           if (NCOL(left_box_clrs) == 2){
@@ -161,6 +164,7 @@ prTcPlotArrows <- function(trnstn_set,
                               width=adjusted_lwd,
                               arrow=list(length=arrow_length, base=a_width),
                               clr=arrow_clr,
+                              rez = rez,
                               grdt_type = "triangle",
                               grdt_clr_prop = 0.5,
                               grdt_prop = .8,

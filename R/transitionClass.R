@@ -14,6 +14,8 @@
 #'  The corresponding functions are \code{\link{bezierArrowGradient}}, and
 #'  \code{\link{bezierArrowSmpl}}. \emph{Note} The bezierGrob ("grid") has been deprecated
 #'  as it is no longer faster than the bezierArrows and there is a difference in design.
+#' @field arrow_clr The arrow color
+#' @field arrow_rez The rezolution of the arrow
 #' @field vertical_space The space between the boxes
 #' @field fill_clr The box fill color
 #' @field clr_bar Shows a color bar if there are proportions. Can be \code{"none"}, \code{"top"}, \code{"bottom"}
@@ -30,9 +32,9 @@
 #'  not have the same fine resolution as the data and you therefore may want to hide
 #'  lines that are smaller than a certain amount.
 #' @field max_lwd The maximum line width to show
-#' @field lwd_prop_type The line can either be proportional to the \code{"set"} of transitions,
-#'  i.e. group of two box columns. It can also be proportional to \code{"all"} transitions,
-#'  or to each \code{"box"}.
+#' @field lwd_prop_type The line can either be proportional to the \code{"set"} of transitions
+#'  (group of two box columns), to \code{"all"} transitions, or to each \code{"box"}. It defaults
+#'  to \code{"all"}.
 #' @field data Internal storage variable. Should not be accessed directly.
 #'
 #' @import magrittr
@@ -134,6 +136,9 @@ Transition <-
               label_cex <- label_cex/size_ratio
           }
 
+          # Once used it should save the value for consistency
+          data$box_label_cex <<- label_cex
+
           return(label_cex)
         }
 
@@ -208,6 +213,20 @@ Transition <-
         }
 
         data$arrow_clr <<- value
+      },
+      arrow_rez = function(value){
+        if (missing(value)){
+          if (!is.null(data$arrow_rez))
+            return(data$arrow_rez)
+          return(400)
+        }
+
+        if (length(value) != 1 ||
+            value < 1 ||
+            round(value) != value)
+          stop("Invalid arrow rezolution, needs to be integer between 1 -> Inf")
+
+        data$arrow_rez <<- value
       },
       vertical_space = function(value){
         if (missing(value))
@@ -413,7 +432,7 @@ Transition <-
           if (!is.null(data$lwd_prop_type))
             return(data$lwd_prop_type)
 
-          return("set")
+          return("all")
         }
 
         data$lwd_prop_type <<- match.arg(value)
@@ -849,8 +868,16 @@ Transition <-
         space_between <- (1- raw_width * .self$noCols())/(.self$noCols() - 1)
 
         if (!is.null(box_label)){
-          raw_height <- convertHeight(grobHeight(textGrob("Aj", gp=gpar(cex=box_label_cex))),
-                                      unitTo = "npc", valueOnly = TRUE)
+          raw_height <- 0
+          for (i in 1:noCols()){
+            raw_height <-
+              unit(1, "strheight", box_label[i]) %>%
+              convertHeight(unitTo = "npc", valueOnly = TRUE) %>%
+              max(raw_height)
+          }
+
+          raw_mm <- convertHeight(unit(raw_height, "npc"), unitTo = "mm", valueOnly = TRUE)
+
           widths <- c()
           for (i in 1:.self$noCols()){
             widths %<>% c(raw_width)
@@ -858,7 +885,7 @@ Transition <-
               widths %<>% c(space_between)
           }
 
-          box_label_heights <- c(raw_height * 2, 1-raw_height * 2)
+          box_label_heights <- c(raw_height * box_label_cex * 2.5, 1-raw_height * 2.5 * box_label_cex)
           label_pos <- 1
           graph_pos <- 2
           if (box_label_pos == "bottom"){
@@ -866,14 +893,18 @@ Transition <-
             label_pos <- 2
             graph_pos <- 1
           }
-          # Add margins
+
+          labels <- list()
+          for (i in 1:noCols()){
+            labels[[i]] <- textGrob(box_label[i], gp = gpar(cex = box_label_cex))
+          }
+
           pushViewport(viewport(layout = grid.layout(nrow = 2, ncol = length(widths),
                                                      heights = unit(box_label_heights, "npc"),
                                                      widths = unit(widths, "npc"))))
           for (i in 1:.self$noCols()){
-            labelGrob <- textGrob(box_label[i], gp = gpar(cex = box_label_cex))
             pushViewport(viewport(layout.pos.row = label_pos, layout.pos.col = i + (i-1)))
-            grid.draw(labelGrob)
+            grid.draw(labels[[i]])
             upViewport()
           }
           pushViewport(viewport(layout.pos.row = graph_pos, layout.pos.col = 1:length(widths)))
@@ -1002,6 +1033,7 @@ Transition <-
                            widths = .self$arrowWidths(col),
                            type = arrow_type,
                            clr = arrow_clr,
+                           rez = arrow_rez,
                            origin_boxes = bx_pos,
                            target_boxes = .self$boxPositions(col + 1),
                            left_box_clrs = box_args[["fill"]],

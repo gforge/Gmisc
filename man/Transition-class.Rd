@@ -31,6 +31,10 @@ The corresponding functions are \code{\link{bezierArrowGradient}}, and
 \code{\link{bezierArrowSmpl}}. \emph{Note} The bezierGrob ("grid") has been deprecated
 as it is no longer faster than the bezierArrows and there is a difference in design.}
 
+\item{\code{arrow_clr}}{The arrow color}
+
+\item{\code{arrow_rez}}{The rezolution of the arrow}
+
 \item{\code{vertical_space}}{The space between the boxes}
 
 \item{\code{fill_clr}}{The box fill color}
@@ -60,9 +64,9 @@ lines that are smaller than a certain amount.}
 
 \item{\code{max_lwd}}{The maximum line width to show}
 
-\item{\code{lwd_prop_type}}{The line can either be proportional to the \code{"set"} of transitions,
-i.e. group of two box columns. It can also be proportional to \code{"all"} transitions,
-or to each \code{"box"}.}
+\item{\code{lwd_prop_type}}{The line can either be proportional to the \code{"set"} of transitions
+(group of two box columns), to \code{"all"} transitions, or to each \code{"box"}. It defaults
+to \code{"all"}.}
 
 \item{\code{data}}{Internal storage variable. Should not be accessed directly.}
 }}
