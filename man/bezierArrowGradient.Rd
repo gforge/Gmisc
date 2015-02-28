@@ -8,7 +8,8 @@ bezierArrowGradient(x = c(0.2, 0.7, 0.3, 0.9), y = c(0.2, 0.2, 0.9, 0.9),
   width = 0.05, clr = "#000000", default.units = "npc",
   align_2_axis = TRUE, grdt_type = c("triangle", "rectangle"),
   grdt_prop = 0.8, grdt_decrease_prop = 0.5, grdt_clr_prop = 0.7,
-  grdt_line_width, grdt_clr = "#2F4F2F", vp = NULL, gp = gpar(), ...)
+  grdt_line_width, grdt_clr = "#2F4F2F", vp = NULL, gp = gpar(),
+  rm_intersect = 3L, ...)
 }
 \arguments{
   \item{x}{A numeric vector or unit object specifying
@@ -62,6 +63,10 @@ bezierArrowGradient(x = c(0.2, 0.7, 0.3, 0.9), y = c(0.2, 0.2, 0.9, 0.9),
   \item{gp}{An object of class \code{gpar}, typically the
   output from a call to the function \code{gpar}.  This is
   basically a list of graphical parameter settings.}
+
+  \item{rm_intersect}{Set to 0 if you want to skip
+  intersection removal, 1 only to remove left or 2 to only
+  remove right. See details for why.}
 
   \item{...}{Passed on to \code{\link{bezierArrowSmpl}}}
 }

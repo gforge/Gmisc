@@ -5,7 +5,7 @@
 \title{Gets offsetted lines}
 \usage{
 calculateLinesAndArrow(x, y, offset, end_x = -1, end_y = -1,
-  arrow_offset = -1)
+  arrow_offset = -1, rm_intersect = 3L)
 }
 \arguments{
   \item{x}{A numeric vector containing all the x-elements}
@@ -23,6 +23,10 @@ calculateLinesAndArrow(x, y, offset, end_x = -1, end_y = -1,
 
   \item{arrow_offset}{The offset to add to the arrow
   section if any (if <= 0 arrow is skipped)}
+
+  \item{rm_intersect}{Set to 0 if you want to skip
+  intersection removal, 1 only to remove left or 2 to only
+  remove right. See details for why.}
 }
 \value{
 \code{list(list(x = ..., y = ...))} Returns a list with the
@@ -32,5 +36,19 @@ right/left lines that in turn lists with \emph{x} and
 \description{
 The function calculates new points according to the offset
 that lie to the left/right of the provided line.
+}
+\section{Remove intersections}{
+  When the line is wide and the arrow has a narrow curve
+  there may appear an empty triangle due to polygon
+  cancellation (two polygons within the same are cancel
+  out). This behaviour may be ugly and the function
+  therefor tries to remove these.
+
+  \emph{Note:} it is expensive to check if there are the
+  lineas may intersect at one point, remove those
+  unexpected, and then adjust the line to the new situation
+  so that the top and bottom lines match. It can also cause
+  some unexpected behaviour why you may want to remove this
+  feature if the arrow behaves erratically.
 }
 

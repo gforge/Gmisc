@@ -27,6 +27,7 @@
 #' @param ... Passed on to \code{\link{bezierArrowSmpl}}
 #' @return \code{grid::gList()} A grob of \code{\link[grid]{gList}}-type
 #'
+#' @inheritParams calculateLinesAndArrow
 #' @examples
 #' library(grid)
 #' grid.newpage()
@@ -48,6 +49,7 @@ bezierArrowGradient <- function(x = c(0.2, .7, .3, .9),
                                 grdt_clr = "#2F4F2F",
                                 vp = NULL,
                                 gp = gpar(),
+                                rm_intersect = 3L,
                                 ...){
 
   if ("grdt_start_prop" %in% names(list(...)))
@@ -100,7 +102,9 @@ bezierArrowGradient <- function(x = c(0.2, .7, .3, .9),
                         width = width,
                         default.units = default.units,
                         clr = clr, align_2_axis = align_2_axis,
-                        gp = gp, vp = vp, ...)
+                        gp = gp, vp = vp,
+                        rm_intersect = rm_intersect,
+                        ...)
 
   # Now to the gradient
   bp <- attr(pg, "center_points")
@@ -243,7 +247,7 @@ bezierArrowGradient <- function(x = c(0.2, .7, .3, .9),
       (1 - c(0, cumsum(decr_lengths))/sum(decr_lengths))
   }
 
-  grdnt_lines <- calculateLinesAndArrow(x = bp$x, y = bp$y, offset = offset)
+  grdnt_lines <- calculateLinesAndArrow(x = bp$x, y = bp$y, offset = offset, rm_intersect = rm_intersect)
   if (attr(pg, "axis") != FALSE){
     grdnt_lines <- align2Axis(bp = bp,
                               lines = grdnt_lines,
@@ -252,15 +256,11 @@ bezierArrowGradient <- function(x = c(0.2, .7, .3, .9),
                               axis = attr(pg, "axis"))
   }
 
-  #   max_gradient_width <- getGridVal(width, default.units) -
-  #     2*getGridVal(grdt_line_width, default.units)
-  convGenPolyGrob <- function(x, y, d.u, i.u, gp){
-    x <- convertX(unit(x, units = i.u), unitTo = d.u)
-    y <- convertY(unit(y, units = i.u), unitTo = d.u)
-    polygonGrob(x = x,
-                y = y,
-                gp = gp)
-  }
+  # Prepare for the correct size
+  grdnt_lines$left$x <- convertX(unit(grdnt_lines$left$x, units = internal.units), unitTo = default.units)
+  grdnt_lines$right$x <- convertX(unit(grdnt_lines$right$x, units = internal.units), unitTo = default.units)
+  grdnt_lines$left$y <- convertY(unit(grdnt_lines$left$y, units = internal.units), unitTo = default.units)
+  grdnt_lines$right$y <- convertY(unit(grdnt_lines$right$y, units = internal.units), unitTo = default.units)
 
   inner_gradient <- gList()
   if (clr_start > 2){
@@ -270,11 +270,9 @@ bezierArrowGradient <- function(x = c(0.2, .7, .3, .9),
                                    function(x) head(x, clr_start - 1)))
     gradient_pg <-
       with(reg_size,
-           convGenPolyGrob(x = c(left$x, rev(right$x)),
-                           y = c(left$y, rev(right$y)),
-                           d.u = default.units,
-                           i.u = internal.units,
-                           gp = gpar(fill = grdt_clr, col = grdt_clr, lwd = .01)))
+           polygonGrob(x = c(left$x, rev(right$x)),
+                       y = c(left$y, rev(right$y)),
+                       gp = gpar(fill = grdt_clr, col = grdt_clr, lwd = .01)))
 
     inner_gradient <- gList(inner_gradient, gradient_pg)
   }
@@ -284,20 +282,19 @@ bezierArrowGradient <- function(x = c(0.2, .7, .3, .9),
   if (length(bp$x) >= clr_start){
     elmnts <- (clr_start-1):(length(grdnt_lines$right$x)-1)
     g_clrs <- colorRampPalette(colors=c(grdt_clr, clr))(length(elmnts))
+    # Speeds signifacantly the process
+    decr_polygons <- list()
     for (i in elmnts){
       col <- g_clrs[i-clr_start+2]
       x <- with(grdnt_lines, c(left$x[i:(i+1)], right$x[(i+1):i]))
       y <- with(grdnt_lines, c(left$y[i:(i+1)], right$y[(i+1):i]))
-      gradient_pg <-
-        with(grdnt_lines,
-             convGenPolyGrob(x = x,
-                             y = y,
-                             d.u = default.units,
-                             i.u = internal.units,
-                             gp = gpar(fill = col, col = col, lwd = .01)))
-
-      inner_gradient <- gList(inner_gradient, gradient_pg)
+      decr_polygons[[i-clr_start+2]] <-
+        polygonGrob(x = x,
+                    y = y,
+                    gp = gpar(fill = col, col = col, lwd = .01))
     }
+    inner_gradient <-
+      gList(inner_gradient, fastDoCall(gList, decr_polygons))
   }
 
   return (gList(pg, inner_gradient))

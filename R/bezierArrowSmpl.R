@@ -19,6 +19,7 @@
 #' @return \code{grid::grob} A grob of the class polygonGrob with attributes that
 #'  correspond to the bezier points.
 #'
+#' @inheritParams calculateLinesAndArrow
 #' @examples
 #' library(grid)
 #' grid.newpage()
@@ -37,6 +38,7 @@ bezierArrowSmpl <- function(x = c(0.2, .7, .3, .9),
                             rez = 200,
                             align_2_axis = TRUE,
                             name = NULL,
+                            rm_intersect = 3L,
                             gp = gpar(), vp = NULL){
   if (class(x) != "unit")
     x <- unit(x, default.units)
@@ -116,7 +118,8 @@ bezierArrowSmpl <- function(x = c(0.2, .7, .3, .9),
                                   offset = width/2,
                                   end_x = end_points$end$x,
                                   end_y = end_points$end$y,
-                                  arrow_offset = arrow$base/2)
+                                  arrow_offset = arrow$base/2,
+                                  rm_intersect = rm_intersect)
 
   if (align_2_axis != FALSE){
     lines <- align2Axis(bp = new_bp,

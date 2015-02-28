@@ -6,7 +6,8 @@
 \usage{
 bezierArrowSmpl(x = c(0.2, 0.7, 0.3, 0.9), y = c(0.2, 0.2, 0.9, 0.9),
   width = 0.05, clr = "#000000", default.units = "npc", arrow = list(),
-  rez = 200, align_2_axis = TRUE, name = NULL, gp = gpar(), vp = NULL)
+  rez = 200, align_2_axis = TRUE, name = NULL, rm_intersect = 3L,
+  gp = gpar(), vp = NULL)
 }
 \arguments{
   \item{x}{A numeric vector or unit object specifying
@@ -40,6 +41,10 @@ bezierArrowSmpl(x = c(0.2, 0.7, 0.3, 0.9), y = c(0.2, 0.2, 0.9, 0.9),
   instance if the arrow attaches to a box.}
 
   \item{name}{A character identifier.}
+
+  \item{rm_intersect}{Set to 0 if you want to skip
+  intersection removal, 1 only to remove left or 2 to only
+  remove right. See details for why.}
 
   \item{gp}{An object of class \code{gpar}, typically the
   output from a call to the function \code{gpar}.  This is
