@@ -1,18 +1,12 @@
 NEWS for the Gmisc package
 
-Changes for 1.0.3
+Changes for 1.1
 -----------------
-* Created the Transition class that can handle multiple transitions in contrast to the previous transitionPlot
+* Created the Transition class that can handle multiple transitions in contrast to transitionPlot
 * The bezierArrowGradient has a simpler handling of the gradient proportion
-
-Changes for 1.0.2
------------------
 * The bezier arrows have been rewritten with a > 20x speed increase
 * The getDescriptionStatsBy function is now accompanied by mergeDesc that takes care of merging
   everything into one table
-
-Changes for 1.0.1
------------------
 * Added ability to customize statistics for getDescriptionStatsBy
 * transitionPlot: The color_bar_labels are now automatically extracted from the transition_flow input
 * transitionPlot: Fixed bug so that the end viewport is the root
