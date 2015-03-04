@@ -1,5 +1,5 @@
 ---
-title: "The fastest way to compile table 1?"
+title: "The fastest way to compile your Table 1?"
 author: "Max Gordon"
 date: "`r Sys.Date()`"
 output: 
