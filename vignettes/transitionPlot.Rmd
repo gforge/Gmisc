@@ -6,7 +6,7 @@ output:
   rmarkdown::html_vignette:
     toc: true
 vignette: >
-  %\VignetteIndexEntry{Gmisc for generating descriptive statistics}
+  %\VignetteIndexEntry{transitionPlot - basic usage}
   %\VignetteEngine{knitr::rmarkdown}
   %\usepackage[utf8]{inputenc}
 ---
@@ -14,7 +14,9 @@ vignette: >
 Introduction
 ============
 
-The transitionPlot function aims at illustrating the transition between classes. The original intent was to show how [self-administered the Charnley classification](http://informahealthcare.com/doi/full/10.3109/17453674.2014.931199) behaves before and after surgery. The plot is a fancier version than what can be achiewed using packages such as [*diagram*](http://informahealthcare.com.proxy.kib.ki.se/doi/full/10.3109/17453674.2014.931199) but at the cost of flexibility. The current function only allows to show a transition from one state to the next.
+The transitionPlot function aims at illustrating the transition between classes. The original intent was to show how [self-administered the Charnley classification](http://informahealthcare.com/doi/full/10.3109/17453674.2014.931199) behaves before and after surgery. The plot is a fancier version than what can be achiewed using packages such as [*diagram*](http://informahealthcare.com.proxy.kib.ki.se/doi/full/10.3109/17453674.2014.931199) but at the cost of flexibility. The current function only allows to show a transition from one state to the next. 
+
+**Note**: The new Transition class will superseed the transitionPlot. See `vignette("Transition-class")` for more info.
 
 Generate some data
 ==================
@@ -130,7 +132,7 @@ transitionPlot(trn_mtrx,
                box_label = c("Before", "After"),
                box_txt = box_txt,
                cex = 1.2,
-               type_of_arrow = "gradient")
+               type_of_arrow = "simple")
 ```
 
 Using 3D matrices
