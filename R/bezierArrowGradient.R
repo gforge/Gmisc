@@ -272,7 +272,7 @@ bezierArrowGradient <- function(x = c(0.2, .7, .3, .9),
       with(reg_size,
            polygonGrob(x = c(left$x, rev(right$x)),
                        y = c(left$y, rev(right$y)),
-                       gp = gpar(fill = grdt_clr, col = grdt_clr, lwd = .01)))
+                       gp = gpar(fill = grdt_clr, col = grdt_clr)))
 
     inner_gradient <- gList(inner_gradient, gradient_pg)
   }
@@ -291,7 +291,7 @@ bezierArrowGradient <- function(x = c(0.2, .7, .3, .9),
       decr_polygons[[i-clr_start+2]] <-
         polygonGrob(x = x,
                     y = y,
-                    gp = gpar(fill = col, col = col, lwd = .01))
+                    gp = gpar(fill = col, col = col))
     }
     inner_gradient <-
       gList(inner_gradient, fastDoCall(gList, decr_polygons))
