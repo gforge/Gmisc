@@ -5,9 +5,9 @@
 \title{A simple bezier arrow}
 \usage{
 bezierArrowSmpl(x = c(0.2, 0.7, 0.3, 0.9), y = c(0.2, 0.2, 0.9, 0.9),
-  width = 0.05, clr = "#000000", default.units = "npc",
-  arrow = list(base = unit(0.1, "npc"), length = unit(0.1, "npc")),
-  align_2_axis = TRUE, name = NULL, gp = gpar(), vp = NULL)
+  width = 0.05, clr = "#000000", default.units = "npc", arrow = list(),
+  rez = 200, align_2_axis = TRUE, name = NULL, rm_intersect = 3L,
+  gp = gpar(), vp = NULL)
 }
 \arguments{
   \item{x}{A numeric vector or unit object specifying
@@ -31,11 +31,20 @@ bezierArrowSmpl(x = c(0.2, 0.7, 0.3, 0.9), y = c(0.2, 0.2, 0.9, 0.9),
   \strong{Note:} This differs from the original
   \code{\link{bezierGrob}} function.}
 
+  \item{rez}{The resolution of the arrow. This specifies
+  how many points to retrieve from the
+  \code{\link{gnrlBezierPoints}} function. Defaults to
+  200.}
+
   \item{align_2_axis}{Indicates if the arrow should be
   vertically/horizontally aligned. This is useful for
   instance if the arrow attaches to a box.}
 
   \item{name}{A character identifier.}
+
+  \item{rm_intersect}{Set to 0 if you want to skip
+  intersection removal, 1 only to remove left or 2 to only
+  remove right. See details for why.}
 
   \item{gp}{An object of class \code{gpar}, typically the
   output from a call to the function \code{gpar}.  This is

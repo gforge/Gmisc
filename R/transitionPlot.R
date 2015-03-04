@@ -69,7 +69,9 @@
 #'  then the color_bar will automatically appear at the bottom unless you set
 #'  this to \code{FALSE}
 #' @param color_bar_cex The size of the tick labels for the color bar
-#' @param color_bar_labels The labels of the two proportions that make up the color bar
+#' @param color_bar_labels The labels of the two proportions that make up the color bar.
+#'  Defaults to the labels of the third dimension for the \code{transition_flow}
+#'  argument.
 #' @param color_bar_subspace If there is little or no difference exists
 #'  at the low/high proportions of the spectrum then it
 #'  can be of interest to focus the color change to the center
@@ -78,7 +80,6 @@
 #'  default it is \code{FALSE}.
 #' @return void
 #' @examples
-#' \dontrun{
 #' # This example does not run since it
 #' # takes a little while to assemble the
 #' # arrows and RMD Check complains that this
@@ -120,8 +121,8 @@
 #'                max_lwd = unit(10, "mm"),
 #'                overlap_add_width = unit(1, "mm"))
 #' par(par_org)
-#' }
 #' @import grid
+#' @import magrittr
 #' @export
 transitionPlot <- function (transition_flow,
                             type_of_arrow = c("grid", "simple", "gradient"),
@@ -150,7 +151,7 @@ transitionPlot <- function (transition_flow,
                             color_bar = TRUE,
                             color_bar_cex = cex * .33,
                             color_bar_labels,
-                            color_bar_subspace,
+                            color_bar_subspace = NULL,
                             new_page = FALSE) {
   # Just for convenience
   no_boxes <- nrow(transition_flow)
@@ -184,13 +185,19 @@ transitionPlot <- function (transition_flow,
                       apply(cbind(no_1_end, no_tot_end), 1, prop_fn))
     transition_arrow_props <- transition_flow[,,1]/(transition_flow[,,1]+transition_flow[,,2])
 
-    # Remove the third dimension
-    transition_flow <- transition_flow[,,1] + transition_flow[,,2]
     if (color_bar == FALSE){
       color_bar <- "none"
     } else if(!is.character(color_bar)){
       color_bar <- "bottom"
     }
+
+    if (missing(color_bar_labels) &&
+          !is.null(dimnames(transition_flow))){
+      color_bar_labels <- dimnames(transition_flow)[[3]]
+    }
+
+    # Remove the third dimension
+    transition_flow <- transition_flow[,,1] + transition_flow[,,2]
   }else if(!missing(box_prop)){
     transition_arrow_props <- t(sapply(box_prop[,1], function(x) rep(x, no_boxes)))
     color_bar <- "none"
@@ -311,6 +318,9 @@ transitionPlot <- function (transition_flow,
 
   if (new_page) grid.newpage()
 
+  # For popViewport at the need to keep track of how
+  # many levels we have added
+  vp_depth = 1
   # Add plot margin
   prPushMarginViewport(bottom = convertY(mar[1], unitTo="npc"),
                        left = convertX(mar[2], unitTo="npc"),
@@ -320,6 +330,7 @@ transitionPlot <- function (transition_flow,
 
   if (!is.null(main) && nchar(main) > 0){
     prGridPlotTitle(main, cex[1])
+    vp_depth %<>% + 2
   }
 
   if (!is.null(box_label) && length(box_label) == 2){
@@ -369,8 +380,10 @@ transitionPlot <- function (transition_flow,
       main_row_no <- 1
     }
 
+    # Set layout
     pushViewport(viewport(layout=gl, name="Label_layout"))
 
+    # Add labels
     pushViewport(viewport(layout.pos.row=label_row_no, layout.pos.col=1, name="Left_label"))
     grid.draw(left_label)
     popViewport()
@@ -378,10 +391,13 @@ transitionPlot <- function (transition_flow,
     grid.draw(right_label)
     popViewport()
 
+    # Set the graph viewport
     pushViewport(viewport(layout.pos.row=main_row_no, layout.pos.col=1:3, name="Main_exc_label"))
+    vp_depth %<>% + 2
   }
 
-  if (color_bar != "none"){
+  if (color_bar != "none" &&
+        type_of_arrow == "gradient"){
     if (color_bar == "bottom"){
       bar_height <- unit(.05, "npc")
       colorAxis <- xaxisGrob(at=c(0,.25,.5,.75, 1),
@@ -422,10 +438,17 @@ transitionPlot <- function (transition_flow,
           color_bar_txt_clr <- txt_start_clr[1,]
         }
 
-        left <- textGrob(color_bar_labels[1], x=0, y=.5, just="left",
+        lab_margin <- .05
+        left <- textGrob(color_bar_labels[1],
+                         x=0 + lab_margin,
+                         just="left",
+                         y=.5,
                          gp=gpar(cex=lab_cex_adjusted,
                                  col=color_bar_txt_clr[1]))
-        right <- textGrob(color_bar_labels[2], x=1, y=.5, just="right",
+        right <- textGrob(color_bar_labels[2],
+                          x=1-lab_margin,
+                          just="right",
+                          y=.5,
                           gp=gpar(cex=lab_cex_adjusted,
                                   col=color_bar_txt_clr[2]))
         grid.draw(left)
@@ -436,7 +459,7 @@ transitionPlot <- function (transition_flow,
       pushViewport(viewport(layout.pos.row=1,
                             layout.pos.col=1:3,
                             name="Main_exc_bar"))
-
+      vp_depth %<>% + 2
     }else{
       stop("The color bar position you want, '", color_bar, "', is not yet supported")
     }
@@ -498,18 +521,8 @@ transitionPlot <- function (transition_flow,
                 color_bar_subspace = color_bar_subspace,
                 plot_arrows = TRUE,
                 proportion = TRUE)
-
   popViewport()
 
-  if (!is.null(main) && nchar(main) > 0){
-    popViewport()
-  }
-
-  if (color_bar != "none"){
-    popViewport()
-  }
-
-  if (!is.null(box_label) && length(box_label) == 2){
-    popViewport()
-  }
+  # Exit margin viewport
+  popViewport(vp_depth)
 }

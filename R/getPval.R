@@ -32,9 +32,12 @@ getPvalWilcox <- function(x, by){
 #' through \code{\link[stats]{anova}(\link[stats]{lm}(x ~ by))}
 #'
 #' @rdname getPval
+#' @import magrittr
 #' @export
 getPvalAnova <- function(x, by){
-  anova(lm(vaiable ~ by))[["Pr(>F)"]][[1]]
+  out <- lm(x ~ by) %>%
+    anova
+  out[["Pr(>F)"]][[1]]
 }
 
 #' @rdname getPval

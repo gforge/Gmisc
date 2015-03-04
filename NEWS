@@ -1,8 +1,18 @@
 NEWS for the Gmisc package
 
-Changes for 1.0.1
+Changes for 1.1
 -----------------
+* Created the Transition class that can handle multiple transitions in contrast to transitionPlot
+* The bezierArrowGradient has a simpler handling of the gradient proportion
+* The bezier arrows have been rewritten with a > 20x speed increase
+* The getDescriptionStatsBy function is now accompanied by mergeDesc that takes care of merging
+  everything into one table
 * Added ability to customize statistics for getDescriptionStatsBy
+* transitionPlot: The color_bar_labels are now automatically extracted from the transition_flow input
+* transitionPlot: Fixed bug so that the end viewport is the root
+* transitionPlot: Fixed grid arrow bug
+* transitionPlot: When using 3D matrices and two colors there should only be a colorbar when used with gradient arrows
+* transitionPlot: If line width is smaller than the minimum width it is now set to 0
 
 Changes for 1.0
 ---------------

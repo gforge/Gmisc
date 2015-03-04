@@ -8,8 +8,13 @@ transition_matrix[2,] <- 540*c(.75, .10, .15)
 transition_matrix[3,] <- 340*c(0.01, .2, .80)
 
 grid.newpage()
+box_txt <- 
+  cbind(mapply(function(txt, n) sprintf("%s\nn=%.0f", txt, n), 
+               txt = c("First", "Second", "Third"), n = rowSums(transition_matrix)),
+        mapply(function(txt, n) sprintf("%s\nn=%.0f", txt, n), 
+               txt = c("First", "Second", "Third"), n = colSums(transition_matrix)))
 transitionPlot(transition_matrix,
-               box_txt = c("First", "Second", "Third"),
+               box_txt = box_txt,
                type_of_arrow = "simple",
                min_lwd = unit(.01, "mm"),
                max_lwd = unit(6, "mm"),
@@ -50,7 +55,7 @@ grid.newpage()
 transitionPlot(transition_matrix,
                box_txt = c("First", "Second", "Third"),
                type_of_arrow = "simple",
-               min_lwd = unit(1, "mm"),
+               min_lwd = unit(.1, "mm"),
                max_lwd = unit(6, "mm"),
                overlap_add_width = unit(1, "mm"))
 

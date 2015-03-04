@@ -4,14 +4,15 @@
 \alias{prPushMarginViewport}
 \title{Pushes viewport with margins}
 \usage{
-prPushMarginViewport(bottom, left, top, right, name = NULL)
+prPushMarginViewport(bottom, left, top, right, name = "margin")
 }
 \arguments{
   \item{bottom}{The margin object, either in npc or a
-  \code{\link[grid]{unit}} object}
+  \code{\link[grid]{unit}} object, or a vector of 4 if you
+  want the same margins allover.}
 
   \item{left}{The margin object, either in npc or a
-  \code{\link[grid]{unit}} object}
+  \code{\link[grid]{unit}} object.}
 
   \item{top}{The margin object, either in npc or a
   \code{\link[grid]{unit}} object}

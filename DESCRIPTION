@@ -1,6 +1,6 @@
 Package: Gmisc
-Version: 1.0.1
-Date: 2015-01-07
+Version: 1.1
+Date: 2015-03-04
 Title: Descriptive Statistics, Transition Plots, and More
 Author: Max Gordon <max@gforge.se>
 Maintainer: Max Gordon <max@gforge.se>
@@ -15,17 +15,21 @@ URL: http://gforge.se
 BugReports: https://github.com/gforge/Gmisc/issues
 Biarch: yes
 Depends:
-    htmlTable
+    Rcpp(>= 0.11.4),
+    htmlTable (>= 1.1)
 Imports:
     grid,
     lattice,
-    sp,
     Hmisc,
-    forestplot
+    forestplot,
+    abind,
+    methods,
+    knitr,
+    magrittr
 Suggests:
-    testthat,
-    knitr
+    testthat
 Roxygen: list(wrap = TRUE)
 Encoding: UTF-8
 NeedsCompilation: no
 VignetteBuilder: knitr
+LinkingTo: Rcpp
