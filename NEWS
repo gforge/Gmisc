@@ -1,5 +1,9 @@
 NEWS for the Gmisc package
 
+Changes for 1.1.1
+-----------------
+* Fixed header_count bug in getDescriptionStatsBy - thanks rvlevitin (iss#13)
+
 Changes for 1.1
 -----------------
 * Created the Transition class that can handle multiple transitions in contrast to transitionPlot

@@ -387,7 +387,8 @@ getDescriptionStatsBy <- function(x,
 
   getHeader <- function (tbl_cnt, header_count, html) {
     if (missing(header_count) ||
-          !header_count){
+          (!is.character(header_count) &&
+                           !header_count)){
       return(names(tbl_cnt))
     }
 
