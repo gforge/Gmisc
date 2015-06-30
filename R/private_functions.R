@@ -60,7 +60,8 @@ prGetStatistics <- function(x,
       if (show_perc)
         total_table <- fastDoCall(factor_fn, describe_args)
       else{
-        total_table <- table(x, useNA=useNA)
+        total_table <- table(x, useNA=useNA) %>%
+          txtInt
         names(total_table)[is.na(names(total_table))] <- "Missing"
       }
     }

@@ -1,6 +1,10 @@
 NEWS for the Gmisc package
 
-Changes for 1.1.1
+Changes for 1.2.1
+-----------------
+* The total column is now also passed through the txtInt function
+
+Changes for 1.2
 -----------------
 * Fixed header_count bug in getDescriptionStatsBy - thanks rvlevitin (iss#13)
 
