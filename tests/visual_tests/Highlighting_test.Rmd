@@ -3,7 +3,7 @@ title: "Highlighting"
 author: "Max Gordon"
 date: "Thursday, July 17, 2014"
 output: 
-  Grmd::docx_document:
+  Gmisc::docx_document:
     remove_scripts: false
     highlight: default
 ---

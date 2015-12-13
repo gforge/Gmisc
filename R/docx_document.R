@@ -49,7 +49,7 @@
 #' title: "Test"
 #' author: "Max Gordon"
 #' output:
-#'   Grmd::docx_document
+#'   Gmisc::docx_document
 #' ---
 #' }
 #' @importFrom rmarkdown html_document
@@ -70,7 +70,7 @@ docx_document <- function(...,
   if (css == "rmarkdown/docx.css"){
     css <- system.file(css, package = "Gmisc")
     if (css == "")
-      stop("Error locating the docx.css that should be included in the Grmd package")
+      stop("Error locating the docx.css that should be included in the Gmisc package")
     if (!self_contained){
       file.copy(from = css, to="docx.css", overwrite = TRUE)
       css <- "docx.css"
@@ -93,7 +93,7 @@ docx_document <- function(...,
                         " You may want to have a YAML section that looks something like:",
                         "\n---",
                         "\noutput:",
-                        "\n  Grmd::docx_document:",
+                        "\n  Gmisc::docx_document:",
                         "\n    css: \"", paste(alt_css, collapse = "\", \""), "\"",
                         "\n---")
     }else{

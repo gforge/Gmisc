@@ -2,7 +2,7 @@
 title: "Test"
 author: "MG"
 output:
-  Grmd::docx_document:
+  Gmisc::docx_document:
     fig_caption: true
     remove_scripts: false
 ---

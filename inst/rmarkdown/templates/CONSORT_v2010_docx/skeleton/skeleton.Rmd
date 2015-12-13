@@ -2,12 +2,12 @@
 title: "CONSORT-Statement checklist"
 lang: en
 output:
-  Grmd::docx_document:
+  Gmisc::docx_document:
     fig_caption: true
 ---
 
 ```{r "Load libraries", echo=FALSE, message=FALSE, warning=FALSE}
-library(Grmd)
+library(Gmisc)
 ```
 
 ```{r "Load data"}

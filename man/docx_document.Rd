@@ -72,7 +72,7 @@ use the \code{\link[rmarkdown]{word_document}} format.
 title: "Test"
 author: "Max Gordon"
 output:
-  Grmd::docx_document
+  Gmisc::docx_document
 ---
 }
 }
