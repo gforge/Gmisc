@@ -1,0 +1,14 @@
+---
+title: Small_max_width
+output:
+  Grmd::docx_document:
+    css_max_width: 80em
+    self_contained: true
+---
+
+# Header 1
+
+```{r}
+paste(rep(sprintf("test"), 40), collapse=" ")
+```
+
