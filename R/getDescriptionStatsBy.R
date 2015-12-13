@@ -92,10 +92,8 @@
 #'
 #' @family descriptive functions
 #'
-#' @importFrom Hmisc label
-#' @importFrom Hmisc label<-
-#' @importFrom Hmisc units
-#' @importFrom Hmisc capitalize
+#' @importFrom Hmisc label label<- units capitalize
+#' @importFrom stats na.omit
 #'
 #' @export
 getDescriptionStatsBy <- function(x,

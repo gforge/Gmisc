@@ -34,6 +34,7 @@
 #' arrowGrob <- bezierArrowGradient(x = c(.1,.3,.6,.9),
 #'                                      y = c(0.2, 0.2, 0.9, 0.9))
 #' grid.draw(arrowGrob)
+#' @importFrom utils head tail
 #' @export
 bezierArrowGradient <- function(x = c(0.2, .7, .3, .9),
                                 y = c(0.2, .2, .9, .9),

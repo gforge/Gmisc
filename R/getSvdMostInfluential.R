@@ -35,6 +35,8 @@
 #' @example inst/examples/getSvdMostInfluential_example.R
 #'
 #' @import lattice
+#' @importFrom grDevices colorRampPalette grey
+#' @importFrom graphics par
 #' @export
 getSvdMostInfluential <- function(mtrx,
                                   quantile,

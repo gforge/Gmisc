@@ -14,6 +14,7 @@
 #'
 #' @inheritParams getDescriptionStatsBy
 #' @keywords internal
+#' @importFrom stats na.omit
 prGetStatistics <- function(x,
                             show_perc = FALSE,
                             html = TRUE,

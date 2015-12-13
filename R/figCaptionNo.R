@@ -35,6 +35,7 @@
 #' # Return the original settings
 #' options(org_opts)
 #' @family figure caption functions
+#' @importFrom utils as.roman
 figCapNo <- function(str,
                      roman = getOption("fig_caption_no_roman",
                                        FALSE),
@@ -74,6 +75,7 @@ figCapNo <- function(str,
 #' org_opts <- options(fig_caption_no=1)
 #' figCapNoLast()
 #' options(org_opts)
+#' @importFrom utils as.roman
 #' @family figure caption functions
 figCapNoLast <- function(roman = getOption("fig_caption_no_roman",
                                            FALSE)){
@@ -105,6 +107,7 @@ figCapNoLast <- function(roman = getOption("fig_caption_no_roman",
 #' org_opts <- options(fig_caption_no=1)
 #' figCapNoNext()
 #' options(org_opts)
+#' @importFrom utils as.roman
 #' @family figure caption functions
 figCapNoNext <- function(roman = getOption("fig_caption_no_roman",
                                            FALSE)){

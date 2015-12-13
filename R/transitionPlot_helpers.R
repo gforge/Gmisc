@@ -474,6 +474,7 @@ prTpPlotBoxes <- function (overlap_order,
 #' @return \code{list(top, left, bottom, right, width, height)}
 #'
 #' @inheritParams transitionPlot
+#' @importFrom utils head tail
 #' @keywords internal
 prTpGetBoxPositions <- function (no, side,
                                  transitions,
@@ -584,6 +585,7 @@ prTpGetBoxPositions <- function (no, side,
 #' @return \code{character} The function can return both single colors
 #'  or multiple colors as character vector (see \code{\link[grDevices]{rgb}})
 #'
+#' @importFrom utils tail
 #' @keywords internal
 prTpGetColors <- function(colors, proportion, space = NULL, no = 101){
   start <- c()

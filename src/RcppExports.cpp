@@ -7,39 +7,31 @@
 using namespace Rcpp;
 
 // calculateLinesAndArrow
-Rcpp::List calculateLinesAndArrow(NumericVector x, NumericVector y, NumericVector offset, double end_x = -1, double end_y = -1, double arrow_offset = -1, int rm_intersect = 3);
+Rcpp::List calculateLinesAndArrow(NumericVector x, NumericVector y, NumericVector offset, double end_x, double end_y, double arrow_offset, int rm_intersect);
 RcppExport SEXP Gmisc_calculateLinesAndArrow(SEXP xSEXP, SEXP ySEXP, SEXP offsetSEXP, SEXP end_xSEXP, SEXP end_ySEXP, SEXP arrow_offsetSEXP, SEXP rm_intersectSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP );
-        Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP );
-        Rcpp::traits::input_parameter< NumericVector >::type offset(offsetSEXP );
-        Rcpp::traits::input_parameter< double >::type end_x(end_xSEXP );
-        Rcpp::traits::input_parameter< double >::type end_y(end_ySEXP );
-        Rcpp::traits::input_parameter< double >::type arrow_offset(arrow_offsetSEXP );
-        Rcpp::traits::input_parameter< int >::type rm_intersect(rm_intersectSEXP );
-        Rcpp::List __result = calculateLinesAndArrow(x, y, offset, end_x, end_y, arrow_offset, rm_intersect);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type offset(offsetSEXP);
+    Rcpp::traits::input_parameter< double >::type end_x(end_xSEXP);
+    Rcpp::traits::input_parameter< double >::type end_y(end_ySEXP);
+    Rcpp::traits::input_parameter< double >::type arrow_offset(arrow_offsetSEXP);
+    Rcpp::traits::input_parameter< int >::type rm_intersect(rm_intersectSEXP);
+    __result = Rcpp::wrap(calculateLinesAndArrow(x, y, offset, end_x, end_y, arrow_offset, rm_intersect));
+    return __result;
 END_RCPP
 }
 // gnrlBezierPoints
-NumericMatrix gnrlBezierPoints(SEXP& ctrl_points, int length_out = 100);
+NumericMatrix gnrlBezierPoints(SEXP& ctrl_points, int length_out);
 RcppExport SEXP Gmisc_gnrlBezierPoints(SEXP ctrl_pointsSEXP, SEXP length_outSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< SEXP& >::type ctrl_points(ctrl_pointsSEXP );
-        Rcpp::traits::input_parameter< int >::type length_out(length_outSEXP );
-        NumericMatrix __result = gnrlBezierPoints(ctrl_points, length_out);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< SEXP& >::type ctrl_points(ctrl_pointsSEXP);
+    Rcpp::traits::input_parameter< int >::type length_out(length_outSEXP);
+    __result = Rcpp::wrap(gnrlBezierPoints(ctrl_points, length_out));
+    return __result;
 END_RCPP
 }
