@@ -8,3 +8,4 @@ Gmisc.Rproj
 .Rproj.user
 *.md
 tests/visual_tests/FTP_test/FTP_test_files
+tests/testthat/*.pdf

@@ -8,6 +8,7 @@
 #' @return list
 #'
 #' @import magrittr
+#' @importFrom utils tail
 getBezierAdj4Arrw <- function (x, y, arrow_length, length_out = 100) {
 
   org <- data.frame(x = x, y = y)
@@ -130,6 +131,7 @@ validateAndConvertVectorInputs <- function(x, y,
 #' @param w The width that is to be changed
 #' @return The width transformed into a \code{\link[grid]{unit}} of "mm"
 #' @keywords internal
+#' @importFrom utils tail
 getAbsoluteWidth <- function (w, default.units, x = x, y = y) {
   if (!inherits(w, "unit"))
     w <- unit(w, default.units)

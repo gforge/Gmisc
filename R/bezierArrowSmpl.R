@@ -28,6 +28,7 @@
 #' grid.draw(arrowGrob)
 #'
 #' @import grid
+#' @importFrom utils tail
 #' @export
 bezierArrowSmpl <- function(x = c(0.2, .7, .3, .9),
                             y = c(0.2, .2, .9, .9),

@@ -1,0 +1,22 @@
+---
+title: "MathJax Test"
+output: 
+  html_document:
+    self_contained: false
+---
+
+Here is a test to see abilities when dealing with equations such as $y=X\beta$ handles
+
+Or single line
+
+$$y=X\beta$$
+
+And a more complex formula
+
+$$\frac{a}{(\sum_{n}^{i=1}{x_i+1})+k}$$
+
+Results:  
+2014-07-17  
+Copy-paste OK for the simple formulas but nothing else  
+Complete failure for opening directly in LibreOffice/Word  
+With word_document - works perfectly  

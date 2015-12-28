@@ -40,6 +40,8 @@
 #' @import magrittr
 #' @importFrom methods setRefClass
 #' @import abind
+#' @importFrom utils head tail
+#' @importFrom grDevices grey as.raster
 #' @export
 Transition <-
   setRefClass(

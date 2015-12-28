@@ -22,6 +22,7 @@
 #'               sample(LETTERS[1:3], size = 100, replace = TRUE))
 #' getPvalWilcox(rnorm(100),
 #'               sample(LETTERS[1:2], size = 100, replace = TRUE))
+#' @importFrom stats wilcox.test
 getPvalWilcox <- function(x, by){
   wilcox.test(x ~ by, alternative = "two.sided")$p.value
 }
@@ -33,6 +34,7 @@ getPvalWilcox <- function(x, by){
 #'
 #' @rdname getPval
 #' @import magrittr
+#' @importFrom stats lm anova 
 #' @export
 getPvalAnova <- function(x, by){
   out <- lm(x ~ by) %>%
@@ -43,8 +45,9 @@ getPvalAnova <- function(x, by){
 #' @rdname getPval
 #'
 #' @section getPvalFisher:
-#'
 #' Performs Fisher's exact test through the \code{\link[stats]{fisher.test}}.
+#' 
+#' @importFrom stats fisher.test
 #' @export
 getPvalFisher <- function(x, by){
   # This is a quick fix in case of large dataset
@@ -67,6 +70,7 @@ getPvalFisher <- function(x, by){
 #' through \code{\link[stats]{chisq.test}}
 #'
 #' @rdname getPval
+#' @importFrom stats chisq.test
 #' @export
 getPvalChiSq <- function(x, by){
   chisq.test(x, by)$p.value
@@ -78,6 +82,7 @@ getPvalChiSq <- function(x, by){
 #' Performs a  Kruskal-Wallis rank sum test
 #' through \code{\link[stats]{kruskal.test}}
 #'
+#' @importFrom stats kruskal.test
 #' @rdname getPval
 #' @export
 getPvalKruskal <- function(x, by){

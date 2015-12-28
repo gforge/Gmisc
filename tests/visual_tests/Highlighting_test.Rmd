@@ -1,0 +1,25 @@
+---
+title: "Highlighting"
+author: "Max Gordon"
+date: "Thursday, July 17, 2014"
+output: 
+  Gmisc::docx_document:
+    remove_scripts: false
+    highlight: default
+---
+
+
+```{r}
+some_text <- "aaaa"
+a <- 2
+a + 1 ->  b
+
+summary(cars)
+```
+
+
+Results:  
+2014-07-17  
+Copy-paste OK but fails to generate the grey box  
+Complete failure for opening directly in LibreOffice/Word  
+With word_document - works perfectly  
