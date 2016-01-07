@@ -338,12 +338,15 @@ getDescriptionStatsBy <- function(x,
             useNA.digits = useNA.digits,
             default_ref = default_ref, percentage_sign = percentage_sign)
 
-    # Set the rowname to a special format
-    # if there was missing and this is an matrix
-    # then we should avoid using this format
-    name <- sprintf("%s %s",
-                    capitalize(levels(x)[default_ref]),
-                    tolower(label(x)))
+    # Check that we're dealing with only one row
+    if (unique(sapply(t, length)) == 1)
+      # Set the rowname to a special format
+      # if there was missing and this is an matrix
+      # then we should avoid using this format
+      name <- sprintf("%s %s",
+                      capitalize(levels(x)[default_ref]),
+                      tolower(name))
+    
     if (NEJMstyle) {
       # LaTeX needs and escape before %
       # or it marks the rest of the line as
