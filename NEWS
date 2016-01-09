@@ -3,6 +3,8 @@ NEWS for the Gmisc package
 Changes for 1.2.1
 -----------------
 * The total column is now also passed through the txtInt function
+* Fixed the naming of proportions in getDescriptionStatsBy
+* If a variable has units set it can now be added into the rowname in getDescriptionStatsBy
 
 Changes for 1.2
 -----------------
