@@ -72,8 +72,8 @@
 #' @param use_units If the Hmisc package's units() function has been employed
 #'  it may be interesting to have a column at the far right that indicates the
 #'  unit measurement. If this column is specified then the total column will
-#'  appear before the units (if specified as last). You can also set he value to 
-#'  \code{"name"} and the units will be added to the name as a parenthesis, 
+#'  appear before the units (if specified as last). You can also set he value to
+#'  \code{"name"} and the units will be added to the name as a parenthesis,
 #'  e.g. Age (years).
 #' @param percentage_sign If you want to surpress the percentage sign you
 #'  can set this variable to FALSE. You can also choose something else that
@@ -346,7 +346,7 @@ getDescriptionStatsBy <- function(x,
       name <- sprintf("%s %s",
                       capitalize(levels(x)[default_ref]),
                       tolower(name))
-    
+
     if (NEJMstyle) {
       # LaTeX needs and escape before %
       # or it marks the rest of the line as
@@ -390,8 +390,7 @@ getDescriptionStatsBy <- function(x,
 
   getHeader <- function (tbl_cnt, header_count, html) {
     if (missing(header_count) ||
-          (!is.character(header_count) &&
-                           !header_count)){
+          identical(header_count, FALSE)){
       return(names(tbl_cnt))
     }
 
