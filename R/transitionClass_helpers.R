@@ -192,64 +192,86 @@ prTcPlotArrows <- function(trnstn_set,
 #'  transition matrix
 #' @keywords internal
 prTcValidateAndPrepClr <- function (value, transitions, tcObject) {
-  if (!is.matrix(value) ||
-        length(dim(value)) != length(dim(transitions)) ||
-        !all(dim(value) == dim(transitions))){
-    if (length(tcObject$getDim()) == 3){
-      if (length(value) == 1){
-        value <- array(value, dim = tcObject$getDim())
-      }else if (is.array(value)){
-        if (length(dim(value)) == 3){
-          if (dim(value)[3] != 2)
-            stop("The third dimension of the color matrix must be of length 2, reflecting the proportions.")
-          value <- abind(asub(value, 1, dims = 3)[rep(1:nrow(value), length.out = tcObject$noRows()),
-                                                  rep(1:ncol(value), length.out = tcObject$noCols())],
-                         asub(value, 2, dims = 3)[rep(1:nrow(value), length.out = tcObject$noRows()),
-                                                  rep(1:ncol(value), length.out = tcObject$noCols())],
-                         along = 3)
-        }else if (dim(value)[2] == 2){
-          value <- abind(value[rep(1:nrow(value), length.out = tcObject$noRows()),
-                               rep(1, length.out = tcObject$noCols())],
-                         value[rep(1:nrow(value), length.out = tcObject$noRows()),
-                               rep(2, length.out = tcObject$noCols())],
-                         along = 3)
-        }else{
-          stop("Could not interpret the provided color matrix")
-        }
-      }else if (length(value) == 2){
-        value <- abind(matrix(value[1], nrow = tcObject$noRows(), ncol=tcObject$noCols()),
-                       matrix(value[2], nrow = tcObject$noRows(), ncol=tcObject$noCols()),
-                       along = 3)
-      }else if (length(value) == tcObject$noCols()){
-        if (length(value) != tcObject$noRows()){
-          value <- matrix(value, nrow = tcObject$noRows(), ncol=tcObject$noCols(), byrow = TRUE)
-        }else{
-          value <- matrix(value, nrow = tcObject$noRows(), ncol=tcObject$noCols())
-        }
-      }else if (length(value) == tcObject$noCols()){
-        value <- matrix(value, nrow = tcObject$noRows(), ncol=tcObject$noCols(), byrow = TRUE)
-      }else{
-        stop("The provided colors do not seem to match either rows/columns of the matrix")
+  if (is.matrix(value) || is.vector(value)){
+    if (length(value) == 1){
+      clrs <- list(
+        rep(value, nrow(transitions[[1]]))
+      )
+      for (i in 1:length(transitions)){
+        clrs <-
+          c(clrs,
+            list(rep(value, ncol(transitions[[i]]))))
       }
     }else{
+      if (length(transitions) > 1)
+        stop("The colors have to be provided as a list if you have more than one",
+             " transition matrix")
       if (is.matrix(value)){
-        value <- value[rep(1:nrow(value), length.out = tcObject$noRows()),
-                       rep(1:ncol(value), length.out = tcObject$noCols())]
-      }else{
-        if (length(value) == 1){
-          value <- array(value, dim = tcObject$getDim())
-        }else if (length(value) == tcObject$noCols()){
-          if (length(value) != tcObject$noRows()){
-            value <- matrix(value, nrow = tcObject$noRows(), ncol=tcObject$noCols(), byrow = TRUE)
-          }else{
-            value <- matrix(value, nrow = tcObject$noRows(), ncol=tcObject$noCols())
-          }
-        }else if (length(value) == tcObject$noCols()){
-          value <- matrix(value, nrow = tcObject$noRows(), ncol=tcObject$noCols(), byrow = TRUE)
-        }else{
-          stop("The provided colors do not seem to match either rows/columns of the matrix")
+        if (!length(dim(value)) == length(dim(transitions[[1]])))
+          stop("The color matrix must match the transition matrix.",
+               " You have currently a dim of ",
+               paste(dim(value), collapse = ":"),
+               " while the transition matrix has a dim of",
+               paste(dim(transitions[[1]]), collapse = ":"),
+               " They have to be of the same length")
+        if (ncol(value) == 1){
+          value <- cbind(value, value)
+        }else if (ncol(value) != 2){
+          stop("Your color matrix has incorrect number of columns, 1 or 2 are allowed")
         }
+        if (nrow(value) != nrow(transitions[[1]]) ||
+            nrow(value) != ncol(transitions[[1]]))
+          stop("Your color matrix does not match the transition matrix",
+               " rows in value = ", nrow(value),
+               " rows in transition matrix = ", nrow(transitions[[1]]),
+               " cols in value = ", ncol(value),
+               " cols in transition matrix = ", ncol(transitions[[1]]))
+
+        value <- list(list(value[,1],
+                           value[,2]))
+      } else {
+        if (length(value) == 1){
+          value <- list(rep(value, nrow(transitions[[1]])),
+                        rep(value, ncol(transitions[[1]])))
+        }else if (length(value) == 2){
+          value <- list(rep(value[1], nrow(transitions[[1]])),
+                        rep(value[2], ncol(transitions[[1]])))
+        }else if (length(value) == 4){
+          if (length(dim(transitions[[1]])) != 3)
+            stop("Invalid color vector")
+          value <- list(
+            cbind(rep(value[1], nrow(transitions[[1]])),
+                  rep(value[2], nrow(transitions[[1]]))),
+            cbind(rep(value[3], ncol(transitions[[1]])),
+                  rep(value[4], ncol(transitions[[1]]))))
+        }else{
+          stop("Cannot interpret your color values")
+        }
+
       }
+    }
+  }
+
+  if (!is.list(value))
+    stop("Invalud color value")
+
+  if (length(value) != length(transitions) + 1)
+    stop("Invalid color length, got ", length(value), " expected ", length(transitions) + 1)
+
+  for (i in 1:length(value)){
+    if (is.matrix(value)){
+      if (length(dim(transitions[[t]])) != 3 ||
+          ncol(value[[i]]) != 2)
+        stop("Cannot have matrix in this use case,",
+             " the color matrix should be of two columns",
+             " if the corresponding transtion matrix has a third dimension")
+      if (nrow(value[[i]]) != tcObject$noRows(i))
+        stop("The colors don't match the transition object.",
+             " ", nrow(value[[i]]), "  != ", tcObject$noRows(i))
+    }else{
+      if (length(value[[i]]) != tcObject$noRows(i))
+        stop("The colors don't match the transition object.",
+             " ", length(value[[i]]), "  != ", tcObject$noRows(i))
     }
   }
 

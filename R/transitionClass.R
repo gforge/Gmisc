@@ -61,12 +61,7 @@ Transition <-
           stop("The dimensions of the transition matrix has to be between 2 and 3.",
                " This means that the stored transitions should have an additional dimension",
                " in order to allow for multiple transitions.")
-        if (ncol(value) != nrow(value))
-          stop("The transtion matrix has to be of equal number of rows and columns.",
-               " If a certain factor level is not present after the transition that level's",
-               " column should sum up to 0. You have provided '", nrow(value), "' rows",
-               " and '", ncol(value), "' columns.")
-        data$transitions <<- value
+        data$transitions <<- list(value)
       },
       box_width = function(value){
         if (missing(value))
@@ -91,17 +86,24 @@ Transition <-
         if (missing(value))
           return(data$box_txt)
 
-        if (NROW(value) != .self$noRows())
+        if (!is.list(box_txt))
+          stop("The box_txt has to be a list")
+
+        if (length(value) != length(transitions) + 1)
           stop("Your labels should match the number of rows within the transition matrix")
-        if (is.matrix(value) &&
-              ncol(value) > 1){
-          if (ncol(value) != .self$noCols())
-            stop("Your labels need to match the number of columns")
-        }else{
-          value <- matrix(value,
-                          nrow = .self$noRows(),
-                          ncol = .self$noCols())
+
+        if (length(value[[1]]) != nrow(transitions[[1]]))
+          stop("Your labels should match the number of rows within the transition matrix",
+               " This is not the case for the 1st column that is ", nrow(transitions[[1]]),
+               " and you've provided ", length(value[[1]]), " texts.")
+
+        for (i in 1:length(transitions)){
+          if (length(value[[i + 1]]) != ncol(transitions[[i]]))
+            stop("Your labels should match the number of rows within the transition matrix",
+                 " This is not the case for column no. ", i + 1, " that is ", ncol(transitions[[i]]),
+                 " and you've provided ", length(value[[i + 1]]), " texts.")
         }
+
         data$box_txt <<- value
       },
       box_label = function(value){
@@ -194,24 +196,51 @@ Transition <-
         if (missing(value)){
           if (!is.null(data$arrow_clr))
             return(data$arrow_clr)
-          clrs <- matrix("#000000", nrow = .self$noRows(), ncol = .self$noRows())
+          clrs <- list()
+          for (i in 1:length(transitions)){
+            clrs <- c(clrs,
+                      list(matrix("#000000",
+                                  nrow = nrow(transitions[[i]]),
+                                  ncol = ncol(transitions[[i]]))))
+          }
           return(clrs)
         }
 
-        if (is.matrix(value)){
-          if (!all(dim(value) != .self$getDim()))
+        if (is.matrix(value) && .self$noCols() == 2){
+          if (!all(dim(value) != transitions[[1]]))
             stop("If you provide an arrow color matrix it must have the same",
                  " rows and columns that your transition matrix has: ", paste(.self$getDim(), collapse="-"),
                  " You have provided a matrix of the dimensions: ", paste(dim(value), collapse="-"))
-        }else if (length(value) == 1){
-          value <- matrix(value, nrow = .self$noRows(), ncol = .self$noCols())
-        }else if (value == .self$noRows()){
-          value <- matrix(value,
-                          ncol = .self$noRows(),
-                          nrow = .self$noRows())
+          value <- list(value)
+        } else if (!is.list(value) &&
+                   length(value) == 1){
+          clrs <- list()
+          for (i in 1:length(transitions)){
+            clrs <- c(clrs,
+                      list(matrix(value,
+                                  nrow = nrow(transitions[[i]]),
+                                  ncol = ncol(transitions[[i]]))))
+          }
+          value <- clrs
+        }else if (is.vector(value) && .self$noCols() == 2){
+          if (length(value) != .self$noRows(1))
+            stop("Could not match the number of rows in the transition matrix")
+
+          value <- matrix(value, nrow = .self$noRows(1), ncol = .self$noRows(2))
+        } else if (is.list(value)){
+          if (length(value) != length(transitions))
+            stop("The list length for the arrow colors should match the no of transition matrices")
+
+          for (i in 1:length(transitions)){
+            if (nrow(value[[i]]) != nrow(transitions[[i]]))
+              stop("In the ", i, " transitions there is a row mismatch")
+
+            if (ncol(value[[i]]) != ncol(transitions[[i]]))
+              stop("In the ", i, " transitions there is a column mismatch")
+          }
         }else{
           stop("The color length '", length(value), "'",
-               " did not match rows ('", .self$noRows(), "')")
+               " could not be interpreted")
         }
 
         data$arrow_clr <<- value
@@ -476,11 +505,21 @@ Transition <-
         If you don't provide the txt field the box' text field will be deduced from the transition matrix'
         dimnames. The fill_clr and txt_clr are passed on to the \\code{addClr} function."
 
+        if (is.null(dimnames(mtrx)) ||
+            any(sapply(dimnames(mtrx), is.null)))
+          stop("Your transition matrix must have dimension names.",
+               " If you use table() for generating your transition matrix",
+               " it should automatically add the names.",
+               " This feature is for making sure that the names don't",
+               " accidentally differ between matrices.")
+
         if (length(transitions) > 0){
-          if (!is.null(attr(mtrx, "transition"))){
-            transitions <<- mtrx
-            return()
-          }else if(.self$noRows() !=
+#           if (!is.null(attr(mtrx, "transition"))){
+#             transitions <<- list(mtrx)
+#             return()
+#           }
+
+          if(.self$noRows("last") !=
                      nrow(mtrx)){
             stop("The number of elements within the new matrix must be equal to the previous matrix.",
                  " You have provided '", nrow(mtrx), "' elements",
@@ -491,23 +530,49 @@ Transition <-
                  " These two should be equal.")
           }
 
-          mtrx <- abind(transitions, mtrx, along = length(dim(mtrx)) + 1)
+          # Clean from empty rows/columns
+          empty_rows <- rowSums(mtrx) == 0
+          if (any(empty_rows)){
+            mtrx <- mtrx[!empty_rows,,drop=FALSE]
+          }
+          empty_cols <- colSums(mtrx) == 0
+          if (any(empty_cols)){
+            mtrx <- mtrx[!empty_cols,,drop=FALSE]
+          }
+
+          # The new matrix must match up to the previous
+          prev_match <-
+            rownames(mtrx) %in% colnames(transitions[[.self$noCols()]])
+          if (any(!prev_match))
+            stop("Could not find the names ",
+                 paste(rownames(mtrx)[!prev_match], collapse = ", "),
+                 " in the previous transition matrix' column names: ",
+                 paste(colnames(transitions[.self$noCols()]), collapse = ", "))
+
+          # Align the column order
+          prev_order <-
+            sapply(rownames(mtrx),
+                   function(n) which(n == colnames(transitions[[.self$noCols() - 1]])))
+          mtrx <- mtrx[order(prev_order),]
+
+          if (any(rowSums(mtrx) != colSums(transitions[[.self$noCols() - 1]])))
+
+          mtrx <- c(transitions, list(mtrx))
 
           raw_width <- convertUnit(box_width, unitTo = "npc", axisFrom = "x", axisTo = "x", valueOnly = TRUE)
           shrinkage <- (.self$noCols() * 2 - 1)/((.self$noCols() + 1) * 2 - 1)
           bw <- unit(raw_width * shrinkage, units = "npc")
         }else{
-          mtrx <- abind(mtrx, along = length(dim(mtrx)) + 1)
+          mtrx <- list(mtrx)
           bw <- unit(1/4, units = "npc")
         }
         attr(mtrx, "transition") <- TRUE
 
         transitions <<- mtrx
         box_width <<- bw
-        vertical_space <<- unit(.6/.self$noRows(), units = "npc")
 
         if (missing(label)){
-          label <- tail(dim(transitions), 1) + 1
+          label <- length(transitions)
           if (label == 2){
             label <- 1:2
           }
@@ -519,21 +584,69 @@ Transition <-
         }
 
         if (missing(txt)){
-          if (all(sapply(dimnames(mtrx), is.null))){
-            txt <- rep("", times = nrow(mtrx))
-          }else if (sum(!sapply(dimnames(mtrx)[1:2], is.null)) == 1){
-            txt <- dimnames(mtrx)[[which(!sapply(dimnames(mtrx)[1:2], is.null))]]
-          }else if (.self$noCols() == 2){
-            txt <- cbind(rownames(mtrx), colnames(mtrx))
+          if (.self$noCols() > 2){
+            txt <- colnames(transitions[[.self$.noCols() - 1]])
           }else{
-            txt <- colnames(mtrx)
+            txt <- list(
+              rownames(transitions[[1]]),
+              colnames(transitions[[1]]))
           }
-        }else if (NROW(txt) != NROW(mtrx)){
-          stop("You must provide the same number of txt as rows in the transition matrix")
+        }else{
+          # Prep txt argument
+          if (is.vector(txt)){
+            if (.self$noCols() == 2){
+              txt <- list(txt,
+                          txt)
+            }else{
+              txt <- list(txt)
+            }
+          }else if (is.matrix(txt)){
+            if (ncol(txt) == 1){
+              txt <- list(txt[,1])
+            }else if(ncol(txt) == 2){
+              if (.self$noCols() > 2){
+                stop("Can only have two txt columns if this is the first transition matrix")
+              }
+              txt <-
+                list(txt[,1],
+                     txt[,2])
+            }else{
+              stop("Invalid number of txt columns")
+            }
+          }
+
+          if (length(txt) == 1 &&
+              .self$noCols == 2){
+            txt <- rep(txt, 2)
+          }
+
+          # Validate txt argument
+          if (length(txt) == 1){
+            if (length(txt[[1]]) != .self$noRows("last"))
+              stop("You must provide the same number of txt as rows in the transition matrix.",
+                   " You've provided ", length(txt[[1]]), " rows for the new column",
+                   " while the function expects ", .self$noRows("last"), " rows.",
+                   " Note that empty rows have been removed.")
+          } else if (length(txt) == 2){
+            if (.self$noCols() > 2)
+              stop("After adding the first matrix you can only specify the new column's names")
+            if (length(txt[[1]]) != .self$noRows(1))
+              stop("You must provide the same number of txt as rows in the transition matrix.",
+                   " You've provided ", length(txt[[1]]), " rows for the left column",
+                   " while the function expects ", .self$noRows(1), " rows.",
+                   " Note that empty rows have been removed.")
+            if (length(txt[[2]]) != .self$noRows(2))
+              stop("You must provide the same number of txt as rows in the transition matrix.",
+                   " You've provided ", length(txt[[2]]), " rows for the right column",
+                   " while the function expects ", .self$noRows(2), " rows.",
+                   " Note that empty rows have been removed.")
+          }else{
+            stop("Invalid txt length")
+          }
         }
 
         if (.self$noCols() > 2){
-          box_txt <<- cbind(box_txt, txt)
+          box_txt <<- c(box_txt, txt)
         }else{
           box_txt <<- txt
         }
@@ -551,12 +664,10 @@ Transition <-
               no < 1)
           stop("You can only select transition sets ranging from 1 to ", .self$noCols() - 1)
 
-        set <- asub(transitions,
-                        idx = no,
-                        dims = length(.self$getDim()) + 1)
+        set <- transitions[[no]]
         if (reduce_dim &&
               length(dim(set)) == 3)
-          set <- set[,,1] + set[,,2]
+          set <- set[,,1,drop=FALSE] + set[,,2,drop=FALSE]
         return(set)
       },
       addClr = function(fill, txt){
@@ -654,15 +765,36 @@ Transition <-
       },
       getDim = function(){
         "Gets the current dimensions of the transitions"
-        return(dim(transitions)[-length(dim(transitions))])
+        return(dim(transitions[[1]]))
       },
-      noRows = function(){
-        "Gets the number of boxes in each row"
-        return(.self$getDim()[1])
+      noRows = function(no){
+        "Gets the number of boxes in each row.
+        If multiple rows the number of rows may differ
+        betwen each transition matrix we therefore need
+        to specify what transitions that we refer to.
+        If only one transition present it defaults to
+        that one."
+        if (missing(no)){
+          if(length(transitions) != 1)
+            stop("You have more than one transition matrix",
+                 " (", length(transitions) , ") ",
+                 "and you need to specify what matrix that",
+                 " you're interested in")
+
+            no <- 1
+        } else if (no == "last"){
+          no <- length(transitions)
+        } else if (!no %in% 1:length(transitions)){
+          stop("The requested transition matrix' ", no, " isn't present",
+               " among the available transitions 1:", length(transitions))
+
+        }
+
+        return(nrow(transitions[[no]]))
       },
       noCols = function(){
-        "Gets the number of columns"
-        return(tail(dim(transitions), 1) + 1)
+        "Gets the number of columns, i.e. the number of transitions"
+        return(length(transitions) + 1)
       },
       arrowWidths = function(set_no, add_width){
         "Retreives the details regarding arrow sizes for each arrow within the transition
