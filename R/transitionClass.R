@@ -272,8 +272,12 @@ Transition <-
         data$arrow_rez <<- value
       },
       vertical_space = function(value){
-        if (missing(value))
+        if (missing(value)){
+          if (is.null(data$vertical_space))
+            return(unit(.1, "npc"))
+
           return(data$vertical_space)
+        }
 
         if (!inherits(value, "unit") &&
               value >= 1 && value < 0)
@@ -540,7 +544,7 @@ Transition <-
                      nrow(mtrx)){
             stop("The number of elements within the new matrix must be equal to the previous matrix.",
                  " You have provided '", nrow(mtrx), "' elements",
-                 " while there are previously '", .self$noRows(), "' elements.")
+                 " while there are previously '", .self$noRows("last"), "' elements.")
           } else if(sum(.self$boxSizes("last") - rowSums(mtrx)) > .Machine$double.eps*10*nrow(mtrx)){
             stop("You have provided a transition matrix starting with the sizes ", prPasteVec(rowSums(mtrx)),
                  " while the previous transition matrix resulted in sizes ", prPasteVec(.self$boxSizes("last")), ".",
@@ -798,15 +802,15 @@ Transition <-
                                        valueOnly = TRUE)
         }
         arrows <- list()
-        for (org_row in 1:.self$noRows()){
+        for (org_row in 1:.self$noRows(set_no)){
           if (lwd_prop_type == "box"){
             max_flow <- max(trnstn_set[row,])
           }
 
           arrows[[org_row]] <-
-            lapply(1:.self$noRows(), function(x) list())
+            lapply(1:.self$noRows(set_no), function(x) list())
 
-          for (targ_row in 1:.self$noRows()){
+          for (targ_row in 1:.self$noRows(set_no)){
             # Calculate line width
             lwd <- raw_max_lwd*trnstn_set[org_row,targ_row]/max_flow
             if (lwd < raw_min_lwd){
@@ -1109,14 +1113,14 @@ Transition <-
         for (col in 1:.self$noCols()){
           proportions <- getYProps(col)
 
-          txt <- box_txt[,col]
+          txt <- box_txt[[col]]
           bx_pos <- .self$boxPositions(col)
 
           box_args <- list(box_positions = bx_pos,
                            proportions = as.vector(proportions),
-                           fill = rep(grey(level = .3), times = .self$noRows()),
-                           txt = rep("", times = .self$noRows()),
-                           txt_clr = rep(grey(level = .3), times = .self$noRows()),
+                           fill = rep(grey(level = .3), times = .self$noRows(col)),
+                           txt = rep("", times = .self$noRows(col)),
+                           txt_clr = rep(grey(level = .3), times = .self$noRows(col)),
                            cex = box_cex)
 
           seekViewport("shadows")
@@ -1136,7 +1140,7 @@ Transition <-
             prTcPlotArrows(trnstn_set,
                            widths = .self$arrowWidths(col),
                            type = arrow_type,
-                           clr = arrow_clr,
+                           clr = arrow_clr[[col]],
                            rez = arrow_rez,
                            origin_boxes = bx_pos,
                            target_boxes = .self$boxPositions(col + 1),
