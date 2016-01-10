@@ -161,7 +161,7 @@ Transition <-
             box_txt %>%
             unlist %>%
             as.vector %>%
-            lapply(function(x) strsplit(x, "\n")[[1]], USE.NAMES = FALSE) %>%
+            lapply(function(x) strsplit(x, "\n")[[1]]) %>%
             unlist %>%
             sapply(function(txt){
                      textGrob(label = txt, gp = gpar(cex = 1)) %>%
