@@ -8,7 +8,7 @@ names <-
   gsub("[,.]", " ", .)
 
 n <- 100
-data <-
+my_data <-
   data.frame(
     Binary = sample(c("Alt 1", "Alt 2"),
                  size = n,
@@ -29,6 +29,7 @@ data <-
                    replace = TRUE)
   )
 
-transitions <- table(data$Var_a, data$Var_b) %>%
+transitions <- with(my_data,
+                    table(Var_a, Var_b)) %>%
   getRefClass("Transition")$new(label=c("Var a", "Var b"))
 transitions$render()
