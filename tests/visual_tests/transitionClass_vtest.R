@@ -20,7 +20,7 @@ my_data <-
     Var_b = sample(names[4:7],
                    size = n,
                    replace = TRUE),
-    Var_c = sapply(8:16, function(x) paste(names[x*2 + 1:2],
+    Var_c = sapply(8:13, function(x) paste(names[x*2 + 1:2],
                                            collapse = " - ")) %>%
       sample(size = n,
              replace = TRUE),
@@ -32,4 +32,8 @@ my_data <-
 transitions <- with(my_data,
                     table(Var_a, Var_b)) %>%
   getRefClass("Transition")$new(label=c("Var a", "Var b"))
+
+with(my_data,
+     table(Var_b, Var_c)) %>%
+  transitions$addTransitions()
 transitions$render()
