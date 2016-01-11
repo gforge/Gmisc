@@ -93,8 +93,10 @@ Transition <-
         if (!is.list(value))
           stop("The value has to be a list")
 
-        if (length(value) != length(transitions) + 1)
-          stop("Your labels should match the number of rows within the transition matrix")
+        if (length(value) != .self$noCols())
+          stop("Your labels should match the number of rows within the transition matrix.",
+               " You have currently ", length(value), " sets of labels while there are ",
+               .self$noCols(), " columns")
 
         for (i in 1:length(value)){
           if (length(value[[i]]) != .self$noRows(i))
@@ -563,17 +565,17 @@ Transition <-
 
           # The new matrix must match up to the previous
           prev_match <-
-            rownames(mtrx) %in% colnames(transitions[[.self$noCols()]])
+            rownames(mtrx) %in% colnames(.self$getTransitionSet("last"))
           if (any(!prev_match))
             stop("Could not find the names ",
                  paste(rownames(mtrx)[!prev_match], collapse = ", "),
                  " in the previous transition matrix' column names: ",
-                 paste(colnames(transitions[[.self$noCols()]]), collapse = ", "))
+                 paste(colnames(.self$getTransitionSet("last")), collapse = ", "))
 
           # Align the column order
           prev_order <-
             sapply(rownames(mtrx),
-                   function(n) which(n == colnames(transitions[[.self$noCols() - 1]])))
+                   function(n) which(n == colnames(.self$getTransitionSet("last"))))
           mtrx <- mtrx[order(prev_order),]
 
           # Merge the two transitions
@@ -611,7 +613,7 @@ Transition <-
         # Next we add txt
         if (missing(txt)){
           if (.self$noCols() > 2){
-            txt <- colnames(transitions[[.self$.noCols() - 1]])
+            txt <- colnames(.self$getTransitionSet("last"))
           }else{
             txt <- list(
               rownames(transitions[[1]]),
@@ -643,7 +645,11 @@ Transition <-
               .self$noCols == 2){
             txt <- rep(txt, 2)
           }
+
         }
+
+        if (!is.list(txt))
+          txt <- list(txt)
 
         if (.self$noCols() > 2){
           box_txt <<- c(box_txt, txt)
