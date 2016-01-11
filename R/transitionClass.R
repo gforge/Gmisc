@@ -343,10 +343,10 @@ Transition <-
             return(data$clr_bar_clrs)
 
           if (.self$is3D()){
-            return(apply(asub(fill_clr, idx = 1, dims = 2), 2, unique))
+            return(fill_clr[[1]][1,])
           }
 
-          return(head(fill_clr, 1))
+          return(fill_clr[[1]][1])
         }
 
         data$clr_bar_clrs <<- value
@@ -357,10 +357,10 @@ Transition <-
             return(data$clr_bar_txt_clr)
 
           if (.self$is3D()){
-            return(apply(asub(txt_clr, idx = 1, dims = 2), 2, unique))
+            return(txt_clr[[1]][1,])
           }
 
-          return(rep(head(txt_clr, 1), length.out = 2))
+          return(rep(txt_clr[[1]][1], length.out = 2))
         }
 
         data$clr_bar_txt_clr <<- rep(value, length.out = 2)
