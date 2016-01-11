@@ -676,8 +676,10 @@ Transition <-
 
         set <- transitions[[no]]
         if (reduce_dim &&
-              length(dim(set)) == 3)
+              length(dim(set)) == 3){
           set <- set[,,1,drop=FALSE] + set[,,2,drop=FALSE]
+          set <- set[,,1]
+        }
         return(set)
       },
       addClr = function(fill, txt){
