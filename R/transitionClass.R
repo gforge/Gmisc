@@ -808,9 +808,9 @@ Transition <-
           }
 
           arrows[[org_row]] <-
-            lapply(1:.self$noRows(set_no), function(x) list())
+            lapply(1:.self$noRows(set_no + 1), function(x) list())
 
-          for (targ_row in 1:.self$noRows(set_no)){
+          for (targ_row in 1:.self$noRows(set_no + 1)){
             # Calculate line width
             lwd <- raw_max_lwd*trnstn_set[org_row,targ_row]/max_flow
             if (lwd < raw_min_lwd){
