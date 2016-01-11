@@ -209,12 +209,12 @@ prTcValidateAndPrepClr <- function (value, no_cols, no_rows, is3D) {
           value[[i]] <-
               rep(value[[i]], no_rows[i])
         }else{
-          stop("The number of colors don't match the transition object.",
-               " ", length(value[[i]]), "  != ", no_rows[i])
+          stop("The number of colors don't match the transition object for column no. ", i,
+               ": ", length(value[[i]]), "  != ", no_rows[i])
         }
       }else{
-        stop("The number of colors don't match the transition object.",
-             " ", length(value[[i]]), "  != ", no_rows[i])
+        stop("The number of colors don't match the transition object for column no. ", i,
+             ": ", length(value[[i]]), "  != ", no_rows[i])
       }
     }
   }
@@ -354,7 +354,9 @@ prTcMatchClr <- function(add, org, no_cols, no_rows, is3D){
   }
 
   if (missing(add)){
-    add <- tail(org, 1)
+    add <- tail(org, 1)[[1]] %>%
+      rep(length.out = tail(no_rows, 1)) %>%
+      list
   }else{
     if  (is.list(add)){
       if (length(add) != 1)
@@ -404,5 +406,5 @@ prTcMatchClr <- function(add, org, no_cols, no_rows, is3D){
       stop("Invalid color argument")
     }
   }
-  return(c(org, last))
+  return(c(org, add))
 }
