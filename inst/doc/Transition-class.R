@@ -49,7 +49,7 @@ for (i in 1:length(Ch_classes)){
     factor(levels = c("A", "B", "C"))
 }
 
-## ----, echo=FALSE--------------------------------------------------------
+## ---- echo=FALSE---------------------------------------------------------
 knitr::opts_chunk$set(dev.args = list(type="cairo"), 
                       message = FALSE, 
                       warnings = FALSE)
@@ -76,7 +76,7 @@ transitions$title <- "Charnley class in relation to THR"
 transitions$clr_bar <- "bottom"
 transitions$render()
 
-## ----, echo=FALSE--------------------------------------------------------
+## ---- echo=FALSE---------------------------------------------------------
 knitr::opts_chunk$set(fig.height = 5, fig.width=7)
 
 ## ------------------------------------------------------------------------
