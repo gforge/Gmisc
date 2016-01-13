@@ -114,7 +114,7 @@ Transition <-
         if (length(value) != .self$noCols())
           stop("You have provided '", length(value), "' box labels",
                " while there are '", .self$noCols(), "' columns that require a label.")
-        data$box_label <<- value
+        data$box_label <<- as.character(value)
       },
       box_label_pos = function(value = c("top","bottom")){
         if (missing(value)){
@@ -177,7 +177,7 @@ Transition <-
 
           min_height <- Inf
           for (col in 1:.self$noCols()){
-            proportions <- getYProps(col)
+            proportions <- .self$getYProps(col)
             proportions <- proportions[proportions > 0]
             min_height %<>%
               min(proportions)
@@ -555,12 +555,26 @@ Transition <-
 
           # Clean from empty rows/columns
           empty_rows <- rowSums(mtrx) == 0
-          if (any(empty_rows)){
-            mtrx <- mtrx[!empty_rows,,drop=FALSE]
-          }
           empty_cols <- colSums(mtrx) == 0
+          if (.self$is3D()){
+            # Merge 2D matrix into 1D-vector
+            empty_cols <- rowSums(!empty_cols) == 0
+            # This is not an issue with rows
+          }
+          if (any(empty_rows)){
+            if (.self$is3D()){
+              mtrx <- mtrx[!empty_rows,,,drop=FALSE]
+            }else{
+              mtrx <- mtrx[!empty_rows,,drop=FALSE]
+            }
+          }
+
           if (any(empty_cols)){
-            mtrx <- mtrx[!empty_cols,,drop=FALSE]
+            if (.self$is3D()){
+              mtrx <- mtrx[,!empty_cols,,drop=FALSE]
+            }else{
+              mtrx <- mtrx[,!empty_cols,drop=FALSE]
+            }
           }
 
           # The new matrix must match up to the previous
@@ -576,7 +590,11 @@ Transition <-
           prev_order <-
             sapply(rownames(mtrx),
                    function(n) which(n == colnames(.self$getTransitionSet("last"))))
-          mtrx <- mtrx[order(prev_order),]
+          if (.self$is3D()){
+            mtrx <- mtrx[order(prev_order),,]
+          }else{
+            mtrx <- mtrx[order(prev_order),]
+          }
 
           # Merge the two transitions
           mtrx <- c(transitions, list(mtrx))
@@ -1119,7 +1137,7 @@ Transition <-
 
 
         for (col in 1:.self$noCols()){
-          proportions <- getYProps(col)
+          proportions <- .self$getYProps(col)
 
           txt <- box_txt[[col]]
           bx_pos <- .self$boxPositions(col)

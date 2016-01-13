@@ -354,9 +354,17 @@ prTcMatchClr <- function(add, org, no_cols, no_rows, is3D){
   }
 
   if (missing(add)){
-    add <- tail(org, 1)[[1]] %>%
-      rep(length.out = tail(no_rows, 1)) %>%
-      list
+    if(is3D){
+      # Doesn't work with magrittr as expected
+      tmp <- tail(org, 1)[[1]]
+      add <-  cbind(rep(tmp[,1], length.out = tail(no_rows, 1)),
+                    rep(tmp[,2], length.out = tail(no_rows, 1)))
+      rm(tmp)
+    }else{
+      add <- tail(org, 1)[[1]] %>%
+        rep(length.out = tail(no_rows, 1))
+    }
+    add <- list(add)
   }else{
     if  (is.list(add)){
       if (length(add) != 1)
