@@ -79,7 +79,9 @@ requested the percentages are surpressed as this sometimes may be confusing.}
 \item{use_units}{If the Hmisc package's units() function has been employed
 it may be interesting to have a column at the far right that indicates the
 unit measurement. If this column is specified then the total column will
-appear before the units (if specified as last).}
+appear before the units (if specified as last). You can also set he value to
+\code{"name"} and the units will be added to the name as a parenthesis,
+e.g. Age (years).}
 
 \item{default_ref}{The default reference, either first,
 the level name or a number within the levels. If left out
