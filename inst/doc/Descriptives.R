@@ -1,4 +1,4 @@
-## ----, message=FALSE-----------------------------------------------------
+## ---- message=FALSE------------------------------------------------------
 data(mtcars)
 # For labelling we use the label()
 # function from the Hmisc package
@@ -76,7 +76,7 @@ mergeDesc(getTable1Stats(mtcars$mpg),
                                 caption  = "Basic descriptive statistics from the mtcars dataset",
                                 tfoot = "&dagger; The weight is in 10<sup>3</sup> kg"))
 
-## ----, warning=FALSE-----------------------------------------------------
+## ---- warning=FALSE------------------------------------------------------
 getTable1Stats <- function(x, digits = 0, ...){
   getDescriptionStatsBy(x = x, 
                         by = mtcars$am,
@@ -105,7 +105,7 @@ mergeDesc(t1,
             caption  = "Basic descriptive statistics from the mtcars dataset",
             tfoot = "&dagger; The weight is in 10<sup>3</sup> kg")
 
-## ----, warning=FALSE-----------------------------------------------------
+## ---- warning=FALSE------------------------------------------------------
 getTable1Stats <- function(x, digits = 0, ...){
   getDescriptionStatsBy(x = x, 
                         by = mtcars$am,

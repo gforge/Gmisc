@@ -4,7 +4,7 @@
 \alias{validateAndConvertVectorInputs}
 \title{Checks the input of a vector}
 \usage{
-validateAndConvertVectorInputs(x, y, x_origo = NA, y_origo = NA)
+validateAndConvertVectorInputs(x, y, x_origo, y_origo)
 }
 \arguments{
 \item{x}{The x point of the vector}

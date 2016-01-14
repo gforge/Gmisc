@@ -12,11 +12,25 @@
 getBezierAdj4Arrw <- function (x, y, arrow_length, length_out = 100) {
 
   org <- data.frame(x = x, y = y)
+  true_bezier <- gnrlBezierPoints(cbind(x, y), length_out = length_out)
+  true_bezier <- list(x = true_bezier[,1],
+                      y = true_bezier[,2])
+  true_bezier$distance <-
+    with(true_bezier,
+         sqrt((x - tail(x, 1))^2 + (y - tail(y, 1))^2))
+  if (missing(arrow_length) ||
+      arrow_length == 0){
+    return(structure(true_bezier,
+                     true_bezier = true_bezier,
+                     cut_point = NA,
+                     spline_ctrl = org))
+  }
+
   # The distance between the tail and the second last spline point is indicative
   # of how strong the adjustment should be
   spl_len <- sqrt((tail(x, 1) - tail(x, 2)[1])^2 +
                     (tail(y, 1) - tail(y, 2)[1])^2)
-  if (spl_len < arrow_length * 3){
+  if (spl_len < arrow_length * 3 || arrow_length == 0){
     mult <- 1
   }else{
     mult <- spl_len/arrow_length
@@ -32,13 +46,6 @@ getBezierAdj4Arrw <- function (x, y, arrow_length, length_out = 100) {
       mult <- spl_len/(arrow_length * 2)
     }
   }
-
-  true_bezier <- gnrlBezierPoints(cbind(x, y), length_out = length_out)
-  true_bezier <- list(x = true_bezier[,1],
-                      y = true_bezier[,2])
-  true_bezier$distance <-
-    with(true_bezier,
-         sqrt((x - tail(x, 1))^2 + (y - tail(y, 1))^2))
 
   cut_point <- which.min(abs(true_bezier$distance - arrow_length))
 
@@ -82,21 +89,22 @@ getBezierAdj4Arrw <- function (x, y, arrow_length, length_out = 100) {
 #'
 #' @keywords internal
 validateAndConvertVectorInputs <- function(x, y,
-  x_origo=NA, y_origo=NA){
+                                           x_origo, y_origo){
+  if (missing(x_origo) != missing(y_origo))
+    stop("You must specify both origo points!")
+
+  if (missing(x) || missing(y))
+    stop("You must specify both x and y points!")
+
   # Just som sanity input check
   if (class(y) != class(x))
     stop("The x and y point don't have the same class,",
       " should be either numeric or units.",
       " Currently you have provided y=", class(y), " & x=", class(x))
 
-  if (is.na(x_origo) != is.na(y_origo))
-    stop("You must specify both origo points!")
 
-  if (is.na(x) || is.na(y))
-    stop("You must specify both x and y points!")
-
-  if (is.na(x_origo)){
-    if ("unit" %in% class(y))
+  if (missing(x_origo)){
+    if (inherits(y, "unit"))
       y_origo <- x_origo <- unit(0, attr(y, "unit"))
     else
       x_origo <- y_origo <- 0
