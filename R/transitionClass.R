@@ -42,6 +42,7 @@
 #' @import abind
 #' @importFrom utils head tail
 #' @importFrom grDevices grey as.raster
+#' @example inst/examples/transitionClass_example.R
 #' @export
 Transition <-
   setRefClass(
