@@ -38,7 +38,7 @@
 #' @field data Internal storage variable. Should not be accessed directly.
 #'
 #' @import magrittr
-#' @importFrom methods setRefClass
+#' @importFrom methods setRefClass new
 #' @import abind
 #' @importFrom utils head tail
 #' @importFrom grDevices grey as.raster
