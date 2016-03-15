@@ -424,3 +424,43 @@ test_that("test header", {
                sprintf("\\(n = %d\\)",
                        sum(mtcars$am != levels(mtcars$am)[1])))
 })
+
+
+test_that("Test use_units", {
+  data(mtcars)
+  
+  mtcars$am <- factor(mtcars$am, levels=0:1, labels=c("Automatic", "Manual"))
+  Hmisc::label(mtcars$am) <- "Transmission"
+  set.seed(666)
+  units(mtcars$mpg) <- "mpg"
+  
+  out1 <- getDescriptionStatsBy(
+    x=mtcars$mpg,
+    by=mtcars$am,
+    header_count = TRUE,
+    add_total_col = TRUE,
+    statistics = TRUE
+  )
+
+  out2 <- getDescriptionStatsBy(
+    x=mtcars$mpg,
+    by=mtcars$am,
+    use_units = TRUE,
+    header_count = TRUE,
+    add_total_col = TRUE,
+    statistics = TRUE
+  )
+  
+  expect_equal(ncol(out1) + 1, ncol(out2))
+
+  out3 <- getDescriptionStatsBy(
+    x=mtcars$mpg,
+    by=mtcars$am,
+    use_units = "name",
+    header_count = TRUE,
+    add_total_col = TRUE,
+    statistics = TRUE
+  )
+  expect_match(label(out3), "\\(mpg\\)")
+  expect_false(grepl("\\(mpg\\)", label(out2)))
+})

@@ -464,28 +464,24 @@ getDescriptionStatsBy <- function(x,
     }
   }
 
-  if (use_units){
-    if(is.logical(use_units)){
-      if (units(x) != ""){
-        unitcol <- rep(sprintf("%s",units(x)), times=NROW(results))
-        unitcol[rownames(results) == "Missing"] <- ""
-      }else{
-        unitcol <- rep("", times=NROW(results))
-      }
-      if (length(unitcol) != nrow(results)){
-        stop("There is an discrepancy in the number of rows in the units",
-             " and the by results: ", length(unitcol), " units vs ", nrow(results), " results",
-             "\n Units:", paste(unitcol, collapse=", "),
-             "\n Rows results:", paste(rownames(results), collapse=", "))
-      }
-      results <- cbind(results, unitcol)
-      cn <- c(cn, "units")
-    }else if(use_units == "name"){
-      if (units(x) != ""){
-        name <- sprintf("%s (%s)", name, units(x))
-      }
+  if (isTRUE(use_units)){
+    if (units(x) != ""){
+      unitcol <- rep(sprintf("%s",units(x)), times=NROW(results))
+      unitcol[rownames(results) == "Missing"] <- ""
     }else{
-      stop("The units use suggested has not yet been implemented, only logical or 'name' are.")
+      unitcol <- rep("", times=NROW(results))
+    }
+    if (length(unitcol) != nrow(results)){
+      stop("There is an discrepancy in the number of rows in the units",
+           " and the by results: ", length(unitcol), " units vs ", nrow(results), " results",
+           "\n Units:", paste(unitcol, collapse=", "),
+           "\n Rows results:", paste(rownames(results), collapse=", "))
+    }
+    results <- cbind(results, unitcol)
+    cn <- c(cn, "units")
+  }else if(use_units == "name"){
+    if (units(x) != ""){
+      name <- sprintf("%s (%s)", name, units(x))
     }
   }
 
