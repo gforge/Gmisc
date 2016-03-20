@@ -4,14 +4,16 @@
 \alias{prTcValidateAndPrepClr}
 \title{Checks and prepares colors}
 \usage{
-prTcValidateAndPrepClr(value, transitions, tcObject)
+prTcValidateAndPrepClr(value, no_cols, no_rows, is3D)
 }
 \arguments{
 \item{value}{The color values}
 
-\item{transitions}{The transition matrix}
+\item{no_cols}{The no. of columns in the transition matrix}
 
-\item{tcObject}{The Transtion-object}
+\item{no_rows}{All the row counts in the transition plot}
+
+\item{is3D}{Whether the transition matrix has 3 dimensions}
 }
 \value{
 \code{matrix} Returns a matrix of the same size as the

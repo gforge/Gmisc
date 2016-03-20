@@ -379,3 +379,88 @@ test_that("Error when a factor variable has an empty level", {
   expect_match(ret["B","2"],
                sprintf("^%d", sum(variable[by == 2] == "B", na.rm=TRUE)))
 })
+
+
+test_that("test header", {
+  data(mtcars)
+
+  mtcars$am <- factor(mtcars$am, levels=0:1, labels=c("Automatic", "Manual"))
+  Hmisc::label(mtcars$am) <- "Transmission"
+  set.seed(666)
+  mtcars$col <- factor(sample(c("red", "black", "silver"),
+                              size=NROW(mtcars), replace=TRUE))
+
+  out <- getDescriptionStatsBy(
+    x=mtcars$col,
+    by=mtcars$am,
+    header_count = TRUE,
+    add_total_col = TRUE,
+    statistics = TRUE
+  )
+  expect_match(colnames(out)[1],
+               sprintf("No. %d", nrow(mtcars)))
+  expect_match(colnames(out)[2],
+               sprintf("No. %d",
+                       sum(mtcars$am == levels(mtcars$am)[1])))
+  expect_match(colnames(out)[3],
+               sprintf("No. %d",
+                       sum(mtcars$am != levels(mtcars$am)[1])))
+
+
+  out <- getDescriptionStatsBy(
+    x=mtcars$col,
+    by=mtcars$am,
+    header_count = "(n = %s)",   # custom header
+    add_total_col = TRUE,
+    statistics = TRUE
+  )
+
+  expect_match(colnames(out)[1],
+               sprintf("\\(n = %d\\)", nrow(mtcars)))
+  expect_match(colnames(out)[2],
+               sprintf("\\(n = %d\\)",
+                       sum(mtcars$am == levels(mtcars$am)[1])))
+  expect_match(colnames(out)[3],
+               sprintf("\\(n = %d\\)",
+                       sum(mtcars$am != levels(mtcars$am)[1])))
+})
+
+
+test_that("Test use_units", {
+  data(mtcars)
+  
+  mtcars$am <- factor(mtcars$am, levels=0:1, labels=c("Automatic", "Manual"))
+  Hmisc::label(mtcars$am) <- "Transmission"
+  set.seed(666)
+  units(mtcars$mpg) <- "mpg"
+  
+  out1 <- getDescriptionStatsBy(
+    x=mtcars$mpg,
+    by=mtcars$am,
+    header_count = TRUE,
+    add_total_col = TRUE,
+    statistics = TRUE
+  )
+
+  out2 <- getDescriptionStatsBy(
+    x=mtcars$mpg,
+    by=mtcars$am,
+    use_units = TRUE,
+    header_count = TRUE,
+    add_total_col = TRUE,
+    statistics = TRUE
+  )
+  
+  expect_equal(ncol(out1) + 1, ncol(out2))
+
+  out3 <- getDescriptionStatsBy(
+    x=mtcars$mpg,
+    by=mtcars$am,
+    use_units = "name",
+    header_count = TRUE,
+    add_total_col = TRUE,
+    statistics = TRUE
+  )
+  expect_match(label(out3), "\\(mpg\\)")
+  expect_false(grepl("\\(mpg\\)", label(out2)))
+})

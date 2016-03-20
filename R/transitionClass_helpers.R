@@ -186,72 +186,233 @@ prTcPlotArrows <- function(trnstn_set,
 #' matrix.
 #'
 #' @param value The color values
-#' @param transitions The transition matrix
-#' @param tcObject The Transtion-object
+#' @inheritParams prTcMatchClr
 #' @return \code{matrix} Returns a matrix of the same size as the
 #'  transition matrix
 #' @keywords internal
-prTcValidateAndPrepClr <- function (value, transitions, tcObject) {
-  if (!is.matrix(value) ||
-        length(dim(value)) != length(dim(transitions)) ||
-        !all(dim(value) == dim(transitions))){
-    if (length(tcObject$getDim()) == 3){
-      if (length(value) == 1){
-        value <- array(value, dim = tcObject$getDim())
-      }else if (is.array(value)){
-        if (length(dim(value)) == 3){
-          if (dim(value)[3] != 2)
-            stop("The third dimension of the color matrix must be of length 2, reflecting the proportions.")
-          value <- abind(asub(value, 1, dims = 3)[rep(1:nrow(value), length.out = tcObject$noRows()),
-                                                  rep(1:ncol(value), length.out = tcObject$noCols())],
-                         asub(value, 2, dims = 3)[rep(1:nrow(value), length.out = tcObject$noRows()),
-                                                  rep(1:ncol(value), length.out = tcObject$noCols())],
-                         along = 3)
-        }else if (dim(value)[2] == 2){
-          value <- abind(value[rep(1:nrow(value), length.out = tcObject$noRows()),
-                               rep(1, length.out = tcObject$noCols())],
-                         value[rep(1:nrow(value), length.out = tcObject$noRows()),
-                               rep(2, length.out = tcObject$noCols())],
-                         along = 3)
+prTcValidateAndPrepClr <- function (value, no_cols, no_rows, is3D) {
+  if (!is.list(value))
+    stop("Invalid color value. Expecting a list with a vector/matrix matching the no rows in each column")
+
+  if (length(value) != no_cols)
+    stop("Invalid color length, got ", length(value), " expected ", no_cols)
+
+  for (i in 1:length(value)){
+    if (NROW(value[[i]]) != no_rows[i]){
+      if (NROW(value[[i]]) == 1){
+        if(is.matrix(value[[i]]) &&
+           NCOL(value[[i]]) <= 2 &&
+           is3D){
+          value[[i]] <-
+            matrix(value[[i]], nrow = no_rows[i], ncol = 2, byrow = TRUE)
+        }else if (length(value[[i]]) == 1){
+          value[[i]] <-
+              rep(value[[i]], no_rows[i])
         }else{
-          stop("Could not interpret the provided color matrix")
+          stop("The number of colors don't match the transition object for column no. ", i,
+               ": ", length(value[[i]]), "  != ", no_rows[i])
         }
-      }else if (length(value) == 2){
-        value <- abind(matrix(value[1], nrow = tcObject$noRows(), ncol=tcObject$noCols()),
-                       matrix(value[2], nrow = tcObject$noRows(), ncol=tcObject$noCols()),
-                       along = 3)
-      }else if (length(value) == tcObject$noCols()){
-        if (length(value) != tcObject$noRows()){
-          value <- matrix(value, nrow = tcObject$noRows(), ncol=tcObject$noCols(), byrow = TRUE)
-        }else{
-          value <- matrix(value, nrow = tcObject$noRows(), ncol=tcObject$noCols())
-        }
-      }else if (length(value) == tcObject$noCols()){
-        value <- matrix(value, nrow = tcObject$noRows(), ncol=tcObject$noCols(), byrow = TRUE)
       }else{
-        stop("The provided colors do not seem to match either rows/columns of the matrix")
-      }
-    }else{
-      if (is.matrix(value)){
-        value <- value[rep(1:nrow(value), length.out = tcObject$noRows()),
-                       rep(1:ncol(value), length.out = tcObject$noCols())]
-      }else{
-        if (length(value) == 1){
-          value <- array(value, dim = tcObject$getDim())
-        }else if (length(value) == tcObject$noCols()){
-          if (length(value) != tcObject$noRows()){
-            value <- matrix(value, nrow = tcObject$noRows(), ncol=tcObject$noCols(), byrow = TRUE)
-          }else{
-            value <- matrix(value, nrow = tcObject$noRows(), ncol=tcObject$noCols())
-          }
-        }else if (length(value) == tcObject$noCols()){
-          value <- matrix(value, nrow = tcObject$noRows(), ncol=tcObject$noCols(), byrow = TRUE)
-        }else{
-          stop("The provided colors do not seem to match either rows/columns of the matrix")
-        }
+        stop("The number of colors don't match the transition object for column no. ", i,
+             ": ", length(value[[i]]), "  != ", no_rows[i])
       }
     }
   }
 
   return(value)
+}
+
+#' Finds the matching colors for the new addition based on the original set
+#' of colors
+#'
+#' @param add The colors that we want to add
+#' @param org The original colors
+#' @param no_cols The no. of columns in the transition matrix
+#' @param no_rows All the row counts in the transition plot
+#' @param is3D Whether the transition matrix has 3 dimensions
+#' @return A list with colors that is appropriate for the transition object
+#' @keywords internal
+prTcMatchClr <- function(add, org, no_cols, no_rows, is3D){
+  if (no_cols == 2){
+    if (missing(add) &&
+        length(org) == 2)
+      return(org)
+
+    if  (is.list(add)){
+      if (length(add) == 1){
+        add <- rep(add, 2)
+      }else if (length(add) != 2){
+        stop("Invalid color list - expecting a list with 2 columns",
+             " got one with ", length(add), " columns")
+      }
+    }else if (is.matrix(add)){
+      if (ncol(add) == 2){
+        if (is3D){
+          add <- rep(list(add), 2)
+        }else{
+          add <- list(add[,1],
+                      add[,2])
+        }
+      }else if (ncol(add) == 4 && is3D){
+        add <- list(add[,1:2],
+                    add[,3:4])
+      }else if (ncol(add) == 1){
+        if (length(add) == 2){
+          if (is3D){
+            add <-
+              list(cbind(rep(add[1,], no_rows[1]),
+                         rep(add[2,], no_rows[1])),
+                   cbind(rep(add[1,], no_rows[2]),
+                         rep(add[2,], no_rows[2])))
+          }else{
+            add <-
+              list(rep(add[1,], no_rows[1]),
+                   rep(add[2,], no_rows[2]))
+          }
+        }else if (length(add) == 1){
+          if (is3D){
+            add <-
+              list(cbind(matrix(add[1,],
+                                nrow = no_rows[1],
+                                ncol = 2)),
+                   cbind(matrix(add[1,],
+                                nrow = no_rows[1],
+                                ncol = 2)))
+          }else{
+            add <-
+              list(rep(add[1,], no_rows[1]),
+                   rep(add[1,], no_rows[2]))
+          }
+        }else{
+          stop("Invalid color argument")
+        }
+      }
+    }else if(is.vector(add)){
+      if (length(add) == 2 &&
+          is3D){
+        add <-
+          list(cbind(rep(add[1], no_rows[1]),
+                     rep(add[2], no_rows[1])),
+               cbind(rep(add[1], no_rows[2]),
+                     rep(add[2], no_rows[2])))
+      }else if (length(add) == 1){
+        if (is3D){
+          add <-
+            list(matrix(add,
+                        nrow = no_rows[1],
+                        ncol = 2),
+                 matrix(add,
+                        nrow = no_rows[2],
+                        ncol = 2))
+        }else{
+          add <-
+            list(rep(add, no_rows[1]),
+                 rep(add, no_rows[2]))
+        }
+      }else{
+        add <- list(add)
+      }
+    }else{
+      stop("Invalid color argument")
+    }
+
+    # If this is the initial value then simply use the default colors
+    return(add)
+  }
+
+  # We need to handle the situation where a color is
+  # added and the colors are already of the same dimension
+  # as the transition matrix. This means that either we
+  # switch entire matrix if the new colors have the correct
+  # dimenension but otherwise we stick with the old colors
+  if (all(length(org) == no_cols)){
+    if (missing(add))
+      return(org)
+    # If the add is equal in dimentions to the target
+    # dimentions then the reasonable way to go is to substitute
+    # all colors
+    if (is.matrix(add)){
+      if(ncol(add) != no_cols ||
+         any(nrow(add) != unique(no_rows)) ||
+         ((length(dim(add)) == 3) == is3D))
+        stop("Can't add the color matrix as suggested since the dimensions don't match")
+
+      clrs <- list()
+      for (i in 1:ncol(add)){
+        if (is3D){
+          clrs <- c(clrs, list(add[,i,]))
+        }else{
+          clrs <- c(clrs, list(add[,i]))
+        }
+      }
+      return(clrs)
+    }else if(is.list(add) &&
+             length(add) != length(no_cols))
+      stop("The list is not of the same length as the number of columns")
+
+    return(org)
+  }
+
+  if (missing(add)){
+    if(is3D){
+      # Doesn't work with magrittr as expected
+      tmp <- tail(org, 1)[[1]]
+      add <-  cbind(rep(tmp[,1], length.out = tail(no_rows, 1)),
+                    rep(tmp[,2], length.out = tail(no_rows, 1)))
+      rm(tmp)
+    }else{
+      add <- tail(org, 1)[[1]] %>%
+        rep(length.out = tail(no_rows, 1))
+    }
+    add <- list(add)
+  }else{
+    if  (is.list(add)){
+      if (length(add) != 1)
+        stop("Invalid color list - expecting a list with 1 column",
+             " got one with ", length(add), " columns")
+    }else if (is.matrix(add)){
+      if (ncol(add) == 2 &&
+          is3D){
+        add <- list(add)
+      }else if (ncol(add) == 1 &&
+                !is3D){
+        add <-
+          list(add[,1])
+      }else if (length(add) == 1){
+        if (is3D){
+          add <-
+            list(cbind(matrix(add[1,],
+                              nrow = tail(no_rows, 1),
+                              ncol = 2)))
+        }else{
+          add <-
+            list(rep(add[1,], tail(no_rows, 1)))
+        }
+      }else{
+        stop("Invalid matrix color argument")
+      }
+    }else if(is.vector(add)){
+      if (length(add) == 2 &&
+          is3D){
+        add <-
+          list(cbind(rep(add[1], tail(no_rows, 1)),
+                     rep(add[2], tail(no_rows, 1))))
+      }else if (length(add) == 1){
+        if (is3D){
+          add <-
+            list(matrix(add,
+                        nrow = tail(no_rows, 1),
+                        ncol = 2))
+        }else{
+          add <-
+            list(rep(add, tail(no_rows, 1)))
+        }
+      }else{
+        add <- list(add)
+      }
+    }else{
+      stop("Invalid color argument")
+    }
+  }
+  return(c(org, add))
 }

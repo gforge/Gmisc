@@ -72,7 +72,9 @@
 #' @param use_units If the Hmisc package's units() function has been employed
 #'  it may be interesting to have a column at the far right that indicates the
 #'  unit measurement. If this column is specified then the total column will
-#'  appear before the units (if specified as last).
+#'  appear before the units (if specified as last). You can also set he value to
+#'  \code{"name"} and the units will be added to the name as a parenthesis,
+#'  e.g. Age (years).
 #' @param percentage_sign If you want to surpress the percentage sign you
 #'  can set this variable to FALSE. You can also choose something else that
 #'  the default \% if you so wish by setting this variable.
@@ -336,12 +338,15 @@ getDescriptionStatsBy <- function(x,
             useNA.digits = useNA.digits,
             default_ref = default_ref, percentage_sign = percentage_sign)
 
-    # Set the rowname to a special format
-    # if there was missing and this is an matrix
-    # then we should avoid using this format
-    name <- sprintf("%s %s",
-                    capitalize(levels(x)[default_ref]),
-                    tolower(label(x)))
+    # Check that we're dealing with only one row
+    if (unique(sapply(t, length)) == 1)
+      # Set the rowname to a special format
+      # if there was missing and this is an matrix
+      # then we should avoid using this format
+      name <- sprintf("%s %s",
+                      capitalize(levels(x)[default_ref]),
+                      tolower(name))
+
     if (NEJMstyle) {
       # LaTeX needs and escape before %
       # or it marks the rest of the line as
@@ -385,8 +390,7 @@ getDescriptionStatsBy <- function(x,
 
   getHeader <- function (tbl_cnt, header_count, html) {
     if (missing(header_count) ||
-          (!is.character(header_count) &&
-                           !header_count)){
+          identical(header_count, FALSE)){
       return(names(tbl_cnt))
     }
 
@@ -460,7 +464,7 @@ getDescriptionStatsBy <- function(x,
     }
   }
 
-  if (use_units){
+  if (isTRUE(use_units)){
     if (units(x) != ""){
       unitcol <- rep(sprintf("%s",units(x)), times=NROW(results))
       unitcol[rownames(results) == "Missing"] <- ""
@@ -475,6 +479,10 @@ getDescriptionStatsBy <- function(x,
     }
     results <- cbind(results, unitcol)
     cn <- c(cn, "units")
+  }else if(use_units == "name"){
+    if (units(x) != ""){
+      name <- sprintf("%s (%s)", name, units(x))
+    }
   }
 
   if (is.function(statistics)){
