@@ -38,6 +38,7 @@
 #' describeMean(c(1:10, NA), useNA="no")
 #'
 #' @family descriptive functions
+#' @importFrom stats sd
 #' @export
 describeMean <- function(x,
                          html = TRUE,
@@ -122,6 +123,7 @@ describeMean <- function(x,
 #' describeMedian(c(1:10, NA), useNA="ifany")
 #'
 #' @family descriptive functions
+#' @importFrom stats median quantile
 #' @export
 describeMedian <- function(x,
                            iqr = TRUE,

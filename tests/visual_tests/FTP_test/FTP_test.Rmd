@@ -1,0 +1,148 @@
+---
+title: "Test"
+author: "MG"
+output:
+  Gmisc::docx_document:
+    fig_caption: true
+    remove_scripts: false
+---
+
+```{r Data_prep, echo=FALSE, message=FALSE, warning=FALSE}
+# Moved this outside the document for easy of reading
+# I often have those sections in here
+source("Setup_and_munge.R")
+```
+
+```{r Versions}
+info <- sessionInfo()
+r_ver <- paste(info$R.version$major, info$R.version$minor, sep=".")
+```
+
+All analyses were performed using R (ver. `r r_ver`)[R Core Team, 2013] and packages rms (ver. `r info$otherPkgs$rms$Version`) [F. Harrell, 2014] for analysis, Gmisc for plot and table output (ver. `r info$otherPkgs$Gmisc$Version`), and knitr (ver `r info$otherPkgs$knitr$Version`) [Xie, 2013] for reproducible research.
+
+Results
+=======
+
+We found `r nrow(melanoma)` patients with malignant melanoma between the years `r paste(range(melanoma$year), collapse=" and ")`. Patients were followed until the end of 1977, the median follow-up time was `r sprintf("%.1f", median(melanoma$time_years))` years (range `r paste(sprintf("%.1f", range(melanoma$time_years)), collapse=" to ")` years). Males were more common than females and had also a higher mortality rate.
+
+```{r Table1, results='asis', cache=FALSE}
+table_data <- list()
+getT1Stat <- function(varname, digits=0){
+  getDescriptionStatsBy(melanoma[, varname], melanoma$status, 
+                        add_total_col=TRUE,
+                        show_all_values=TRUE, 
+                        hrzl_prop=TRUE,
+                        statistics=FALSE, 
+                        html=TRUE, 
+                        digits=digits)
+}
+
+# Get the basic stats
+table_data[["Sex"]] <- getT1Stat("sex")
+table_data[["Age<sup>&dagger;</sup>"]] <- getT1Stat("age")
+table_data[["Ulceration"]] <- getT1Stat("ulcer")
+table_data[["Thickness<sup>&Dagger;</sup>"]] <- getT1Stat("thickness", digits=1)
+
+# Now merge everything into a matrix
+# and create the rgroup & n.rgroup variabels
+rgroup <- c()
+n.rgroup <- c()
+output_data <- NULL
+for (varlabel in names(table_data)){
+  output_data <- rbind(output_data, table_data[[varlabel]])
+  rgroup <- c(rgroup, varlabel)
+  n.rgroup <- c(n.rgroup, nrow(table_data[[varlabel]]))
+}
+
+# Add a column spanner for the death columns
+cgroup <- c("", "Death")
+n.cgroup <- c(2, 2)
+colnames(output_data) <- gsub("[ ]*death", "", colnames(output_data))
+
+htmlTable(output_data, align="rrrr",
+          rgroup=rgroup, n.rgroup=n.rgroup, 
+          rgroupCSSseparator="", 
+          cgroup = cgroup,
+          n.cgroup = n.cgroup,
+          rowlabel="", 
+          caption="Baseline characteristics", 
+          tfoot="<sup>&dagger;</sup> Age at the time of surgery. <br/><sup>&Dagger;</sup> Tumour thicknes, also known as Breslow thickness, measured in mm.", 
+          ctable=TRUE)
+```
+
+Main results
+------------
+
+```{r C_and_A, results='asis'}
+label(melanoma$sex) <- "Sex"
+label(melanoma$age) <- "Age"
+label(melanoma$ulcer) <- "Ulceration"
+label(melanoma$thickness) <- "Breslow thickness"
+
+# Setup needed for the rms coxph wrapper
+ddist <- datadist(melanoma)
+options(datadist = "ddist")
+
+# Do the cox regression model 
+# for melanoma specific death
+msurv <- Surv(melanoma$time_years, melanoma$status=="Melanoma death")
+fit <- cph(msurv ~ sex + age + ulcer + thickness, data=melanoma)
+
+# Print the model
+printCrudeAndAdjustedModel(fit, desc_digits=0,
+                           caption="Adjusted and unadjusted estimates for melanoma specific death.",
+                           desc_column=TRUE,
+                           add_references=TRUE, 
+                           ctable=TRUE)
+
+pvalues <- 
+  1 - pchisq(coef(fit)^2/diag(vcov(fit)), df=1)
+```
+
+After adjusting for the three variables, age, sex, tumor thickness and ulceration, only the latter two remained significant (p-value `r pvalueFormatter(pvalues["ulcer=Present"], sig.limit=10^-3)` and `r pvalueFormatter(pvalues["thickness"], sig.limit=10^-3)`), see table `r as.numeric(options("table_counter"))-1` and figure I.
+
+```{r Regression_forestplot, fig.height=3, fig.width=5, fig.cap="A forest plot comparing the regression coefficients."}
+# I've adjusted the coefficient for age to be by 
+forestplotRegrObj(update(fit, .~.-age+I(age/10)), 
+                  order.regexps=c("Female", "age", "ulc", "thi"),
+                  box.default.size=.25, xlog=TRUE,
+                  new_page=TRUE, clip=c(.5, 6), rowname.fn=function(x){
+  if (grepl("Female", x))
+    return("Female")
+  
+  if (grepl("Present", x))
+    return("Ulceration")
+  
+  if (grepl("age", x))
+    return("Age/10 years")
+
+  return(capitalize(x))
+})
+```
+
+There was no strong indication for non-linearity for any of the continuous variables although the impact of thickness did seem to lessen above 4 mm, see figure II.
+
+
+```{r spline_plot, fig.cap=plotHR_cap}
+plotHR_cap = paste0("The adjusted and unadjusted restricted cubic spline",
+                    " for tumor thickness. Solid line and confidence interval",
+                    " indicate the adjusted line while the dashed is",
+                    " the unadjusted line. The grey area at ",
+                    " the bottom indicates the density.")
+# Generate adjusted and anuadjusted regression models
+rcs_fit <- update(fit, .~.-thickness+rcs(thickness, 3))
+rcs_fit_ua <- update(fit, .~+rcs(thickness, 3))
+
+# Make sure the axes stay at the exact intended points
+par(xaxs="i", yaxs="i")
+plotHR(list(rcs_fit, rcs_fit_ua), col.dens="#00000033",
+       lty.term=c(1, 2),
+       col.term=c("blue", "#444444"), 
+       col.se = c("#0000FF44", "grey"),
+       polygon_ci=c(TRUE, FALSE),
+       term="thickness", 
+       xlab="Thickness (mm)", 
+       ylim=c(.1, 4), xlim=c(min(melanoma$thickness), 4), 
+       plot.bty="l", y.ticks=c(.1, .25, .5, 1, 2, 4))
+legend(x=.1, y=1.1, legend=c("Adjusted", "Unadjusted"), fill=c("blue", "grey"), bty="n")
+```

@@ -1,15 +1,13 @@
 Package: Gmisc
 Version: 1.2.1
-Date: 2015-06-30
+Date: 2016-03-18
 Title: Descriptive Statistics, Transition Plots, and More
 Author: Max Gordon <max@gforge.se>
 Maintainer: Max Gordon <max@gforge.se>
-Description:
-   Tools for making the descriptive "Table 1" used in medical articles,
-   a transition plot for showing changes between categories,
-   a method for variable selection based on the SVD,
-   Bézier lines with arrows complementing the ones in the 'grid' package,
-   and more.
+Description: Tools for making the descriptive "Table 1" used in medical
+    articles, a transition plot for showing changes between categories, a method for
+    variable selection based on the SVD, Bézier lines with arrows complementing the
+    ones in the 'grid' package, and more.
 License: GPL (>= 3)
 URL: http://gforge.se
 BugReports: https://github.com/gforge/Gmisc/issues
@@ -19,13 +17,19 @@ Depends:
     htmlTable (>= 1.1)
 Imports:
     grid,
+    grDevices,
+    graphics,
     lattice,
     Hmisc,
     forestplot,
     abind,
     methods,
     knitr,
-    magrittr
+    magrittr,
+    rmarkdown,
+    XML,
+    utils,
+    stats
 Suggests:
     testthat
 Roxygen: list(wrap = FALSE)
@@ -33,3 +37,4 @@ Encoding: UTF-8
 NeedsCompilation: no
 VignetteBuilder: knitr
 LinkingTo: Rcpp
+RoxygenNote: 5.0.1

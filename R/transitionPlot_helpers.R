@@ -240,7 +240,7 @@ prTpPlotArrows <- function(type,
         x_ctrl_points[4] <- x_ctrl_points[4]-.00075*adjusted_lwd
         grid.bezier(x=x_ctrl_points,
                     y=y_ctrl_points,
-                    gp=gpar(lwd=adjusted_lwd, fill=current_arrow_clr),
+                    gp=gpar(lwd=adjusted_lwd, fill=current_arrow_clr, col=current_arrow_clr),
                     arrow=arrow(type="closed", angle=a_angle, length=unit(a_l, "npc")))
 
       }else{
@@ -474,6 +474,7 @@ prTpPlotBoxes <- function (overlap_order,
 #' @return \code{list(top, left, bottom, right, width, height)}
 #'
 #' @inheritParams transitionPlot
+#' @importFrom utils head tail
 #' @keywords internal
 prTpGetBoxPositions <- function (no, side,
                                  transitions,
@@ -584,6 +585,7 @@ prTpGetBoxPositions <- function (no, side,
 #' @return \code{character} The function can return both single colors
 #'  or multiple colors as character vector (see \code{\link[grDevices]{rgb}})
 #'
+#' @importFrom utils tail
 #' @keywords internal
 prTpGetColors <- function(colors, proportion, space = NULL, no = 101){
   start <- c()

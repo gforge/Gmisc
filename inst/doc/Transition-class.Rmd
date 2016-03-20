@@ -103,8 +103,8 @@ transitions$box_label_pos <- "bottom"
 transitions$render()
 ```
 
-Adding a third dimension
-------------------------
+## Adding a third dimension
+
 
 Underlying proportions can be visualized by splitting the box colors and blending the colors in the gradient arrows. The color blend is explained in the colorbar element at the bottom:
 

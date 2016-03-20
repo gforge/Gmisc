@@ -33,6 +33,7 @@
 #' @return \code{matrix} Returns a matrix object of class descList
 #' @export
 #' @example inst/examples/getDescriptionStatsBy_example.R
+#' @importFrom utils tail
 #' @family table functions
 mergeDesc <- function(..., htmlTable_args = list(css.rgroup = "")){
   tlist <- list()

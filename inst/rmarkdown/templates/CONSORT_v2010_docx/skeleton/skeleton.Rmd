@@ -1,0 +1,120 @@
+---
+title: "CONSORT-Statement checklist"
+lang: en
+output:
+  Gmisc::docx_document:
+    fig_caption: true
+---
+
+```{r "Load libraries", echo=FALSE, message=FALSE, warning=FALSE}
+library(Gmisc)
+```
+
+```{r "Load data"}
+
+```
+
+```{r "Munge data"}
+
+```
+
+# Abstract
+1a  Identification as a randomised trial in the title  
+1b	Structured summary of trial design, methods, results, and conclusions (for specific guidance see CONSORT for abstracts)  
+
+# Introduction
+
+## Background/rationale
+Scientific background and explanation of rationale
+
+## Objectives	
+Specific objectives or hypotheses
+
+# Methods
+
+## Trial design
+Description of trial design (such as parallel, factorial) including allocation ratio  
+Important changes to methods after trial commencement (such as eligibility criteria), with reasons  
+
+## Participants	
+Eligibility criteria for participants  
+Settings and locations where the data were collected  
+
+## Interventions
+The interventions for each group with sufficient details to allow replication, including how and when they were actually administered
+
+## Outcomes
+Completely defined pre-specified primary and secondary outcome measures, including how and when they were assessed  
+Any changes to trial outcomes after the trial commenced, with reasons  
+
+## Sample size
+How sample size was determined  
+When applicable, explanation of any interim analyses and stopping guidelines
+
+## Randomisation:		
+
+### Sequence generation
+Method used to generate the random allocation sequence  
+Type of randomisation; details of any restriction (such as blocking and block size)  
+
+### Allocation concealment mechanism
+Mechanism used to implement the random allocation sequence (such as sequentially numbered containers), describing any steps taken to conceal the sequence until interventions were assigned
+
+### Implementation
+Who generated the random allocation sequence, who enrolled participants, and who assigned participants to interventions
+
+## Blinding	
+If done, who was blinded after assignment to interventions (for example, participants, care providers, those assessing outcomes) and how  
+If relevant, description of the similarity of interventions
+
+## Statistical methods
+Statistical methods used to compare groups for primary and secondary outcomes  
+Methods for additional analyses, such as subgroup analyses and adjusted analyses  
+
+# Results
+
+## Participant flow (a diagram is strongly recommended)
+For each group, the numbers of participants who were randomly assigned, received intended treatment, and were analysed for the primary outcome  
+For each group, losses and exclusions after randomisation, together with reasons  
+
+## Recruitment
+Dates defining the periods of recruitment and follow-up  
+Why the trial ended or was stopped
+
+## Baseline data
+A table showing baseline demographic and clinical characteristics for each group
+
+## Numbers analysed
+For each group, number of participants (denominator) included in each analysis and whether the analysis was by original assigned groups
+
+## Outcomes and estimation
+For each primary and secondary outcome, results for each group, and the estimated effect size and its precision (such as 95% confidence interval)  
+For binary outcomes, presentation of both absolute and relative effect sizes is recommended
+
+## Ancillary analyses
+Results of any other analyses performed, including subgroup analyses and adjusted analyses, distinguishing pre-specified from exploratory
+
+## Harms
+All important harms or unintended effects in each group (for specific guidance see CONSORT for harms)
+
+# Discussion
+## Limitations
+Trial limitations, addressing sources of potential bias, imprecision, and, if relevant, multiplicity of analyses
+
+## Generalisability
+Generalisability (external validity, applicability) of the trial findings
+
+## Interpretation
+Interpretation consistent with results, balancing benefits and harms, and considering other relevant evidence
+
+# Other information
+
+## Registration
+Registration number and name of trial registry
+
+## Protocol
+Where the full trial protocol can be accessed, if available
+
+## Funding
+Sources of funding and other support (such as supply of drugs), role of funders
+

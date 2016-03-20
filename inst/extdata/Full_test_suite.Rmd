@@ -1,0 +1,181 @@
+---
+title: Document
+output:
+  Gmisc::docx_document:
+    fig_caption: true
+    force_captions: true
+---
+
+# Header 1
+
+Test with header 1
+
+Second paragraph
+
+## Header 2
+
+Test with header 2
+
+Second paragraph
+
+### Header 3
+
+Test with header 3
+
+Second paragraph
+
+#### Header 4
+
+Test with header 4
+
+Second paragraph
+
+##### Header 5
+
+Test with header 5
+
+Second paragraph
+
+###### Header 6
+
+Test with header 6
+
+Second paragraph
+
+# Tables
+
+```{r htmlTable, results='asis', echo=FALSE, message=FALSE}
+set.seed(1)
+library(Gmisc)
+
+f <- function(...) sample(..., 100, replace = TRUE)
+data <- data.frame(age = rpois(100, 50),
+                   cat_var = f(LETTERS[1:5]),
+                   sex = f(c('Male','Female')),
+                   race = f(c('Black','White','Asian')),
+                   treat = factor(f(1:3),
+                                  # The factor helps arranging the order
+                                  labels=c('Treatment A', 'Treatment B', 'Placebo')))
+
+
+getT1stat <- function(varname, digits = 0) {
+  getDescriptionStatsBy(data[ , varname],
+                        data$treat,
+                        add_total_col = TRUE, 
+                        show_all_values = TRUE,
+                        hrzl_prop = FALSE,
+                        statistics = FALSE,
+                        html = TRUE,
+                        digits = digits,
+                        continuous_fn = describeMedian)
+}
+
+
+## table 1 stats
+table_data <- list()
+table_data[['Age']] <- getT1stat('age')
+table_data[['Some categorical<br />&nbsp;&nbsp;variable']] <- getT1stat('cat_var')
+table_data[['Sex']] <- getT1stat('sex')
+table_data[['Race']] <- getT1stat('race')
+
+## combine into matrix
+output_data <- do.call(rbind, table_data)
+rgroup <- names(table_data)
+n.rgroup <- unname(sapply(rgroup, function(x) nrow(table_data[[x]])))
+
+# add a column spanner for the status columns
+cgroup <- c("", "Type of treatment<sup>&dagger;</sup>")
+n.cgroup <- c(1, 3) 
+colnames(output_data) <-
+  c(paste0('Total<br />\n',
+           '<span style="weight = normal; font-size: .6em;">',
+            'n = ', nrow(data),
+           '</span>'),
+    paste0('Treated A<br />\n',
+           '<span style="weight = normal; font-size: .6em;">',
+            'n = ', sum(data$treat == 'Treatment A'),
+           '</span>'),
+    paste0('Treatment B&Dagger;<br />\n',
+           '<span style="weight = normal; font-size: .6em;">',
+            'n = ', sum(data$treat == 'Treatment B'),
+           '</span>'),
+    paste0('Placebo<br />',
+           '<span style="weight = normal; font-size: .6em;">',
+            'n = ', sum(data$treat == 'Placebo'),
+           '</span>'))
+
+
+htmlTable(output_data, align = 'rccc',
+          rgroup = rgroup, n.rgroup = n.rgroup,
+          css.rgroup.sep = '',
+          col.rgroup = c('white','lightblue1'),
+          cgroup = cgroup,
+          n.cgroup = n.cgroup,
+          tspanner=c("Base", "Other"),
+          n.tspanner=c(sum(sapply(table_data, nrow)[1:2]),
+                       sum(sapply(table_data, nrow)[3:4])),
+          rowlabel = '',
+          ctable = TRUE, # latex-style table lines
+          caption = "Table 1: Patient demographics",
+          tfoot = paste0(
+            '<span style="font-size: .6em;">',
+              'Abbreviations:',
+              ' ECOG, Eastern Cooperative Oncology Group;',
+              ' PS, performance score',
+            '</span><br />\n',
+            '<span style="font-size: .6em;">',
+              '<sup>&dagger;</sup>',
+              ' Note 1. Trial groups for a new wonder drug</span><br />\n',
+            '<span style="font-size: .6em;">',
+              '<sup>&Dagger;</sup>',
+              ' Note 2. Twice the dosage of treatment A',
+            '</span>'),
+          useViewer=FALSE)
+```
+
+# Graph tests
+
+Basic plot:
+
+```{r Basic_graph}
+plot(cars)
+```
+
+Height, width, and caption:
+
+```{r Height_width_caption, fig.width=3, fig.height=3, fig.cap="Test: Height, width, and caption"}
+plot(cars)
+```
+
+Height, width, caption, and dpi:
+
+```{r Height_width_caption_dpi, fig.width=3, fig.height=3, dpi=300, fig.cap="Test: Height, width, caption, and dpi"}
+plot(cars)
+```
+
+
+Height, width, caption, dpi, out.height, out.width:
+
+```{r Height_width_caption_dpi_out.height_out.width, out.height=288, out.width=288, fig.width=3, fig.height=3, dpi=300, fig.cap="Test: Height, width, caption, dpi, out.height, out.width"}
+plot(cars)
+```
+
+# Formula tests
+
+$$y=X\beta$$
+
+$$\sum_{n}^{i=1}{x_i+1}$$
+
+$$\frac{a}{(\sum_{n}^{i=1}{x_i+1})+k}$$
+
+# Highlighting of code
+
+```{r Highlighting, echo=TRUE}
+a <- "Some text"
+b <- 2
+c <- b + 1234
+d <- function(x){
+  print(x)
+}
+```
+

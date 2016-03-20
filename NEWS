@@ -3,10 +3,12 @@ NEWS for the Gmisc package
 Changes for 1.2.1
 -----------------
 * The total column is now also passed through the txtInt function
+* Fixed header_count bug in getDescriptionStatsBy - thanks rvlevitin (iss#13)
 
 Changes for 1.2
------------------
-* Fixed header_count bug in getDescriptionStatsBy - thanks rvlevitin (iss#13)
+---------------
+* Merged with the Grmd-package allowing direct access to the docx_document()
+* Prepared for stricter requirements for R 3.3
 
 Changes for 1.1
 -----------------

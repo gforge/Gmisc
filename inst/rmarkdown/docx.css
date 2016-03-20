@@ -1,0 +1,205 @@
+/* Set the main font to Calibri, same
+   as My Word 2010 uses. Also set the
+   default font size to 11pt.
+
+   The maximum width to 35em enhances
+   readability through optimal line
+   length. Note: this setting is ignored
+   by Word/Libre Office*/
+body  {
+   font-family: Calibri;
+   font-size: 11pt;
+   background-color: white;
+   padding-top: 1em;
+   margin: auto;
+   max-width: 40em; /* Body */
+}
+
+/* Note that no math currently gets imported into
+   Word or LibreOffice - I recommend going with LaTeX
+   if you need to have formulas */
+.MathJax span {
+font-size: 13pt;
+}
+
+/* Set the paragraph margin and
+   padding to 0 except for the bottom */
+p {
+  padding: 0;
+  margin: 0pt 0pt 10pt 0pt;
+}
+
+.caption {
+  font-family: Calibri;
+  font-size: 9pt;
+  font-weight: 900;
+  margin: 0pt 0pt 10pt 0pt;
+  color: #4F81BD;
+}
+
+/* Center the table and add top/bottom margins */
+table{
+  margin: auto;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  border: none;
+}
+
+/* The tr padding/margin 0 is important for table
+   import, while the font needs to be specified as
+   font and not font-family/font-size due to limiations
+   in Libre Office */
+td, tr{
+  font: 10pt Arial;
+  padding: 0px;
+  margin: 0px;
+}
+
+/* The cell should have a little space to easy reading
+   although this section is mostly ignored by the
+   Libre Office import */
+td {
+  padding: 4px;
+  padding-bottom: 2px;
+}
+
+/* Set the headings to correspond to Word-style */
+h1, h2, h3, h4, h5, h6 {
+  margin: 10pt 0pt 0pt 0pt;
+  font-family: Cambria;
+  font-weight: bold;
+  font-style: normal;
+
+}
+
+/* h1 has a slightly larger top margins
+   so we re-set that from the other*/
+h1 {
+  margin: 24pt 0pt 0pt 0pt;
+  font-size: 14pt;
+  color: #365F91;
+}
+
+
+h2, h3, h3, h4 {
+  color: #4F81BD;
+
+}
+h2 {
+  font-size: 13pt;
+}
+
+h3 {
+  font-size: 11pt;
+}
+
+h4 {
+  font-size: 11pt;
+  font-style: italic;
+}
+
+h5, h6 {
+  color: #243F5D;
+}
+
+h5 {
+  font-size: 11pt;
+  font-weight: normal;
+}
+
+h6 {
+  font-size: 11pt;
+  font-weight: normal;
+  font-style: italic;
+}
+
+/* The following sections are mostly
+   unrelated to Word/Libre Office imports */
+tt, code, pre {
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+
+a:visited {
+   color: rgb(50%, 0%, 50%);
+}
+
+pre {
+   margin-top: 0;
+   max-width: 95%;
+   border: 1px solid #ccc;
+   white-space: pre-wrap;
+}
+
+pre code {
+   display: block; padding: 0.5em;
+}
+
+code.r, code.cpp {
+   background-color: #F8F8F8;
+}
+
+blockquote {
+   color:#666666;
+   margin:0;
+   padding-left: 1em;
+   border-left: 0.5em #EEE solid;
+}
+
+hr {
+   height: 0px;
+   border-bottom: none;
+   border-top-width: thin;
+   border-top-style: dotted;
+   border-top-color: #999999;
+}
+
+@media print {
+   * {
+      background: transparent !important;
+      color: black !important;
+      filter: none !important;
+      -ms-filter: none !important;
+   }
+
+   body {
+      font-size:11pt;
+      max-width:100%;
+   }
+
+   a, a:visited {
+      text-decoration: underline;
+   }
+
+   hr {
+      visibility: hidden;
+      page-break-before: always;
+   }
+
+   pre, blockquote {
+      padding-right: 1em;
+      page-break-inside: avoid;
+   }
+
+   tr, img {
+      page-break-inside: avoid;
+   }
+
+   img {
+      max-width: 100% !important;
+   }
+
+   @page {
+      margin-top: 2cm;
+      margin-bottom: 1.5cm;
+      margin-left: 3cm;
+      margin-right: 3cm;
+   }
+
+   p, h2, h3 {
+      orphans: 3; widows: 3;
+   }
+
+   h2, h3 {
+      page-break-after: avoid;
+   }
+}
