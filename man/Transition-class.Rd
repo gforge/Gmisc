@@ -114,9 +114,13 @@ between the boxes}
 \item{\code{initialize(transitions, label, txt, fill_clr, txt_clr, ...)}}{Set up a Transition object. The \code{transitions} should be a 2D or 3D matrix
 as defined in the \code{$addTransitions} section and not as later internally stored.}
 
-\item{\code{noCols()}}{Gets the number of columns}
+\item{\code{noCols()}}{Gets the number of columns, i.e. the number of transitions}
 
-\item{\code{noRows()}}{Gets the number of boxes in each row}
+\item{\code{noRows(no)}}{Gets the number of boxes in each row.
+If multiple rows the number of rows may differ
+betwen each transition matrix we therefore need
+to specify what transitions that we refer to.
+If no value is specified it returns all of them.}
 
 \item{\code{render(new_page = TRUE)}}{Call this to render the full graph. The \code{new_page} argument
 is for creating a new plot, set this to \code{FALSE}
@@ -127,4 +131,32 @@ additional viewports that you intend to use.}
 it also adds an attribute \code{attr('props', prop_mtrx)} that
 is a 2D matrix with the corresponding proportions.}
 }}
+\examples{
+# Transitions
+set.seed(1)
+n <- 10
+my_data <-
+  data.frame(
+    Var_a = sample(c("Test 1",
+                     "Test 2",
+                     "Test 3"),
+                   size = n,
+                   replace = TRUE,
+                   prob = 3:1),
+    Var_b = sample(c("Test 1",
+                     "Test 2",
+                     "Test 3"),
+                   size = n,
+                   replace = TRUE,
+                   prob = 1:3))
+mtrx <- with(my_data,
+             table(Var_a, Var_b))
+
+# Initialize the transition plot
+transitions <-
+  getRefClass("Transition")$new(mtrx, label=c("Before", "After"))
+
+# Render the plot
+transitions$render()
+}
 
