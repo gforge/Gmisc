@@ -1,4 +1,4 @@
-# This file contains all the helper funcitons that the outer exported
+# This file contains all the helper functions that the outer exported
 # functions utilize. I try to have a pr at the start of the name for all
 # the private functions.
 #
@@ -78,10 +78,10 @@ prGetStatistics <- function(x,
 }
 
 
-#' A functuon for converting a show_missing variable.
+#' A function for converting a show_missing variable.
 #'
-#' The variable is suppose to be directly compatible with
-#' \code{\link[base]{table}}(..., useNA=show_missing). It throughs an error
+#' The variable is supposed to be directly compatible with
+#' \code{\link[base]{table}}(..., useNA=show_missing). It throws an error
 #' if not compatible. \emph{Deprecated:} This function will be deprecated
 #' as all functions now use the useNA style in order to comply
 #' with standard R naming.
@@ -232,7 +232,7 @@ prPushMarginViewport <- function(bottom, left, top, right, name="margin"){
 #' @param base_cex The base cex used for the plot
 #' @param cex_mult The multiplier of the base - i.e. the increase of the
 #'  text size for the title as compared to the general
-#' @param fontface The type of fontfacte
+#' @param fontface The type of fontface
 #' @param space_below The space below, defaults to 1/5 of the title height
 #' @return \code{NULL} The function does not return a value
 #'
