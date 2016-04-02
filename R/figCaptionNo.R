@@ -83,7 +83,7 @@ figCapNoLast <- function(roman = getOption("fig_caption_no_roman",
   if (is.logical(last_no) ||
         is.null(last_no)){
     stop("You cannot call the get last figure number",
-         " when there has been no prior figure registerd.",
+         " when there has been no prior figure registered.",
          " In other words, you need to call the fiCapNo()",
          " on a figure before you call this function.",
          " If you want the next number then call figCapNoNext()",
@@ -116,7 +116,7 @@ figCapNoNext <- function(roman = getOption("fig_caption_no_roman",
     if (last_no == FALSE)
       stop("You cannot call the get last figure number",
            " when you have explicitly set the fig_cap_no",
-           " option to false.")
+           " option to FALSE.")
     last_no <- 0
 
   }else if (is.null(last_no)){
