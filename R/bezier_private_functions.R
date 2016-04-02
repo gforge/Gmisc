@@ -37,7 +37,7 @@ getBezierAdj4Arrw <- function (x, y, arrow_length, length_out = 100) {
   }
 
   if (length(x) >= 4){
-    # The strength of the previous elmnt is also of importance
+    # The strength of the previous element is also of importance
     # A weak second element will cause the line to be more dependent
     # on the first element
     scnd_spl_len <- sqrt((tail(x, 3)[1] - tail(x, 4)[1])^2 +
@@ -118,7 +118,7 @@ validateAndConvertVectorInputs <- function(x, y,
 
   if (class(y) != class(y_origo))
     stop("The angle won't make any sense if your x and y point",
-      " doesn't have the same unit as the origo x and y point.",
+      " don't have the same unit as the origo x and y point.",
       " Currently you have provided point class=", class(y),
       " & origo class=", class(y_origo))
 
