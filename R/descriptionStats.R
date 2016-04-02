@@ -84,7 +84,7 @@ describeMean <- function(x,
 
   if (useNA %in% c("ifany", "always") & sum(is.na(x))>0){
     ret <- rbind(ret,
-                 prDescGetMissing(x = x,
+                 descGetMissing(x = x,
                                   html = html,
                                   number_first = number_first,
                                   percentage_sign = percentage_sign,
@@ -166,7 +166,7 @@ describeMedian <- function(x,
 
   if (useNA %in% c("ifany", "always") & sum(is.na(x))>0){
     ret <- rbind(ret,
-                 prDescGetMissing(x = x,
+                 descGetMissing(x = x,
                                   html = html,
                                   number_first = number_first,
                                   percentage_sign = percentage_sign,

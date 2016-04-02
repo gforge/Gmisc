@@ -138,37 +138,6 @@ prDescGetAndValidateDefaultRef <- function(x, default_ref){
   return(default_ref)
 }
 
-
-#' Gets missing stats
-#'
-#' Gets the missing row for \code{\link{describeMean}}
-#' and \code{\link{describeMedian}}.
-#'
-#' @inheritParams describeMean
-#' @return \code{vector} A vector with the missing estimate
-#' @keywords internal
-prDescGetMissing <- function (x,
-                              html,
-                              number_first,
-                              percentage_sign,
-                              language,
-                              useNA.digits,
-                              dot_args) {
-  df_arg_list <- list(x = is.na(x),
-                      html = html,
-                      number_first = number_first,
-                      percentage_sign=percentage_sign,
-                      language = language,
-                      digits = useNA.digits)
-  for (n in names(dot_args)){
-    if (!n %in% names(df_arg_list)){
-      df_arg_list[[n]] <- dot_args[[n]]
-    }
-  }
-  missing <- fastDoCall(describeFactors, df_arg_list)
-  return(missing["TRUE", ])
-}
-
 #' Pushes viewport with margins
 #'
 #' A \code{\link[grid]{grid.layout}} object is used to
