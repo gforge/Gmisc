@@ -2,7 +2,7 @@
 % Please edit documentation in R/docx_document.R
 \name{prCaptionFix}
 \alias{prCaptionFix}
-\title{Fixes the caption back fro elements withou}
+\title{Fixes the caption for elements without caption}
 \usage{
 prCaptionFix(outFile)
 }
@@ -13,7 +13,7 @@ prCaptionFix(outFile)
 outFile The name of the file
 }
 \description{
-Fixes the caption back fro elements withou
+Fixes the caption for elements without caption
 }
 \keyword{internal}
 

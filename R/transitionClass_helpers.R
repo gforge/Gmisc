@@ -45,7 +45,7 @@ prTcPlotBoxColumn <- function(box_positions,
 #' @param type The type of arrow to be used
 #' @param widths The arrow widths
 #' @param clr The arrow colors (a matrix)
-#' @param rez The arrow rezolution
+#' @param rez The arrow resolution
 #' @param min_width The minimum line width
 #' @param max_width The maximum line width
 #' @param add_width Adds a certain width - useful for background arrows

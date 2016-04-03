@@ -52,8 +52,8 @@ function.}
 A string formatted for printing either latex by  HTML
 }
 \description{
-A function that returns a description proportion in a
-factir that contains the number of times a variable and the percentage
+A function that returns a description of proportions in a
+factor that contains the number of times a level occurs and the percentage
 }
 \examples{
 set.seed(1)

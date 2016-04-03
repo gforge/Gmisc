@@ -13,7 +13,7 @@ forestplot2(...)
 \item{...}{Parameters to be passed to the new version of the function}
 }
 \description{
-The \code{forestplot2} has move to \pkg{forestplot} package and changed name to \code{\link[forestplot]{forestplot}}
+The \code{forestplot2} has moved to \pkg{forestplot} package and changed name to \code{\link[forestplot]{forestplot}}
 }
 \keyword{internal}
 

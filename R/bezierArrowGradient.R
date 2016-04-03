@@ -17,7 +17,7 @@
 #'  (1) the central band,
 #'  (2) the slimming of the central band,
 #'  (3) the color shift into the arrow color.
-#'  \emph{Note} that the the slimmin and color proportions can be overlapping.
+#'  \emph{Note} that the the slimming and color proportions can be overlapping.
 #' @param grdt_decrease_prop The proportion of the gradient that should be decreasing,
 #'  i.e. narrowing according to the \code{grdt_type} argument.
 #' @param grdt_clr_prop The proportion of the gradient that should be converging to the arrow color.

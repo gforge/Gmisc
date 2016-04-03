@@ -11,7 +11,7 @@ prTpPlotArrows(type, box_row, transition_flow, max_flow, min_lwd, max_lwd, clr,
 \arguments{
 \item{type}{The type of arrow used}
 
-\item{box_row}{Which box do the arrow originate from}
+\item{box_row}{Which box do the arrows originate from}
 
 \item{max_flow}{The largest transition flow}
 
