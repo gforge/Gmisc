@@ -34,7 +34,7 @@ take two arguments and return a p-value (numeric, non-formatted)
 \section{getPvalWilcox}{
 
 
-Performs a two-sample two-sided Wilcoxon tests (also known as the Mann-Whitney test),
+Performs a two-sample two-sided Wilcoxon test (also known as the Mann-Whitney test),
 see \code{\link[stats]{wilcox.test}}.
 }
 

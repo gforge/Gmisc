@@ -33,7 +33,7 @@ as it is no longer faster than the bezierArrows and there is a difference in des
 
 \item{\code{arrow_clr}}{The arrow color}
 
-\item{\code{arrow_rez}}{The rezolution of the arrow}
+\item{\code{arrow_rez}}{The resolution of the arrow}
 
 \item{\code{vertical_space}}{The space between the boxes}
 
@@ -45,7 +45,7 @@ as it is no longer faster than the bezierArrows and there is a difference in des
 
 \item{\code{clr_bar_cex}}{The size of the ticks in the color bar}
 
-\item{\code{clr_bar_subspace}}{If there is little or no difference exists at the low/high proportions of
+\item{\code{clr_bar_subspace}}{If little or no difference exists at the low/high proportions of
 the spectrum then it can be of interest to focus the color change to the center leaving the tails constant}
 
 \item{\code{clr_bar_labels}}{The labels of the color bars. Defaults to the dimnames for the proportions.}
@@ -83,7 +83,7 @@ values from the previous last column will be used for the default columns.}
 If you don't provide the txt field the box' text field will be deduced from the transition matrix'
 dimnames. The fill_clr and txt_clr are passed on to the \code{addClr} function.}
 
-\item{\code{arrowWidths(set_no, add_width)}}{Retreives the details regarding arrow sizes for each arrow within the transition
+\item{\code{arrowWidths(set_no, add_width)}}{Retrieves the details regarding arrow sizes for each arrow within the transition
 group}
 
 \item{\code{boxPositions(col)}}{The box positions as a list with scalars for the positions:
@@ -99,8 +99,8 @@ group}
  \item \emph{unit} The unit used for the values (npc)
 }}
 
-\item{\code{boxSizes(col)}}{Gets the size of the boxes. The \code{col} argumente shoud
-is either an integer or 'last'}
+\item{\code{boxSizes(col)}}{Gets the size of the boxes. The \code{col} argument should
+be either an integer or 'last'}
 
 \item{\code{getDim()}}{Gets the current dimensions of the transitions}
 

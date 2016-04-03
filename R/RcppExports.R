@@ -20,9 +20,9 @@
 #'
 #'  When the line is wide and the arrow has a narrow curve there may appear an empty triangle due
 #'  to polygon cancellation (two polygons within the same are cancel out). This behaviour may be
-#'  ugly and the function therefore tries to remove these.
+#'  ugly and the function therefor tries to remove these.
 #'
-#'  \emph{Note:} it is expensive to check if there are lines that may intersect at one point,
+#'  \emph{Note:} it is expensive to check if there are the lineas may intersect at one point,
 #'  remove those unexpected, and then adjust the line to the new situation so that the
 #'  top and bottom lines match. It can also cause some unexpected behaviour why you may want to
 #'  remove this feature if the arrow behaves erratically.

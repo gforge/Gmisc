@@ -44,7 +44,7 @@ to the left}
 to the right}
 
 \item{box_prop}{If you want the boxes to have proportions indicating some other factors then input
-a matrix with quantiles for the proportions. Note the size mus be \code{nrow(transition_flow) x 2}.}
+a matrix with quantiles for the proportions. Note the size must be \code{nrow(transition_flow) x 2}.}
 
 \item{lwd_prop_total}{The width of the lines may be proportional to either the
 other flows from that box, or they may be related to all flows. This is a boolean
@@ -55,11 +55,11 @@ parameter that is set to true by default, i.e. relating to all flows.}
 \item{fill_end_clr}{The color of the boxes to the right}
 
 \item{txt_start_clr}{The text color of the start boxes. This can either
-be a single value ore a vector if you desire different colors for each
+be a single value or a vector if you desire different colors for each
 box. If you specify box_prop then this has to be a 2 column matrix.}
 
 \item{txt_end_clr}{The text color of the end boxes. This can either
-be a single value ore a vector if you desire different colors for each
+be a single value or a vector if you desire different colors for each
 box. If you specify box_prop then this has to be a 2 column matrix.}
 
 \item{lwd}{The line width}
@@ -96,7 +96,7 @@ left boxes)}
 \item{transition_arrow_props}{The proportions of the different transitions if
 available.}
 
-\item{color_bar_subspace}{If there is little or no difference exists
+\item{color_bar_subspace}{If there is little or no difference
 at the low/high proportions of the spectrum then it
 can be of interest to focus the color change to the center
 leaving the tails constant}

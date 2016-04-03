@@ -44,19 +44,19 @@ empty. It is then split evenly between the boxes.}
 the plot width.}
 
 \item{fill_start_box}{The fill color of the start boxes. This can either
-be a single value ore a vector if you desire different colors for each
+be a single value or a vector if you desire different colors for each
 box. If you specify box_prop then this has to be a 2 column matrix.}
 
 \item{txt_start_clr}{The text color of the start boxes. This can either
-be a single value ore a vector if you desire different colors for each
+be a single value or a vector if you desire different colors for each
 box. If you specify box_prop then this has to be a 2 column matrix.}
 
 \item{fill_end_box}{The fill color of the end boxes. This can either
-be a single value ore a vector if you desire different colors for each
+be a single value or a vector if you desire different colors for each
 box. If you specify box_prop then this has to be a 2 column matrix.}
 
 \item{txt_end_clr}{The text color of the end boxes. This can either
-be a single value ore a vector if you desire different colors for each
+be a single value or a vector if you desire different colors for each
 box. If you specify box_prop then this has to be a 2 column matrix.}
 
 \item{cex}{The cex \code{\link{gpar}} of the text}
@@ -91,7 +91,7 @@ multiplication of the current line width. In case of non-grid arrows then you ca
 as a unit which is recommended as it looks better. If the scalar is < 1 then the overlap is ignored.}
 
 \item{box_prop}{If you want the boxes to have proportions indicating some other factors then input
-a matrix with quantiles for the proportions. Note the size mus be \code{nrow(transition_flow) x 2}.}
+a matrix with quantiles for the proportions. Note the size must be \code{nrow(transition_flow) x 2}.}
 
 \item{mar}{A numerical vector of the form c(bottom, left, top, right) of the type \code{unit()}}
 
@@ -113,7 +113,7 @@ this to \code{FALSE}}
 Defaults to the labels of the third dimension for the \code{transition_flow}
 argument.}
 
-\item{color_bar_subspace}{If there is little or no difference exists
+\item{color_bar_subspace}{If there is little or no difference
 at the low/high proportions of the spectrum then it
 can be of interest to focus the color change to the center
 leaving the tails constant}
@@ -125,7 +125,7 @@ default it is \code{FALSE}.}
 void
 }
 \description{
-This plot purpose is to illustrate how states change before and
+This plot's purpose is to illustrate how states change before and
 after. In my research I use it before surgery and after surgery
 but it can be used in any situation where you have a change from
 one state to another
