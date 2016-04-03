@@ -5,25 +5,27 @@
 #'
 #' @inheritParams describeMean
 #' @return \code{vector} A vector with the missing estimate
-#' @keywords internal
+#' @export
 descGetMissing <- function (x,
-                              html,
-                              number_first,
-                              percentage_sign,
-                              language,
-                              useNA.digits,
-                              dot_args) {
+                              html = TRUE,
+                              number_first = TRUE,
+                              percentage_sign = TRUE,
+                              language = "en",
+                              useNA.digits = 1,
+                              ...) {
+  if (!any(is.na(x))) return(invisible())
   df_arg_list <- list(x = is.na(x),
                       html = html,
                       number_first = number_first,
                       percentage_sign=percentage_sign,
                       language = language,
                       digits = useNA.digits)
+  dot_args <- list(...)
   for (n in names(dot_args)){
     if (!n %in% names(df_arg_list)){
       df_arg_list[[n]] <- dot_args[[n]]
     }
   }
   missing <- fastDoCall(describeFactors, df_arg_list)
-  return(missing["TRUE", ])
+  return(missing["TRUE",])
 }

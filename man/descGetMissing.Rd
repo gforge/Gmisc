@@ -4,8 +4,8 @@
 \alias{descGetMissing}
 \title{Get missingness statistics}
 \usage{
-descGetMissing(x, html, number_first, percentage_sign, language, useNA.digits,
-  dot_args)
+descGetMissing(x, html = TRUE, number_first = TRUE,
+  percentage_sign = TRUE, language = "en", useNA.digits = 1, ...)
 }
 \arguments{
 \item{x}{The variable that you want the statistics for}
@@ -29,6 +29,8 @@ function.}
 
 \item{useNA.digits}{The number of digits to use for the
 missing percentage, defaults to the overall \code{digits}.}
+
+\item{...}{Passed on to \code{\link{describeFactors}}}
 }
 \value{
 \code{vector} A vector with the missing estimate
@@ -37,5 +39,4 @@ missing percentage, defaults to the overall \code{digits}.}
 This function calculates the missingness row for \code{\link{describeMean}},
 \code{\link{describeMedian}} and custom description functions.
 }
-\keyword{internal}
 
