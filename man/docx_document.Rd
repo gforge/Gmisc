@@ -2,7 +2,7 @@
 % Please edit documentation in R/docx_document.R
 \name{docx_document}
 \alias{docx_document}
-\title{Formatter wrapper for \code{\link[rmarkdown]{html_document}} facilitate easier porting to docx}
+\title{Formatter wrapper for \code{\link[rmarkdown]{html_document}}, facilitates easier porting to docx}
 \usage{
 docx_document(..., self_contained = FALSE, mathjax = NULL, theme = NULL,
   highlight = NULL, css = "rmarkdown/docx.css",
@@ -15,7 +15,7 @@ docx_document(..., self_contained = FALSE, mathjax = NULL, theme = NULL,
 
 \item{self_contained}{Overrides the default \code{TRUE} for
 \code{\link[rmarkdown]{html_document}} to \code{FALSE} as
-LibreOffice can't hangs on long lines such as the base64
+LibreOffice hangs on long lines such as the base64
 images included in the self-contained version.}
 
 \item{mathjax}{The advanced mathjax does not work with with

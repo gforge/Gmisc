@@ -1,4 +1,4 @@
-#' A gets the color for the given box
+#' Gets the color for the given box
 #'
 #' @param clr The color of the boxes, either
 #'  a matrix, a vector of length two, or a single color
@@ -138,7 +138,7 @@ prTpGetBoxSizedTextGrob <- function(txt,
 #' Outputs all the arrows from a box row
 #'
 #' @param type The type of arrow used
-#' @param box_row Which box do the arrow originate from
+#' @param box_row Which box do the arrows originate from
 #' @param max_flow The largest transition flow
 #' @param min_lwd The minimum line width
 #' @param max_lwd The maximum line width
@@ -569,7 +569,7 @@ prTpGetBoxPositions <- function (no, side,
 
 #' Gets a set of colors or just one color
 #'
-#' Used in order to illustrate the mixe between two
+#' Used in order to illustrate the mix between two
 #' proportions in the \code{\link{transitionPlot}}.
 #'
 #' @param colors A set of min. two colors that is used
@@ -577,7 +577,7 @@ prTpGetBoxPositions <- function (no, side,
 #' @param proportion A proportion or a set of proportions
 #'  between 0 and 1. If you leave this out then the full color
 #'  span will be returned.
-#' @param space If there is little or no difference exists
+#' @param space If there is little or no difference
 #'  at the low/high proportions of the spectrum then it
 #'  can be of interest to focus the color change to the center
 #'  leaving the tails constant

@@ -18,7 +18,7 @@
 #'  variables make sure to impute prior to this function as the \code{\link{svd}} can't
 #'  handle missing values.
 #' @param quantile The SVD D-matrix gives an estimate for the amount that is explained.
-#'  This parameter applies is used for selecting the columns that have that quantile
+#'  This parameter is used for selecting the columns that have that quantile
 #'  of explanation.
 #' @param similarity_threshold A quantile for how close other variables have to be in value to
 #'  maximum contributor of that particular column. If you only want the maximum value
@@ -77,7 +77,7 @@ getSvdMostInfluential <- function(mtrx,
 
   plotSvdSelection <- function(){
     if (plot_threshold < 0 || plot_threshold > 1)
-      stop("The plot_threshold mus be between 0-1")
+      stop("The plot_threshold must be between 0-1")
 
     if (plot_threshold > similarity_threshold)
       stop(paste0("You can't plot less that you've chosen - it makes no sense",

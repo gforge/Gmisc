@@ -283,7 +283,7 @@ describeProp <- function(x,
   }
   no <- fastDoCall(txtInt, oi_args)
 
-  # The LaTeX treats % as comments unless it's properly escaped
+  # LaTeX treats % as comments unless it's properly escaped
   if(percentage_sign == TRUE)
     percentage_sign <- ifelse (html, "%", "\\%")
   else if(!is.character(percentage_sign))
@@ -300,8 +300,8 @@ describeProp <- function(x,
 
 #' Describes factor variables
 #'
-#' A function that returns a description proportion in a
-#' factir that contains the number of times a variable and the percentage
+#' A function that returns a description of proportions in a
+#' factor that contains the number of times a level occurs and the percentage
 #'
 #' @param ... Passed on to \code{\link{txtInt}}
 #' @param horizontal_proportions Is only active if useNA since this is
@@ -368,7 +368,7 @@ describeFactors <- function(x,
   # Check if we should relate to an external total
   if (!missing(horizontal_proportions)){
 
-    # Error check the horizontal_proporitons variable
+    # Error check the horizontal_proportions variable
     # First check that it's a table or at least a vector
     if (is.numeric(horizontal_proportions) == FALSE ||
           (!inherits(horizontal_proportions, "table") &&
@@ -440,7 +440,7 @@ describeFactors <- function(x,
   }
   values <- fastDoCall(sapply, sa_args)
 
-  # The LaTeX treats % as comments unless it's properly escaped
+  # LaTeX treats % as comments unless it's properly escaped
   if(percentage_sign == TRUE)
     percentage_sign <- ifelse (html, "%", "\\%")
   else if(is.character(percentage_sign) == FALSE)

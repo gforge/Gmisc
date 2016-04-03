@@ -13,7 +13,7 @@ variables make sure to impute prior to this function as the \code{\link{svd}} ca
 handle missing values.}
 
 \item{quantile}{The SVD D-matrix gives an estimate for the amount that is explained.
-This parameter applies is used for selecting the columns that have that quantile
+This parameter is used for selecting the columns that have that quantile
 of explanation.}
 
 \item{similarity_threshold}{A quantile for how close other variables have to be in value to

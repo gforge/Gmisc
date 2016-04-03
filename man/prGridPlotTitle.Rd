@@ -15,7 +15,7 @@ prGridPlotTitle(title, base_cex, cex_mult = 1.2, fontface = "bold",
 \item{cex_mult}{The multiplier of the base - i.e. the increase of the
 text size for the title as compared to the general}
 
-\item{fontface}{The type of fontfacte}
+\item{fontface}{The type of fontface}
 
 \item{space_below}{The space below, defaults to 1/5 of the title height}
 }

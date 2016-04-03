@@ -2,7 +2,7 @@
 % Please edit documentation in R/private_functions.R
 \name{prConvertShowMissing}
 \alias{prConvertShowMissing}
-\title{A functuon for converting a show_missing variable.}
+\title{A function for converting a show_missing variable.}
 \usage{
 prConvertShowMissing(show_missing)
 }
@@ -13,8 +13,8 @@ prConvertShowMissing(show_missing)
 string
 }
 \description{
-The variable is suppose to be directly compatible with
-\code{\link[base]{table}}(..., useNA=show_missing). It throughs an error
+The variable is supposed to be directly compatible with
+\code{\link[base]{table}}(..., useNA=show_missing). It throws an error
 if not compatible. \emph{Deprecated:} This function will be deprecated
 as all functions now use the useNA style in order to comply
 with standard R naming.
