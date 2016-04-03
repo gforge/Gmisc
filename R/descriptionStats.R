@@ -61,7 +61,7 @@ describeMean <- function(x,
 
   if ("show_missing" %in% names(dot_args)){
     if (missing(useNA)){
-      useNA <- prConvertShowMissing(dot_args$show_missing)
+      useNA <- convertShowMissing(dot_args$show_missing)
     }
     dot_args$show_missing <- NULL
     warning("Deprecated: show_missing argument is now useNA as of ver. 1.0")
@@ -146,7 +146,7 @@ describeMedian <- function(x,
 
   if ("show_missing" %in% names(dot_args)){
     if (missing(useNA)){
-      useNA <- prConvertShowMissing(dot_args$show_missing)
+      useNA <- convertShowMissing(dot_args$show_missing)
     }
     dot_args$show_missing <- NULL
     warning("Deprecated: show_missing argument is now useNA as of ver. 1.0")
@@ -228,7 +228,7 @@ describeProp <- function(x,
 
   if ("show_missing" %in% names(dot_args)){
     if (missing(useNA)){
-      useNA <- prConvertShowMissing(dot_args$show_missing)
+      useNA <- convertShowMissing(dot_args$show_missing)
     }
     dot_args$show_missing <- NULL
     warning("Deprecated: show_missing argument is now useNA as of ver. 1.0")
@@ -354,7 +354,7 @@ describeFactors <- function(x,
 
   if ("show_missing" %in% names(dot_args)){
     if (missing(useNA)){
-      useNA <- prConvertShowMissing(dot_args$show_missing)
+      useNA <- convertShowMissing(dot_args$show_missing)
     }
     dot_args$show_missing <- NULL
     warning("Deprecated: show_missing argument is now useNA as of ver. 1.0")
