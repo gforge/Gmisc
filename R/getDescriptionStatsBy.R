@@ -22,6 +22,10 @@
 #' you can provide a list with the names \code{'continuous'}, \code{'proportion'}, \code{'factor'} and
 #' the function will choose accordingly. If you fail to define a certain category
 #' it will default to the above.
+#' 
+#' You can also use a custom function that returns a string with the attribute 'colname' set that will be appended
+#' to the results instead of the p-value column.
+#' to the results instead of the p-value column.
 #'
 #' @param x The variable that you want the statistics for
 #' @param by The variable that you want to split into different
@@ -148,48 +152,51 @@ getDescriptionStatsBy <- function(x,
 
   useNA <- match.arg(useNA)
 
-  if (is.list(statistics) ||
-        (statistics != FALSE &&
-           !is.function(statistics))){
-    if (is.list(statistics)){
-      types <- c("continuous",
-                 "proportion",
-                 "factor")
-      if (any(!names(statistics) %in% types))
-        stop("If you want to provide custom functions for generating statistics",
-             " you must either provide a function or a list with the elements:",
-             " '", paste(types, collapse="', '"), "'")
-
-      if (is.numeric(x) &&
-            length(unique(x)) != 2){
-        statistics <- statistics[["continuous"]]
-      }else if (length(unique(x)) == 2){
-        if ("proportion" %in% names(statistics)){
-          statistics <- statistics[["proportion"]]
-        }else{
-          statistics <- statistics[["factor"]]
+  if (!is.function(statistics)){
+    if (is.list(statistics) ||
+        (statistics != FALSE)){
+        if (is.list(statistics)){
+          types <- c("continuous",
+                     "proportion",
+                     "factor")
+          if (any(!names(statistics) %in% types))
+            stop("If you want to provide custom functions for generating statistics",
+                 " you must either provide a function or a list with the elements:",
+                 " '", paste(types, collapse="', '"), "'")
+          
+          if (is.numeric(x) &&
+              length(unique(x)) != 2){
+            statistics <- statistics[["continuous"]]
+          }else if (length(unique(x)) == 2){
+            if ("proportion" %in% names(statistics)){
+              statistics <- statistics[["proportion"]]
+            }else{
+              statistics <- statistics[["factor"]]
+            }
+          }else{
+            statistics <- statistics[["factor"]]
+          }
+          
+          if (is.character(statistics))
+            statistics <- get(statistics)
         }
-      }else{
-        statistics <- statistics[["factor"]]
+        
+        if (!is.function(statistics)){
+          if(length(unique(x)) == 2){
+            statistics <- getPvalFisher
+          }else if(is.numeric(x)){
+            if (length(unique(by)) == 2)
+              statistics <- getPvalWilcox
+            else
+              statistics <- getPvalAnova
+          }else{
+            statistics <- getPvalFisher
+          }
+        }
       }
-
-      if (is.character(statistics))
-        statistics <- get(statistics)
-    }
-
-    if (!is.function(statistics)){
-      if(length(unique(x)) == 2){
-        statistics <- getPvalFisher
-      }else if(is.numeric(x)){
-        if (length(unique(by)) == 2)
-          statistics <- getPvalWilcox
-        else
-          statistics <- getPvalAnova
-      }else{
-        statistics <- getPvalFisher
-      }
-    }
-
+  }
+  
+  if (is.function(statistics)){
     pval <- statistics(x = x,
                        by = by)
   }
@@ -486,12 +493,21 @@ getDescriptionStatsBy <- function(x,
   }
 
   if (is.function(statistics)){
-    pval <- txtPval(pval,
-                    lim.sig =statistics.sig_lim,
-                    lim.2dec = statistics.two_dec_lim,
-                    html = html)
-    results <- cbind(results, c(pval, rep("", nrow(results)-1)))
-    cn <- c(cn, "P-value")
+    if (is.numeric(pval) &&
+        pval <= 1 &&
+        pval >= 0){
+      pval <- txtPval(pval,
+                      lim.sig =statistics.sig_lim,
+                      lim.2dec = statistics.two_dec_lim,
+                      html = html)
+      results <- cbind(results, c(pval, rep("", nrow(results)-1)))
+      cn <- c(cn, "P-value")
+    }else if(is.character(pval) && !is.null(attr(pval, 'colname'))){
+      results <- cbind(results, c(pval, rep("", nrow(results)-1)))
+      cn <- c(cn, attr(pval, 'colname'))
+    }else{
+      stop("Your statistics function should either return a numerical value from 0 to 1 or a character with the attribute 'colname'")
+    }
   }
 
   colnames(results) <- cn
