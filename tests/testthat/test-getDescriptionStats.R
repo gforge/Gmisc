@@ -485,33 +485,38 @@ test_that("Test use_units", {
   set.seed(666)
   units(mtcars$mpg) <- "mpg"
   
-  out1 <- getDescriptionStatsBy(
-    x=mtcars$mpg,
-    by=mtcars$am,
-    header_count = TRUE,
-    add_total_col = TRUE,
-    statistics = TRUE
-  )
+  out1 <- suppressWarnings(
+    getDescriptionStatsBy(
+      x=mtcars$mpg,
+      by=mtcars$am,
+      header_count = TRUE,
+      add_total_col = TRUE,
+      statistics = TRUE
+    ))
 
-  out2 <- getDescriptionStatsBy(
-    x=mtcars$mpg,
-    by=mtcars$am,
-    use_units = TRUE,
-    header_count = TRUE,
-    add_total_col = TRUE,
-    statistics = TRUE
+  out2 <- suppressWarnings(
+    getDescriptionStatsBy(
+      x=mtcars$mpg,
+      by=mtcars$am,
+      use_units = TRUE,
+      header_count = TRUE,
+      add_total_col = TRUE,
+      statistics = TRUE
+    )
   )
   
   expect_equal(ncol(out1) + 1, ncol(out2))
 
-  out3 <- getDescriptionStatsBy(
-    x=mtcars$mpg,
-    by=mtcars$am,
-    use_units = "name",
-    header_count = TRUE,
-    add_total_col = TRUE,
-    statistics = TRUE
+  out3 <- suppressWarnings(
+    getDescriptionStatsBy(
+      x=mtcars$mpg,
+      by=mtcars$am,
+      use_units = "name",
+      header_count = TRUE,
+      add_total_col = TRUE,
+      statistics = TRUE
+    )
   )
-  expect_match(label(out3), "\\(mpg\\)")
+  expect_match(Hmisc::label(out3), "\\(mpg\\)")
   expect_false(grepl("\\(mpg\\)", label(out2)))
 })
