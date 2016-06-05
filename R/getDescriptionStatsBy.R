@@ -58,6 +58,7 @@
 #'  to limit publication associated issues.
 #' @param statistics.sig_lim The significance limit for < sign, i.e. p-value 0.0000312
 #'  should be < 0.0001 with the default setting.
+#' @param statistics.suppress_warnings Hide warnings from the statistics function.
 #' @param show_all_values This is by default false as for instance if there is
 #'  no missing and there is only one variable then it is most sane to only show
 #'  one option as the other one will just be a complement to the first. For instance
@@ -110,6 +111,7 @@ getDescriptionStatsBy <- function(x,
                                   statistics=FALSE,
                                   statistics.sig_lim=10^-4,
                                   statistics.two_dec_lim= 10^-2,
+                                  statistics.suppress_warnings=TRUE,
                                   useNA = c("ifany", "no", "always"),
                                   useNA.digits = digits,
                                   continuous_fn = describeMean,
@@ -197,8 +199,16 @@ getDescriptionStatsBy <- function(x,
   }
   
   if (is.function(statistics)){
-    pval <- statistics(x = x,
-                       by = by)
+    if (statistics.suppress_warnings){
+      pval <- suppressWarnings(
+        statistics(x = x,
+                   by = by)
+      )
+    }else{
+      pval <- 
+        statistics(x = x,
+                   by = by)
+    }
   }
 
   # Always have a total column if the description statistics

@@ -6,11 +6,11 @@
 \usage{
 getDescriptionStatsBy(x, by, digits = 1, html = TRUE,
   numbers_first = TRUE, statistics = FALSE, statistics.sig_lim = 10^-4,
-  statistics.two_dec_lim = 10^-2, useNA = c("ifany", "no", "always"),
-  useNA.digits = digits, continuous_fn = describeMean,
-  prop_fn = describeProp, factor_fn = describeFactors,
-  show_all_values = FALSE, hrzl_prop = FALSE, add_total_col,
-  total_col_show_perc = TRUE, use_units = FALSE, default_ref,
+  statistics.two_dec_lim = 10^-2, statistics.suppress_warnings = TRUE,
+  useNA = c("ifany", "no", "always"), useNA.digits = digits,
+  continuous_fn = describeMean, prop_fn = describeProp,
+  factor_fn = describeFactors, show_all_values = FALSE, hrzl_prop = FALSE,
+  add_total_col, total_col_show_perc = TRUE, use_units = FALSE, default_ref,
   NEJMstyle = FALSE, percentage_sign = TRUE, header_count, ...)
 }
 \arguments{
@@ -42,6 +42,8 @@ the 0.05 value and thus not as interesting to know the exact proximity to
 0.05. \emph{Disclaimer:} The 0.05-limit is really silly and debated, unfortunately
 it remains a standard and this package tries to adapt to the current standards in order
 to limit publication associated issues.}
+
+\item{statistics.suppress_warnings}{Hide warnings from the statistics function.}
 
 \item{useNA}{This indicates if missing should be added as a separate
 row below all other. See \code{\link[base]{table}} for \code{useNA}-options.
