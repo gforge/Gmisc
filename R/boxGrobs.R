@@ -114,6 +114,9 @@ prGetX4Txt <- function(just, txt_padding) {
   return(x)
 }
 prConvTxt2Height <- function(str){
+  if (missing(str))
+    return(0)
+
   length(strsplit(as.character(str), "\n")[[1]]) %>%
     unit("lines") %>%
     prCnvrtY
@@ -133,8 +136,8 @@ plot.box <- print.box
 
 
 boxSplitGrob <- function (label,
-                          label_left = "",
-                          label_right = "",
+                          label_left,
+                          label_right,
                           prop,
                           y = unit(.5, "npc"),
                           x = unit(.5, "npc"),
@@ -150,18 +153,9 @@ boxSplitGrob <- function (label,
                           box_right_gp = gpar(fill="#D8F0D1", col = NA),
                           box_highlight_gp = gpar(fill="#ffffff55", col=NA)) {
 
-  assert(
-    checkString(label),
-    checkNumeric(label)
-  )
-  assert(
-    checkString(label_left),
-    checkNumeric(label_left)
-  )
-  assert(
-    checkString(label_right),
-    checkNumeric(label_right)
-  )
+  assert_label(label)
+  assert_label(label_left)
+  assert_label(label_right)
   assert_unit(y)
   assert_unit(x)
   assert_unit(width)
@@ -188,25 +182,42 @@ boxSplitGrob <- function (label,
   base_txt_height <- prConvTxt2Height(label) + 2
   add_height <- max(prConvTxt2Height(label_left), prConvTxt2Height(label_right))
   height <- unit(base_txt_height + add_height, "mm") + spacer$y + txt_padding + txt_padding
+  main_label <- NULL
+  if (!missing(label)) {
+    main_label <- grobTree(gList(roundrectGrob(gp=box_highlight_gp),
+                                 textGrob(label = label, x = prGetX4Txt(just, txt_padding), y = .5,
+                                          just = just)),
+                           vp = viewport(height=unit(base_txt_height + 2, "mm"), y = 1, just="top"))
+  }
+
+  sublabel <- list()
+  if (!missing(label_left)){
+    sublabel <- c(sublabel,
+                  textGrob(label = label_left, x = .5, y = 1,
+                           just = "center", vjust = 1,
+                           vp = viewport(x = prop/2, width=prop)))
+  }
+
+  if (!missing(label_right)){
+    sublabel <- c(sublabel,
+                  textGrob(label = label_right, x = .5, y = 1,
+                           just = "center", vjust = 1,
+                           vp = viewport(x = prop + (1-prop)-(1-prop)/2, width=1-prop)))
+  }
+
+  if (length(sublabel) == 0) {
+    sublabel <- NULL
+  }else{
+    sublabel <- do.call(gList, sublabel)
+  }
 
   txt <- grobTree(
-    gList(roundrectGrob(gp=box_highlight_gp,
-                        vp=viewport(height = unit(base_txt_height + 2, "mm"), y = 1, just="top")),
-          textGrob(label = label, x = prGetX4Txt(just, txt_padding), y = .5,
-                   just = just,
-                   vp = viewport(height=unit(base_txt_height + 2, "mm"), y = 1, just="top")),
-          textGrob(label = label_left, x = .5, y = 1,
-                   just = "center", vjust = 1,
-                   vp = viewport(x = prop/2, width=prop,
-                                 y = 0,
-                                 just = "bottom",
-                                 height = unit(1, "npc") - unit(base_txt_height, "mm") - spacer$y)),
-          textGrob(label = label_right, x = .5, y = 1,
-                   just = "center", vjust = 1,
-                   vp = viewport(x = prop + (1-prop)-(1-prop)/2, width=1-prop,
-                                 y = 0,
-                                 just = "bottom",
-                                 height = unit(1, "npc") - unit(base_txt_height, "mm") - spacer$y))),
+    gList(
+      main_label,
+      grobTree(
+        gList(main_label, sublabel),
+        vp = viewport(y = 0, just = "bottom",
+                           height = unit(1, "npc") - unit(base_txt_height, "mm") - spacer$y))),
     vp = viewport(height = unit(1, "npc") - txt_padding - txt_padding,
                   width = unit(1, "npc") - txt_padding - txt_padding,
                   clip="on"))

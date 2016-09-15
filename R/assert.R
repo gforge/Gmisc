@@ -38,7 +38,7 @@ assert_just <- function(var, allow_missing = TRUE){
 }
 
 
-#' Assert that its a string or number 0-1
+#' Assert that its a string or number
 #'
 #' @param var Varible 2 check
 #' @param allow_missing Allow missing variables
@@ -47,13 +47,13 @@ assert_just <- function(var, allow_missing = TRUE){
 #' @rdname assert
 #' @keywords internal
 #' @importfrom checkString assert checkmate
-assert_just <- function(var, allow_missing = TRUE){
+assert_label <- function(var, allow_missing = TRUE){
   if (missing(var) && allow_missing)
     return()
 
   assert(
-    checkString(var, pattern = "left|right|top|bottom"),
-    checkNumeric(var, lower = 0, upper = 1),
+    checkString(var),
+    checkNumeric(var),
     .var.name = dep_var(var)
   )
 }
