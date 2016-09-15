@@ -1,0 +1,91 @@
+---
+title: "Building your custom flowchart"
+author: "Max Gordon"
+date: "15 september 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Intro
+
+The `grid` package is what makes R graphics great. All the popular tools with awesome graphics use the `grid` as the backend, e.g. `ggplot2` and `lattice`. When I started working on the `forestplot` package I first encountered the `grid` and it was instant love. In this vignette I'll show how you can use the box-functions in this package together with `grid` in order to generate a flowchart.
+
+# Basics
+
+The grid package splits the plot into views. You can define a viewport and it will work as an isolated part of the plot, ignorant of the world around it. You do this via `viewport`, below I create a plot and add a rectangle to it:
+
+```{r basic_plot, fig.height=2, fig.width=2}
+library(grid) # Part of standard R libraries so no need installing
+grid.newpage() # Create a new graph
+pushViewport(viewport(width=.5, height=.8))
+grid.rect(gp=gpar(fill="#D8F0D1"))
+popViewport()
+```
+
+Important to note is that the grid allows you to define precise units or relative units.
+
+## Relative units
+
+
+* `npc` - ranges from 0-1 where 1 is 100% of the viewport width.
+* `snpc` - similar to npc but is the same length in height/width.
+* `lines` - the height of a line. The go-to method if you want to know the height of a few lines of text. It's relative to the viewport's `fontsize` and  `lineheight`.
+* `char` - the `lines` without the `lineheight` part.
+
+
+## Absolute units
+
+* `mm` - probably my go-to unit when I want something absolute.
+* `inch` - if you prefer inches I guess this is the go-to choice.
+
+# A basic box
+
+```{r basic_box, fig.height=2, fig.width=2}
+library(Gmisc)
+grid.newpage()
+boxSplitGrob("2", .5, .5, prop=.2)
+```
+
+```{r}
+grid.newpage()
+smpl_bx <- drawBox(
+  label = "SADASDSAD\nasdasd",
+  x = .1,
+  y = .9,
+  just = "center")
+
+bx <- drawSplitBox(
+  label = "SADASDSAD\nasdasd sad asdjl adl al\n asdasdsa asd",
+  x = .4,
+  y = .5,
+  prop = .3,
+  just = "center",
+  label_left = "asdasd 213",
+  label_right =  "asdasds a\nasdasd 123")
+
+connectBoxes(
+  start = smpl_bx,
+  end = bx,
+  type = "L"
+)
+
+grid.draw(smpl_bx$grob)
+
+grid.circle(y = smpl_bx$y, x= smpl_bx$x, r = unit(1, "mm"), gp=gpar(fill="black"))
+grid.circle(y = smpl_bx$bottom, x= smpl_bx$right, r = unit(1, "mm"), gp=gpar(fill="red"))
+grid.circle(y = smpl_bx$top, x = smpl_bx$right, r = unit(1, "mm"), gp=gpar(fill="purple"))
+grid.circle(y = smpl_bx$bottom, x = smpl_bx$left, r = unit(1, "mm"), gp=gpar(fill="blue"))
+grid.circle(y = smpl_bx$top, x = smpl_bx$left, r = unit(1, "mm"), gp=gpar(fill="orange"))
+
+grid.draw(bx$grob)
+grid.circle(y = bx$y, x= bx$x, r = unit(1, "mm"), gp=gpar(fill="black"))
+grid.circle(y = bx$bottom, x= bx$right_x, r = unit(1, "mm"), gp=gpar(fill="red"))
+grid.circle(y = bx$top, x = bx$right_x, r = unit(1, "mm"), gp=gpar(fill="purple"))
+grid.circle(y = bx$bottom, x = bx$left_x, r = unit(1, "mm"), gp=gpar(fill="blue"))
+grid.circle(y = bx$top, x = bx$left_x, r = unit(1, "mm"), gp=gpar(fill="orange"))
+
+```
+
