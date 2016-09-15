@@ -2,3 +2,4 @@
 ^\.Rproj\.user$
 ^visual_tests
 ^\.travis\.yml$
+cran-comments.md
