@@ -46,7 +46,7 @@ Important to note is that the grid allows you to define precise units or relativ
 ```{r basic_box, fig.height=2, fig.width=2}
 library(Gmisc)
 grid.newpage()
-boxSplitGrob("2", .5, .5, prop=.2)
+boxSplitGrob("Top", "Left", "Right", prop=.2)
 ```
 
 ```{r}

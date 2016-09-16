@@ -6,7 +6,7 @@
 #' @return void
 #' @rdname assert
 #' @keywords internal
-#' @importfrom checkClass assert checkmate
+#' @importFrom checkmate checkClass checkNumeric assert
 assert_unit <- function(var, allow_missing = TRUE){
   if (missing(var) && allow_missing)
     return()
@@ -26,7 +26,7 @@ assert_unit <- function(var, allow_missing = TRUE){
 #' @return void
 #' @rdname assert
 #' @keywords internal
-#' @importfrom checkString assert checkmate
+#' @importFrom checkmate checkString checkNumeric assert
 assert_just <- function(var, allow_missing = TRUE){
   if (missing(var) && allow_missing)
     return()
@@ -46,7 +46,7 @@ assert_just <- function(var, allow_missing = TRUE){
 #' @return void
 #' @rdname assert
 #' @keywords internal
-#' @importfrom checkString assert checkmate
+#' @importFrom checkmate checkString checkNumeric assert
 assert_label <- function(var, allow_missing = TRUE){
   if (missing(var) && allow_missing)
     return()
@@ -66,7 +66,7 @@ assert_label <- function(var, allow_missing = TRUE){
 #' @return void
 #' @rdname assert
 #' @keywords internal
-#' @importfrom checkString assert checkmate
+#' @importFrom checkmate checkString assert
 assert_just <- function(var, allow_missing = TRUE){
   if (missing(var) && allow_missing)
     return()

@@ -2,6 +2,7 @@
 % Please edit documentation in R/assert.R
 \name{assert_unit}
 \alias{assert_just}
+\alias{assert_label}
 \alias{assert_unit}
 \title{Checks if unit or number 0-1}
 \usage{
@@ -9,7 +10,7 @@ assert_unit(var, allow_missing = TRUE)
 
 assert_just(var, allow_missing = TRUE)
 
-assert_just(var, allow_missing = TRUE)
+assert_label(var, allow_missing = TRUE)
 
 assert_just(var, allow_missing = TRUE)
 }
@@ -44,7 +45,7 @@ Checks if unit or number 0-1
 
 Assert that its a string or number 0-1
 
-Assert that its a string or number 0-1
+Assert that its a string or number
 
 Assert valid color
 }

@@ -1,20 +1,23 @@
-#' Create a grid box with text
+#' Create a box with text
 #'
+#' Creates a grob box with text inside it.
 #'
+#' @param label The label to print
+#' @param y The y position to put the box at. Can be either in \code{npc} (i.e. 0-1) or a \code{\link[grid]{unit}}.
+#' @param x The x position to put the box at. Can be either in \code{npc} (i.e. 0-1) or a \code{\link[grid]{unit}}.
+#' @param just The justification for the text: left, center or right.
+#' @param bjust The justification for the box: left, center, right, top or bottom.
+#'  See the \code{just} option for the \code{\link[grid]{viewport}}
+#' @param txt_gp The \code{\link[grid]{gpar}} style to apply to the text.
+#' @param box_gp The \code{\link[grid]{gpar}} style to apply to the box.
 #'
-#' @param label
-#' @param y
-#' @param x
-#' @param just
-#' @param bjust
-#' @param fill
-#'
-#' @return
+#' @return A grob
 #' @export
 #'
 #' @rdname box
-#' @importFrom grid
+#' @importFrom checkmate assert_class assert checkString checkNumeric
 #' @examples
+#' boxGrob("My box")
 boxGrob <- function (label,
                      y = unit(.5, "npc"),
                      x = unit(.5, "npc"),
@@ -45,8 +48,11 @@ boxGrob <- function (label,
   txt <- textGrob(label = label,
                   x = prGetX4Txt(just, txt_padding), y = .5,
                   just = just, gp = txt_gp)
-  height <- grobHeight(txt) + txt_padding + txt_padding
-  width <- grobWidth(txt) + txt_padding + txt_padding
+
+  if (missing(height))
+    height <- grobHeight(txt) + txt_padding + txt_padding
+  if (missing(width))
+    width <- grobWidth(txt) + txt_padding + txt_padding
 
 
   rect <- roundrectGrob(x=.5, y=.5, gp = box_gp)
@@ -64,13 +70,244 @@ boxGrob <- function (label,
 
   structure(gl,
             class=c("box", class(gl)),
-            left = x - half_width,
-            right = x + half_width,
-            bottom = y - half_height,
-            top = y + half_height,
-            x = x,
-            y = y)
+            coords = list(
+              left = x - half_width,
+              right = x + half_width,
+              bottom = y - half_height,
+              top = y + half_height,
+              x = x,
+              y = y))
 }
+
+
+#' The print/plot calls the \code{\link[grid]{grid.draw}} function on the object
+#' @rdname box
+#' @export
+print.box <- function(x, ...)
+{
+  grid.draw(x, ...)
+}
+
+#' @rdname box
+#' @export
+plot.box <- print.box
+
+
+#' Create a box with a color split
+#'
+#' Creates a grob box with text inside it and a color split in the
+#' horizontal axes that allow indicating different proportions. The
+#' box can also have a title that spanse the two color areas and
+#' that has its own background.
+#'
+#' @inheritParams boxGrob
+#' @param label_left The label for the left area
+#' @param label_right The label for the right area
+#' @param prop The proportion to split along
+#' @param txt_left_gp The \code{\link[grid]{gpar}} style to apply to the left text.
+#' @param txt_right_gp The \code{\link[grid]{gpar}} style to apply to the right text.
+#' @param box_left_gp The \code{\link[grid]{gpar}} style to apply to the left box.
+#' @param box_right_gp The \code{\link[grid]{gpar}} style to apply to the right box.
+#' @param box_highlight_gp The \code{\link[grid]{gpar}} style to apply to the background of the main label.
+#'
+#' @return A box grob
+#' @export
+#'
+#' @importFrom checkmate assert_class assert checkString checkNumeric assert_number
+#' @examples
+#' boxSplitGrob("Main label", "Left text", "Right text", prop = .3)
+boxSplitGrob <- function (label,
+                          label_left,
+                          label_right,
+                          prop,
+                          y = unit(.5, "npc"),
+                          x = unit(.5, "npc"),
+                          width,
+                          height,
+                          just = "center",
+                          bjust = "center",
+                          txt_gp = gpar(color="black"),
+                          txt_left_gp = gpar(col="black"),
+                          txt_right_gp = gpar(col ="black"),
+                          box_gp = gpar(fill=NA),
+                          box_left_gp = gpar(fill="#81BFD4", col = NA),
+                          box_right_gp = gpar(fill="#D8F0D1", col = NA),
+                          box_highlight_gp = gpar(fill="#ffffff55", col=NA)) {
+
+  assert_label(label)
+  assert_label(label_left)
+  assert_label(label_right)
+  assert_unit(y)
+  assert_unit(x)
+  assert_unit(width)
+  assert_unit(height)
+  assert_just(just)
+  assert_just(bjust)
+  assert_class(txt_gp, "gpar")
+  assert_class(txt_left_gp, "gpar")
+  assert_class(txt_right_gp, "gpar")
+  assert_class(box_gp, "gpar")
+  assert_class(box_left_gp, "gpar")
+  assert_class(box_right_gp, "gpar")
+  assert_class(box_highlight_gp, "gpar")
+
+  assert_number(prop, lower = 0, upper = 1)
+
+  x <- prAsUnit(x)
+  y <- prAsUnit(y)
+
+  txt_padding <- unit(4, "mm")
+  spacer <- list(x = unit(2, "mm"),
+                 y = unit(5, "mm"))
+
+  base_txt_height <- prConvTxt2Height(label) + 2
+  add_height <- max(prConvTxt2Height(label_left), prConvTxt2Height(label_right))
+  if (missing(height))
+    height <- unit(base_txt_height + add_height, "mm") + spacer$y + txt_padding + txt_padding
+
+  main_label <- NULL
+  if (!missing(label)) {
+    main_label <- grobTree(gList(roundrectGrob(gp=box_highlight_gp),
+                                 textGrob(label = label, x = prGetX4Txt(just, txt_padding), y = .5,
+                                          just = just)),
+                           vp = viewport(height=unit(base_txt_height + 2, "mm"), y = 1, just="top"))
+  }
+
+  sublabel <- list()
+  if (!missing(label_left)){
+    sublabel <- c(sublabel,
+                  list(textGrob(label = label_left, x = .5, y = 1,
+                           just = "center", vjust = 1,
+                           vp = viewport(x = prop/2, width=prop))))
+  }
+
+  if (!missing(label_right)){
+    sublabel <- c(sublabel,
+                  list(textGrob(label = label_right, x = .5, y = 1,
+                                just = "center", vjust = 1,
+                                vp = viewport(x = prop + (1-prop)-(1-prop)/2, width=1-prop))))
+  }
+
+  if (length(sublabel) == 0) {
+    sublabel <- NULL
+  }else{
+    sublabel <- do.call(gList, sublabel)
+  }
+
+  txt <- grobTree(
+    gList(
+      main_label,
+      grobTree(
+        sublabel,
+        vp = viewport(y = 0, just = "bottom",
+                           height = unit(1, "npc") - unit(base_txt_height, "mm") - spacer$y))),
+    vp = viewport(height = unit(1, "npc") - txt_padding - txt_padding,
+                  width = unit(1, "npc") - txt_padding - txt_padding,
+                  clip="on"))
+
+
+  # Calculate the width of the grob
+  base_width <-
+    max(prCnvrtX(grobWidth(txt)),
+        (prCnvrtX(grobWidth(textGrob(label_left))) +
+           prCnvrtX(spacer$x)+
+           prCnvrtX(grobWidth(textGrob(label_right))))
+    )
+
+  # Due to the proportions we may need to force a larger window
+  min_left <- prCnvrtX(grobWidth(textGrob(label_left))) +
+    prCnvrtX(txt_padding) +
+    prCnvrtX(spacer$x)
+  min_right <- prCnvrtX(grobWidth(textGrob(label_right))) +
+    prCnvrtX(txt_padding) +
+    prCnvrtX(spacer$x)
+  if (base_width * prop < min_left) {
+    base_width <- min_left / prop
+  }
+  if (base_width * prop < min_right) {
+    base_width <- min_right / prop
+  }
+
+  if (missing(width))
+    width <- unit(base_width, "mm") + txt_padding + txt_padding
+
+  half_height <- unit(prCnvrtY(height)/2, "mm")
+  half_width <- unit(prCnvrtX(width)/2, "mm")
+
+  gl <- grobTree(roundrectGrob(gp=box_left_gp,
+                               width=width, x=0, just="left",
+                               vp=viewport(x=0, just="left", width=prop, clip="on")),
+                 roundrectGrob(gp=box_right_gp,
+                               width=width, x=1, just="right",
+                               vp=viewport(x=1, just="right", width=1-prop, clip="on")),
+                 txt,
+                 vp = viewport(x = x, y = y, width = width, height = height))
+
+  structure(gl,
+            class=c("box", class(gl)),
+            coords = list(
+              left = x - half_width,
+              right = x + half_width,
+              bottom = y - half_height,
+              top = y + half_height,
+              x = x,
+              left_x = x - half_width +
+                unit(prCnvrtX(width)*prop/2, "mm"),
+              right_x = x - half_width +
+                unit(prCnvrtX(width)*prop +
+                       prCnvrtX(width)*(1-prop)/2,
+                     "mm"),
+              y = y)
+            )
+}
+
+connectBoxes <- function(
+  start,
+  end,
+  type = c("vertical", "horizontal", "L"),
+  subelmnt = "")
+{
+  type = match.arg(type)
+  getX4elmnt <- function(elmnt, side = c("left", "right", "x")){
+    side = match.arg(side)
+    if (side == "x" && !is.null(elmnt[[sprintf("%s%s", subelmnt, side)]])) {
+      return (elmnt[[sprintf("%s%s", subelmnt, side)]])
+    }else{
+      return (elmnt[[side]])
+    }
+  }
+  line <- list()
+  cnvrt <- function(val)
+    convertHeight(val, unitTo = "mm", valueOnly = TRUE)
+  if (type == "L") {
+    line$y <- unit.c(start$bottom, end$y, end$y)
+    if (cnvrt(getX4elmnt(start, "x")) < cnvrt(getX4elmnt(end, "x"))) {
+      line$x <- unit.c(getX4elmnt(start, "x"), getX4elmnt(start, "x"), end$left)
+    }else{
+      line$x <- unit.c(getX4elmnt(start, "x"), getX4elmnt(start, "x"), end$right)
+    }
+  }else if (type == "vertical") {
+    line$x <- unit.c(getX4elmnt(start, "x"), getX4elmnt(end, "x"))
+    if (cnvrt(start$y) < cnvrt(end$y)) {
+      line$y <- unit.c(start$top, end$bottom)
+    }else{
+      line$y <- unit.c(start$bottom, end$top)
+    }
+  }else{
+    line$y <- unit.c(start$y, end$y)
+    if (cnvrt(getX4elmnt(start, "x")) < cnvrt(getX4elmnt(end, "x"))) {
+      line$x <- unit.c(start$right, end$left)
+    }else{
+      line$x <- unit.c(start$left, end$right)
+    }
+  }
+
+  grid.lines(x = line$x,
+             y = line$y,
+             gp = gpar(fill="black"),
+             arrow = arrow(ends = "last", type = "closed"))
+}
+
 
 prAsUnit <- function(val){
   if (is.unit(val))
@@ -121,209 +358,3 @@ prConvTxt2Height <- function(str){
     unit("lines") %>%
     prCnvrtY
 }
-
-#' The print/plot calls the \code{\link[grid]{grid.draw}} function on the object
-#' @rdname box
-#' @export
-print.box <- function(x, ...)
-{
-  grid.draw(x, ...)
-}
-
-#' @rdname box
-#' @export
-plot.box <- print.box
-
-
-boxSplitGrob <- function (label,
-                          label_left,
-                          label_right,
-                          prop,
-                          y = unit(.5, "npc"),
-                          x = unit(.5, "npc"),
-                          width,
-                          height,
-                          just = "center",
-                          bjust = "center",
-                          txt_gp = gpar(color="black"),
-                          txt_left_gp = gpar(col="black"),
-                          txt_right_gp = gpar(col ="black"),
-                          box_gp = gpar(fill=NA),
-                          box_left_gp = gpar(fill="#81BFD4", col = NA),
-                          box_right_gp = gpar(fill="#D8F0D1", col = NA),
-                          box_highlight_gp = gpar(fill="#ffffff55", col=NA)) {
-
-  assert_label(label)
-  assert_label(label_left)
-  assert_label(label_right)
-  assert_unit(y)
-  assert_unit(x)
-  assert_unit(width)
-  assert_unit(height)
-  assert_just(just)
-  assert_just(bjust)
-  assert_class(txt_gp, "gpar")
-  assert_class(txt_left_gp, "gpar")
-  assert_class(txt_right_gp, "gpar")
-  assert_class(box_gp, "gpar")
-  assert_class(box_left_gp, "gpar")
-  assert_class(box_right_gp, "gpar")
-  assert_class(box_highlight_gp, "gpar")
-
-  assert_number(prop, lower = 0, upper = 1)
-
-  x <- prAsUnit(x)
-  y <- prAsUnit(y)
-
-  txt_padding <- unit(4, "mm")
-  spacer <- list(x = unit(2, "mm"),
-                 y = unit(5, "mm"))
-
-  base_txt_height <- prConvTxt2Height(label) + 2
-  add_height <- max(prConvTxt2Height(label_left), prConvTxt2Height(label_right))
-  height <- unit(base_txt_height + add_height, "mm") + spacer$y + txt_padding + txt_padding
-  main_label <- NULL
-  if (!missing(label)) {
-    main_label <- grobTree(gList(roundrectGrob(gp=box_highlight_gp),
-                                 textGrob(label = label, x = prGetX4Txt(just, txt_padding), y = .5,
-                                          just = just)),
-                           vp = viewport(height=unit(base_txt_height + 2, "mm"), y = 1, just="top"))
-  }
-
-  sublabel <- list()
-  if (!missing(label_left)){
-    sublabel <- c(sublabel,
-                  textGrob(label = label_left, x = .5, y = 1,
-                           just = "center", vjust = 1,
-                           vp = viewport(x = prop/2, width=prop)))
-  }
-
-  if (!missing(label_right)){
-    sublabel <- c(sublabel,
-                  textGrob(label = label_right, x = .5, y = 1,
-                           just = "center", vjust = 1,
-                           vp = viewport(x = prop + (1-prop)-(1-prop)/2, width=1-prop)))
-  }
-
-  if (length(sublabel) == 0) {
-    sublabel <- NULL
-  }else{
-    sublabel <- do.call(gList, sublabel)
-  }
-
-  txt <- grobTree(
-    gList(
-      main_label,
-      grobTree(
-        gList(main_label, sublabel),
-        vp = viewport(y = 0, just = "bottom",
-                           height = unit(1, "npc") - unit(base_txt_height, "mm") - spacer$y))),
-    vp = viewport(height = unit(1, "npc") - txt_padding - txt_padding,
-                  width = unit(1, "npc") - txt_padding - txt_padding,
-                  clip="on"))
-
-
-  # Calculate the width of the grob
-  base_width <-
-    max(prCnvrtX(grobWidth(txt)),
-        (prCnvrtX(grobWidth(textGrob(label_left))) +
-           prCnvrtX(spacer$x)+
-           prCnvrtX(grobWidth(textGrob(label_right))))
-    )
-
-  # Due to the proportions we may need to force a larger window
-  min_left <- prCnvrtX(grobWidth(textGrob(label_left))) +
-    prCnvrtX(txt_padding) +
-    prCnvrtX(spacer$x)
-  min_right <- prCnvrtX(grobWidth(textGrob(label_right))) +
-    prCnvrtX(txt_padding) +
-    prCnvrtX(spacer$x)
-  if (base_width * prop < min_left) {
-    base_width <- min_left / prop
-  }
-  if (base_width * prop < min_right) {
-    base_width <- min_right / prop
-  }
-
-  width <- unit(base_width, "mm") + txt_padding + txt_padding
-
-  half_height <- unit(prCnvrtY(height)/2, "mm")
-  half_width <- unit(prCnvrtX(width)/2, "mm")
-
-  radius = unit(2, "mm")
-  gl <- grobTree(roundrectGrob(x = prop/2, width=prop, gp=box_left_gp, r=radius),
-                 rectGrob(x = 3*prop/4, width=2*prop/4, gp=box_left_gp),
-                 roundrectGrob(x = prop + (1-prop)/2, width=1-prop, gp=box_right_gp, r=radius),
-                 rectGrob(x = prop + prop/4, width=2*prop/4, gp=box_right_gp),
-                 roundrectGrob(x=.5, y=.5,
-                               gp = box_gp,
-                               width = unit(1, "npc"),
-                               height= unit(1, "npc"),
-                               r=radius,
-                               just = bjust),
-                 txt,
-                 vp = viewport(x = x, y = y, width = width, height = height))
-
-  structure(gl,
-            class=c("box", class(gl)),
-            left = x - half_width,
-            right = x + half_width,
-            bottom = y - half_height,
-            top = y + half_height,
-            x = x,
-            left_x = x - half_width +
-                unit(prCnvrtX(width)*prop/2, "mm"),
-            right_x = x - half_width +
-              unit(prCnvrtX(width)*prop +
-                     prCnvrtX(width)*(1-prop)/2,
-                   "mm"),
-            y = y)
-}
-
-connectBoxes <- function(
-  start,
-  end,
-  type = c("vertical", "horizontal", "L"),
-  subelmnt = "")
-{
-  type = match.arg(type)
-  getX4elmnt <- function(elmnt, side = c("left", "right", "x")){
-    side = match.arg(side)
-    if (side == "x" && !is.null(elmnt[[sprintf("%s%s", subelmnt, side)]])) {
-      return (elmnt[[sprintf("%s%s", subelmnt, side)]])
-    }else{
-      return (elmnt[[side]])
-    }
-  }
-  line <- list()
-  cnvrt <- function(val)
-    convertHeight(val, unitTo = "mm", valueOnly = TRUE)
-  if (type == "L") {
-    line$y <- unit.c(start$bottom, end$y, end$y)
-    if (cnvrt(getX4elmnt(start, "x")) < cnvrt(getX4elmnt(end, "x"))) {
-      line$x <- unit.c(getX4elmnt(start, "x"), getX4elmnt(start, "x"), end$left)
-    }else{
-      line$x <- unit.c(getX4elmnt(start, "x"), getX4elmnt(start, "x"), end$right)
-    }
-  }else if (type == "vertical") {
-    line$x <- unit.c(getX4elmnt(start, "x"), getX4elmnt(end, "x"))
-    if (cnvrt(start$y) < cnvrt(end$y)) {
-      line$y <- unit.c(start$top, end$bottom)
-    }else{
-      line$y <- unit.c(start$bottom, end$top)
-    }
-  }else{
-    line$y <- unit.c(start$y, end$y)
-    if (cnvrt(getX4elmnt(start, "x")) < cnvrt(getX4elmnt(end, "x"))) {
-      line$x <- unit.c(start$right, end$left)
-    }else{
-      line$x <- unit.c(start$left, end$right)
-    }
-  }
-
-  grid.lines(x = line$x,
-             y = line$y,
-             gp = gpar(fill="black"),
-             arrow = arrow(ends = "last", type = "closed"))
-}
-

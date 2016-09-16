@@ -4,7 +4,7 @@
 \alias{boxGrob}
 \alias{plot.box}
 \alias{print.box}
-\title{Create a grid box with text}
+\title{Create a box with text}
 \usage{
 boxGrob(label, y = unit(0.5, "npc"), x = unit(0.5, "npc"), width, height,
   just = "center", bjust = "center", txt_gp = gpar(color = "black"),
@@ -15,11 +15,30 @@ boxGrob(label, y = unit(0.5, "npc"), x = unit(0.5, "npc"), width, height,
 \method{plot}{box}(x, ...)
 }
 \arguments{
-\item{fill}{}
+\item{label}{The label to print}
+
+\item{y}{The y position to put the box at. Can be either in \code{npc} (i.e. 0-1) or a \code{\link[grid]{unit}}.}
+
+\item{x}{The x position to put the box at. Can be either in \code{npc} (i.e. 0-1) or a \code{\link[grid]{unit}}.}
+
+\item{just}{The justification for the text: left, center or right.}
+
+\item{bjust}{The justification for the box: left, center, right, top or bottom.
+See the \code{just} option for the \code{\link[grid]{viewport}}}
+
+\item{txt_gp}{The \code{\link[grid]{gpar}} style to apply to the text.}
+
+\item{box_gp}{The \code{\link[grid]{gpar}} style to apply to the box.}
+}
+\value{
+A grob
 }
 \description{
-Create a grid box with text
+Creates a grob box with text inside it.
 
 The print/plot calls the \code{\link[grid]{grid.draw}} function on the object
+}
+\examples{
+boxGrob("My box")
 }
 
