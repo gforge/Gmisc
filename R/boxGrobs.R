@@ -14,9 +14,12 @@
 #' @return A grob
 #' @export
 #'
-#' @rdname box
+#' @rdname box-functions
 #' @importFrom checkmate assert_class assert checkString checkNumeric
+#' @family box-functions
 #' @examples
+#' library(grid)
+#' grid.newpage()
 #' boxGrob("My box")
 boxGrob <- function (label,
                      y = unit(.5, "npc"),
@@ -51,8 +54,13 @@ boxGrob <- function (label,
 
   if (missing(height))
     height <- grobHeight(txt) + txt_padding + txt_padding
+  else
+    height <- prAsUnit(height)
+
   if (missing(width))
     width <- grobWidth(txt) + txt_padding + txt_padding
+  else
+    width <- prAsUnit(width)
 
 
   rect <- roundrectGrob(x=.5, y=.5, gp = box_gp)
@@ -114,9 +122,12 @@ plot.box <- print.box
 #' @export
 #'
 #' @importFrom checkmate assert_class assert checkString checkNumeric assert_number
+#' @family box-functions
 #' @examples
-#' boxSplitGrob("Main label", "Left text", "Right text", prop = .3)
-boxSplitGrob <- function (label,
+#' library(grid)
+#' grid.newpage()
+#' boxPropGrob("Main label", "Left text", "Right text", prop = .3)
+boxPropGrob <- function (label,
                           label_left,
                           label_right,
                           prop,
@@ -129,9 +140,8 @@ boxSplitGrob <- function (label,
                           txt_gp = gpar(color="black"),
                           txt_left_gp = gpar(col="black"),
                           txt_right_gp = gpar(col ="black"),
-                          box_gp = gpar(fill=NA),
-                          box_left_gp = gpar(fill="#81BFD4", col = NA),
-                          box_right_gp = gpar(fill="#D8F0D1", col = NA),
+                          box_left_gp = gpar(fill="#81BFD4"),
+                          box_right_gp = gpar(fill="#D8F0D1"),
                           box_highlight_gp = gpar(fill="#ffffff55", col=NA)) {
 
   assert_label(label)
@@ -146,7 +156,6 @@ boxSplitGrob <- function (label,
   assert_class(txt_gp, "gpar")
   assert_class(txt_left_gp, "gpar")
   assert_class(txt_right_gp, "gpar")
-  assert_class(box_gp, "gpar")
   assert_class(box_left_gp, "gpar")
   assert_class(box_right_gp, "gpar")
   assert_class(box_highlight_gp, "gpar")
@@ -208,7 +217,7 @@ boxSplitGrob <- function (label,
 
   # Calculate the width of the grob
   base_width <-
-    max(prCnvrtX(grobWidth(txt)),
+    max(prCnvrtX(grobWidth(textGrob(txt))),
         (prCnvrtX(grobWidth(textGrob(label_left))) +
            prCnvrtX(spacer$x)+
            prCnvrtX(grobWidth(textGrob(label_right))))
@@ -224,8 +233,8 @@ boxSplitGrob <- function (label,
   if (base_width * prop < min_left) {
     base_width <- min_left / prop
   }
-  if (base_width * prop < min_right) {
-    base_width <- min_right / prop
+  if (base_width * (1 - prop) < min_right) {
+    base_width <- min_right / (1-prop)
   }
 
   if (missing(width))
@@ -241,7 +250,9 @@ boxSplitGrob <- function (label,
                                width=width, x=1, just="right",
                                vp=viewport(x=1, just="right", width=1-prop, clip="on")),
                  txt,
-                 vp = viewport(x = x, y = y, width = width, height = height))
+                 vp = viewport(x = x, y = y, width = width, height = height, just = bjust))
+  x <- prAdjustXPos(bjust, x, width)
+  y <- prAdjustYPos(bjust, y, height)
 
   structure(gl,
             class=c("box", class(gl)),
@@ -261,13 +272,46 @@ boxSplitGrob <- function (label,
             )
 }
 
-connectBoxes <- function(
+#' Connect boxes with an arrow
+#'
+#' The function creates a grob that links two boxes together. It looks for
+#' which side it should attach the arrow to in order to avoid
+#'
+#' @param start The start box
+#' @param end The end box
+#' @param type How the boxes are stacked. The \code{L} alternative generates a
+#'  straight line up/down and then turns to righT/left for connecting with the end.
+#' @param subelmnt If we have a split box we can specify the right/left x as the
+#'  connector point.
+#'
+#' @return grob with an arrow
+#' @export
+#'
+#' @importFrom checkmate assert_class
+#' @family box-functions
+#' @rdname connect
+#' @example inst/examples/connectGrob_example.R
+connectGrob <- function(
   start,
   end,
   type = c("vertical", "horizontal", "L"),
-  subelmnt = "")
+  subelmnt = c("right", "left"),
+  lty_gp = gpar(fill="black"))
 {
+  assert_class(start, "box")
+  assert_class(end, "box")
+  assert_class(lty_gp, "gpar")
+
+  # We use the coordinates provided with the boxes
+  start <- attr(start, "coords")
+  end <- attr(end, "coords")
+
   type = match.arg(type)
+  if (missing(subelmnt)) {
+    subelmnt <- ""
+  } else {
+    subelmnt <- sprintf("%s_", match.arg(subelmnt))
+  }
   getX4elmnt <- function(elmnt, side = c("left", "right", "x")){
     side = match.arg(side)
     if (side == "x" && !is.null(elmnt[[sprintf("%s%s", subelmnt, side)]])) {
@@ -302,11 +346,27 @@ connectBoxes <- function(
     }
   }
 
-  grid.lines(x = line$x,
-             y = line$y,
-             gp = gpar(fill="black"),
-             arrow = arrow(ends = "last", type = "closed"))
+  lg <- linesGrob(x = line$x,
+                  y = line$y,
+                  gp = gpar(fill="black"),
+                  arrow = arrow(ends = "last", type = "closed"))
+  structure(lg,
+            class = c("connect_boxes", class(lg)))
 }
+
+#' The print/plot calls the \code{\link[grid]{grid.draw}} function on the object
+#' @param x The grob to print/plot
+#' @param ... Passed to \code{\link[grid]{grid.draw}}
+#' @rdname connect
+#' @export
+print.connect_boxes <- function(x, ...)
+{
+  grid.draw(x, ...)
+}
+
+#' @rdname connect
+#' @export
+plot.connect_boxes <- print.connect_boxes
 
 
 prAsUnit <- function(val){
