@@ -33,6 +33,8 @@ See the \code{just} option for the \code{\link[grid]{viewport}}}
 \item{txt_gp}{The \code{\link[grid]{gpar}} style to apply to the text.}
 
 \item{box_gp}{The \code{\link[grid]{gpar}} style to apply to the box.}
+
+\item{...}{Passed to \code{\link[grid]{grid.draw}}}
 }
 \value{
 A grob
