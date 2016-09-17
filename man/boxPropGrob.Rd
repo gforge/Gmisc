@@ -24,6 +24,10 @@ boxPropGrob(label, label_left, label_right, prop, y = unit(0.5, "npc"),
 
 \item{x}{The x position to put the box at. Can be either in \code{npc} (i.e. 0-1) or a \code{\link[grid]{unit}}.}
 
+\item{width}{The box autosizes but you can force by specifying the width}
+
+\item{height}{The box autosizes but you can force by specifying the height}
+
 \item{just}{The justification for the text: left, center or right.}
 
 \item{bjust}{The justification for the box: left, center, right, top or bottom.

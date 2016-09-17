@@ -24,6 +24,8 @@ straight line up/down and then turns to righT/left for connecting with the end.}
 \item{subelmnt}{If we have a split box we can specify the right/left x as the
 connector point.}
 
+\item{lty_gp}{The \code{\link[grid]{gpar}} for the line}
+
 \item{x}{The grob to print/plot}
 
 \item{...}{Passed to \code{\link[grid]{grid.draw}}}

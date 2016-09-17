@@ -5,6 +5,8 @@
 #' @param label The label to print
 #' @param y The y position to put the box at. Can be either in \code{npc} (i.e. 0-1) or a \code{\link[grid]{unit}}.
 #' @param x The x position to put the box at. Can be either in \code{npc} (i.e. 0-1) or a \code{\link[grid]{unit}}.
+#' @param width The box autosizes but you can force by specifying the width
+#' @param height The box autosizes but you can force by specifying the height
 #' @param just The justification for the text: left, center or right.
 #' @param bjust The justification for the box: left, center, right, top or bottom.
 #'  See the \code{just} option for the \code{\link[grid]{viewport}}
@@ -14,7 +16,7 @@
 #' @return A grob
 #' @export
 #'
-#' @rdname box-functions
+#' @rdname box
 #' @importFrom checkmate assert_class assert checkString checkNumeric
 #' @family box-functions
 #' @examples
@@ -283,6 +285,7 @@ boxPropGrob <- function (label,
 #'  straight line up/down and then turns to righT/left for connecting with the end.
 #' @param subelmnt If we have a split box we can specify the right/left x as the
 #'  connector point.
+#' @param lty_gp The \code{\link[grid]{gpar}} for the line
 #'
 #' @return grob with an arrow
 #' @export
