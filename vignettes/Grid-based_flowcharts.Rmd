@@ -1,0 +1,201 @@
+---
+title: "Building your custom flowchart"
+author: "Max Gordon"
+date: "15 september 2016"
+output: 
+  rmarkdown::html_vignette:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{Transition-class - basic usage}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\usepackage[utf8]{inputenc}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Intro
+
+The `grid` package is what makes R graphics great. All the popular tools with awesome graphics use the `grid` as the backend, e.g. `ggplot2` and `lattice`. When I started working on the `forestplot` package I first encountered the `grid` and it was instant love. In this vignette I'll show how you can use the box-functions in this package together with `grid` in order to generate a flowchart.
+
+# Basics
+
+The grid package splits the plot into views. You can define a viewport and it will work as an isolated part of the plot, ignorant of the world around it. You do this via `viewport`, below I create a plot and add a rectangle to it:
+
+```{r basic_plot, fig.height=2, fig.width=2}
+# Load the grid library
+# part of standard R libraries so no need installing
+library(grid)  
+
+# Create a new graph
+grid.newpage()
+
+pushViewport(viewport(width=.5, height=.8))
+
+grid.rect(gp=gpar(fill="#D8F0D1"))
+
+popViewport()
+```
+
+Important to note is that the grid allows you to define precise units or relative units.
+
+## Relative units
+
+
+* `npc` - ranges from 0-1 where 1 is 100% of the viewport width.
+* `snpc` - similar to npc but is the same length in height/width.
+* `lines` - the height of a line. The go-to method if you want to know the height of a few lines of text. It's relative to the viewport's `fontsize` and  `lineheight`.
+* `char` - the `lines` without the `lineheight` part.
+
+Below we draw a line with relative units in two nested viewports. Note that the to lines are generated  from the exact same grob object but appear different depending on the viewport they are in:
+
+```{r relative_lines, fig.height=3, fig.width=3}
+grid.newpage()
+pushViewport(viewport(width=.5, height=.8, clip="on"))
+grid.rect(gp=gpar(lty=2, fill="lightyellow"))
+lg <- linesGrob(x = unit(c(.2, 1), "npc"),
+                y = unit(c(.2, 1), "npc"),
+                gp = gpar(lwd=2))
+grid.draw(lg)
+pushViewport(viewport(x=0, y=.6, just="left", width=.4, height=.4, angle = 20))
+grid.rect(gp=gpar(fill="lightblue")) # A translucent box to indicate the new viewport
+grid.draw(lg)
+popViewport()
+```
+
+
+## Absolute units
+
+* `mm` - probably my go-to unit when I want something absolute.
+* `inch` - if you prefer inches I guess this is the go-to choice.
+
+Below we draw a line with absolute units in two nested viewports. Note that the lines have the exact same length:
+
+```{r absolute_lines, fig.height=3, fig.width=3}
+grid.newpage()
+pushViewport(viewport(width=.5, height=.8, clip="on"))
+grid.rect(gp=gpar(lty=2, fill="lightyellow"))
+lg <- linesGrob(x = unit(c(2, 10), "mm"),
+                y = unit(c(2, 10), "mm"),
+                gp = gpar(lwd=2))
+grid.draw(lg)
+pushViewport(viewport(x=0, y=.6, just="left", width=.4, height=.4, angle = 20))
+grid.rect(gp=gpar(fill="lightblue")) # A translucent box to indicate the new viewport
+grid.draw(lg)
+popViewport()
+```
+
+# A basic box
+
+Now we can start exploring how to use the `Gmics::box` functions. We'll strt with outputting a single box:
+
+```{r basic_box, fig.height=1.5, fig.width=3, message=FALSE}
+library(Gmisc)
+grid.newpage()
+txt <- 
+"Just a plain box
+with some text
+- Note that newline is OK"
+boxGrob(txt)
+```
+
+We can position and style this box as any element:
+
+
+```{r styled_box, fig.height=3, fig.width=3}
+grid.newpage()
+boxGrob("A large\noffset\nyellow\nbox", 
+        width=.8, height=.8, 
+        x=.4, y=.4, 
+        txt_gp = gpar(col="darkblue", cex=2),
+        box_gp = gpar(fill="lightyellow", col="darkblue"))
+```
+
+# A box with proportiions
+
+The `boxPropGrob` is for displaying proportions as the name indicates.
+
+```{r prop_box, fig.height=2, fig.width=4}
+grid.newpage()
+boxPropGrob("A box with proportions", 
+            "Left side", "Right side",
+            prop=.7)
+```
+
+# The box coordinates
+
+The boxes have coordinates that allow you to easily draw lines to and from it. The coordinates are stored in the `coords` attribute. Below is an illustration of the coordinates for the two boxes:
+
+```{r, fig.height=3, fig.width=4}
+grid.newpage()
+smpl_bx <- boxGrob(
+  label = "A simple box",
+  x = .5,
+  y = .9,
+  just = "center")
+
+prop_bx <- boxPropGrob(
+  label = "A split box",
+  label_left = "Left side",
+  label_right = "Right side",
+  x = .5,
+  y = .3,
+  prop = .3,
+  just = "center")
+
+plot(smpl_bx)
+plot(prop_bx)
+
+smpl_bx_coords <- attr(smpl_bx, "coords")
+grid.circle(y = smpl_bx_coords$y, x= smpl_bx_coords$x, r = unit(2, "mm"), gp=gpar(fill="#FFFFFF99", col="black"))
+grid.circle(y = smpl_bx_coords$bottom, x= smpl_bx_coords$right, r = unit(1, "mm"), gp=gpar(fill="red"))
+grid.circle(y = smpl_bx_coords$top, x = smpl_bx_coords$right, r = unit(1, "mm"), gp=gpar(fill="purple"))
+grid.circle(y = smpl_bx_coords$bottom, x = smpl_bx_coords$left, r = unit(1, "mm"), gp=gpar(fill="blue"))
+grid.circle(y = smpl_bx_coords$top, x = smpl_bx_coords$left, r = unit(1, "mm"), gp=gpar(fill="orange"))
+
+prop_bx_coords <- attr(prop_bx, "coords")
+grid.circle(y = prop_bx_coords$y, x= prop_bx_coords$x, r = unit(2, "mm"), gp=gpar(fill="#FFFFFF99", col="black"))
+grid.circle(y = prop_bx_coords$bottom, x= prop_bx_coords$right_x, r = unit(1, "mm"), gp=gpar(fill="red"))
+grid.circle(y = prop_bx_coords$top, x = prop_bx_coords$right_x, r = unit(1, "mm"), gp=gpar(fill="purple"))
+grid.circle(y = prop_bx_coords$bottom, x = prop_bx_coords$left_x, r = unit(1, "mm"), gp=gpar(fill="blue"))
+grid.circle(y = prop_bx_coords$top, x = prop_bx_coords$left_x, r = unit(1, "mm"), gp=gpar(fill="orange"))
+
+grid.circle(y = prop_bx_coords$bottom, x= prop_bx_coords$right, r = unit(2, "mm"), gp=gpar(fill="red"))
+grid.circle(y = prop_bx_coords$top, x = prop_bx_coords$right, r = unit(2, "mm"), gp=gpar(fill="purple"))
+grid.circle(y = prop_bx_coords$bottom, x = prop_bx_coords$left, r = unit(2, "mm"), gp=gpar(fill="blue"))
+grid.circle(y = prop_bx_coords$top, x = prop_bx_coords$left, r = unit(2, "mm"), gp=gpar(fill="orange"))
+
+```
+
+# Connecting the boxes
+
+In order to make connecting boxes with an arrow there is the `connectGrob` function. Here's an example of how you can use it for connecting a set of boxes:
+
+```{r "Connected boxes", fig.width=5, fig.height=5}
+grid.newpage()
+
+# Initiate the boxes that we want to connect
+start <- boxGrob("Top", x=.6, y=.8)
+end <- boxGrob("Bottom", x=.6, y=.2)
+side <- boxPropGrob("Side", "Left", "Right", prop=.3, x=0.05, bjust = "left", y=.8)
+sub_side_left <- boxGrob("Left", x = attr(side, "coords")$left_x, y = .5)
+sub_side_right <- boxGrob("Right", x = attr(side, "coords")$right_x, y = .5)
+exclude <- boxGrob("Exclude:\n - Too sick\n - Prev. surgery", x=.95, y=.5, just="left", bjust = "right")
+
+# Connect the boxes and print/plot them
+connectGrob(start, end, "vertical")
+connectGrob(start, side, "horizontal")
+connectGrob(side, sub_side_left, "v", "l")
+connectGrob(side, sub_side_right, "v", "r")
+connectGrob(start, exclude, "L")
+
+# Print the grobs
+start
+end
+side
+exclude
+sub_side_left
+sub_side_right
+```
+
