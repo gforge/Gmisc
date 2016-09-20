@@ -6,11 +6,11 @@
 \usage{
 getDescriptionStatsBy(x, by, digits = 1, html = TRUE,
   numbers_first = TRUE, statistics = FALSE, statistics.sig_lim = 10^-4,
-  statistics.two_dec_lim = 10^-2, useNA = c("ifany", "no", "always"),
-  useNA.digits = digits, continuous_fn = describeMean,
-  prop_fn = describeProp, factor_fn = describeFactors,
-  show_all_values = FALSE, hrzl_prop = FALSE, add_total_col,
-  total_col_show_perc = TRUE, use_units = FALSE, default_ref,
+  statistics.two_dec_lim = 10^-2, statistics.suppress_warnings = TRUE,
+  useNA = c("ifany", "no", "always"), useNA.digits = digits,
+  continuous_fn = describeMean, prop_fn = describeProp,
+  factor_fn = describeFactors, show_all_values = FALSE, hrzl_prop = FALSE,
+  add_total_col, total_col_show_perc = TRUE, use_units = FALSE, default_ref,
   NEJMstyle = FALSE, percentage_sign = TRUE, header_count, ...)
 }
 \arguments{
@@ -42,6 +42,8 @@ the 0.05 value and thus not as interesting to know the exact proximity to
 0.05. \emph{Disclaimer:} The 0.05-limit is really silly and debated, unfortunately
 it remains a standard and this package tries to adapt to the current standards in order
 to limit publication associated issues.}
+
+\item{statistics.suppress_warnings}{Hide warnings from the statistics function.}
 
 \item{useNA}{This indicates if missing should be added as a separate
 row below all other. See \code{\link[base]{table}} for \code{useNA}-options.
@@ -131,6 +133,10 @@ If you want the function to select functions depending on the type of input
 you can provide a list with the names \code{'continuous'}, \code{'proportion'}, \code{'factor'} and
 the function will choose accordingly. If you fail to define a certain category
 it will default to the above.
+
+You can also use a custom function that returns a string with the attribute 'colname' set that will be appended
+to the results instead of the p-value column.
+to the results instead of the p-value column.
 }
 \examples{
 data(mtcars)

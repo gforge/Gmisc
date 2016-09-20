@@ -129,12 +129,63 @@ test_that("Check factor function",
                   info="Factor percentagess don't match in horizontal mode")
   }
 
+})
+
+test_that("Statistics work as expected",{
+  a <- getDescriptionStatsBy(Loblolly$fvar, Loblolly$young, hrzl_prop=TRUE,
+                             continuous_fn=describeMedian,
+                             statistics=TRUE,
+                             digits=2, statistics.sig_lim=10^-4)
+  
   true_fisher_pval <- txtPval(fisher.test(Loblolly$fvar, Loblolly$young)$p.value,
                               statistics.sig_lim=10^-4)
-
+  
   expect_equivalent(as.character(a[1, "P-value"]),
                     true_fisher_pval)
 
+  a <- getDescriptionStatsBy(Loblolly$fvar, Loblolly$young, hrzl_prop=TRUE,
+                             continuous_fn=describeMedian,
+                             statistics=list("factor" = getPvalFisher),
+                             digits=2, statistics.sig_lim=10^-4)
+  
+  expect_equivalent(as.character(a[1, "P-value"]),
+                    true_fisher_pval)
+
+  expect_error(getDescriptionStatsBy(Loblolly$fvar, Loblolly$young, hrzl_prop=TRUE,
+                                     continuous_fn=describeMedian,
+                                     statistics=list("factor" = getNonExistentPvalueFunction),
+                                     digits=2, statistics.sig_lim=10^-4))
+  
+  a <- getDescriptionStatsBy(Loblolly$fvar, Loblolly$young, hrzl_prop=TRUE,
+                             continuous_fn=describeMedian,
+                             statistics=function(x, by){
+                               return(.2)
+                             },
+                             digits=2, statistics.sig_lim=10^-4)
+  
+  expect_equivalent(as.character(a[1, "P-value"]),
+                    "0.20", "Custom p-value function problem")
+  
+  a <- getDescriptionStatsBy(Loblolly$fvar, Loblolly$young, hrzl_prop=TRUE,
+                             continuous_fn=describeMedian,
+                             statistics=function(x, by){
+                               a <- "test"
+                               attr(a, 'colname') <- "test"
+                               return(a)
+                             },
+                             digits=2, statistics.sig_lim=10^-4)
+  
+  expect_equivalent(as.character(a[1, "test"]),
+                    "test", "Errror when adding a string p-value alternative")
+  
+  expect_error(getDescriptionStatsBy(Loblolly$fvar, Loblolly$young, hrzl_prop=TRUE,
+                                     continuous_fn=describeMedian,
+                                     statistics=function(x, by){
+                                       a <- "test"
+                                       return(a)
+                                     },
+                                     digits=2, statistics.sig_lim=10^-4),
+                info = "The colname attribute must be present")
 })
 
 test_that("Check total column position",{
@@ -423,4 +474,49 @@ test_that("test header", {
   expect_match(colnames(out)[3],
                sprintf("\\(n = %d\\)",
                        sum(mtcars$am != levels(mtcars$am)[1])))
+})
+
+
+test_that("Test use_units", {
+  data(mtcars)
+  
+  mtcars$am <- factor(mtcars$am, levels=0:1, labels=c("Automatic", "Manual"))
+  Hmisc::label(mtcars$am) <- "Transmission"
+  set.seed(666)
+  units(mtcars$mpg) <- "mpg"
+  
+  out1 <- suppressWarnings(
+    getDescriptionStatsBy(
+      x=mtcars$mpg,
+      by=mtcars$am,
+      header_count = TRUE,
+      add_total_col = TRUE,
+      statistics = TRUE
+    ))
+
+  out2 <- suppressWarnings(
+    getDescriptionStatsBy(
+      x=mtcars$mpg,
+      by=mtcars$am,
+      use_units = TRUE,
+      header_count = TRUE,
+      add_total_col = TRUE,
+      statistics = TRUE
+    )
+  )
+  
+  expect_equal(ncol(out1) + 1, ncol(out2))
+
+  out3 <- suppressWarnings(
+    getDescriptionStatsBy(
+      x=mtcars$mpg,
+      by=mtcars$am,
+      use_units = "name",
+      header_count = TRUE,
+      add_total_col = TRUE,
+      statistics = TRUE
+    )
+  )
+  expect_match(Hmisc::label(out3), "\\(mpg\\)")
+  expect_false(grepl("\\(mpg\\)", label(out2)))
 })
