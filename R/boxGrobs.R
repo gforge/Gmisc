@@ -12,6 +12,8 @@
 #'  See the \code{just} option for the \code{\link[grid]{viewport}}
 #' @param txt_gp The \code{\link[grid]{gpar}} style to apply to the text.
 #' @param box_gp The \code{\link[grid]{gpar}} style to apply to the box.
+#' @param name a character identifier for the grob. Used to find the grob on the display 
+#'  list and/or as a child of another grob.
 #'
 #' @return A grob
 #' @export
@@ -31,7 +33,8 @@ boxGrob <- function (label,
                      just = "center",
                      bjust = "center",
                      txt_gp = gpar(color="black"),
-                     box_gp = gpar(fill="#D8F0D1")) {
+                     box_gp = gpar(fill="#D8F0D1"),
+                     name = NULL) {
 
   assert(
     checkString(label),
@@ -52,7 +55,8 @@ boxGrob <- function (label,
   txt_padding <- unit(4, "mm")
   txt <- textGrob(label = label,
                   x = prGetX4Txt(just, txt_padding), y = .5,
-                  just = just, gp = txt_gp)
+                  just = just, gp = txt_gp,
+                  name = "label")
 
   if (missing(height))
     height <- grobHeight(txt) + txt_padding + txt_padding
@@ -65,12 +69,14 @@ boxGrob <- function (label,
     width <- prAsUnit(width)
 
 
-  rect <- roundrectGrob(x=.5, y=.5, gp = box_gp)
+  rect <- roundrectGrob(x=.5, y=.5, gp = box_gp, name = "rect_around")
   gl <- grobTree(gList(rect,
                        txt),
                  vp = viewport(x = x, y = y,
                                width = width, height = height,
-                               just = bjust))
+                               just = bjust),
+                 name = name,
+                 cl = "box")
 
   # Adjust center depending on the viewport position
   x <- prAdjustXPos(bjust, x, width)
@@ -79,16 +85,27 @@ boxGrob <- function (label,
   half_height <- unit(prCnvrtY(height)/2, "mm")
 
   structure(gl,
-            class=c("box", class(gl)),
             coords = list(
               left = x - half_width,
               right = x + half_width,
               bottom = y - half_height,
               top = y + half_height,
               x = x,
-              y = y))
+              y = y,
+              width = width,
+              height = height))
 }
 
+
+#' @rdname box
+#' @export
+widthDetails.box <- function(x) 
+  attr(x, "coords")$width
+
+#' @rdname box
+#' @export
+heightDetails.box <- function(x)
+  attr(x, "coords")$height
 
 #' The print/plot calls the \code{\link[grid]{grid.draw}} function on the object
 #' @param ... Passed to \code{\link[grid]{grid.draw}}
@@ -131,21 +148,22 @@ plot.box <- print.box
 #' grid.newpage()
 #' boxPropGrob("Main label", "Left text", "Right text", prop = .3)
 boxPropGrob <- function (label,
-                          label_left,
-                          label_right,
-                          prop,
-                          y = unit(.5, "npc"),
-                          x = unit(.5, "npc"),
-                          width,
-                          height,
-                          just = "center",
-                          bjust = "center",
-                          txt_gp = gpar(color="black"),
-                          txt_left_gp = gpar(col="black"),
-                          txt_right_gp = gpar(col ="black"),
-                          box_left_gp = gpar(fill="#81BFD4"),
-                          box_right_gp = gpar(fill="#D8F0D1"),
-                          box_highlight_gp = gpar(fill="#ffffff55", col=NA)) {
+                         label_left,
+                         label_right,
+                         prop,
+                         y = unit(.5, "npc"),
+                         x = unit(.5, "npc"),
+                         width,
+                         height,
+                         just = "center",
+                         bjust = "center",
+                         txt_gp = gpar(color="black"),
+                         txt_left_gp = gpar(col="black"),
+                         txt_right_gp = gpar(col ="black"),
+                         box_left_gp = gpar(fill="#81BFD4"),
+                         box_right_gp = gpar(fill="#D8F0D1"),
+                         box_highlight_gp = gpar(fill="#ffffff55", col=NA),
+                         name = NULL) {
 
   assert_label(label)
   assert_label(label_left)
@@ -179,25 +197,31 @@ boxPropGrob <- function (label,
 
   main_label <- NULL
   if (!missing(label)) {
-    main_label <- grobTree(gList(roundrectGrob(gp=box_highlight_gp),
-                                 textGrob(label = label, x = prGetX4Txt(just, txt_padding), y = .5,
-                                          just = just)),
-                           vp = viewport(height=unit(base_txt_height + 2, "mm"), y = 1, just="top"))
+    main_label <- grobTree(
+      name = "main_label",
+      gList(roundrectGrob(gp=box_highlight_gp),
+            textGrob(label = label, 
+                     x = prGetX4Txt(just, txt_padding), y = .5,
+                     just = just,
+                     name = "label")),
+      vp = viewport(height=unit(base_txt_height + 2, "mm"), y = 1, just="top"))
   }
 
   sublabel <- list()
   if (!missing(label_left)){
     sublabel <- c(sublabel,
                   list(textGrob(label = label_left, x = .5, y = 1,
-                           just = "center", vjust = 1,
-                           vp = viewport(x = prop/2, width=prop))))
+                                just = "center", vjust = 1,
+                                vp = viewport(x = prop/2, width=prop),
+                                name = "label_left")))
   }
 
   if (!missing(label_right)){
     sublabel <- c(sublabel,
                   list(textGrob(label = label_right, x = .5, y = 1,
                                 just = "center", vjust = 1,
-                                vp = viewport(x = prop + (1-prop)-(1-prop)/2, width=1-prop))))
+                                vp = viewport(x = prop + (1-prop)-(1-prop)/2, width=1-prop),
+                                name = "label_right")))
   }
 
   if (length(sublabel) == 0) {
@@ -211,16 +235,19 @@ boxPropGrob <- function (label,
       main_label,
       grobTree(
         sublabel,
+        name = "sublabel",
         vp = viewport(y = 0, just = "bottom",
-                           height = unit(1, "npc") - unit(base_txt_height, "mm") - spacer$y))),
+                      height = unit(1, "npc") - unit(base_txt_height, "mm") - spacer$y))),
     vp = viewport(height = unit(1, "npc") - txt_padding - txt_padding,
                   width = unit(1, "npc") - txt_padding - txt_padding,
-                  clip="on"))
+                  clip="on"),
+    name = name,
+    cl = "boxProp")
 
 
   # Calculate the width of the grob
   base_width <-
-    max(prCnvrtX(grobWidth(textGrob(txt))),
+    max(prCnvrtX(grobWidth(textGrob(label))),
         (prCnvrtX(grobWidth(textGrob(label_left))) +
            prCnvrtX(spacer$x)+
            prCnvrtX(grobWidth(textGrob(label_right))))
@@ -253,12 +280,12 @@ boxPropGrob <- function (label,
                                width=width, x=1, just="right",
                                vp=viewport(x=1, just="right", width=1-prop, clip="on")),
                  txt,
-                 vp = viewport(x = x, y = y, width = width, height = height, just = bjust))
+                 vp = viewport(x = x, y = y, width = width, height = height, just = bjust),
+                 cl = "box")
   x <- prAdjustXPos(bjust, x, width)
   y <- prAdjustYPos(bjust, y, height)
 
   structure(gl,
-            class=c("box", class(gl)),
             coords = list(
               left = x - half_width,
               right = x + half_width,
@@ -271,7 +298,9 @@ boxPropGrob <- function (label,
                 unit(prCnvrtX(width)*prop +
                        prCnvrtX(width)*(1-prop)/2,
                      "mm"),
-              y = y)
+              y = y,
+              height = height, 
+              width = width)
             )
 }
 

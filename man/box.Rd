@@ -2,13 +2,19 @@
 % Please edit documentation in R/boxGrobs.R
 \name{boxGrob}
 \alias{boxGrob}
+\alias{heightDetails.box}
 \alias{plot.box}
 \alias{print.box}
+\alias{widthDetails.box}
 \title{Create a box with text}
 \usage{
 boxGrob(label, y = unit(0.5, "npc"), x = unit(0.5, "npc"), width, height,
   just = "center", bjust = "center", txt_gp = gpar(color = "black"),
-  box_gp = gpar(fill = "#D8F0D1"))
+  box_gp = gpar(fill = "#D8F0D1"), name = NULL)
+
+\method{widthDetails}{box}(x)
+
+\method{heightDetails}{box}(x)
 
 \method{print}{box}(x, ...)
 
@@ -33,6 +39,9 @@ See the \code{just} option for the \code{\link[grid]{viewport}}}
 \item{txt_gp}{The \code{\link[grid]{gpar}} style to apply to the text.}
 
 \item{box_gp}{The \code{\link[grid]{gpar}} style to apply to the box.}
+
+\item{name}{a character identifier for the grob. Used to find the grob on the display 
+list and/or as a child of another grob.}
 
 \item{...}{Passed to \code{\link[grid]{grid.draw}}}
 }

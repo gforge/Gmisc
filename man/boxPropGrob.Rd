@@ -9,7 +9,7 @@ boxPropGrob(label, label_left, label_right, prop, y = unit(0.5, "npc"),
   txt_gp = gpar(color = "black"), txt_left_gp = gpar(col = "black"),
   txt_right_gp = gpar(col = "black"), box_left_gp = gpar(fill = "#81BFD4"),
   box_right_gp = gpar(fill = "#D8F0D1"), box_highlight_gp = gpar(fill =
-  "#ffffff55", col = NA))
+  "#ffffff55", col = NA), name = NULL)
 }
 \arguments{
 \item{label}{The label to print}
@@ -44,6 +44,9 @@ See the \code{just} option for the \code{\link[grid]{viewport}}}
 \item{box_right_gp}{The \code{\link[grid]{gpar}} style to apply to the right box.}
 
 \item{box_highlight_gp}{The \code{\link[grid]{gpar}} style to apply to the background of the main label.}
+
+\item{name}{a character identifier for the grob. Used to find the grob on the display 
+list and/or as a child of another grob.}
 }
 \value{
 A box grob
