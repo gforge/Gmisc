@@ -1,5 +1,9 @@
 NEWS for the Gmisc package
 
+Changes for 1.4.1
+-----------------
+* Fixed merge with master external descGetMissing (Thanks Peter)
+
 Changes for 1.4
 ---------------
 * Added grid grobs for creating boxes and connecting these with lines
