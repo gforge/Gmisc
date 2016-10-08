@@ -14,7 +14,7 @@ for \code{\link[grDevices]{colorRampPalette}}.}
 between 0 and 1. If you leave this out then the full color
 span will be returned.}
 
-\item{space}{If there is little or no difference exists
+\item{space}{If there is little or no difference
 at the low/high proportions of the spectrum then it
 can be of interest to focus the color change to the center
 leaving the tails constant}
@@ -26,7 +26,7 @@ leaving the tails constant}
  or multiple colors as character vector (see \code{\link[grDevices]{rgb}})
 }
 \description{
-Used in order to illustrate the mixe between two
+Used in order to illustrate the mix between two
 proportions in the \code{\link{transitionPlot}}.
 }
 \keyword{internal}

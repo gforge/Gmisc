@@ -19,7 +19,7 @@ bezierArrowGradient(x = c(0.2, 0.7, 0.3, 0.9), y = c(0.2, 0.2, 0.9, 0.9),
     spline control points.}
 
 \item{width}{The width of the arrow, either a numeric single number or a unit. \strong{Note:}
-The arrow does not rely on lwd but on actual width.}
+The arrow does not rely on \code{lwd} but on actual width.}
 
 \item{clr}{The color of the arrow. This is the main color of the arrow and not the gradient color.}
 
@@ -39,7 +39,7 @@ consists of three things:
 (1) the central band,
 (2) the slimming of the central band,
 (3) the color shift into the arrow color.
-\emph{Note} that the the slimmin and color proportions can be overlapping.}
+\emph{Note} that the the slimming and color proportions can be overlapping.}
 
 \item{grdt_decrease_prop}{The proportion of the gradient that should be decreasing,
 i.e. narrowing according to the \code{grdt_type} argument.}

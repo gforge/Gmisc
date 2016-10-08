@@ -17,7 +17,7 @@ prTcPlotArrows(trnstn_set, widths, type = c("simple", "gradient"), clr, rez,
 
 \item{clr}{The arrow colors (a matrix)}
 
-\item{rez}{The arrow rezolution}
+\item{rez}{The arrow resolution}
 
 \item{origin_boxes}{The origin boxes' positions to the left}
 

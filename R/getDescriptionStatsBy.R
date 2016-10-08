@@ -73,20 +73,20 @@
 #'  You can also specify if you want the total column "first" or "last"
 #'  in the column order.
 #' @param total_col_show_perc This is by default true but if
-#'  requested the percentages are surpressed as this sometimes may be confusing.
+#'  requested the percentages are suppressed as this sometimes may be confusing.
 #' @param use_units If the Hmisc package's units() function has been employed
 #'  it may be interesting to have a column at the far right that indicates the
 #'  unit measurement. If this column is specified then the total column will
-#'  appear before the units (if specified as last). You can also set he value to
+#'  appear before the units (if specified as last). You can also set the value to
 #'  \code{"name"} and the units will be added to the name as a parenthesis,
 #'  e.g. Age (years).
-#' @param percentage_sign If you want to surpress the percentage sign you
+#' @param percentage_sign If you want to suppress the percentage sign you
 #'  can set this variable to FALSE. You can also choose something else that
 #'  the default \% if you so wish by setting this variable.
 #' @param header_count Set to \code{TRUE} if you want to add a header count,
 #'  e.g. Smoking; No. 25 observations, where there is a new line after the
 #'  factor name. If you want a different text for the second line you can
-#'  speficy use the \code{\link[base]{sprintf}} formatting, e.g. "No. \%s patients".
+#'  specifically use the \code{\link[base]{sprintf}} formatting, e.g. "No. \%s patients".
 #' @param ... Currently only used for generating warnings of deprecated call
 #'  parameters.
 #' @return Returns a vector if vars wasn't specified and it's a
@@ -223,7 +223,7 @@ getDescriptionStatsBy <- function(x,
          " This error is most frequently caused by referencing an old",
          " variable name that doesn't exist anymore")
   if(is.null(by))
-    stop("You haven't provided an by-value to do the statistics by.",
+    stop("You haven't provided a by-value to do the statistics by.",
          " This error is most frequently caused by referencing an old",
          " variable name that doesn't exist anymore")
 
@@ -365,7 +365,7 @@ getDescriptionStatsBy <- function(x,
                       tolower(name))
 
     if (NEJMstyle) {
-      # LaTeX needs and escape before %
+      # LaTeX needs an escape before %
       # or it marks the rest of the line as
       # a comment. This is not an issue with
       # html (markdown)
@@ -464,7 +464,7 @@ getDescriptionStatsBy <- function(x,
     }
 
     if (nrow(total_table) != nrow(results)){
-      stop("There is an discrepancy in the number of rows in the total table",
+      stop("There is a discrepancy in the number of rows in the total table",
            " and the by results: ", nrow(total_table), " total vs ", nrow(results), " results",
            "\n Rows total:", paste(rownames(total_table), collapse=", "),
            "\n Rows results:", paste(rownames(results), collapse=", "))

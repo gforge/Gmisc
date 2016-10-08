@@ -17,7 +17,7 @@ bezierArrowSmpl(x = c(0.2, 0.7, 0.3, 0.9), y = c(0.2, 0.2, 0.9, 0.9),
     spline control points.}
 
 \item{width}{The width of the arrow, either a numeric single number or a unit. \strong{Note:}
-The arrow does not rely on lwd but on actual width.}
+The arrow does not rely on \code{lwd} but on actual width.}
 
 \item{clr}{The color of the arrow.}
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/transitionPlot_helpers.R
 \name{prTpGetBoxPropClr}
 \alias{prTpGetBoxPropClr}
-\title{A gets the color for the given box}
+\title{Gets the color for the given box}
 \usage{
 prTpGetBoxPropClr(clr, no_boxes, lengthOneOK = FALSE)
 }
@@ -19,7 +19,7 @@ a matrix, a vector of length two, or a single color}
  If function fails then return \code{NULL}
 }
 \description{
-A gets the color for the given box
+Gets the color for the given box
 }
 \keyword{internal}
 

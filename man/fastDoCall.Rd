@@ -35,7 +35,7 @@ enhancing the function.
 While the function attempts to do most of what \code{\link[base]{do.call}}
 can it has limitations. It can currently not parse the example code from the
 original function: \code{do.call(paste, list(as.name("A"), as.name("B")), quote = TRUE)}
-and the funcitonality of \code{quote} has not been thoroughly tested.
+and the functionality of \code{quote} has not been thoroughly tested.
 }
 \examples{
 fastDoCall("complex", list(imaginary = 1:3))

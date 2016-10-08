@@ -1,4 +1,4 @@
-#' Formatter wrapper for \code{\link[rmarkdown]{html_document}} facilitate easier porting to docx
+#' Formatter wrapper for \code{\link[rmarkdown]{html_document}}, facilitates easier porting to docx
 #'
 #' This function adds the option of having adaptations needed for seemless integration with
 #' MS Word for importing html-documents in the .docx-format. The advantage of html documents is
@@ -14,7 +14,7 @@
 #' @param ... Passed onto \code{\link[rmarkdown]{html_document}}.
 #' @param self_contained Overrides the default \code{TRUE} for
 #'  \code{\link[rmarkdown]{html_document}} to \code{FALSE} as
-#'  LibreOffice can't hangs on long lines such as the base64
+#'  LibreOffice hangs on long lines such as the base64
 #'  images included in the self-contained version.
 #' @param mathjax The advanced mathjax does not work with with
 #'  Word/LibreOffice.
@@ -260,7 +260,7 @@ prFtpOtherChanges <- function(output_str){
   return(output_str)
 }
 
-#' Fixes the caption back fro elements withou
+#' Fixes the caption for elements without caption
 #'
 #' @param outFile The name of the file
 #' @return outFile The name of the file

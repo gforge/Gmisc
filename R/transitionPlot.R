@@ -1,6 +1,6 @@
 #' A transition plot
 #'
-#' This plot purpose is to illustrate how states change before and
+#' This plot's purpose is to illustrate how states change before and
 #' after. In my research I use it before surgery and after surgery
 #' but it can be used in any situation where you have a change from
 #' one state to another
@@ -25,16 +25,16 @@
 #' @param box_width The width of the box. By default the box is one fourth of
 #'  the plot width.
 #' @param fill_start_box The fill color of the start boxes. This can either
-#'  be a single value ore a vector if you desire different colors for each
+#'  be a single value or a vector if you desire different colors for each
 #'  box. If you specify box_prop then this has to be a 2 column matrix.
 #' @param txt_start_clr The text color of the start boxes. This can either
-#'  be a single value ore a vector if you desire different colors for each
+#'  be a single value or a vector if you desire different colors for each
 #'  box. If you specify box_prop then this has to be a 2 column matrix.
 #' @param fill_end_box The fill color of the end boxes. This can either
-#'  be a single value ore a vector if you desire different colors for each
+#'  be a single value or a vector if you desire different colors for each
 #'  box. If you specify box_prop then this has to be a 2 column matrix.
 #' @param txt_end_clr The text color of the end boxes. This can either
-#'  be a single value ore a vector if you desire different colors for each
+#'  be a single value or a vector if you desire different colors for each
 #'  box. If you specify box_prop then this has to be a 2 column matrix.
 #' @param cex The cex \code{\link{gpar}} of the text
 #' @param min_lwd The minimum width of the line that we want to illustrate the
@@ -59,7 +59,7 @@
 #'  multiplication of the current line width. In case of non-grid arrows then you can also have this
 #'  as a unit which is recommended as it looks better. If the scalar is < 1 then the overlap is ignored.
 #' @param box_prop If you want the boxes to have proportions indicating some other factors then input
-#'  a matrix with quantiles for the proportions. Note the size mus be \code{nrow(transition_flow) x 2}.
+#'  a matrix with quantiles for the proportions. Note the size must be \code{nrow(transition_flow) x 2}.
 #' @param mar A numerical vector of the form c(bottom, left, top, right) of the type \code{unit()}
 #' @param main The title of the plot if any, default \code{NULL}
 #' @param box_label A vector of length 2 if you want to label each box column
@@ -72,7 +72,7 @@
 #' @param color_bar_labels The labels of the two proportions that make up the color bar.
 #'  Defaults to the labels of the third dimension for the \code{transition_flow}
 #'  argument.
-#' @param color_bar_subspace If there is little or no difference exists
+#' @param color_bar_subspace If there is little or no difference
 #'  at the low/high proportions of the spectrum then it
 #'  can be of interest to focus the color change to the center
 #'  leaving the tails constant
@@ -214,7 +214,7 @@ transitionPlot <- function (transition_flow,
   }
 
   if (length(arrow_clr) != no_boxes*ncol(transition_flow))
-    stop("You have provided invalid number of arrow colors,",
+    stop("You have provided an invalid number of arrow colors,",
       " you have ", length(arrow_clr), " colors, while you should provide either 1, ",
       no_boxes, ", or ", no_boxes*ncol(transition_flow), " colors")
 

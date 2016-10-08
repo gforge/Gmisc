@@ -76,12 +76,12 @@ You can also specify if you want the total column "first" or "last"
 in the column order.}
 
 \item{total_col_show_perc}{This is by default true but if
-requested the percentages are surpressed as this sometimes may be confusing.}
+requested the percentages are suppressed as this sometimes may be confusing.}
 
 \item{use_units}{If the Hmisc package's units() function has been employed
 it may be interesting to have a column at the far right that indicates the
 unit measurement. If this column is specified then the total column will
-appear before the units (if specified as last). You can also set he value to
+appear before the units (if specified as last). You can also set the value to
 \code{"name"} and the units will be added to the name as a parenthesis,
 e.g. Age (years).}
 
@@ -91,14 +91,14 @@ it defaults to the first value.}
 
 \item{NEJMstyle}{Adds - no (\%) at the end to proportions}
 
-\item{percentage_sign}{If you want to surpress the percentage sign you
+\item{percentage_sign}{If you want to suppress the percentage sign you
 can set this variable to FALSE. You can also choose something else that
 the default \% if you so wish by setting this variable.}
 
 \item{header_count}{Set to \code{TRUE} if you want to add a header count,
 e.g. Smoking; No. 25 observations, where there is a new line after the
 factor name. If you want a different text for the second line you can
-speficy use the \code{\link[base]{sprintf}} formatting, e.g. "No. \%s patients".}
+specifically use the \code{\link[base]{sprintf}} formatting, e.g. "No. \%s patients".}
 
 \item{...}{Currently only used for generating warnings of deprecated call
 parameters.}

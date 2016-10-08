@@ -1,6 +1,6 @@
 #' Deprecated function(s) in \pkg{Gmisc}
 #'
-#' The \code{forestplot2} has move to \pkg{forestplot} package and changed name to \code{\link[forestplot]{forestplot}}
+#' The \code{forestplot2} has moved to \pkg{forestplot} package and changed name to \code{\link[forestplot]{forestplot}}
 #'
 #' @param ... Parameters to be passed to the new version of the function
 #' @export

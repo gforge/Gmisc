@@ -1,4 +1,4 @@
-# This file contains all the helper funcitons that the outer exported
+# This file contains all the helper functions that the outer exported
 # functions utilize. I try to have a pr at the start of the name for all
 # the private functions.
 #
@@ -77,41 +77,6 @@ prGetStatistics <- function(x,
   return(total_table)
 }
 
-
-#' A functuon for converting a show_missing variable.
-#'
-#' The variable is suppose to be directly compatible with
-#' \code{\link[base]{table}}(..., useNA=show_missing). It throughs an error
-#' if not compatible. \emph{Deprecated:} This function will be deprecated
-#' as all functions now use the useNA style in order to comply
-#' with standard R naming.
-#'
-#' @param show_missing Boolean or "no", "ifany", "always"
-#' @return string
-#'
-#' @keywords internal
-prConvertShowMissing <- function(show_missing){
-  if (missing(show_missing) ||
-        show_missing == FALSE ||
-        show_missing == "no"){
-    return("no")
-  }
-
-  if (show_missing == TRUE){
-    return("ifany")
-  }
-
-  if (!show_missing %in% c("no", "ifany", "always"))
-    stop("You have set an invalid option for show_missing variable",
-         " '", show_missing, "' - it should be TRUE/FALSE",
-         " or one of the options: no, ifany or always.")
-
-  if (length(show_missing) > 1)
-    stop("You have an invalid show_missing variable of more than one elements: ", length(show_missing))
-
-  return(show_missing)
-}
-
 #' A helper function for the description stats
 #'
 #' @param x The variable of interest with the levels
@@ -136,37 +101,6 @@ prDescGetAndValidateDefaultRef <- function(x, default_ref){
       " as this is only used for factors.")
 
   return(default_ref)
-}
-
-
-#' Gets missing stats
-#'
-#' Gets the missing row for \code{\link{describeMean}}
-#' and \code{\link{describeMedian}}.
-#'
-#' @inheritParams describeMean
-#' @return \code{vector} A vector with the missing estimate
-#' @keywords internal
-prDescGetMissing <- function (x,
-                              html,
-                              number_first,
-                              percentage_sign,
-                              language,
-                              useNA.digits,
-                              dot_args) {
-  df_arg_list <- list(x = is.na(x),
-                      html = html,
-                      number_first = number_first,
-                      percentage_sign=percentage_sign,
-                      language = language,
-                      digits = useNA.digits)
-  for (n in names(dot_args)){
-    if (!n %in% names(df_arg_list)){
-      df_arg_list[[n]] <- dot_args[[n]]
-    }
-  }
-  missing <- fastDoCall(describeFactors, df_arg_list)
-  return(missing["TRUE", ])
 }
 
 #' Pushes viewport with margins
@@ -232,7 +166,7 @@ prPushMarginViewport <- function(bottom, left, top, right, name="margin"){
 #' @param base_cex The base cex used for the plot
 #' @param cex_mult The multiplier of the base - i.e. the increase of the
 #'  text size for the title as compared to the general
-#' @param fontface The type of fontfacte
+#' @param fontface The type of fontface
 #' @param space_below The space below, defaults to 1/5 of the title height
 #' @return \code{NULL} The function does not return a value
 #'

@@ -15,13 +15,13 @@
 #'  \code{\link{bezierArrowSmpl}}. \emph{Note} The bezierGrob ("grid") has been deprecated
 #'  as it is no longer faster than the bezierArrows and there is a difference in design.
 #' @field arrow_clr The arrow color
-#' @field arrow_rez The rezolution of the arrow
+#' @field arrow_rez The resolution of the arrow
 #' @field vertical_space The space between the boxes
 #' @field fill_clr The box fill color
 #' @field clr_bar Shows a color bar if there are proportions. Can be \code{"none"}, \code{"top"}, \code{"bottom"}
 #' @field clr_bar_clrs Extracts the colors for the colorbar from the \code{fill_clr} if none is provided
 #' @field clr_bar_cex The size of the ticks in the color bar
-#' @field clr_bar_subspace  If there is little or no difference exists at the low/high proportions of
+#' @field clr_bar_subspace  If little or no difference exists at the low/high proportions of
 #'  the spectrum then it can be of interest to focus the color change to the center leaving the tails constant
 #' @field clr_bar_labels The labels of the color bars. Defaults to the dimnames for the proportions.
 #' @field txt_clr The text color within the boxes
@@ -63,7 +63,7 @@ Transition <-
           stop("Your transition matrices have different dimensions: ",
                paste(dims, collapse = ":"))
         if(!dims[1] %in% 2:3)
-          stop("The dimensions of the transition matrix has to be between 2 and 3.",
+          stop("The dimension of the transition matrix has to be between 2 and 3.",
                " This means that the stored transitions should have an additional dimension",
                " in order to allow for multiple transitions.")
         data$transitions <<- value
@@ -270,7 +270,7 @@ Transition <-
         if (length(value) != 1 ||
             value < 1 ||
             round(value) != value)
-          stop("Invalid arrow rezolution, needs to be integer between 1 -> Inf")
+          stop("Invalid arrow resolution, needs to be integer between 1 -> Inf")
 
         data$arrow_rez <<- value
       },
@@ -800,7 +800,7 @@ Transition <-
         return(length(transitions) + 1)
       },
       arrowWidths = function(set_no, add_width){
-        "Retreives the details regarding arrow sizes for each arrow within the transition
+        "Retrieves the details regarding arrow sizes for each arrow within the transition
         group"
         trnstn_set <- .self$getTransitionSet(set_no, reduce_dim = TRUE)
 
@@ -878,8 +878,8 @@ Transition <-
         return(mtrx)
       },
       boxSizes = function(col){
-        "Gets the size of the boxes. The \\code{col} argumente shoud
-        is either an integer or 'last'"
+        "Gets the size of the boxes. The \\code{col} argument should
+        be either an integer or 'last'"
         if (is.character(col)){
           if(col == "last"){
             col <- .self$noCols()

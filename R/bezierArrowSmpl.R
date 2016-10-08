@@ -6,7 +6,7 @@
 #'
 #' @inheritParams grid::bezierGrob
 #' @param width The width of the arrow, either a numeric single number or a unit. \strong{Note:}
-#'  The arrow does not rely on lwd but on actual width.
+#'  The arrow does not rely on \code{lwd} but on actual width.
 #' @param clr The color of the arrow.
 #' @param arrow This is a list with all the \strong{base} (width) and the desired
 #' \strong{length} for the arrow. \strong{Note:} This differs from the original
@@ -131,7 +131,7 @@ bezierArrowSmpl <- function(x = c(0.2, .7, .3, .9),
     align_2_axis <- attr(lines, "axis")
   }
 
-  # Change evrything to default.units from internal
+  # Change everything to default.units from internal
   lines <- lapply(lines,
                   function(x) lapply(x, function(xx) unit(xx, internal.units)))
   lines$left$x <- convertX(lines$left$x, unitTo=default.units)
