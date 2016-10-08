@@ -12,7 +12,7 @@
 
 <meta name="author" content="Max Gordon" />
 
-<meta name="date" content="2016-09-20" />
+<meta name="date" content="2016-09-28" />
 
 <title>The fastest way to compile your Table 1?</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">The fastest way to compile your Table 1?</h1>
 <h4 class="author"><em>Max Gordon</em></h4>
-<h4 class="date"><em>2016-09-20</em></h4>
+<h4 class="date"><em>2016-09-28</em></h4>
 
 
 <div id="TOC">
@@ -109,10 +109,8 @@ mtcars$col &lt;-<span class="st"> </span><span class="kw">factor</span>(<span cl
 <div id="the-basics-of-getdescriptionstatsby" class="section level1">
 <h1>The basics of getDescriptionStatsBy</h1>
 <p>The function <code>getDescriptionStatsBy</code> is a simple way to do basic descriptive statistics. Mandatory inputs are the first two, <em>x</em> and <em>by</em>:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(Gmisc)</code></pre></div>
-<pre><code>## Loading required package: Rcpp</code></pre>
-<pre><code>## Loading required package: htmlTable</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">getDescriptionStatsBy</span>(<span class="dt">x =</span> mtcars$mpg, 
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(Gmisc)
+<span class="kw">getDescriptionStatsBy</span>(<span class="dt">x =</span> mtcars$mpg, 
                       <span class="dt">by =</span> mtcars$am)</code></pre></div>
 <pre><code>## Gas 
 ##     Automatic            Manual              
@@ -217,7 +215,7 @@ Color
   black
 </td>
 <td style="text-align: center;">
-6 (32%)
+7 (37%)
 </td>
 <td style="text-align: center;">
 5 (38%)
@@ -228,10 +226,10 @@ Color
   red
 </td>
 <td style="text-align: center;">
-8 (42%)
+7 (37%)
 </td>
 <td style="text-align: center;">
-4 (31%)
+5 (38%)
 </td>
 </tr>
 <tr>
@@ -242,7 +240,7 @@ Color
 5 (26%)
 </td>
 <td style="text-align: center;">
-4 (31%)
+3 (23%)
 </td>
 </tr>
 <tr>
@@ -351,7 +349,7 @@ Color
   black
 </td>
 <td style="text-align: center;">
-6 (32%)
+7 (37%)
 </td>
 <td style="text-align: center;">
 5 (38%)
@@ -362,10 +360,10 @@ Color
   red
 </td>
 <td style="text-align: center;">
-8 (42%)
+7 (37%)
 </td>
 <td style="text-align: center;">
-4 (31%)
+5 (38%)
 </td>
 </tr>
 <tr>
@@ -376,7 +374,7 @@ Color
 5 (26%)
 </td>
 <td style="text-align: center;">
-4 (31%)
+3 (23%)
 </td>
 </tr>
 <tr>
@@ -512,7 +510,7 @@ Weight†
 Color
 </td>
 <td style="text-align: center;">
-0.82
+1.0
 </td>
 </tr>
 <tr>
@@ -520,7 +518,7 @@ Color
   black
 </td>
 <td style="text-align: center;">
-6 (32%)
+7 (37%)
 </td>
 <td style="text-align: center;">
 5 (38%)
@@ -533,10 +531,10 @@ Color
   red
 </td>
 <td style="text-align: center;">
-8 (42%)
+7 (37%)
 </td>
 <td style="text-align: center;">
-4 (31%)
+5 (38%)
 </td>
 <td style="text-align: center;">
 </td>
@@ -549,7 +547,7 @@ Color
 5 (26%)
 </td>
 <td style="text-align: center;">
-4 (31%)
+3 (23%)
 </td>
 <td style="text-align: center;">
 </td>
@@ -696,7 +694,7 @@ Weight†
 Color
 </td>
 <td style="text-align: center;">
-0.81
+0.98
 </td>
 </tr>
 <tr>
@@ -704,7 +702,7 @@ Color
   black
 </td>
 <td style="text-align: center;">
-6 (32%)
+7 (37%)
 </td>
 <td style="text-align: center;">
 5 (38%)
@@ -717,10 +715,10 @@ Color
   red
 </td>
 <td style="text-align: center;">
-8 (42%)
+7 (37%)
 </td>
 <td style="text-align: center;">
-4 (31%)
+5 (38%)
 </td>
 <td style="text-align: center;">
 </td>
@@ -733,7 +731,7 @@ Color
 5 (26%)
 </td>
 <td style="text-align: center;">
-4 (31%)
+3 (23%)
 </td>
 <td style="text-align: center;">
 </td>

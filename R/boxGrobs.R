@@ -313,9 +313,11 @@ boxPropGrob <- function (label,
 #' @param end The end box
 #' @param type How the boxes are stacked. The \code{L} alternative generates a
 #'  straight line up/down and then turns to righT/left for connecting with the end.
+#'  The \code{-} generates a straight horizontal arrow.
 #' @param subelmnt If we have a split box we can specify the right/left x as the
 #'  connector point.
-#' @param lty_gp The \code{\link[grid]{gpar}} for the line
+#' @param lty_gp The \code{\link[grid]{gpar}} for the line.
+#' @param arrow_obj The arrow spec according to \code{\link[grid]{arrow}}.
 #'
 #' @return grob with an arrow
 #' @export
@@ -327,14 +329,16 @@ boxPropGrob <- function (label,
 connectGrob <- function(
   start,
   end,
-  type = c("vertical", "horizontal", "L"),
+  type = c("vertical", "horizontal", "L", "-"),
   subelmnt = c("right", "left"),
-  lty_gp = gpar(fill="black"))
+  lty_gp = gpar(fill="black"),
+  arrow_obj = arrow(ends = "last", type = "closed"))
 {
   assert_class(start, "box")
   assert_class(end, "box")
   assert_class(lty_gp, "gpar")
-
+  assert_class(arrow_obj, "arrow")
+  
   # We use the coordinates provided with the boxes
   start <- attr(start, "coords")
   end <- attr(end, "coords")
@@ -356,8 +360,12 @@ connectGrob <- function(
   line <- list()
   cnvrt <- function(val)
     convertHeight(val, unitTo = "mm", valueOnly = TRUE)
-  if (type == "L") {
-    line$y <- unit.c(start$bottom, end$y, end$y)
+  if (type %in% c("L", "-")) {
+    if (type == "-") {
+      line$y <- unit.c(end$y, end$y, end$y)
+    }else{
+      line$y <- unit.c(start$bottom, end$y, end$y)
+    }
     if (cnvrt(getX4elmnt(start, "x")) < cnvrt(getX4elmnt(end, "x"))) {
       line$x <- unit.c(getX4elmnt(start, "x"), getX4elmnt(start, "x"), end$left)
     }else{
@@ -381,8 +389,8 @@ connectGrob <- function(
 
   lg <- linesGrob(x = line$x,
                   y = line$y,
-                  gp = gpar(fill="black"),
-                  arrow = arrow(ends = "last", type = "closed"))
+                  gp = lty_gp,
+                  arrow = arrow_obj)
   structure(lg,
             class = c("connect_boxes", class(lg)))
 }

@@ -108,7 +108,7 @@ grid.circle(y = prop_bx_coords$top, x = prop_bx_coords$left, r = unit(2, "mm"), 
 grid.newpage()
 
 # Initiate the boxes that we want to connect
-start <- boxGrob("Top", x=.6, y=.8)
+start <- boxGrob("Top", x=.6, y=.8, box_gp = gpar(fill = "yellow"))
 end <- boxGrob("Bottom", x=.6, y=.2)
 side <- boxPropGrob("Side", "Left", "Right", prop=.3, x=0.05, bjust = "left", y=.8)
 sub_side_left <- boxGrob("Left", x = attr(side, "coords")$left_x, y = .5)
@@ -120,7 +120,8 @@ connectGrob(start, end, "vertical")
 connectGrob(start, side, "horizontal")
 connectGrob(side, sub_side_left, "v", "l")
 connectGrob(side, sub_side_right, "v", "r")
-connectGrob(start, exclude, "L")
+connectGrob(start, exclude, "-", 
+            lty_gp = gpar(lwd=2, col="darkred", fill="darkred"))
 
 # Print the grobs
 start

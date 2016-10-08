@@ -6,8 +6,9 @@
 \alias{print.connect_boxes}
 \title{Connect boxes with an arrow}
 \usage{
-connectGrob(start, end, type = c("vertical", "horizontal", "L"),
-  subelmnt = c("right", "left"), lty_gp = gpar(fill = "black"))
+connectGrob(start, end, type = c("vertical", "horizontal", "L", "-"),
+  subelmnt = c("right", "left"), lty_gp = gpar(fill = "black"),
+  arrow_obj = arrow(ends = "last", type = "closed"))
 
 \method{print}{connect_boxes}(x, ...)
 
@@ -19,12 +20,15 @@ connectGrob(start, end, type = c("vertical", "horizontal", "L"),
 \item{end}{The end box}
 
 \item{type}{How the boxes are stacked. The \code{L} alternative generates a
-straight line up/down and then turns to righT/left for connecting with the end.}
+straight line up/down and then turns to righT/left for connecting with the end.
+The \code{-} generates a straight horizontal arrow.}
 
 \item{subelmnt}{If we have a split box we can specify the right/left x as the
 connector point.}
 
-\item{lty_gp}{The \code{\link[grid]{gpar}} for the line}
+\item{lty_gp}{The \code{\link[grid]{gpar}} for the line.}
+
+\item{arrow_obj}{The arrow spec according to \code{\link[grid]{arrow}}.}
 
 \item{x}{The grob to print/plot}
 
