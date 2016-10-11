@@ -63,3 +63,15 @@ test_that("Box auto height", {
     convertY(unitTo = "mm", valueOnly = TRUE)
   expect_lt(A, AA, label = "Prop box height should be defined from the width of the text")
 })
+
+test_that("Box adjustment and coord consistency", {
+  txt <- "AAAAAAAAAA\n  - BBBB"
+  bx1 <- boxGrob(txt, x=.8)
+  bx2 <- boxGrob(txt, 
+                 x = coords(bx1)$left, 
+                 bjust="left")
+  diff <- sum(sapply(coords(bx1), function(x) convertUnit(x, unitTo = "npc", valueOnly = TRUE)) -
+                sapply(coords(bx2), function(x) convertUnit(x, unitTo = "npc", valueOnly = TRUE)))
+  
+  expect_equal(diff, 0)
+})

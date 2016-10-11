@@ -1,5 +1,9 @@
 NEWS for the Gmisc package
 
+Changes for 1.4.2
+-----------------
+* Added box functions between and coords
+
 Changes for 1.4.1
 -----------------
 * Fixed merge with master external descGetMissing (Thanks Peter)

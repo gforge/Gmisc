@@ -459,3 +459,67 @@ prConvTxt2Height <- function(str){
     unit("lines") %>%
     prCnvrtY
 }
+
+#' Get the box coordinates
+#' 
+#' Retrieves the boxes \code{"coords"} attribute.
+#' 
+#' @param box The boxGrob
+#' @return A list with the cooordinates
+#' 
+#' @importFrom checkmate assert_class assert checkString checkNumeric
+#' @export
+#' @examples
+#' box <- boxGrob("A test box")
+#' coords(box)
+coords <- function(box) {
+  assert_class(box, "box")
+  attr(box, "coords")
+}
+
+#' Get the distance between boxes
+#' 
+#' Retrieves the distance between two boxes as "npc" units
+#' 
+#' @param box1 The first boxGrob
+#' @param box2 The second boxGrob
+#' @param type Wheter we should retrieve the vertical or horizontal difference
+#' @param half If set to true it returns half the distance. This is convenient
+#'  when postioning boxes between eachother.
+#' @return a unit
+#' 
+#' @importFrom checkmate assert_class assert checkString checkNumeric
+#' @export
+#' @examples
+#' box1 <- boxGrob("A test box", y=.8)
+#' box2 <- boxGrob("Another test box", y=.2)
+#' distance(box1, box2, "v")
+distance <- function(box1, box2, type=c("vertical", "horizontal"), half=FALSE) {
+  assert_class(box1, "box")
+  assert_class(box2, "box")
+  type <- match.arg(type)
+  box1 <- coords(box1)
+  box2 <- coords(box2)
+  if (type == "vertical") {
+    if (prCnvrtY(box1$y) < prCnvrtY(box2$y)) {
+      ret <- 
+        (prCnvrtY(box2$bottom) - prCnvrtY(box2$top))
+    }else{
+      ret <- 
+        (prCnvrtY(box2$top) - prCnvrtY(box2$bottom))
+    }
+  }else{
+    if (prCnvrtY(box1$x) < prCnvrtY(box2$x)) {
+      ret <- 
+        (prCnvrtY(box2$left) - prCnvrtY(box2$right))
+    }else{
+      ret <- 
+        (prCnvrtY(box2$right) - prCnvrtY(box2$left))
+    }
+  }
+  if (half) {
+    ret <- ret/2
+  }
+  
+  return (ret)
+}
