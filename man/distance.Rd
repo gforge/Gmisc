@@ -17,10 +17,10 @@ distance(box1, box2, type = c("vertical", "horizontal"), half = FALSE)
 when postioning boxes between eachother.}
 }
 \value{
-a unit
+a unit with \code{"mm"}
 }
 \description{
-Retrieves the distance between two boxes as "npc" units
+Retrieves the distance between two boxes as absolute \code{"mm"} units.
 }
 \examples{
 box1 <- boxGrob("A test box", y=.8)

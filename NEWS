@@ -3,6 +3,8 @@ NEWS for the Gmisc package
 Changes for 1.4.2
 -----------------
 * Added box functions between and coords
+* Added more connectGrob options for arrows
+* Added default options for connectGrob, boxGrob and boxGrobProp
 
 Changes for 1.4.1
 -----------------

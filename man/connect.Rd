@@ -6,9 +6,10 @@
 \alias{print.connect_boxes}
 \title{Connect boxes with an arrow}
 \usage{
-connectGrob(start, end, type = c("vertical", "horizontal", "L", "-"),
-  subelmnt = c("right", "left"), lty_gp = gpar(fill = "black"),
-  arrow_obj = arrow(ends = "last", type = "closed"))
+connectGrob(start, end, type = c("vertical", "horizontal", "L", "-", "Z",
+  "N"), subelmnt = c("right", "left"), lty_gp = getOption("connectGrob",
+  default = gpar(fill = "black")), arrow_obj = getOption("connectGrobArrow",
+  default = arrow(ends = "last", type = "closed")))
 
 \method{print}{connect_boxes}(x, ...)
 
@@ -21,14 +22,18 @@ connectGrob(start, end, type = c("vertical", "horizontal", "L", "-"),
 
 \item{type}{How the boxes are stacked. The \code{L} alternative generates a
 straight line up/down and then turns to righT/left for connecting with the end.
-The \code{-} generates a straight horizontal arrow.}
+The \code{-} generates a straight horizontal arrow. The \code{Z} creates a
+horizontal line that looks like a \code{Z} with 90 degree turns. The option
+\code{N} allows for vertical lines.}
 
 \item{subelmnt}{If we have a split box we can specify the right/left x as the
 connector point.}
 
-\item{lty_gp}{The \code{\link[grid]{gpar}} for the line.}
+\item{lty_gp}{The \code{\link[grid]{gpar}} for the line. Set
+\code{connectGrob} option if you want to customize all the arrows at once.}
 
-\item{arrow_obj}{The arrow spec according to \code{\link[grid]{arrow}}.}
+\item{arrow_obj}{The arrow spec according to \code{\link[grid]{arrow}}. Set
+\code{connectGrobArrow} option if you want to customize all the arrows at once.}
 
 \item{x}{The grob to print/plot}
 
@@ -39,9 +44,17 @@ grob with an arrow
 }
 \description{
 The function creates a grob that links two boxes together. It looks for
-which side it should attach the arrow to in order to avoid
+which side it should attach the arrow, e.g. if the start is on top of
+the bottom it should attach to the bottom edge of ther start box and then
+to the top at the end.
 
 The print/plot calls the \code{\link[grid]{grid.draw}} function on the object
+}
+\details{
+The exact positions of the line is stored at the \code{attr(..., "line")}.
+If you want to draw your own custom line all you need to do is check which
+\code{attr(my_line, "line")$x} and \code{attr(my_line, "line")$y} you want
+to attach to and then create your own custom \code{\link[grid]{linesGrob}}.
 }
 \examples{
 library(grid)
