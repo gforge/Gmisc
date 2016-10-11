@@ -486,7 +486,7 @@ coords <- function(box) {
 #' @param type Wheter we should retrieve the vertical or horizontal difference
 #' @param half If set to true it returns half the distance. This is convenient
 #'  when postioning boxes between eachother.
-#' @return a unit
+#' @return a unit with \code{"mm"}
 #' 
 #' @importFrom checkmate assert_class assert checkString checkNumeric
 #' @export
@@ -501,25 +501,25 @@ distance <- function(box1, box2, type=c("vertical", "horizontal"), half=FALSE) {
   box1 <- coords(box1)
   box2 <- coords(box2)
   if (type == "vertical") {
-    if (prCnvrtY(box1$y) < prCnvrtY(box2$y)) {
+    if (prCnvrtY(box1$y) > prCnvrtY(box2$y)) {
       ret <- 
-        (prCnvrtY(box2$bottom) - prCnvrtY(box2$top))
+        (prCnvrtY(box1$bottom) - prCnvrtY(box2$top))
     }else{
       ret <- 
-        (prCnvrtY(box2$top) - prCnvrtY(box2$bottom))
+        (prCnvrtY(box2$bottom) - prCnvrtY(box1$top))
     }
   }else{
     if (prCnvrtY(box1$x) < prCnvrtY(box2$x)) {
       ret <- 
-        (prCnvrtY(box2$left) - prCnvrtY(box2$right))
+        (prCnvrtY(box2$left) - prCnvrtY(box1$right))
     }else{
       ret <- 
-        (prCnvrtY(box2$right) - prCnvrtY(box2$left))
+        (prCnvrtY(box1$left) - prCnvrtY(box2$right))
     }
   }
   if (half) {
     ret <- ret/2
   }
   
-  return (ret)
+  return (unit(ret, "mm"))
 }
