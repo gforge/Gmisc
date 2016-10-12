@@ -14,7 +14,7 @@ vignette: >
 Introduction
 ============
 
-The transitionPlot function aims at illustrating the transition between classes. The original intent was to show how [self-administered the Charnley classification](http://informahealthcare.com/doi/full/10.3109/17453674.2014.931199) behaves before and after surgery. The plot is a fancier version than what can be achiewed using packages such as [*diagram*](http://informahealthcare.com.proxy.kib.ki.se/doi/full/10.3109/17453674.2014.931199) but at the cost of flexibility. The current function only allows to show a transition from one state to the next. 
+The transitionPlot function aims at illustrating the transition between classes. The original intent was to show how [self-administered the Charnley classification](http://informahealthcare.com/doi/full/10.3109/17453674.2014.931199) behaves before and after surgery. The plot is a fancier version than what can be achieved using packages such as [*diagram*](https://cran.r-project.org/web/packages/diagram/index.html) but at the cost of flexibility. The current function only allows to show a transition from one state to the next. 
 
 **Note**: The new Transition class will superseed the transitionPlot. See `vignette("Transition-class")` for more info.
 
@@ -142,7 +142,7 @@ Using 3D matrices
 knitr::opts_chunk$set(fig.height = 5.5)
 ```
 
-We can enhance the [data-ink ratio](http://informahealthcare.com.proxy.kib.ki.se/doi/full/10.3109/17453674.2014.931199) by adding a color split for the boxes. This works only for factors with 2 levels such as sex in our example.
+We can enhance the [data-ink ratio](http://www.infovis-wiki.net/index.php/Data-Ink_Ratio) by adding a color split for the boxes. This works only for factors with 2 levels such as sex in our example.
 
 ```{r}
 trn_mtrx_3D <-

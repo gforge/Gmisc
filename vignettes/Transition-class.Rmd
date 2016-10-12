@@ -14,7 +14,7 @@ vignette: >
 Introduction
 ============
 
-The *Transition*-class is the advanced version of the transitionPlot that aims at illustrating transitions between classes over time. The original intent was to show how [self-administered the Charnley classification](http://informahealthcare.com/doi/full/10.3109/17453674.2014.931199) behaves before and after surgery. The plot is a fancier version than what can be achiewed using packages such as [*diagram*](http://informahealthcare.com.proxy.kib.ki.se/doi/full/10.3109/17453674.2014.931199), although it lacks some of the flexibility - most notable is the lack of ability to "go back in time". Thus the current function only allows to show transitions from one state to the next and there is no going back to previous columns.
+The *Transition*-class is the advanced version of the transitionPlot that aims at illustrating transitions between classes over time. The original intent was to show how [self-administered the Charnley classification](http://informahealthcare.com/doi/full/10.3109/17453674.2014.931199) behaves before and after surgery. The plot is a fancier version than what can be achieved using packages such as [*diagram*](https://cran.r-project.org/web/packages/diagram/index.html), although it lacks some of the flexibility - most notable is the lack of ability to "go back in time". Thus the current function only allows to show transitions from one state to the next and there is no going back to previous columns.
 
 Generate some data
 ==================
