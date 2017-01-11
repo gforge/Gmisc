@@ -295,7 +295,7 @@ getDescriptionStatsBy <- function(x,
     ret <- list()
     for (n in names(t)){
       # Create an empty array
-      ret[[n]] <- rep(0, times=length(all_row_names))
+      ret[[n]] <- rep("-", times=length(all_row_names))
       names(ret[[n]]) <- all_row_names
       # Loop and add all the values
       for (nn in all_row_names){
@@ -329,7 +329,13 @@ getDescriptionStatsBy <- function(x,
               useNA.digits = useNA.digits,
               percentage_sign = percentage_sign)
 
-
+    missing_t <- sapply(t, is.null)
+    if (any(missing_t)) {
+      substitute_t <- rep("-", length(t[!missing_t][[1]]))
+      names(substitute_t) <- names(t[!missing_t][[1]])
+      t[missing_t][[1]] <- substitute_t
+    }
+    
     if (length(t[[1]]) != 1){
       fn_name <- deparse(substitute(continuous_fn))
       if (fn_name == "describeMean")
