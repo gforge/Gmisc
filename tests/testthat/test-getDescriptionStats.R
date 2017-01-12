@@ -17,119 +17,119 @@ Loblolly$height_w_missing <- Loblolly$height
 Loblolly$height_w_missing[sample(1:nrow(Loblolly), size=4)] <- NA
 
 test_that("Check mean function",
-{
-  stats <- by(Loblolly$height, Loblolly$young, mean)
-  a <- getDescriptionStatsBy(Loblolly$height, Loblolly$young,
-                             statistics=TRUE,
-                             digits=2, statistics.sig_lim=10^-4)
-  # Check that it contains the true mean
-  expect_true(grepl(round(stats[["No"]], 2), a[1,"No"]),
-              info="Expected the mean")
-  expect_true(grepl(round(stats[["Yes"]], 2), a[1,"Yes"]),
-              info="Expected the mean")
-
-  # Check that it contains the sd
-  stats <- by(Loblolly$height, Loblolly$young, sd)
-  expect_true(grepl(round(stats[["No"]], 2), a[1,"No"]),
-              info="Expected the sd")
-  expect_true(grepl(round(stats[["Yes"]], 2), a[1,"Yes"]),
-              info="Expected the sd")
-
-  true_wilc_pv <- txtPval(wilcox.test(Loblolly$height ~ Loblolly$young)$p.value,
-                          statistics.sig_lim=10^-4)
-  expect_equal(as.character(a[1, "P-value"]),
-               true_wilc_pv)
-
-  # Check P-value without truncation
-  a <- getDescriptionStatsBy(Loblolly$height, Loblolly$age == 10,
-                             statistics=TRUE,
-                             digits=2, statistics.sig_lim=10^-4)
-  true_wilc_pv <- txtPval(wilcox.test(Loblolly$height ~ Loblolly$age == 10)$p.value,
-                          statistics.sig_lim=10^-4)
-  expect_equal(as.character(a[1, "P-value"]),
-               true_wilc_pv)
-})
+          {
+            stats <- by(Loblolly$height, Loblolly$young, mean)
+            a <- getDescriptionStatsBy(Loblolly$height, Loblolly$young,
+                                       statistics=TRUE,
+                                       digits=2, statistics.sig_lim=10^-4)
+            # Check that it contains the true mean
+            expect_true(grepl(round(stats[["No"]], 2), a[1,"No"]),
+                        info="Expected the mean")
+            expect_true(grepl(round(stats[["Yes"]], 2), a[1,"Yes"]),
+                        info="Expected the mean")
+            
+            # Check that it contains the sd
+            stats <- by(Loblolly$height, Loblolly$young, sd)
+            expect_true(grepl(round(stats[["No"]], 2), a[1,"No"]),
+                        info="Expected the sd")
+            expect_true(grepl(round(stats[["Yes"]], 2), a[1,"Yes"]),
+                        info="Expected the sd")
+            
+            true_wilc_pv <- txtPval(wilcox.test(Loblolly$height ~ Loblolly$young)$p.value,
+                                    statistics.sig_lim=10^-4)
+            expect_equal(as.character(a[1, "P-value"]),
+                         true_wilc_pv)
+            
+            # Check P-value without truncation
+            a <- getDescriptionStatsBy(Loblolly$height, Loblolly$age == 10,
+                                       statistics=TRUE,
+                                       digits=2, statistics.sig_lim=10^-4)
+            true_wilc_pv <- txtPval(wilcox.test(Loblolly$height ~ Loblolly$age == 10)$p.value,
+                                    statistics.sig_lim=10^-4)
+            expect_equal(as.character(a[1, "P-value"]),
+                         true_wilc_pv)
+          })
 
 test_that("Check median function",
-{
-  stats <- by(Loblolly$height, Loblolly$young, median)
-  a <- getDescriptionStatsBy(Loblolly$height, Loblolly$young,
-                             continuous_fn=describeMedian,
-                             statistics=TRUE,
-                             digits=2, statistics.sig_lim=10^-4)
-  # Check that it contains the true mean
-  expect_true(grepl(round(stats[["No"]], 2), a[1,"No"]),
-              info="Expected the median")
-  expect_true(grepl(round(stats[["Yes"]], 2), a[1,"Yes"]),
-              info="Expected the median")
-
-  # Check that it contains the sd
-  stats <- by(Loblolly$height, Loblolly$young,
-              function(x) str_trim(paste(format(quantile(x, probs=c(.25, .75)),
-                                                digits=2,
-                                                nsmall=2), collapse=" - ")))
-  expect_true(grepl(stats[["No"]], a[1,"No"]),
-              info="Expected the iqr range")
-  expect_true(grepl(stats[["Yes"]], a[1,"Yes"]),
-              info="Expected the iqr range")
-
-  true_wilc_pv <- txtPval(wilcox.test(Loblolly$height ~ Loblolly$young)$p.value,
-                                  statistics.sig_lim=10^-4)
-  expect_equal(as.character(a[1, "P-value"]),
-               true_wilc_pv)
-
-  a <- getDescriptionStatsBy(Loblolly$height, Loblolly$young,
-                             continuous_fn=function(...)
-                               describeMedian(..., iqr = FALSE),
-                             statistics=TRUE,
-                             digits=2, statistics.sig_lim=10^-4)
-
-  # Check that it contains the sd
-  stats <- by(Loblolly$height, Loblolly$young,
-              function(x) paste(round(range(x), 2), collapse=" - "))
-  expect_true(grepl(stats[["No"]], a[1,"No"]),
-              info="Expected the range")
-  expect_true(grepl(stats[["Yes"]], a[1,"Yes"]),
-              info="Expected the range")
-})
+          {
+            stats <- by(Loblolly$height, Loblolly$young, median)
+            a <- getDescriptionStatsBy(Loblolly$height, Loblolly$young,
+                                       continuous_fn=describeMedian,
+                                       statistics=TRUE,
+                                       digits=2, statistics.sig_lim=10^-4)
+            # Check that it contains the true mean
+            expect_true(grepl(round(stats[["No"]], 2), a[1,"No"]),
+                        info="Expected the median")
+            expect_true(grepl(round(stats[["Yes"]], 2), a[1,"Yes"]),
+                        info="Expected the median")
+            
+            # Check that it contains the sd
+            stats <- by(Loblolly$height, Loblolly$young,
+                        function(x) str_trim(paste(format(quantile(x, probs=c(.25, .75)),
+                                                          digits=2,
+                                                          nsmall=2), collapse=" - ")))
+            expect_true(grepl(stats[["No"]], a[1,"No"]),
+                        info="Expected the iqr range")
+            expect_true(grepl(stats[["Yes"]], a[1,"Yes"]),
+                        info="Expected the iqr range")
+            
+            true_wilc_pv <- txtPval(wilcox.test(Loblolly$height ~ Loblolly$young)$p.value,
+                                    statistics.sig_lim=10^-4)
+            expect_equal(as.character(a[1, "P-value"]),
+                         true_wilc_pv)
+            
+            a <- getDescriptionStatsBy(Loblolly$height, Loblolly$young,
+                                       continuous_fn=function(...)
+                                         describeMedian(..., iqr = FALSE),
+                                       statistics=TRUE,
+                                       digits=2, statistics.sig_lim=10^-4)
+            
+            # Check that it contains the sd
+            stats <- by(Loblolly$height, Loblolly$young,
+                        function(x) paste(round(range(x), 2), collapse=" - "))
+            expect_true(grepl(stats[["No"]], a[1,"No"]),
+                        info="Expected the range")
+            expect_true(grepl(stats[["Yes"]], a[1,"Yes"]),
+                        info="Expected the range")
+          })
 
 test_that("Check factor function",
-{
-  stats <- table(Loblolly$fvar, Loblolly$young)
-  a <- getDescriptionStatsBy(Loblolly$fvar, Loblolly$young,
-                             continuous_fn=describeMedian,
-                             statistics=TRUE,
-                             digits=2, statistics.sig_lim=10^-4)
-  # Check that it contains the true mean
-  for (rn in rownames(a)){
-    for (cn in levels(Loblolly$young))
-      expect_match(a[rn, cn], as.character(stats[rn, cn]),
-                   info="Factor count don't match")
-  }
-
-  vertical_perc_stats <- format(apply(stats, 2, function(x){
-    x/sum(x)*100
-  }), nsmall=2, digits=2)
-  horizontal_perc_stats <- t(format(apply(stats, 1, function(x){
-    x/sum(x)*100
-  }), nsmall=2, digits=2))
-  for (rn in rownames(a)){
-    for (cn in levels(Loblolly$young))
-      expect_match(a[rn, cn], sprintf("%s%%", vertical_perc_stats[rn, cn]),
-                  info="Factor percentagess don't match in vertical mode")
-  }
-
-  a <- getDescriptionStatsBy(Loblolly$fvar, Loblolly$young, hrzl_prop=TRUE,
-                             continuous_fn=describeMedian,
-                             statistics=TRUE,
-                             digits=2, statistics.sig_lim=10^-4)
-  for (rn in rownames(a)){
-    for (cn in levels(Loblolly$young))
-      expect_match(a[rn, cn], sprintf("%s%%", horizontal_perc_stats[rn, cn]),
-                  info="Factor percentagess don't match in horizontal mode")
-  }
-
-})
+          {
+            stats <- table(Loblolly$fvar, Loblolly$young)
+            a <- getDescriptionStatsBy(Loblolly$fvar, Loblolly$young,
+                                       continuous_fn=describeMedian,
+                                       statistics=TRUE,
+                                       digits=2, statistics.sig_lim=10^-4)
+            # Check that it contains the true mean
+            for (rn in rownames(a)){
+              for (cn in levels(Loblolly$young))
+                expect_match(a[rn, cn], as.character(stats[rn, cn]),
+                             info="Factor count don't match")
+            }
+            
+            vertical_perc_stats <- format(apply(stats, 2, function(x){
+              x/sum(x)*100
+            }), nsmall=2, digits=2)
+            horizontal_perc_stats <- t(format(apply(stats, 1, function(x){
+              x/sum(x)*100
+            }), nsmall=2, digits=2))
+            for (rn in rownames(a)){
+              for (cn in levels(Loblolly$young))
+                expect_match(a[rn, cn], sprintf("%s%%", vertical_perc_stats[rn, cn]),
+                             info="Factor percentagess don't match in vertical mode")
+            }
+            
+            a <- getDescriptionStatsBy(Loblolly$fvar, Loblolly$young, hrzl_prop=TRUE,
+                                       continuous_fn=describeMedian,
+                                       statistics=TRUE,
+                                       digits=2, statistics.sig_lim=10^-4)
+            for (rn in rownames(a)){
+              for (cn in levels(Loblolly$young))
+                expect_match(a[rn, cn], sprintf("%s%%", horizontal_perc_stats[rn, cn]),
+                             info="Factor percentagess don't match in horizontal mode")
+            }
+            
+          })
 
 test_that("Statistics work as expected",{
   a <- getDescriptionStatsBy(Loblolly$fvar, Loblolly$young, hrzl_prop=TRUE,
@@ -142,7 +142,7 @@ test_that("Statistics work as expected",{
   
   expect_equivalent(as.character(a[1, "P-value"]),
                     true_fisher_pval)
-
+  
   a <- getDescriptionStatsBy(Loblolly$fvar, Loblolly$young, hrzl_prop=TRUE,
                              continuous_fn=describeMedian,
                              statistics=list("factor" = getPvalFisher),
@@ -150,7 +150,7 @@ test_that("Statistics work as expected",{
   
   expect_equivalent(as.character(a[1, "P-value"]),
                     true_fisher_pval)
-
+  
   expect_error(getDescriptionStatsBy(Loblolly$fvar, Loblolly$young, hrzl_prop=TRUE,
                                      continuous_fn=describeMedian,
                                      statistics=list("factor" = getNonExistentPvalueFunction),
@@ -185,7 +185,7 @@ test_that("Statistics work as expected",{
                                        return(a)
                                      },
                                      digits=2, statistics.sig_lim=10^-4),
-                info = "The colname attribute must be present")
+               info = "The colname attribute must be present")
 })
 
 test_that("Check total column position",{
@@ -196,7 +196,7 @@ test_that("Check total column position",{
                              digits=2, statistics.sig_lim=10^-4)
   expect_equivalent(colnames(a)[1], "Total")
   expect_equivalent(ncol(a), 4)
-
+  
   a <- getDescriptionStatsBy(Loblolly$fvar, Loblolly$young,
                              hrzl_prop=TRUE,
                              add_total_col = "last",
@@ -205,7 +205,7 @@ test_that("Check total column position",{
   expect_equivalent(tail(colnames(a),1), "Total",
                     info="The last column without statistics should be the total column when the add_total_col is set to last")
   expect_equivalent(ncol(a), 3)
-
+  
   a <- getDescriptionStatsBy(Loblolly$fvar, Loblolly$young,
                              statistics = TRUE,
                              hrzl_prop=TRUE,
@@ -216,119 +216,119 @@ test_that("Check total column position",{
 })
 
 test_that("Check factor function with missing",
-{
-  stats <- table(Loblolly$fvar, Loblolly$young_w_missing, useNA="ifany")
-  expect_warning(a <- getDescriptionStatsBy(Loblolly$fvar, Loblolly$young_w_missing,
-                                            statistics=TRUE,
-                                            digits=2, statistics.sig_lim=10^-4))
-
-  for (rn in rownames(a)){
-    for (cn in levels(Loblolly$young))
-      expect_match(a[rn, cn], as.character(stats[rn, cn]),
-                   info="Factor count don't match")
-  }
-
-
-  stats <- table(Loblolly$fvar, Loblolly$young_w_missing, useNA="no")
-  vertical_perc_stats <-
-    format(apply(stats, 2, function(x){
-      x/sum(x)*100
-    }), nsmall=2, digits=2)
-  horizontal_perc_stats <-
-    t(format(apply(stats, 1, function(x){
-      x/sum(x)*100
-    }), nsmall=2, digits=2))
-
-  for (rn in rownames(a)){
-    for (cn in levels(Loblolly$young))
-      expect_match(a[rn, cn], sprintf("%s%%", vertical_perc_stats[rn, cn]),
-                  info="Factor vertical percentages don't match")
-  }
-
-  suppressWarnings(a <- getDescriptionStatsBy(Loblolly$fvar, Loblolly$young_w_missing,
-                                              hrzl_prop=TRUE,
-                                              statistics=TRUE,
-                                              digits=2, statistics.sig_lim=10^-4))
-
-  for (rn in rownames(a)){
-    for (cn in levels(Loblolly$young))
-      expect_match(a[rn, cn], sprintf("%s%%", horizontal_perc_stats[rn, cn]),
-                  info="Factor percentages don't match in horizontal mode")
-  }
-
-  suppressWarnings(a <- getDescriptionStatsBy(Loblolly$fvar_w_missing, Loblolly$young_w_missing,
-                                              useNA="no",
-                                              digits=2, statistics.sig_lim=10^-4))
-  stats <- table(Loblolly$fvar_w_missing, Loblolly$young_w_missing, useNA="no")
-  vertical_perc_stats <-
-    format(apply(stats, 2, function(x){
-      x/sum(x)*100
-    }), nsmall=2, digits=2)
-
-  for (rn in rownames(a)){
-    for (cn in levels(Loblolly$young)){
-      expect_match(a[rn, cn], as.character(stats[rn, cn]),
-                  info=sprintf("Factor '%s':'%s' count don't match",
-                               rn, cn))
-      expect_match(a[rn, cn], sprintf("%s%%", vertical_perc_stats[rn, cn]),
-                   info=sprintf("Factor '%s':'%s' vertical percentages don't match",
-                                rn, cn))
-    }
-  }
-
-  suppressWarnings(a <- getDescriptionStatsBy(Loblolly$fvar_w_missing,
-                                              Loblolly$young_w_missing,
-                                              digits=2, statistics.sig_lim=10^-4))
-  stats <- table(Loblolly$fvar_w_missing, Loblolly$young_w_missing, useNA="ifany")
-  stats <- stats[,!is.na(colnames(stats))]
-  rownames(stats)[is.na(rownames(stats))] <- "Missing"
-  vertical_perc_stats <-
-    format(apply(stats, 2, function(x){
-      x/sum(x)*100
-    }), nsmall=2, digits=2)
-  for (rn in rownames(a)){
-    for (cn in levels(Loblolly$young)){
-      expect_match(a[rn, cn], as.character(stats[rn, cn]),
-                   info=sprintf("Factor '%s':'%s' count don't match",
-                                rn, cn))
-      expect_match(a[rn, cn], sprintf("%s%%", str_trim(vertical_perc_stats[rn, cn])),
-                   info=sprintf("Factor '%s':'%s' vertical percentages don't match",
-                                rn, cn))
-    }
-  }
-
-  suppressWarnings(a <- getDescriptionStatsBy(Loblolly$fvar_w_missing, Loblolly$young_w_missing, hrzl_prop = TRUE,
-                             digits=2, statistics.sig_lim=10^-4))
-  horizontal_perc_stats <-
-    t(format(apply(stats, 1, function(x){
-      x/sum(x)*100
-    }), nsmall=2, digits=2))
-
-
-  for (rn in rownames(a)){
-    for (cn in levels(Loblolly$young)){
-      expect_match(a[rn, cn], sprintf("%s%%", str_trim(horizontal_perc_stats[rn, cn])),
-                  info="Factor vertical percentages don't match")
-    }
-  }
-
-  # When
-  # - `x` has exactly 2 levels and some NAs
-  # - add_total_col=TRUE
-  # - show_missing="no"
-  # - show_all_values=FALSE
-  # Then prGetStatistics should return the count of just the first factor level
-  # use example:
-  #   a <- getDescriptionStatsBy(Loblolly$young_w_missing, Loblolly$fvar,
-  #                              useNA="no", digits=2,
-  #                              add_total_col=TRUE)
-  a <- prGetStatistics(Loblolly$young_w_missing,
-                       useNA ="no", show_all_values=FALSE)
-  lvl = levels(Loblolly$young_w_missing)[1]
-  target = sum(stats[, lvl])
-  names(target) = lvl
-  expect_equal(a, target)
-})
+          {
+            stats <- table(Loblolly$fvar, Loblolly$young_w_missing, useNA="ifany")
+            expect_warning(a <- getDescriptionStatsBy(Loblolly$fvar, Loblolly$young_w_missing,
+                                                      statistics=TRUE,
+                                                      digits=2, statistics.sig_lim=10^-4))
+            
+            for (rn in rownames(a)){
+              for (cn in levels(Loblolly$young))
+                expect_match(a[rn, cn], as.character(stats[rn, cn]),
+                             info="Factor count don't match")
+            }
+            
+            
+            stats <- table(Loblolly$fvar, Loblolly$young_w_missing, useNA="no")
+            vertical_perc_stats <-
+              format(apply(stats, 2, function(x){
+                x/sum(x)*100
+              }), nsmall=2, digits=2)
+            horizontal_perc_stats <-
+              t(format(apply(stats, 1, function(x){
+                x/sum(x)*100
+              }), nsmall=2, digits=2))
+            
+            for (rn in rownames(a)){
+              for (cn in levels(Loblolly$young))
+                expect_match(a[rn, cn], sprintf("%s%%", vertical_perc_stats[rn, cn]),
+                             info="Factor vertical percentages don't match")
+            }
+            
+            suppressWarnings(a <- getDescriptionStatsBy(Loblolly$fvar, Loblolly$young_w_missing,
+                                                        hrzl_prop=TRUE,
+                                                        statistics=TRUE,
+                                                        digits=2, statistics.sig_lim=10^-4))
+            
+            for (rn in rownames(a)){
+              for (cn in levels(Loblolly$young))
+                expect_match(a[rn, cn], sprintf("%s%%", horizontal_perc_stats[rn, cn]),
+                             info="Factor percentages don't match in horizontal mode")
+            }
+            
+            suppressWarnings(a <- getDescriptionStatsBy(Loblolly$fvar_w_missing, Loblolly$young_w_missing,
+                                                        useNA="no",
+                                                        digits=2, statistics.sig_lim=10^-4))
+            stats <- table(Loblolly$fvar_w_missing, Loblolly$young_w_missing, useNA="no")
+            vertical_perc_stats <-
+              format(apply(stats, 2, function(x){
+                x/sum(x)*100
+              }), nsmall=2, digits=2)
+            
+            for (rn in rownames(a)){
+              for (cn in levels(Loblolly$young)){
+                expect_match(a[rn, cn], as.character(stats[rn, cn]),
+                             info=sprintf("Factor '%s':'%s' count don't match",
+                                          rn, cn))
+                expect_match(a[rn, cn], sprintf("%s%%", vertical_perc_stats[rn, cn]),
+                             info=sprintf("Factor '%s':'%s' vertical percentages don't match",
+                                          rn, cn))
+              }
+            }
+            
+            suppressWarnings(a <- getDescriptionStatsBy(Loblolly$fvar_w_missing,
+                                                        Loblolly$young_w_missing,
+                                                        digits=2, statistics.sig_lim=10^-4))
+            stats <- table(Loblolly$fvar_w_missing, Loblolly$young_w_missing, useNA="ifany")
+            stats <- stats[,!is.na(colnames(stats))]
+            rownames(stats)[is.na(rownames(stats))] <- "Missing"
+            vertical_perc_stats <-
+              format(apply(stats, 2, function(x){
+                x/sum(x)*100
+              }), nsmall=2, digits=2)
+            for (rn in rownames(a)){
+              for (cn in levels(Loblolly$young)){
+                expect_match(a[rn, cn], as.character(stats[rn, cn]),
+                             info=sprintf("Factor '%s':'%s' count don't match",
+                                          rn, cn))
+                expect_match(a[rn, cn], sprintf("%s%%", str_trim(vertical_perc_stats[rn, cn])),
+                             info=sprintf("Factor '%s':'%s' vertical percentages don't match",
+                                          rn, cn))
+              }
+            }
+            
+            suppressWarnings(a <- getDescriptionStatsBy(Loblolly$fvar_w_missing, Loblolly$young_w_missing, hrzl_prop = TRUE,
+                                                        digits=2, statistics.sig_lim=10^-4))
+            horizontal_perc_stats <-
+              t(format(apply(stats, 1, function(x){
+                x/sum(x)*100
+              }), nsmall=2, digits=2))
+            
+            
+            for (rn in rownames(a)){
+              for (cn in levels(Loblolly$young)){
+                expect_match(a[rn, cn], sprintf("%s%%", str_trim(horizontal_perc_stats[rn, cn])),
+                             info="Factor vertical percentages don't match")
+              }
+            }
+            
+            # When
+            # - `x` has exactly 2 levels and some NAs
+            # - add_total_col=TRUE
+            # - show_missing="no"
+            # - show_all_values=FALSE
+            # Then prGetStatistics should return the count of just the first factor level
+            # use example:
+            #   a <- getDescriptionStatsBy(Loblolly$young_w_missing, Loblolly$fvar,
+            #                              useNA="no", digits=2,
+            #                              add_total_col=TRUE)
+            a <- prGetStatistics(Loblolly$young_w_missing,
+                                 useNA ="no", show_all_values=FALSE)
+            lvl = levels(Loblolly$young_w_missing)[1]
+            target = sum(stats[, lvl])
+            names(target) = lvl
+            expect_equal(a, target)
+          })
 
 test_that("Check txtInt application",{
   # Check for factors
@@ -361,19 +361,19 @@ test_that("Error when one category has no missing in it", {
   aa[aaa == 2 & is.na(aa)] <- "B"
   ret <-
     getDescriptionStatsBy(x = aa, by=aaa, add_total_col = TRUE)
-
+  
   expect_match(ret["A","2"], sprintf("^%d", table(aa, aaa)["A","2"]),
                info="The value does not seem to match the raw table")
   expect_match(ret["B","2"], sprintf("^%d", table(aa, aaa)["B","2"]),
                info="The value does not seem to match the raw table")
   expect_match(ret["Missing","2"], "^0")
-
+  
   ret <-
     getDescriptionStatsBy(x = aa, by=aaa, useNA="no", add_total_col = TRUE)
   expect_match(ret[1,"2"], sprintf("^%d", table(aa, aaa)["A","2"]),
                info="The value does not seem to match the raw table")
   expect_equal(nrow(ret), 1)
-
+  
   ret <-
     getDescriptionStatsBy(x = aa, by=aaa,
                           add_total_col = TRUE,
@@ -383,14 +383,14 @@ test_that("Error when one category has no missing in it", {
                info="The value does not seem to match the raw table")
   expect_match(ret["B","2"], sprintf("^%d", table(aa, aaa)["B","2"]),
                info="The value does not seem to match the raw table")
-
+  
   cont <- rnorm(length(aa))
   cont[sample(1:50, size = 5)] <- NA
   cont[aaa == 2 & is.na(cont)] <- 0
   ret <-
     getDescriptionStatsBy(x = cont, by=aaa, useNA="no", add_total_col = TRUE)
   expect_equal(nrow(ret), 1)
-
+  
   aa <- factor(sample(LETTERS[1:3], size = 50, replace = TRUE))
   aa[sample(1:50, size = 5)] <- NA
   aaa <- factor(sample(1:2, size = 50, replace = TRUE))
@@ -401,8 +401,8 @@ test_that("Error when one category has no missing in it", {
                info="The value does not seem to match the raw table")
   expect_match(ret["B","2"], sprintf("^%d", table(aa, aaa)["B","2"]),
                info="The value does not seem to match the raw table")
-
-
+  
+  
 })
 
 test_that("Error when one continuous variable has no missing in it", {
@@ -413,7 +413,7 @@ test_that("Error when one continuous variable has no missing in it", {
   aa[aaa == 2 & is.na(aa)] <- 1
   ret <-
     getDescriptionStatsBy(x = aa, by=aaa, html=TRUE)
-
+  
   expect_match(ret["Missing","2"],
                sprintf("^%d", sum(is.na(aa[aaa == 2]))))
 })
@@ -426,7 +426,7 @@ test_that("Error when a factor variable has an empty level", {
   by <- factor(sample(1:2, size = 50, replace = TRUE))
   ret <-
     getDescriptionStatsBy(x = variable, by=by, add_total_col = TRUE, useNA="no")
-
+  
   expect_match(ret["B","2"],
                sprintf("^%d", sum(variable[by == 2] == "B", na.rm=TRUE)))
 })
@@ -434,13 +434,13 @@ test_that("Error when a factor variable has an empty level", {
 
 test_that("test header", {
   data(mtcars)
-
+  
   mtcars$am <- factor(mtcars$am, levels=0:1, labels=c("Automatic", "Manual"))
   Hmisc::label(mtcars$am) <- "Transmission"
   set.seed(666)
   mtcars$col <- factor(sample(c("red", "black", "silver"),
                               size=NROW(mtcars), replace=TRUE))
-
+  
   out <- getDescriptionStatsBy(
     x=mtcars$col,
     by=mtcars$am,
@@ -456,8 +456,8 @@ test_that("test header", {
   expect_match(colnames(out)[3],
                sprintf("No. %d",
                        sum(mtcars$am != levels(mtcars$am)[1])))
-
-
+  
+  
   out <- getDescriptionStatsBy(
     x=mtcars$col,
     by=mtcars$am,
@@ -465,7 +465,7 @@ test_that("test header", {
     add_total_col = TRUE,
     statistics = TRUE
   )
-
+  
   expect_match(colnames(out)[1],
                sprintf("\\(n = %d\\)", nrow(mtcars)))
   expect_match(colnames(out)[2],
@@ -493,7 +493,7 @@ test_that("Test use_units", {
       add_total_col = TRUE,
       statistics = TRUE
     ))
-
+  
   out2 <- suppressWarnings(
     getDescriptionStatsBy(
       x=mtcars$mpg,
@@ -506,7 +506,7 @@ test_that("Test use_units", {
   )
   
   expect_equal(ncol(out1) + 1, ncol(out2))
-
+  
   out3 <- suppressWarnings(
     getDescriptionStatsBy(
       x=mtcars$mpg,
@@ -519,4 +519,114 @@ test_that("Test use_units", {
   )
   expect_match(Hmisc::label(out3), "\\(mpg\\)")
   expect_false(grepl("\\(mpg\\)", label(out2)))
+})
+
+test_that("missing levels are handled correctly when using custom descriptive functions", {
+  set.seed(1)
+  trial <- data.frame(visit = sort(rep(c("randomisation", "week1", "week2", "week3"), 5)),
+                      arm = sort(rep(c("control", "treatment"))),
+                      outcome = rnorm(40))
+  trial_missing_first <- trial[!((trial$visit == "randomisation") & (trial$arm == "control")),]
+  trial_missing_second <- trial[!((trial$visit == "randomisation") & (trial$arm == "treatment")),]
+  
+  descriptive_function <- function(x, ...) {
+    result <- c(describeMean(x, ...),
+                describeMedian(x, ...))
+    return(result)
+  }
+  
+  expected_no_missing <- structure(
+    c("0.1 (&plusmn;0.7)", "0.2 (-0.5 - 0.5)", "0.1 (&plusmn;0.5)", 
+      "0.2 (-0.2 - 0.5)", "0.4 (&plusmn;1.2)", "0.8 (-0.4 - 1.3)", 
+      "0.4 (&plusmn;0.7)", "0.4 (-0.1 - 0.9)", "0.1 (&plusmn;1.5)", 
+      "0.5 (-0.4 - 1.0)", "-0.2 (&plusmn;0.8)", "-0.2 (-0.7 - 0.3)", 
+      "-0.5 (&plusmn;1.2)", "-0.1 (-0.6 - 0.1)", "0.3 (&plusmn;0.5)", 
+      "0.3 (-0.1 - 0.7)"),
+    .Dim = c(8L, 2L),
+    .Dimnames = list(c("Mean (SD)", "Median (IQR)",
+                       "Mean (SD)", "Median (IQR)",
+                       "Mean (SD)", "Median (IQR)",
+                       "Mean (SD)", "Median (IQR)"),
+                     c("control", "treatment")),
+    rgroup = c("trial$outcome[trial$visit == x]",
+               "trial$outcome[trial$visit == x]",
+               "trial$outcome[trial$visit == x]",
+               "trial$outcome[trial$visit == x]"),
+    n.rgroup = c(2L, 2L, 2L, 2L),
+    htmlTable_args = structure(list(
+      rgroup = c("randomisation", "week1", "week2", "week3"),
+      n.rgroup = c(2, 2, 2, 2)),
+      .Names = c("rgroup", "n.rgroup")),
+    class = c("descMrg", "matrix"))
+  
+  expected_missing_first <- structure(
+    c("-", "-", "0.1 (&plusmn;0.5)", "0.2 (-0.2 - 0.5)", 
+      "0.4 (&plusmn;1.2)", "0.8 (-0.4 - 1.3)", "0.4 (&plusmn;0.7)", 
+      "0.4 (-0.1 - 0.9)", "0.1 (&plusmn;1.5)", "0.5 (-0.4 - 1.0)", 
+      "-0.2 (&plusmn;0.8)", "-0.2 (-0.7 - 0.3)", "-0.5 (&plusmn;1.2)", 
+      "-0.1 (-0.6 - 0.1)", "0.3 (&plusmn;0.5)", "0.3 (-0.1 - 0.7)"),
+    .Dim = c(8L, 2L),
+    .Dimnames = list(c("Mean (SD)", "Median (IQR)", 
+                       "Mean (SD)", "Median (IQR)",
+                       "Mean (SD)", "Median (IQR)",
+                       "Mean (SD)", "Median (IQR)"),
+                     c("control", "treatment")),
+    rgroup = c("trial_missing_first$outcome[trial_missing_first$visit == x]", 
+               "trial_missing_first$outcome[trial_missing_first$visit == x]", 
+               "trial_missing_first$outcome[trial_missing_first$visit == x]", 
+               "trial_missing_first$outcome[trial_missing_first$visit == x]"),
+    n.rgroup = c(2L, 2L, 2L, 2L),
+    htmlTable_args = structure(list(
+      rgroup = c("randomisation", "week1", "week2", "week3"),
+      n.rgroup = c(2, 2, 2, 2)),
+      .Names = c("rgroup", "n.rgroup")),
+    class = c("descMrg", "matrix"))
+  
+  expected_missing_second <- structure(
+    c("0.1 (&plusmn;0.7)", "0.2 (-0.5 - 0.5)", "0.1 (&plusmn;0.5)", 
+      "0.2 (-0.2 - 0.5)", "0.4 (&plusmn;1.2)", "0.8 (-0.4 - 1.3)", 
+      "0.4 (&plusmn;0.7)", "0.4 (-0.1 - 0.9)", "-", "-", "-0.2 (&plusmn;0.8)", 
+      "-0.2 (-0.7 - 0.3)", "-0.5 (&plusmn;1.2)", "-0.1 (-0.6 - 0.1)", 
+      "0.3 (&plusmn;0.5)", "0.3 (-0.1 - 0.7)"),
+    .Dim = c(8L, 2L),
+    .Dimnames = list(
+      c("Mean (SD)", "Median (IQR)",
+        "Mean (SD)", "Median (IQR)", 
+        "Mean (SD)", "Median (IQR)",
+        "Mean (SD)", "Median (IQR)"), 
+      c("control", "treatment")),
+    rgroup = c("trial_missing_second$outcome[trial_missing_second$visit == x]", 
+               "trial_missing_second$outcome[trial_missing_second$visit == x]", 
+               "trial_missing_second$outcome[trial_missing_second$visit == x]", 
+               "trial_missing_second$outcome[trial_missing_second$visit == x]"),
+    n.rgroup = c(2L, 2L, 2L, 2L),
+    htmlTable_args = structure(list(
+      rgroup = c("randomisation", "week1", "week2", "week3"),
+      n.rgroup = c(2, 2, 2, 2)),
+      .Names = c("rgroup", "n.rgroup")),
+    class = c("descMrg", "matrix"))
+  
+  out <- mergeDesc(lapply(levels(trial$visit), function(x)
+    getDescriptionStatsBy(x = trial$outcome[trial$visit == x],
+                          by = trial$arm[trial$visit == x],
+                          continuous_fn = descriptive_function)),
+    htmlTable_args = list(rgroup = levels(trial$visit),
+                          n.rgroup = rep(2, 4)))
+  expect_identical(out, expected_no_missing)
+  
+  out <- mergeDesc(lapply(levels(trial_missing_first$visit), function(x)
+    getDescriptionStatsBy(x = trial_missing_first$outcome[trial_missing_first$visit == x],
+                          by = trial_missing_first$arm[trial_missing_first$visit == x],
+                          continuous_fn = descriptive_function)),
+    htmlTable_args = list(rgroup = levels(trial_missing_first$visit),
+                          n.rgroup = rep(2, 4)))
+  expect_identical(out, expected_missing_first)
+  
+  out <- mergeDesc(lapply(levels(trial_missing_second$visit), function(x)
+    getDescriptionStatsBy(x = trial_missing_second$outcome[trial_missing_second$visit == x],
+                          by = trial_missing_second$arm[trial_missing_second$visit == x],
+                          continuous_fn = descriptive_function)),
+    htmlTable_args = list(rgroup = levels(trial_missing_second$visit),
+                          n.rgroup = rep(2, 4)))
+  expect_identical(out, expected_missing_second)
 })

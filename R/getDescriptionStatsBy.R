@@ -87,6 +87,7 @@
 #'  e.g. Smoking; No. 25 observations, where there is a new line after the
 #'  factor name. If you want a different text for the second line you can
 #'  specifically use the \code{\link[base]{sprintf}} formatting, e.g. "No. \%s patients".
+#' @param missing_value Value that is substituted for empty cells. Defaults to "-"  
 #' @param ... Currently only used for generating warnings of deprecated call
 #'  parameters.
 #' @return Returns a vector if vars wasn't specified and it's a
@@ -126,6 +127,7 @@ getDescriptionStatsBy <- function(x,
                                   NEJMstyle = FALSE,
                                   percentage_sign = TRUE,
                                   header_count,
+                                  missing_value = "-",
                                   ...){
 
   API_changes <-
@@ -295,7 +297,7 @@ getDescriptionStatsBy <- function(x,
     ret <- list()
     for (n in names(t)){
       # Create an empty array
-      ret[[n]] <- rep("-", times=length(all_row_names))
+      ret[[n]] <- rep(missing_value, times=length(all_row_names))
       names(ret[[n]]) <- all_row_names
       # Loop and add all the values
       for (nn in all_row_names){
@@ -331,7 +333,7 @@ getDescriptionStatsBy <- function(x,
 
     missing_t <- sapply(t, is.null)
     if (any(missing_t)) {
-      substitute_t <- rep("-", length(t[!missing_t][[1]]))
+      substitute_t <- rep(missing_value, length(t[!missing_t][[1]]))
       names(substitute_t) <- names(t[!missing_t][[1]])
       t[missing_t][[1]] <- substitute_t
     }
@@ -361,6 +363,13 @@ getDescriptionStatsBy <- function(x,
             useNA.digits = useNA.digits,
             default_ref = default_ref, percentage_sign = percentage_sign)
 
+    missing_t <- sapply(t, is.null)
+    if (any(missing_t)) {
+      substitute_t <- rep(missing_value, length(t[!missing_t][[1]]))
+      names(substitute_t) <- names(t[!missing_t][[1]])
+      t[missing_t][[1]] <- substitute_t
+    }
+    
     # Check that we're dealing with only one row
     if (unique(sapply(t, length)) == 1)
       # Set the rowname to a special format
@@ -402,6 +411,12 @@ getDescriptionStatsBy <- function(x,
               useNA = useNA,
               useNA.digits = useNA.digits,
               percentage_sign = percentage_sign)
+    }
+    missing_t <- sapply(t, is.null)
+    if (any(missing_t)) {
+      substitute_t <- rep(missing_value, length(t[!missing_t][[1]]))
+      names(substitute_t) <- names(t[!missing_t][[1]])
+      t[missing_t][[1]] <- substitute_t
     }
   }
 
