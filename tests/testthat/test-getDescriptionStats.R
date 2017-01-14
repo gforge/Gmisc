@@ -520,6 +520,7 @@ test_that("Test use_units", {
   expect_match(Hmisc::label(out3), "\\(mpg\\)")
   expect_false(grepl("\\(mpg\\)", label(out2)))
 })
+
 test_that("missing levels are handled correctly when using custom descriptive functions", {
   set.seed(1)
   trial <- data.frame(visit = sort(rep(c("randomisation", "week1", "week2", "week3"), 5)),
