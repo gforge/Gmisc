@@ -87,6 +87,7 @@
 #'  e.g. Smoking; No. 25 observations, where there is a new line after the
 #'  factor name. If you want a different text for the second line you can
 #'  specifically use the \code{\link[base]{sprintf}} formatting, e.g. "No. \%s patients".
+#' @param missing_value Value that is substituted for empty cells. Defaults to "-"  
 #' @param ... Currently only used for generating warnings of deprecated call
 #'  parameters.
 #' @return Returns a vector if vars wasn't specified and it's a
@@ -126,8 +127,9 @@ getDescriptionStatsBy <- function(x,
                                   NEJMstyle = FALSE,
                                   percentage_sign = TRUE,
                                   header_count,
+                                  missing_value = "-",
                                   ...){
-  
+
   API_changes <-
     c(show_missing_digits = "show_missing.digits",
       show_missing = "useNA",
@@ -151,51 +153,51 @@ getDescriptionStatsBy <- function(x,
       }
     }
   }
-  
+
   useNA <- match.arg(useNA)
-  
+
   if (!is.function(statistics)){
     if (is.list(statistics) ||
         (statistics != FALSE)){
-      if (is.list(statistics)){
-        types <- c("continuous",
-                   "proportion",
-                   "factor")
-        if (any(!names(statistics) %in% types))
-          stop("If you want to provide custom functions for generating statistics",
-               " you must either provide a function or a list with the elements:",
-               " '", paste(types, collapse="', '"), "'")
-        
-        if (is.numeric(x) &&
-            length(unique(x)) != 2){
-          statistics <- statistics[["continuous"]]
-        }else if (length(unique(x)) == 2){
-          if ("proportion" %in% names(statistics)){
-            statistics <- statistics[["proportion"]]
+        if (is.list(statistics)){
+          types <- c("continuous",
+                     "proportion",
+                     "factor")
+          if (any(!names(statistics) %in% types))
+            stop("If you want to provide custom functions for generating statistics",
+                 " you must either provide a function or a list with the elements:",
+                 " '", paste(types, collapse="', '"), "'")
+          
+          if (is.numeric(x) &&
+              length(unique(x)) != 2){
+            statistics <- statistics[["continuous"]]
+          }else if (length(unique(x)) == 2){
+            if ("proportion" %in% names(statistics)){
+              statistics <- statistics[["proportion"]]
+            }else{
+              statistics <- statistics[["factor"]]
+            }
           }else{
             statistics <- statistics[["factor"]]
           }
-        }else{
-          statistics <- statistics[["factor"]]
+          
+          if (is.character(statistics))
+            statistics <- get(statistics)
         }
         
-        if (is.character(statistics))
-          statistics <- get(statistics)
-      }
-      
-      if (!is.function(statistics)){
-        if(length(unique(x)) == 2){
-          statistics <- getPvalFisher
-        }else if(is.numeric(x)){
-          if (length(unique(by)) == 2)
-            statistics <- getPvalWilcox
-          else
-            statistics <- getPvalAnova
-        }else{
-          statistics <- getPvalFisher
+        if (!is.function(statistics)){
+          if(length(unique(x)) == 2){
+            statistics <- getPvalFisher
+          }else if(is.numeric(x)){
+            if (length(unique(by)) == 2)
+              statistics <- getPvalWilcox
+            else
+              statistics <- getPvalAnova
+          }else{
+            statistics <- getPvalFisher
+          }
         }
       }
-    }
   }
   
   if (is.function(statistics)){
@@ -210,14 +212,14 @@ getDescriptionStatsBy <- function(x,
                    by = by)
     }
   }
-  
+
   # Always have a total column if the description statistics
   # are presented in a horizontal fashion
   if (missing(add_total_col) &&
-      hrzl_prop){
+        hrzl_prop){
     add_total_col = TRUE
   }
-  
+
   if(is.null(x))
     stop("You haven't provided an x-value to do the statistics by.",
          " This error is most frequently caused by referencing an old",
@@ -226,7 +228,7 @@ getDescriptionStatsBy <- function(x,
     stop("You haven't provided a by-value to do the statistics by.",
          " This error is most frequently caused by referencing an old",
          " variable name that doesn't exist anymore")
-  
+
   # If there is a label for the variable
   # that one should be used otherwise go
   # with the name of the variable
@@ -234,10 +236,10 @@ getDescriptionStatsBy <- function(x,
     name <- deparse(substitute(x))
   else
     name <- label(x)
-  
+
   if (is.logical(x))
     x <- factor(x, levels=c(TRUE, FALSE))
-  
+
   # Check missing -
   # Send a warning, since the user might be unaware of this
   # potentially disturbing fact. The dataset should perhaps by
@@ -254,16 +256,16 @@ getDescriptionStatsBy <- function(x,
       by <- factor(by)
     }
   }
-  
+
   if (useNA == "ifany" &&
-      any(is.na(x)))
+        any(is.na(x)))
     useNA <- "always"
-  
+
   # If all values are to be shown then simply use
   # the factors function
   if (show_all_values)
     prop_fn <- describeFactors
-  
+
   addEmptyValuesToMakeListCompatibleWithMatrix <- function(t){
     # Convert the list into a list with vectors instead of matrices
     for (n in names(t)){
@@ -273,7 +275,7 @@ getDescriptionStatsBy <- function(x,
         names(t[[n]]) <- tmp_names
       }
     }
-    
+
     # TODO: This function does not respect the order in
     # the factored variable. This could potentially be
     # a problem although probably more theoretical
@@ -281,17 +283,17 @@ getDescriptionStatsBy <- function(x,
     for (n in names(t)){
       all_row_names <- union(all_row_names, names(t[[n]]))
     }
-    
+
     # No rownames exist, this occurs often
     # when there is only one row and that row doesn't
     # have a name
     if (is.null(all_row_names))
       return(t)
-    
+
     # The missing NA element should always be last
     if (any(is.na(all_row_names)))
       all_row_names <- append(all_row_names[is.na(all_row_names) == FALSE], NA)
-    
+
     ret <- list()
     for (n in names(t)){
       # Create an empty array
@@ -308,10 +310,10 @@ getDescriptionStatsBy <- function(x,
         }
       }
     }
-    
+
     return(ret)
   }
-  
+
   if (is.numeric(x)){
     # If the numeric has horizontal_proportions then it's only so in the
     # missing category
@@ -328,7 +330,7 @@ getDescriptionStatsBy <- function(x,
               useNA = useNA,
               useNA.digits = useNA.digits,
               percentage_sign = percentage_sign)
-    
+
     missing_t <- sapply(t, is.null)
     if (any(missing_t)) {
       substitute_t <- rep(missing_value, length(t[!missing_t][[1]]))
@@ -345,22 +347,22 @@ getDescriptionStatsBy <- function(x,
       else
         names(t[[1]][1]) = fn_name
     }
-    
-    
+
+
   }else if((!is.factor(x) &&
-            length(unique(na.omit(x))) == 2) ||
-           (is.factor(x) &&
-            length(levels(x)) == 2) &&
-           hrzl_prop == FALSE){
-    
+              length(unique(na.omit(x))) == 2) ||
+             (is.factor(x) &&
+                length(levels(x)) == 2) &&
+             hrzl_prop == FALSE){
+
     default_ref <- prDescGetAndValidateDefaultRef(x, default_ref)
-    
+
     t <- by(x, by, FUN=prop_fn, html=html, digits=digits,
             number_first=numbers_first,
             useNA = useNA,
             useNA.digits = useNA.digits,
             default_ref = default_ref, percentage_sign = percentage_sign)
-    
+
     missing_t <- sapply(t, is.null)
     if (any(missing_t)) {
       substitute_t <- rep(missing_value, length(t[!missing_t][[1]]))
@@ -376,25 +378,25 @@ getDescriptionStatsBy <- function(x,
       name <- sprintf("%s %s",
                       capitalize(levels(x)[default_ref]),
                       tolower(name))
-    
+
     if (NEJMstyle) {
       # LaTeX needs an escape before %
       # or it marks the rest of the line as
       # a comment. This is not an issue with
       # html (markdown)
       percent_sign <- ifelse(html, "%", "\\%")
-      
+
       if (numbers_first)
         name <- sprintf("%s - no (%s)", name, percent_sign)
       else
         name <- sprintf("%s - %s (no)", name, percent_sign)
     }
-    
+
     # If this is the only row then set that row to the current name
     if (length(t[[1]]) == 1){
       names(t[[1]][1]) = name
     }
-    
+
   }else{
     if (hrzl_prop){
       t <- by(x, by, FUN=factor_fn, html=html, digits=digits,
@@ -410,28 +412,26 @@ getDescriptionStatsBy <- function(x,
               useNA.digits = useNA.digits,
               percentage_sign = percentage_sign)
     }
+    missing_t <- sapply(t, is.null)
+    if (any(missing_t)) {
+      substitute_t <- rep(missing_value, length(t[!missing_t][[1]]))
+      names(substitute_t) <- names(t[!missing_t][[1]])
+      t[missing_t][[1]] <- substitute_t
+    }
   }
-  
-  missing_t <- sapply(t, is.null)
-  if (any(missing_t)) {
-    substitute_t <- rep(missing_value, length(t[!missing_t][[1]]))
-    names(substitute_t) <- names(t[!missing_t][[1]])
-    t[missing_t][[1]] <- substitute_t
-  }
-}
 
   # Convert the list into a matrix compatible format
   t <- addEmptyValuesToMakeListCompatibleWithMatrix(t)
   # Convert into a matrix
   results <- matrix(unlist(t), ncol=length(t))
-  
-  
+
+
   getHeader <- function (tbl_cnt, header_count, html) {
     if (missing(header_count) ||
-        identical(header_count, FALSE)){
+          identical(header_count, FALSE)){
       return(names(tbl_cnt))
     }
-    
+
     if (is.character(header_count)){
       if (!grepl("%s", header_count, fixed = TRUE))
         stop("Your header_count must accept a string character",
@@ -440,33 +440,33 @@ getDescriptionStatsBy <- function(x,
       cnt_str <-
         sprintf(header_count,
                 txtInt(tbl_cnt))
-      
+
     }else{
       cnt_str <- paste("No.", txtInt(tbl_cnt))
     }
-    
+
     return(mapply(txtMergeLines,
                   names(tbl_cnt),
                   cnt_str,
                   html=html))
   }
-  
+
   cn <- getHeader(table(by), header_count, html)
-  
-  
+
+
   # Add the proper rownames
   if (class(t[[1]]) == "matrix")
     rownames(results) <- rownames(t[[1]])
   else
     rownames(results) <- names(t[[1]])
-  
+
   # This is an effect from the numeric variable not having
   # a naming function
   if (is.null(rownames(results)) && nrow(results) == 1)
     rownames(results) <- name
-  
+
   if (!missing(add_total_col) &&
-      add_total_col != FALSE){
+        add_total_col != FALSE){
     total_table <- prGetStatistics(x[is.na(by) == FALSE],
                                    numbers_first=numbers_first,
                                    show_perc=total_col_show_perc,
@@ -479,18 +479,18 @@ getDescriptionStatsBy <- function(x,
                                    factor_fn = factor_fn,
                                    prop_fn = prop_fn,
                                    percentage_sign = percentage_sign)
-    
+
     if (!is.matrix(total_table)){
       total_table <- matrix(total_table, ncol=1, dimnames=list(names(total_table)))
     }
-    
+
     if (nrow(total_table) != nrow(results)){
       stop("There is a discrepancy in the number of rows in the total table",
            " and the by results: ", nrow(total_table), " total vs ", nrow(results), " results",
            "\n Rows total:", paste(rownames(total_table), collapse=", "),
            "\n Rows results:", paste(rownames(results), collapse=", "))
     }
-    
+
     cn_tot <- getHeader(c(Total=length(x[is.na(by) == FALSE])),
                         header_count, html)
     if (add_total_col != "last"){
@@ -501,7 +501,7 @@ getDescriptionStatsBy <- function(x,
       cn <- c(cn, cn_tot)
     }
   }
-  
+
   if (isTRUE(use_units)){
     if (units(x) != ""){
       unitcol <- rep(sprintf("%s",units(x)), times=NROW(results))
@@ -522,7 +522,7 @@ getDescriptionStatsBy <- function(x,
       name <- sprintf("%s (%s)", name, units(x))
     }
   }
-  
+
   if (is.function(statistics)){
     if (is.numeric(pval) &&
         pval <= 1 &&
@@ -540,13 +540,13 @@ getDescriptionStatsBy <- function(x,
       stop("Your statistics function should either return a numerical value from 0 to 1 or a character with the attribute 'colname'")
     }
   }
-  
+
   colnames(results) <- cn
-  
+
   # Even if one row has the same name this doesn't matter
   # at this stage as it is information that may or may
   # not be used later on
   label(results) <- name
-  
+
   return (results)
 }
