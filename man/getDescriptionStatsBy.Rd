@@ -12,7 +12,7 @@ getDescriptionStatsBy(x, by, digits = 1, html = TRUE,
   factor_fn = describeFactors, show_all_values = FALSE, hrzl_prop = FALSE,
   add_total_col, total_col_show_perc = TRUE, use_units = FALSE, default_ref,
   NEJMstyle = FALSE, percentage_sign = TRUE, header_count,
-  missing_value = "-", ...)
+  missing_value = "-", names_of_missing = NULL, ...)
 }
 \arguments{
 \item{x}{The variable that you want the statistics for}
@@ -102,6 +102,9 @@ factor name. If you want a different text for the second line you can
 specifically use the \code{\link[base]{sprintf}} formatting, e.g. "No. \%s patients".}
 
 \item{missing_value}{Value that is substituted for empty cells. Defaults to "-"}
+
+\item{names_of_missing}{Optional character vector containing the names of returned statistics,
+in case all returned values for a given \code{by} level are missing. Defaults to NULL}
 
 \item{...}{Currently only used for generating warnings of deprecated call
 parameters.}
