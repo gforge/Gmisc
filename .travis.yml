@@ -2,6 +2,7 @@
 
 language: r
 warnings_are_errors: true
-cache: packages
-sudo: false
+sudo: required
 
+before_install:
+  Rscript -e 'update.packages(ask = FALSE)'
