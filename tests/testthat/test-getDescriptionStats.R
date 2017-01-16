@@ -530,6 +530,14 @@ test_that("missing levels are handled correctly when using custom descriptive fu
   trial_missing_second <- trial[!((trial$visit == "randomisation") & (trial$arm == "treatment")),]
   trial_missing_both <- trial[trial$visit != "week3",]
   
+  trial_2 <- data.frame(visit = sort(rep(c("randomisation", "week1", "week2", "week3"), 5)),
+                      arm = sort(rep(c("control", "standard treatment", "new treatment"))),
+                      outcome = rnorm(60))
+  trial_2_missing_first <- trial_2[!((trial_2$visit == "randomisation") & (trial_2$arm == "control")),]
+  trial_2_missing_second <- trial_2[!((trial_2$visit == "randomisation") & (trial_2$arm == "standard treatment")),]
+  trial_2_missing_outer <- trial_2[!((trial_2$visit == "randomisation") & (trial_2$arm != "new treatment")),]
+  trial_2_missing_all <- trial_2[trial_2$visit != "week3",]
+  
   descriptive_function <- function(x, ...) {
     result <- c(describeMean(x, ...),
                 describeMedian(x, ...))
@@ -630,6 +638,138 @@ test_that("missing levels are handled correctly when using custom descriptive fu
       .Names = c("rgroup", "n.rgroup")),
     class = c("descMrg", "matrix"))
   
+  expected_no_missing_2 <-  structure(
+    c("0.2 (&plusmn;0.7)", "-0.0 (-0.2 - 0.6)", "0.7 (&plusmn;0.5)", 
+      "0.4 (0.4 - 0.9)", "0.5 (&plusmn;1.0)", "0.5 (0.3 - 1.2)", "0.2 (&plusmn;1.1)", 
+      "-0.4 (-0.6 - 0.6)", "-0.5 (&plusmn;0.8)", "-0.6 (-0.7 - -0.3)", 
+      "0.5 (&plusmn;0.4)", "0.3 (0.2 - 0.8)", "-0.3 (&plusmn;1.0)", 
+      "-0.7 (-1.1 - 0.4)", "-0.2 (&plusmn;0.7)", "-0.1 (-0.4 - 0.0)", 
+      "0.7 (&plusmn;1.0)", "0.6 (0.0 - 0.7)", "-0.2 (&plusmn;1.5)", 
+      "-0.3 (-0.7 - -0.1)", "0.3 (&plusmn;0.9)", "0.6 (-0.5 - 0.7)", 
+      "-0.5 (&plusmn;0.7)", "-0.5 (-1.0 - 0.1)"),
+    .Dim = c(8L, 3L),
+    .Dimnames = list(
+    c("Mean (SD)", "Median (IQR)",
+      "Mean (SD)", "Median (IQR)", 
+      "Mean (SD)", "Median (IQR)",
+      "Mean (SD)", "Median (IQR)"), 
+    c("control", "new treatment", "standard treatment")),
+    rgroup = c("trial_2$outcome[trial_2$visit == x]", 
+               "trial_2$outcome[trial_2$visit == x]",
+               "trial_2$outcome[trial_2$visit == x]", 
+               "trial_2$outcome[trial_2$visit == x]"),
+    n.rgroup = c(2L, 2L, 2L, 2L),
+    htmlTable_args = structure(list(
+      rgroup = c("randomisation", "week1", "week2", "week3"),
+      n.rgroup = c(2, 2, 2, 2)),
+      .Names = c("rgroup", "n.rgroup")),
+    class = c("descMrg", "matrix"))
+  
+  expected_missing_first_2 <- structure(
+    c("-", "-", "0.7 (&plusmn;0.5)", "0.4 (0.4 - 0.9)", 
+      "0.5 (&plusmn;1.0)", "0.5 (0.3 - 1.2)", "0.2 (&plusmn;1.1)", 
+      "-0.4 (-0.6 - 0.6)", "-0.5 (&plusmn;0.8)", "-0.6 (-0.7 - -0.3)", 
+      "0.5 (&plusmn;0.4)", "0.3 (0.2 - 0.8)", "-0.3 (&plusmn;1.0)", 
+      "-0.7 (-1.1 - 0.4)", "-0.2 (&plusmn;0.7)", "-0.1 (-0.4 - 0.0)", 
+      "0.7 (&plusmn;1.0)", "0.6 (0.0 - 0.7)", "-0.2 (&plusmn;1.5)", 
+      "-0.3 (-0.7 - -0.1)", "0.3 (&plusmn;0.9)", "0.6 (-0.5 - 0.7)", 
+      "-0.5 (&plusmn;0.7)", "-0.5 (-1.0 - 0.1)"),
+    .Dim = c(8L, 3L),
+    .Dimnames = list(
+    c("Mean (SD)", "Median (IQR)",
+      "Mean (SD)", "Median (IQR)", 
+      "Mean (SD)", "Median (IQR)",
+      "Mean (SD)", "Median (IQR)"), 
+    c("control", "new treatment", "standard treatment")),
+    rgroup = c("trial_2_missing_first$outcome[trial_2_missing_first$visit ==     x]", 
+               "trial_2_missing_first$outcome[trial_2_missing_first$visit ==     x]", 
+               "trial_2_missing_first$outcome[trial_2_missing_first$visit ==     x]", 
+               "trial_2_missing_first$outcome[trial_2_missing_first$visit ==     x]"),
+    n.rgroup = c(2L, 2L, 2L, 2L),
+    htmlTable_args = structure(list(
+      rgroup = c("randomisation", "week1", "week2", "week3"),
+      n.rgroup = c(2, 2, 2, 2)),
+      .Names = c("rgroup", "n.rgroup")),
+    class = c("descMrg", "matrix"))
+  
+  expected_missing_second_2 <- structure(
+    c("0.2 (&plusmn;0.7)", "-0.0 (-0.2 - 0.6)", "0.7 (&plusmn;0.5)", 
+      "0.4 (0.4 - 0.9)", "0.5 (&plusmn;1.0)", "0.5 (0.3 - 1.2)", "0.2 (&plusmn;1.1)", 
+      "-0.4 (-0.6 - 0.6)", "-0.5 (&plusmn;0.8)", "-0.6 (-0.7 - -0.3)", 
+      "0.5 (&plusmn;0.4)", "0.3 (0.2 - 0.8)", "-0.3 (&plusmn;1.0)", 
+      "-0.7 (-1.1 - 0.4)", "-0.2 (&plusmn;0.7)", "-0.1 (-0.4 - 0.0)", 
+      "-", "-", "-0.2 (&plusmn;1.5)", "-0.3 (-0.7 - -0.1)", "0.3 (&plusmn;0.9)", 
+      "0.6 (-0.5 - 0.7)", "-0.5 (&plusmn;0.7)", "-0.5 (-1.0 - 0.1)"),
+    .Dim = c(8L, 3L),
+    .Dimnames = list(
+      c("Mean (SD)", "Median (IQR)", 
+        "Mean (SD)", "Median (IQR)",
+        "Mean (SD)", "Median (IQR)",
+        "Mean (SD)", "Median (IQR)"),
+      c("control", "new treatment", "standard treatment")),
+    rgroup = c("trial_2_missing_second$outcome[trial_2_missing_second$visit ==     x]", 
+               "trial_2_missing_second$outcome[trial_2_missing_second$visit ==     x]", 
+               "trial_2_missing_second$outcome[trial_2_missing_second$visit ==     x]", 
+               "trial_2_missing_second$outcome[trial_2_missing_second$visit ==     x]"),
+    n.rgroup = c(2L, 2L, 2L, 2L),
+    htmlTable_args = structure(list(
+      rgroup = c("randomisation", "week1", "week2", "week3"),
+      n.rgroup = c(2, 2, 2, 2)),
+      .Names = c("rgroup", "n.rgroup")),
+    class = c("descMrg", "matrix"))
+  
+  expected_missing_outer <- structure(
+    c("-", "-", "0.7 (&plusmn;0.5)", "0.4 (0.4 - 0.9)", 
+      "0.5 (&plusmn;1.0)", "0.5 (0.3 - 1.2)", "0.2 (&plusmn;1.1)", 
+      "-0.4 (-0.6 - 0.6)", "-0.5 (&plusmn;0.8)", "-0.6 (-0.7 - -0.3)", 
+      "0.5 (&plusmn;0.4)", "0.3 (0.2 - 0.8)", "-0.3 (&plusmn;1.0)", 
+      "-0.7 (-1.1 - 0.4)", "-0.2 (&plusmn;0.7)", "-0.1 (-0.4 - 0.0)", 
+      "-", "-", "-0.2 (&plusmn;1.5)", "-0.3 (-0.7 - -0.1)", "0.3 (&plusmn;0.9)", 
+      "0.6 (-0.5 - 0.7)", "-0.5 (&plusmn;0.7)", "-0.5 (-1.0 - 0.1)"),
+    .Dim = c(8L, 3L),
+    .Dimnames = list(
+      c("Mean (SD)", "Median (IQR)", 
+        "Mean (SD)", "Median (IQR)",
+        "Mean (SD)", "Median (IQR)",
+        "Mean (SD)", "Median (IQR)"),
+      c("control", "new treatment", "standard treatment")),
+    rgroup = c("trial_2_missing_outer$outcome[trial_2_missing_outer$visit ==     x]", 
+               "trial_2_missing_outer$outcome[trial_2_missing_outer$visit ==     x]", 
+               "trial_2_missing_outer$outcome[trial_2_missing_outer$visit ==     x]", 
+               "trial_2_missing_outer$outcome[trial_2_missing_outer$visit ==     x]"),
+    n.rgroup = c(2L, 2L, 2L, 2L),
+    htmlTable_args = structure(list(
+      rgroup = c("randomisation", "week1", "week2", "week3"),
+      n.rgroup = c(2, 2, 2, 2)),
+      .Names = c("rgroup", "n.rgroup")),
+    class = c("descMrg", "matrix"))
+  
+  expected_missing_all <- structure(
+    c("0.2 (&plusmn;0.7)", "-0.0 (-0.2 - 0.6)", "0.7 (&plusmn;0.5)", 
+      "0.4 (0.4 - 0.9)", "0.5 (&plusmn;1.0)", "0.5 (0.3 - 1.2)", "-", 
+      "-", "-0.5 (&plusmn;0.8)", "-0.6 (-0.7 - -0.3)", "0.5 (&plusmn;0.4)", 
+      "0.3 (0.2 - 0.8)", "-0.3 (&plusmn;1.0)", "-0.7 (-1.1 - 0.4)", 
+      "-", "-", "0.7 (&plusmn;1.0)", "0.6 (0.0 - 0.7)", "-0.2 (&plusmn;1.5)", 
+      "-0.3 (-0.7 - -0.1)", "0.3 (&plusmn;0.9)", "0.6 (-0.5 - 0.7)", 
+      "-", "-"),
+    .Dim = c(8L, 3L),
+    .Dimnames = list(
+      c("Mean (SD)", "Median (IQR)",
+        "Mean (SD)", "Median (IQR)",
+        "Mean (SD)", "Median (IQR)", 
+        "Mean (SD)", "Median (IQR)"),
+      c("control", "new treatment", "standard treatment")),
+    rgroup = c("trial_2_missing_all$outcome[trial_2_missing_all$visit == x]", 
+               "trial_2_missing_all$outcome[trial_2_missing_all$visit == x]", 
+               "trial_2_missing_all$outcome[trial_2_missing_all$visit == x]", 
+               "trial_2_missing_all$outcome[trial_2_missing_all$visit == x]"),
+    n.rgroup = c(2L, 2L, 2L, 2L),
+    htmlTable_args = structure(list(
+      rgroup = c("randomisation", "week1", "week2", "week3"),
+      n.rgroup = c(2, 2, 2, 2)),
+      .Names = c("rgroup", "n.rgroup")),
+    class = c("descMrg", "matrix"))
+  
   out <- mergeDesc(lapply(levels(trial$visit), function(x)
     getDescriptionStatsBy(x = trial$outcome[trial$visit == x],
                           by = trial$arm[trial$visit == x],
@@ -662,4 +802,96 @@ test_that("missing levels are handled correctly when using custom descriptive fu
     htmlTable_args = list(rgroup = levels(trial_missing_both$visit),
                           n.rgroup = rep(2, 4)))
   expect_identical(out, expected_missing_both)
+  
+  out <- mergeDesc(lapply(levels(trial_2$visit), function(x)
+    getDescriptionStatsBy(x = trial_2$outcome[trial_2$visit == x],
+                          by = trial_2$arm[trial_2$visit == x],
+                          continuous_fn = descriptive_function)),
+    htmlTable_args = list(rgroup = levels(trial_2$visit),
+                          n.rgroup = rep(2, 4)))
+  expect_identical(out, expected_no_missing_2)
+  
+  out <- mergeDesc(lapply(levels(trial_2_missing_first$visit), function(x)
+    getDescriptionStatsBy(x = trial_2_missing_first$outcome[trial_2_missing_first$visit == x],
+                          by = trial_2_missing_first$arm[trial_2_missing_first$visit == x],
+                          continuous_fn = descriptive_function)),
+    htmlTable_args = list(rgroup = levels(trial_2_missing_first$visit),
+                          n.rgroup = rep(2, 4)))
+  expect_identical(out, expected_missing_first_2)
+  
+  out <- mergeDesc(lapply(levels(trial_2_missing_second$visit), function(x)
+    getDescriptionStatsBy(x = trial_2_missing_second$outcome[trial_2_missing_second$visit == x],
+                          by = trial_2_missing_second$arm[trial_2_missing_second$visit == x],
+                          continuous_fn = descriptive_function,
+                          names_of_missing = c("Mean (SD)", "Median (IQR)"))),
+    htmlTable_args = list(rgroup = levels(trial_2_missing_second$visit),
+                          n.rgroup = rep(2, 4)))
+  expect_identical(out, expected_missing_second_2)
+  
+    out <- mergeDesc(lapply(levels(trial_2_missing_outer$visit), function(x)
+    getDescriptionStatsBy(x = trial_2_missing_outer$outcome[trial_2_missing_outer$visit == x],
+                          by = trial_2_missing_outer$arm[trial_2_missing_outer$visit == x],
+                          continuous_fn = descriptive_function,
+                          names_of_missing = c("Mean (SD)", "Median (IQR)"))),
+    htmlTable_args = list(rgroup = levels(trial_2_missing_outer$visit),
+                          n.rgroup = rep(2, 4)))
+  expect_identical(out, expected_missing_outer)
+  
+    out <- mergeDesc(lapply(levels(trial_2_missing_all$visit), function(x)
+    getDescriptionStatsBy(trial_2_missing_all$outcome[trial_2_missing_all$visit == x],
+                          trial_2_missing_all$arm[trial_2_missing_all$visit == x],
+                          continuous_fn = descriptive_function,
+                          names_of_missing = c("Mean (SD)", "Median (IQR)"))),
+    htmlTable_args = list(rgroup = levels(trial_2_missing_all$visit),
+                          n.rgroup = rep(2, 4)))
+  expect_identical(out, expected_missing_all)
+  
+  Hmisc::label(trial_2, self = FALSE) <- c("Study Visit", "Treatment Arm", "Outcome Measure")
+  trial_2_missing_first <- trial_2[!((trial_2$visit == "randomisation") & (trial_2$arm == "control")),]
+  trial_2_missing_second <- trial_2[!((trial_2$visit == "randomisation") & (trial_2$arm == "standard treatment")),]
+  trial_2_missing_outer <- trial_2[!((trial_2$visit == "randomisation") & (trial_2$arm != "new treatment")),]
+  trial_2_missing_all <- trial_2[trial_2$visit != "week3",]
+  
+  out <- mergeDesc(lapply(levels(trial_2$visit), function(x)
+    getDescriptionStatsBy(x = trial_2$outcome[trial_2$visit == x],
+                          by = trial_2$arm[trial_2$visit == x],
+                          continuous_fn = descriptive_function)),
+    htmlTable_args = list(rgroup = levels(trial_2$visit),
+                          n.rgroup = rep(2, 4)))
+  expect_equivalent(out, expected_no_missing_2)
+  
+  out <- mergeDesc(lapply(levels(trial_2_missing_first$visit), function(x)
+    getDescriptionStatsBy(x = trial_2_missing_first$outcome[trial_2_missing_first$visit == x],
+                          by = trial_2_missing_first$arm[trial_2_missing_first$visit == x],
+                          continuous_fn = descriptive_function)),
+    htmlTable_args = list(rgroup = levels(trial_2_missing_first$visit),
+                          n.rgroup = rep(2, 4)))
+  expect_equivalent(out, expected_missing_first_2)
+  
+  out <- mergeDesc(lapply(levels(trial_2_missing_second$visit), function(x)
+    getDescriptionStatsBy(x = trial_2_missing_second$outcome[trial_2_missing_second$visit == x],
+                          by = trial_2_missing_second$arm[trial_2_missing_second$visit == x],
+                          continuous_fn = descriptive_function,
+                          names_of_missing = c("Mean (SD)", "Median (IQR)"))),
+    htmlTable_args = list(rgroup = levels(trial_2_missing_second$visit),
+                          n.rgroup = rep(2, 4)))
+  expect_equivalent(out, expected_missing_second_2)
+  
+  out <- mergeDesc(lapply(levels(trial_2_missing_outer$visit), function(x)
+    getDescriptionStatsBy(x = trial_2_missing_outer$outcome[trial_2_missing_outer$visit == x],
+                          by = trial_2_missing_outer$arm[trial_2_missing_outer$visit == x],
+                          continuous_fn = descriptive_function,
+                          names_of_missing = c("Mean (SD)", "Median (IQR)"))),
+    htmlTable_args = list(rgroup = levels(trial_2_missing_outer$visit),
+                          n.rgroup = rep(2, 4)))
+  expect_equivalent(out, expected_missing_outer)
+  
+  out <- mergeDesc(lapply(levels(trial_2_missing_all$visit), function(x)
+    getDescriptionStatsBy(trial_2_missing_all$outcome[trial_2_missing_all$visit == x],
+                          trial_2_missing_all$arm[trial_2_missing_all$visit == x],
+                          continuous_fn = descriptive_function,
+                          names_of_missing = c("Mean (SD)", "Median (IQR)"))),
+    htmlTable_args = list(rgroup = levels(trial_2_missing_all$visit),
+                          n.rgroup = rep(2, 4)))
+  expect_equivalent(out, expected_missing_all)
 })
