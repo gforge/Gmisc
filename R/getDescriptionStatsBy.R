@@ -445,7 +445,9 @@ getDescriptionStatsBy <- function(x,
     if (any(missing_t)) {
       substitute_t <- rep(missing_value, length(t[!missing_t][[1]]))
       names(substitute_t) <- names(t[!missing_t][[1]])
-      t[missing_t][[1]] <- substitute_t
+      for (i in seq_along(t[missing_t])) {
+        t[missing_t][[i]] <- substitute_t
+      }
     }
     
     if (all(unlist(sapply(t, is.na))) & !is.null(names_of_missing)) {
