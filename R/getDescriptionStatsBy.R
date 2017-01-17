@@ -236,7 +236,7 @@ getDescriptionStatsBy <- function(x,
   # that one should be used otherwise go
   # with the name of the variable
   if (label(x) == "")
-    name <- deparse(substitute(x))
+    name <- paste0(deparse(substitute(x)), collapse = "")
   else
     name <- label(x)
 
@@ -338,10 +338,12 @@ getDescriptionStatsBy <- function(x,
     if (any(missing_t)) {
       substitute_t <- rep(missing_value, length(t[!missing_t][[1]]))
       names(substitute_t) <- names(t[!missing_t][[1]])
-      t[missing_t][[1]] <- substitute_t
+      for (i in seq_along(t[missing_t])) {
+        t[missing_t][[i]] <- substitute_t
+      }
     }
     
-    if (all(sapply(t, is.na)) & !is.null(names_of_missing)) {
+    if (all(unlist(sapply(t, is.na))) & !is.null(names_of_missing)) {
       substitute_t <- rep(missing_value, length(names_of_missing))
       names(substitute_t) <- names_of_missing
       substitute_list <- vector("list", length = length(t))
@@ -351,7 +353,7 @@ getDescriptionStatsBy <- function(x,
       }
       t <- substitute_list
     }
-    
+
     if (length(t[[1]]) != 1){
       fn_name <- deparse(substitute(continuous_fn))
       if (fn_name == "describeMean")
@@ -381,10 +383,12 @@ getDescriptionStatsBy <- function(x,
     if (any(missing_t)) {
       substitute_t <- rep(missing_value, length(t[!missing_t][[1]]))
       names(substitute_t) <- names(t[!missing_t][[1]])
-      t[missing_t][[1]] <- substitute_t
+      for (i in seq_along(t[missing_t])) {
+        t[missing_t][[i]] <- substitute_t
+      }
     }
-    
-    if (all(sapply(t, is.na)) & !is.null(names_of_missing)) {
+
+    if (all(unlist(sapply(t, is.na))) & !is.null(names_of_missing)) {
       substitute_t <- rep(missing_value, length(names_of_missing))
       names(substitute_t) <- names_of_missing
       substitute_list <- vector("list", length = length(t))
@@ -419,7 +423,7 @@ getDescriptionStatsBy <- function(x,
 
     # If this is the only row then set that row to the current name
     if (length(t[[1]]) == 1){
-      names(t[[1]][1]) = name
+      names(t[[1]][1]) <- name
     }
 
   }else{
@@ -441,10 +445,12 @@ getDescriptionStatsBy <- function(x,
     if (any(missing_t)) {
       substitute_t <- rep(missing_value, length(t[!missing_t][[1]]))
       names(substitute_t) <- names(t[!missing_t][[1]])
-      t[missing_t][[1]] <- substitute_t
+      for (i in seq_along(t[missing_t])) {
+        t[missing_t][[i]] <- substitute_t
+      }
     }
     
-    if (all(sapply(t, is.na)) & !is.null(names_of_missing)) {
+    if (all(unlist(sapply(t, is.na))) & !is.null(names_of_missing)) {
       substitute_t <- rep(missing_value, length(names_of_missing))
       names(substitute_t) <- names_of_missing
       substitute_list <- vector("list", length = length(t))
