@@ -240,8 +240,11 @@ getDescriptionStatsBy <- function(x,
   else
     name <- label(x)
 
-  if (is.logical(x))
+  if (is.logical(x)) {
     x <- factor(x, levels=c(TRUE, FALSE))
+  } else if (any(table(x,by) == 0)) {
+    x <- factor(as.character(x))
+  }
 
   # Check missing -
   # Send a warning, since the user might be unaware of this

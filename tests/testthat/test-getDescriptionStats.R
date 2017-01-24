@@ -895,3 +895,25 @@ test_that("missing levels are handled correctly when using custom descriptive fu
                           n.rgroup = rep(2, 4)))
   expect_equivalent(out, expected_missing_all)
 })
+
+data("mtcars")
+test_that("Non-factor variables where values are missing in only one of the by-groups", {
+  table(as.character(mtcars$am), mtcars$gear)
+  retAll <- getDescriptionStatsBy(
+    as.character(mtcars$am), mtcars$gear,
+    show_all_values = TRUE
+  )
+  retOne <- getDescriptionStatsBy(
+    as.character(mtcars$am), mtcars$gear,
+    show_all_values = FALSE
+  )
+  
+  retAllRowDefault <- retAll["0",]
+  retAllRowOther <- retAll["1",]
+  # Delete label as the 
+  attributes(retAllRowDefault) <- NULL
+  attributes(retAllRowOther) <- NULL
+  attributes(retOne) <- NULL
+  expect_equal(retAllRowDefault, retOne)
+  expect_false(all(retAllRowOther == retOne))  
+})
