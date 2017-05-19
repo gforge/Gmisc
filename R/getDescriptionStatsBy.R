@@ -268,8 +268,8 @@ getDescriptionStatsBy <- function(x,
     useNA <- "always"
 
   # If all values are to be shown then simply use
-  # the factors function
-  if (show_all_values)
+  # the factors function, provided describeProp was specified
+  if (show_all_values & deparse(substitute(prop_fn)) == "describeProp")
     prop_fn <- describeFactors
 
   addEmptyValuesToMakeListCompatibleWithMatrix <- function(t){
