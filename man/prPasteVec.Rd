@@ -13,4 +13,3 @@ prPasteVec(x)
 The function collapses a vector into an output useful when throwing
 errors, e.g. 1:3 becomes '1', '2', '3'
 }
-

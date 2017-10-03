@@ -19,4 +19,3 @@ Retrieves the boxes \code{"coords"} attribute.
 box <- boxGrob("A test box")
 coords(box)
 }
-

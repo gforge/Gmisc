@@ -8,7 +8,7 @@ using namespace Rcpp;
 
 // calculateLinesAndArrow
 Rcpp::List calculateLinesAndArrow(NumericVector x, NumericVector y, NumericVector offset, double end_x, double end_y, double arrow_offset, int rm_intersect);
-RcppExport SEXP Gmisc_calculateLinesAndArrow(SEXP xSEXP, SEXP ySEXP, SEXP offsetSEXP, SEXP end_xSEXP, SEXP end_ySEXP, SEXP arrow_offsetSEXP, SEXP rm_intersectSEXP) {
+RcppExport SEXP _Gmisc_calculateLinesAndArrow(SEXP xSEXP, SEXP ySEXP, SEXP offsetSEXP, SEXP end_xSEXP, SEXP end_ySEXP, SEXP arrow_offsetSEXP, SEXP rm_intersectSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -25,7 +25,7 @@ END_RCPP
 }
 // gnrlBezierPoints
 NumericMatrix gnrlBezierPoints(SEXP& ctrl_points, int length_out);
-RcppExport SEXP Gmisc_gnrlBezierPoints(SEXP ctrl_pointsSEXP, SEXP length_outSEXP) {
+RcppExport SEXP _Gmisc_gnrlBezierPoints(SEXP ctrl_pointsSEXP, SEXP length_outSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -34,4 +34,15 @@ BEGIN_RCPP
     rcpp_result_gen = Rcpp::wrap(gnrlBezierPoints(ctrl_points, length_out));
     return rcpp_result_gen;
 END_RCPP
+}
+
+static const R_CallMethodDef CallEntries[] = {
+    {"_Gmisc_calculateLinesAndArrow", (DL_FUNC) &_Gmisc_calculateLinesAndArrow, 7},
+    {"_Gmisc_gnrlBezierPoints", (DL_FUNC) &_Gmisc_gnrlBezierPoints, 2},
+    {NULL, NULL, 0}
+};
+
+RcppExport void R_init_Gmisc(DllInfo *dll) {
+    R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
+    R_useDynamicSymbols(dll, FALSE);
 }

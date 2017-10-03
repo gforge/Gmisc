@@ -22,4 +22,3 @@ Returns the raw value in units if the provided is of type unit else
 it returns the default unit.
 }
 \keyword{internal}
-

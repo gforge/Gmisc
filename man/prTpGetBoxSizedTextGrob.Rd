@@ -21,4 +21,3 @@ prTpGetBoxSizedTextGrob(txt, txt_clr, txt_cex, force_cex = FALSE, ...)
 Gets the text size for the box
 }
 \keyword{internal}
-

@@ -26,4 +26,3 @@ Finds the matching colors for the new addition based on the original set
 of colors
 }
 \keyword{internal}
-

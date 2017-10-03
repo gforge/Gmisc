@@ -43,4 +43,3 @@ want to use different offsets.}
 The function calculates new points according to the offset
 that lie to the left/right of the provided line.
 }
-

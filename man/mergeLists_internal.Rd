@@ -18,4 +18,3 @@ list with the two merged
 A helper function for mergeLists that does the actual work.
 }
 \keyword{internal}
-

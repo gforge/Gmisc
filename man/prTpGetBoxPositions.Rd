@@ -33,4 +33,3 @@ the plot width.}
 Gets the box position
 }
 \keyword{internal}
-

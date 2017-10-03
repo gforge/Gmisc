@@ -46,6 +46,7 @@ calling the \code{\link{htmlTable}} function.
 The function chooses the \code{\link[base]{colnames}} from the first element in
 the \code{tlist}.
 }
+
 \examples{
 data(mtcars)
 # For labelling we use the label()
@@ -128,4 +129,3 @@ getDescriptionStatsBy(mtcars$col_with_missing, mtcars$am, statistics=TRUE,
         file="")
 }
 }
-

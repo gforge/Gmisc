@@ -22,4 +22,3 @@ if not compatible. It is mostly useful for custom describe functions.
 as all functions now use the useNA style in order to comply
 with standard R naming.
 }
-

@@ -24,4 +24,3 @@ string
 Helper to ftp_document
 }
 \keyword{internal}
-

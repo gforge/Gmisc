@@ -22,4 +22,3 @@ list
 \description{
 Gets the bezier points adjusted for an arrow
 }
-

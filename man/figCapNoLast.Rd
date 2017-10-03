@@ -23,4 +23,3 @@ options(org_opts)
 Other figure caption functions: \code{\link{figCapNoNext}},
   \code{\link{figCapNo}}
 }
-

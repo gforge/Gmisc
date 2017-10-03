@@ -173,4 +173,3 @@ transitionPlot(transition_matrix, box_prop=box_prop,
                overlap_add_width = unit(1, "mm"))
 par(par_org)
 }
-

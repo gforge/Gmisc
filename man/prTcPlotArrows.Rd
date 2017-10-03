@@ -39,4 +39,3 @@ prTcPlotArrows(trnstn_set, widths, type = c("simple", "gradient"), clr, rez,
 Plots the arrows within a single transition set
 }
 \keyword{internal}
-

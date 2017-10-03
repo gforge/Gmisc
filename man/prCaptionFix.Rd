@@ -16,4 +16,3 @@ outFile The name of the file
 Fixes the caption for elements without caption
 }
 \keyword{internal}
-
