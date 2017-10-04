@@ -22,4 +22,3 @@ a matrix, a vector of length two, or a single color}
 Gets the color for the given box
 }
 \keyword{internal}
-

@@ -19,4 +19,3 @@ Reads the file, changes the max-width
 for the body element.
 }
 \keyword{internal}
-

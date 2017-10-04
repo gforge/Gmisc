@@ -16,4 +16,3 @@ string Returns without the script elements
 Removes the <script>*</scrip>
 }
 \keyword{internal}
-

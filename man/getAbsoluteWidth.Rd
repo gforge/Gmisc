@@ -31,4 +31,3 @@ main direction of the arrow as specified by the first and last
 bezier control points \code{x} and \code{y}.
 }
 \keyword{internal}
-

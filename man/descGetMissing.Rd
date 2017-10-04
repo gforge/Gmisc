@@ -40,4 +40,3 @@ This function calculates the missingness row for \code{\link{describeMean}},
 \code{\link{describeMedian}} and custom description functions.
 It will return invisibly when no missing values are present.
 }
-

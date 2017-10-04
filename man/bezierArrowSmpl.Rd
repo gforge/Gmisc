@@ -74,4 +74,3 @@ arrowGrob <- bezierArrowSmpl(x = c(.1,.3,.6,.9),
 grid.draw(arrowGrob)
 
 }
-

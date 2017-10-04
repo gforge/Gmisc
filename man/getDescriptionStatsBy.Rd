@@ -144,6 +144,7 @@ You can also use a custom function that returns a string with the attribute 'col
 to the results instead of the p-value column.
 to the results instead of the p-value column.
 }
+
 \examples{
 data(mtcars)
 # For labelling we use the label()
@@ -231,4 +232,3 @@ Other descriptive functions: \code{\link{describeFactors}},
   \code{\link{describeMean}}, \code{\link{describeMedian}},
   \code{\link{describeProp}}, \code{\link{getPvalWilcox}}
 }
-

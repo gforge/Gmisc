@@ -26,4 +26,3 @@ prTcPlotBoxColumn(box_positions, proportions, fill, txt, txt_clr, cex)
 Takes a set of box settings and plots them.
 }
 \keyword{internal}
-

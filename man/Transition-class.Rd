@@ -2,8 +2,8 @@
 % Please edit documentation in R/transitionClass.R
 \docType{class}
 \name{Transition-class}
-\alias{Transition}
 \alias{Transition-class}
+\alias{Transition}
 \title{A reference class for generating transition plots}
 \description{
 This class simplifies the creating of transition plots. It also
@@ -70,6 +70,7 @@ to \code{"all"}.}
 
 \item{\code{data}}{Internal storage variable. Should not be accessed directly.}
 }}
+
 \section{Methods}{
 
 \describe{
@@ -131,6 +132,7 @@ additional viewports that you intend to use.}
 it also adds an attribute \code{attr('props', prop_mtrx)} that
 is a 2D matrix with the corresponding proportions.}
 }}
+
 \examples{
 # Transitions
 set.seed(1)
@@ -159,4 +161,3 @@ transitions <-
 # Render the plot
 transitions$render()
 }
-

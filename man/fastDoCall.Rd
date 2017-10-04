@@ -37,6 +37,7 @@ can it has limitations. It can currently not parse the example code from the
 original function: \code{do.call(paste, list(as.name("A"), as.name("B")), quote = TRUE)}
 and the functionality of \code{quote} has not been thoroughly tested.
 }
+
 \examples{
 fastDoCall("complex", list(imaginary = 1:3))
 
@@ -65,4 +66,3 @@ eval(call("f", quote(A)))               # 2
 eval(call("f", A), envir = env)         # 4
 eval(call("f", quote(A)), envir = env)  # 100
 }
-

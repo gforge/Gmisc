@@ -16,4 +16,3 @@ string Returns with changes
 Changes lines for XML-conformity
 }
 \keyword{internal}
-
