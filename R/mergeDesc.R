@@ -124,6 +124,13 @@ mergeDesc <- function(..., htmlTable_args = list(css.rgroup = "")){
     n.rgroup <- htmlTable_args$n.rgroup
     htmlTable_args$rgroup <- NULL
     htmlTable_args$n.rgroup <- NULL
+    if("P-value" %in% colnames(mx) & length(pvals_rgroup) != length(rgroup)) {
+      replacement_pvals <- rep(NA, length(rgroup))
+      replacement_pvals[n.rgroup > 1] <- pvals_rgroup
+      replacement_pvals[n.rgroup ==1 ] <-mx[, "P-value"][mx[,"P-value"] != ""]
+      mx[, "P-value"] <- ""
+      pvals_rgroup <- replacement_pvals
+    }
   }
   if (length(pvals_rgroup) > 0){
     attr(rgroup, "add") <- pvals_rgroup
