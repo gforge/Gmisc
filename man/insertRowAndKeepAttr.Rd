@@ -31,4 +31,3 @@ print(attr(test, 'wow'))
 \author{
 Max Gordon, Arne Henningsen
 }
-

@@ -20,4 +20,3 @@ it defaults to the first value.}
 A helper function for the description stats
 }
 \keyword{internal}
-

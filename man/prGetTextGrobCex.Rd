@@ -16,4 +16,3 @@ prGetTextGrobCex(x)
 Just a simple acces to the gp$cex parameter
 }
 \keyword{internal}
-

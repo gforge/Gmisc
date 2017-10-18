@@ -44,7 +44,7 @@ Second paragraph
 
 # Tables
 
-```{r htmlTable, results='asis', echo=FALSE}
+```{r echo=FALSE}
 set.seed(1)
 library(Gmisc)
 

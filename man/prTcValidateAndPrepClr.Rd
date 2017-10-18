@@ -26,4 +26,3 @@ always a matrix of the exact same dimensions as the transition
 matrix.
 }
 \keyword{internal}
-

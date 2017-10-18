@@ -144,4 +144,3 @@ getSvdMostInfluential(dataMatrix,
                       plot_selection = TRUE)
 par(org_par)
 }
-

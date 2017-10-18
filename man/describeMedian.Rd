@@ -62,4 +62,3 @@ Other descriptive functions: \code{\link{describeFactors}},
   \code{\link{getDescriptionStatsBy}},
   \code{\link{getPvalWilcox}}
 }
-

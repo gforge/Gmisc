@@ -30,4 +30,3 @@ Used in order to illustrate the mix between two
 proportions in the \code{\link{transitionPlot}}.
 }
 \keyword{internal}
-

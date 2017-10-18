@@ -66,4 +66,3 @@ boxPropGrob("Main label", "Left text", "Right text", prop = .3)
 Other box-functions: \code{\link{boxGrob}},
   \code{\link{connectGrob}}
 }
-

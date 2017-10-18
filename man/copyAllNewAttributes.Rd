@@ -33,4 +33,3 @@ b <- copyAllNewAttributes(a, b)
 print(attr(b, 'wow'))
 
 }
-

@@ -54,4 +54,3 @@ A simple function applied by the \code{\link{getDescriptionStatsBy}}
 for the total column.
 }
 \keyword{internal}
-

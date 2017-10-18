@@ -22,4 +22,3 @@ angle in radians (see \code{\link{atan2}})
 Uses a vector to get an angle by \code{\link{atan2}}.
 }
 \keyword{internal}
-

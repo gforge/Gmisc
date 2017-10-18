@@ -3,8 +3,8 @@
 \docType{package}
 \name{Gmisc-deprecated}
 \alias{Gmisc-deprecated}
-\alias{Gmisc-deprecated-package}
 \alias{forestplot2}
+\alias{Gmisc-deprecated-package}
 \title{Deprecated function(s) in \pkg{Gmisc}}
 \usage{
 forestplot2(...)
@@ -16,4 +16,3 @@ forestplot2(...)
 The \code{forestplot2} has moved to \pkg{forestplot} package and changed name to \code{\link[forestplot]{forestplot}}
 }
 \keyword{internal}
-

@@ -32,7 +32,7 @@
 #' @useDynLib Gmisc
 #' @importFrom Rcpp evalCpp
 calculateLinesAndArrow <- function(x, y, offset, end_x = -1, end_y = -1, arrow_offset = -1, rm_intersect = 3L) {
-    .Call('Gmisc_calculateLinesAndArrow', PACKAGE = 'Gmisc', x, y, offset, end_x, end_y, arrow_offset, rm_intersect)
+    .Call('_Gmisc_calculateLinesAndArrow', PACKAGE = 'Gmisc', x, y, offset, end_x, end_y, arrow_offset, rm_intersect)
 }
 
 #' Generates a generalized Bezier line
@@ -64,6 +64,6 @@ calculateLinesAndArrow <- function(x, y, offset, end_x = -1, end_y = -1, arrow_o
 #'    gp=gpar(col=clrs[which(i == out_sizes)]))
 #' }
 gnrlBezierPoints <- function(ctrl_points, length_out = 100L) {
-    .Call('Gmisc_gnrlBezierPoints', PACKAGE = 'Gmisc', ctrl_points, length_out)
+    .Call('_Gmisc_gnrlBezierPoints', PACKAGE = 'Gmisc', ctrl_points, length_out)
 }
 

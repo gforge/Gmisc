@@ -2,8 +2,8 @@
 % Please edit documentation in R/boxGrobs.R
 \name{connectGrob}
 \alias{connectGrob}
-\alias{plot.connect_boxes}
 \alias{print.connect_boxes}
+\alias{plot.connect_boxes}
 \title{Connect boxes with an arrow}
 \usage{
 connectGrob(start, end, type = c("vertical", "horizontal", "L", "-"),
@@ -74,4 +74,3 @@ sub_side_right
 Other box-functions: \code{\link{boxGrob}},
   \code{\link{boxPropGrob}}
 }
-

@@ -49,4 +49,3 @@ options(org_opts)
 Other figure caption functions: \code{\link{figCapNoLast}},
   \code{\link{figCapNoNext}}
 }
-

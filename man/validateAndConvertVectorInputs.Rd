@@ -25,4 +25,3 @@ grid parameters. It also creates an origo
 at point 0 if none is provided.
 }
 \keyword{internal}
-

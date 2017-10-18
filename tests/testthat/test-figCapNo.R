@@ -4,14 +4,14 @@ test_that("Test figure caption basic functionality",{
   options(fig_caption_no = NULL)
   expect_error(figCapNoLast())
   expect_equivalent(figCapNoNext(), 1)
-  expect_match(figCapNo("a", roman = FALSE, sprintf_str = "%s: %s"),
-               "1+: a")
+  no <- figCapNo("a", roman = FALSE, sprintf_str = "%s: %s")
+  expect_match(no, "1+: a")
 
-  expect_match(figCapNo("a", roman = FALSE, sprintf_str = "%s: %s"),
-               "2: a")
-
-  expect_match(figCapNo("a", roman = TRUE, sprintf_str = "%s: %s"),
-               "III: a")
+  no <- figCapNo("a", roman = FALSE, sprintf_str = "%s: %s")
+  expect_match(no, "2: a")
+  
+  no <- figCapNo("a", roman = TRUE, sprintf_str = "%s: %s")
+  expect_match(no, "III: a")
 
   options(fig_caption_no = NULL)
   expect_match(figCapNo("a", roman = TRUE, sprintf_str = "%s: %s"),
@@ -26,15 +26,16 @@ test_that("Test figure caption basic functionality",{
 
   options(fig_caption_no = TRUE)
   expect_equal(figCapNoNext(), 1)
-  expect_equal(figCapNo("a", roman = FALSE, sprintf_str = "%s: %s"),
-               "1: a")
-
+  no <- figCapNo("a", roman = FALSE, sprintf_str = "%s: %s")
+  expect_equal(no, "1: a")
 })
 
 test_that("Test figure caption options",{
   options(fig_caption_no = 2)
-  expect_equivalent(figCapNoLast(), 2)
-  expect_equivalent(figCapNoNext(), 3)
+  no <- figCapNoLast()
+  expect_equivalent(no, 2)
+  no <- figCapNoNext()
+  expect_equivalent(no, 3)
 
   options(fig_caption_no_roman = TRUE)
   expect_equivalent(figCapNoLast(), "II")

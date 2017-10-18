@@ -2,10 +2,10 @@
 % Please edit documentation in R/boxGrobs.R
 \name{boxGrob}
 \alias{boxGrob}
-\alias{heightDetails.box}
-\alias{plot.box}
-\alias{print.box}
 \alias{widthDetails.box}
+\alias{heightDetails.box}
+\alias{print.box}
+\alias{plot.box}
 \title{Create a box with text}
 \usage{
 boxGrob(label, y = unit(0.5, "npc"), x = unit(0.5, "npc"), width, height,
@@ -62,4 +62,3 @@ boxGrob("My box")
 Other box-functions: \code{\link{boxPropGrob}},
   \code{\link{connectGrob}}
 }
-

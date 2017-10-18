@@ -16,4 +16,3 @@ string Returns without the unwanted lines
 Removes other unwanted lines
 }
 \keyword{internal}
-

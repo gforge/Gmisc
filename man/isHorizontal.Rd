@@ -16,4 +16,3 @@ boolean
 Just a simple help with interpreting the radians
 }
 \keyword{internal}
-

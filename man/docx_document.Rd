@@ -79,4 +79,3 @@ output:
 \author{
 Max Gordon
 }
-
