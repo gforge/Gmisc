@@ -4,7 +4,7 @@
 
 <head>
 
-<meta charset="utf-8">
+<meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
@@ -12,7 +12,7 @@
 
 <meta name="author" content="Max Gordon" />
 
-<meta name="date" content="2016-10-12" />
+<meta name="date" content="2017-10-18" />
 
 <title>The fastest way to compile your Table 1?</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">The fastest way to compile your Table 1?</h1>
 <h4 class="author"><em>Max Gordon</em></h4>
-<h4 class="date"><em>2016-10-12</em></h4>
+<h4 class="date"><em>2017-10-18</em></h4>
 
 
 <div id="TOC">
@@ -164,131 +164,64 @@ t1 &lt;-<span class="st"> </span><span class="kw">c</span>(t1,
           <span class="dt">htmlTable_args =</span> <span class="kw">list</span>(<span class="dt">css.rgroup =</span> <span class="st">&quot;&quot;</span>,
                                 <span class="dt">caption  =</span> <span class="st">&quot;Basic descriptive statistics from the mtcars dataset&quot;</span>,
                                 <span class="dt">tfoot =</span> <span class="st">&quot;&amp;dagger; The weight is in 10&lt;sup&gt;3&lt;/sup&gt; kg&quot;</span>))</code></pre></div>
-<table class="gmisc_table" style="border-collapse: collapse; margin-top: 1em; margin-bottom: 1em;">
+<table class='gmisc_table' style='border-collapse: collapse; margin-top: 1em; margin-bottom: 1em;' >
 <thead>
+<tr><td colspan='3' style='text-align: left;'>
+Basic descriptive statistics from the mtcars dataset</td></tr>
 <tr>
-<td colspan="3" style="text-align: left;">
-Basic descriptive statistics from the mtcars dataset
-</td>
-</tr>
-<tr>
-<th style="border-bottom: 1px solid grey; border-top: 2px solid grey;">
-</th>
-<th style="border-bottom: 1px solid grey; border-top: 2px solid grey; text-align: center;">
-Automatic<br /> No. 19
-</th>
-<th style="border-bottom: 1px solid grey; border-top: 2px solid grey; text-align: center;">
-Manual<br /> No. 13
-</th>
+<th style='border-bottom: 1px solid grey; border-top: 2px solid grey;'> </th>
+<th style='border-bottom: 1px solid grey; border-top: 2px solid grey; text-align: center;'>Automatic<br />
+ No. 19</th>
+<th style='border-bottom: 1px solid grey; border-top: 2px solid grey; text-align: center;'>Manual<br />
+ No. 13</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">
-Gas
-</td>
-<td style="text-align: center;">
-17 (15 - 19)
-</td>
-<td style="text-align: center;">
-23 (21 - 30)
-</td>
+<td style='text-align: left;'>Gas</td>
+<td style='text-align: center;'>17 (15 - 19)</td>
+<td style='text-align: center;'>23 (21 - 30)</td>
 </tr>
 <tr>
-<td style="text-align: left;">
-Weight†
-</td>
-<td style="text-align: center;">
-4 (3 - 4)
-</td>
-<td style="text-align: center;">
-2 (2 - 3)
-</td>
+<td style='text-align: left;'>Weight&dagger;</td>
+<td style='text-align: center;'>4 (3 - 4)</td>
+<td style='text-align: center;'>2 (2 - 3)</td>
+</tr> 
+<tr><td colspan='3' style=''>Color</td></tr>
+<tr>
+<td style='text-align: left;'>&nbsp;&nbsp;black</td>
+<td style='text-align: center;'>7 (37%)</td>
+<td style='text-align: center;'>5 (38%)</td>
 </tr>
 <tr>
-<td colspan="3" style>
-Color
-</td>
+<td style='text-align: left;'>&nbsp;&nbsp;red</td>
+<td style='text-align: center;'>6 (32%)</td>
+<td style='text-align: center;'>4 (31%)</td>
 </tr>
 <tr>
-<td style="text-align: left;">
-  black
-</td>
-<td style="text-align: center;">
-5 (26%)
-</td>
-<td style="text-align: center;">
-5 (38%)
-</td>
+<td style='text-align: left;'>&nbsp;&nbsp;silver</td>
+<td style='text-align: center;'>6 (32%)</td>
+<td style='text-align: center;'>4 (31%)</td>
+</tr> 
+<tr><td colspan='3' style=''>Gears</td></tr>
+<tr>
+<td style='text-align: left;'>&nbsp;&nbsp;3</td>
+<td style='text-align: center;'>15 (79%)</td>
+<td style='text-align: center;'>0 (0%)</td>
 </tr>
 <tr>
-<td style="text-align: left;">
-  red
-</td>
-<td style="text-align: center;">
-9 (47%)
-</td>
-<td style="text-align: center;">
-3 (23%)
-</td>
+<td style='text-align: left;'>&nbsp;&nbsp;4</td>
+<td style='text-align: center;'>4 (21%)</td>
+<td style='text-align: center;'>8 (62%)</td>
 </tr>
 <tr>
-<td style="text-align: left;">
-  silver
-</td>
-<td style="text-align: center;">
-5 (26%)
-</td>
-<td style="text-align: center;">
-5 (38%)
-</td>
-</tr>
-<tr>
-<td colspan="3" style>
-Gears
-</td>
-</tr>
-<tr>
-<td style="text-align: left;">
-  3
-</td>
-<td style="text-align: center;">
-15 (79%)
-</td>
-<td style="text-align: center;">
-0 (0%)
-</td>
-</tr>
-<tr>
-<td style="text-align: left;">
-  4
-</td>
-<td style="text-align: center;">
-4 (21%)
-</td>
-<td style="text-align: center;">
-8 (62%)
-</td>
-</tr>
-<tr>
-<td style="border-bottom: 2px solid grey; text-align: left;">
-  5
-</td>
-<td style="border-bottom: 2px solid grey; text-align: center;">
-0 (0%)
-</td>
-<td style="border-bottom: 2px solid grey; text-align: center;">
-5 (38%)
-</td>
+<td style='border-bottom: 2px solid grey; text-align: left;'>&nbsp;&nbsp;5</td>
+<td style='border-bottom: 2px solid grey; text-align: center;'>0 (0%)</td>
+<td style='border-bottom: 2px solid grey; text-align: center;'>5 (38%)</td>
 </tr>
 </tbody>
-<tfoot>
-<tr>
-<td colspan="3">
-† The weight is in 10<sup>3</sup> kg
-</td>
-</tr>
-</tfoot>
+<tfoot><tr><td colspan='3'>
+&dagger; The weight is in 10<sup>3</sup> kg</td></tr></tfoot>
 </table>
 <p>I like generating lists but it is optional, you can achieve the same through:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mergeDesc</span>(<span class="kw">getTable1Stats</span>(mtcars$mpg),
@@ -298,131 +231,64 @@ Gears
           <span class="dt">htmlTable_args =</span> <span class="kw">list</span>(<span class="dt">css.rgroup =</span> <span class="st">&quot;&quot;</span>,
                                 <span class="dt">caption  =</span> <span class="st">&quot;Basic descriptive statistics from the mtcars dataset&quot;</span>,
                                 <span class="dt">tfoot =</span> <span class="st">&quot;&amp;dagger; The weight is in 10&lt;sup&gt;3&lt;/sup&gt; kg&quot;</span>))</code></pre></div>
-<table class="gmisc_table" style="border-collapse: collapse; margin-top: 1em; margin-bottom: 1em;">
+<table class='gmisc_table' style='border-collapse: collapse; margin-top: 1em; margin-bottom: 1em;' >
 <thead>
+<tr><td colspan='3' style='text-align: left;'>
+Basic descriptive statistics from the mtcars dataset</td></tr>
 <tr>
-<td colspan="3" style="text-align: left;">
-Basic descriptive statistics from the mtcars dataset
-</td>
-</tr>
-<tr>
-<th style="border-bottom: 1px solid grey; border-top: 2px solid grey;">
-</th>
-<th style="border-bottom: 1px solid grey; border-top: 2px solid grey; text-align: center;">
-Automatic<br /> No. 19
-</th>
-<th style="border-bottom: 1px solid grey; border-top: 2px solid grey; text-align: center;">
-Manual<br /> No. 13
-</th>
+<th style='border-bottom: 1px solid grey; border-top: 2px solid grey;'> </th>
+<th style='border-bottom: 1px solid grey; border-top: 2px solid grey; text-align: center;'>Automatic<br />
+ No. 19</th>
+<th style='border-bottom: 1px solid grey; border-top: 2px solid grey; text-align: center;'>Manual<br />
+ No. 13</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">
-Gas
-</td>
-<td style="text-align: center;">
-17 (15 - 19)
-</td>
-<td style="text-align: center;">
-23 (21 - 30)
-</td>
+<td style='text-align: left;'>Gas</td>
+<td style='text-align: center;'>17 (15 - 19)</td>
+<td style='text-align: center;'>23 (21 - 30)</td>
 </tr>
 <tr>
-<td style="text-align: left;">
-Weight†
-</td>
-<td style="text-align: center;">
-4 (3 - 4)
-</td>
-<td style="text-align: center;">
-2 (2 - 3)
-</td>
+<td style='text-align: left;'>Weight&dagger;</td>
+<td style='text-align: center;'>4 (3 - 4)</td>
+<td style='text-align: center;'>2 (2 - 3)</td>
+</tr> 
+<tr><td colspan='3' style=''>Color</td></tr>
+<tr>
+<td style='text-align: left;'>&nbsp;&nbsp;black</td>
+<td style='text-align: center;'>7 (37%)</td>
+<td style='text-align: center;'>5 (38%)</td>
 </tr>
 <tr>
-<td colspan="3" style>
-Color
-</td>
+<td style='text-align: left;'>&nbsp;&nbsp;red</td>
+<td style='text-align: center;'>6 (32%)</td>
+<td style='text-align: center;'>4 (31%)</td>
 </tr>
 <tr>
-<td style="text-align: left;">
-  black
-</td>
-<td style="text-align: center;">
-5 (26%)
-</td>
-<td style="text-align: center;">
-5 (38%)
-</td>
+<td style='text-align: left;'>&nbsp;&nbsp;silver</td>
+<td style='text-align: center;'>6 (32%)</td>
+<td style='text-align: center;'>4 (31%)</td>
+</tr> 
+<tr><td colspan='3' style=''>Gears</td></tr>
+<tr>
+<td style='text-align: left;'>&nbsp;&nbsp;3</td>
+<td style='text-align: center;'>15 (79%)</td>
+<td style='text-align: center;'>0 (0%)</td>
 </tr>
 <tr>
-<td style="text-align: left;">
-  red
-</td>
-<td style="text-align: center;">
-9 (47%)
-</td>
-<td style="text-align: center;">
-3 (23%)
-</td>
+<td style='text-align: left;'>&nbsp;&nbsp;4</td>
+<td style='text-align: center;'>4 (21%)</td>
+<td style='text-align: center;'>8 (62%)</td>
 </tr>
 <tr>
-<td style="text-align: left;">
-  silver
-</td>
-<td style="text-align: center;">
-5 (26%)
-</td>
-<td style="text-align: center;">
-5 (38%)
-</td>
-</tr>
-<tr>
-<td colspan="3" style>
-Gears
-</td>
-</tr>
-<tr>
-<td style="text-align: left;">
-  3
-</td>
-<td style="text-align: center;">
-15 (79%)
-</td>
-<td style="text-align: center;">
-0 (0%)
-</td>
-</tr>
-<tr>
-<td style="text-align: left;">
-  4
-</td>
-<td style="text-align: center;">
-4 (21%)
-</td>
-<td style="text-align: center;">
-8 (62%)
-</td>
-</tr>
-<tr>
-<td style="border-bottom: 2px solid grey; text-align: left;">
-  5
-</td>
-<td style="border-bottom: 2px solid grey; text-align: center;">
-0 (0%)
-</td>
-<td style="border-bottom: 2px solid grey; text-align: center;">
-5 (38%)
-</td>
+<td style='border-bottom: 2px solid grey; text-align: left;'>&nbsp;&nbsp;5</td>
+<td style='border-bottom: 2px solid grey; text-align: center;'>0 (0%)</td>
+<td style='border-bottom: 2px solid grey; text-align: center;'>5 (38%)</td>
 </tr>
 </tbody>
-<tfoot>
-<tr>
-<td colspan="3">
-† The weight is in 10<sup>3</sup> kg
-</td>
-</tr>
-</tfoot>
+<tfoot><tr><td colspan='3'>
+&dagger; The weight is in 10<sup>3</sup> kg</td></tr></tfoot>
 </table>
 </div>
 <div id="p-values" class="section level1">
@@ -455,158 +321,75 @@ t1[[<span class="st">&quot;Color&quot;</span>]] &lt;-<span class="st"> </span>
 <span class="st">  </span><span class="kw">htmlTable</span>(<span class="dt">css.rgroup =</span> <span class="st">&quot;&quot;</span>,
             <span class="dt">caption  =</span> <span class="st">&quot;Basic descriptive statistics from the mtcars dataset&quot;</span>,
             <span class="dt">tfoot =</span> <span class="st">&quot;&amp;dagger; The weight is in 10&lt;sup&gt;3&lt;/sup&gt; kg&quot;</span>)</code></pre></div>
-<table class="gmisc_table" style="border-collapse: collapse; margin-top: 1em; margin-bottom: 1em;">
+<table class='gmisc_table' style='border-collapse: collapse; margin-top: 1em; margin-bottom: 1em;' >
 <thead>
+<tr><td colspan='4' style='text-align: left;'>
+Basic descriptive statistics from the mtcars dataset</td></tr>
 <tr>
-<td colspan="4" style="text-align: left;">
-Basic descriptive statistics from the mtcars dataset
-</td>
-</tr>
-<tr>
-<th style="border-bottom: 1px solid grey; border-top: 2px solid grey;">
-</th>
-<th style="border-bottom: 1px solid grey; border-top: 2px solid grey; text-align: center;">
-Automatic<br /> No. 19
-</th>
-<th style="border-bottom: 1px solid grey; border-top: 2px solid grey; text-align: center;">
-Manual<br /> No. 13
-</th>
-<th style="border-bottom: 1px solid grey; border-top: 2px solid grey; text-align: center;">
-P-value
-</th>
+<th style='border-bottom: 1px solid grey; border-top: 2px solid grey;'> </th>
+<th style='border-bottom: 1px solid grey; border-top: 2px solid grey; text-align: center;'>Automatic<br />
+ No. 19</th>
+<th style='border-bottom: 1px solid grey; border-top: 2px solid grey; text-align: center;'>Manual<br />
+ No. 13</th>
+<th style='border-bottom: 1px solid grey; border-top: 2px solid grey; text-align: center;'>P-value</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">
-Gas
-</td>
-<td style="text-align: center;">
-17 (15 - 19)
-</td>
-<td style="text-align: center;">
-23 (21 - 30)
-</td>
-<td style="text-align: center;">
-0.002
-</td>
+<td style='text-align: left;'>Gas</td>
+<td style='text-align: center;'>17 (15 - 19)</td>
+<td style='text-align: center;'>23 (21 - 30)</td>
+<td style='text-align: center;'>0.002</td>
 </tr>
 <tr>
-<td style="text-align: left;">
-Weight†
-</td>
-<td style="text-align: center;">
-4 (3 - 4)
-</td>
-<td style="text-align: center;">
-2 (2 - 3)
-</td>
-<td style="text-align: center;">
-&lt; 0.0001
-</td>
+<td style='text-align: left;'>Weight&dagger;</td>
+<td style='text-align: center;'>4 (3 - 4)</td>
+<td style='text-align: center;'>2 (2 - 3)</td>
+<td style='text-align: center;'>&lt; 0.0001</td>
+</tr> 
+<tr><td colspan='3' style=''>Color</td>
+<td style='text-align: center;'>1.0</td></tr>
+<tr>
+<td style='text-align: left;'>&nbsp;&nbsp;black</td>
+<td style='text-align: center;'>7 (37%)</td>
+<td style='text-align: center;'>5 (38%)</td>
+<td style='text-align: center;'></td>
 </tr>
 <tr>
-<td colspan="3" style>
-Color
-</td>
-<td style="text-align: center;">
-0.48
-</td>
+<td style='text-align: left;'>&nbsp;&nbsp;red</td>
+<td style='text-align: center;'>6 (32%)</td>
+<td style='text-align: center;'>4 (31%)</td>
+<td style='text-align: center;'></td>
 </tr>
 <tr>
-<td style="text-align: left;">
-  black
-</td>
-<td style="text-align: center;">
-5 (26%)
-</td>
-<td style="text-align: center;">
-5 (38%)
-</td>
-<td style="text-align: center;">
-</td>
+<td style='text-align: left;'>&nbsp;&nbsp;silver</td>
+<td style='text-align: center;'>6 (32%)</td>
+<td style='text-align: center;'>4 (31%)</td>
+<td style='text-align: center;'></td>
+</tr> 
+<tr><td colspan='3' style=''>Gears</td>
+<td style='text-align: center;'>&lt; 0.0001</td></tr>
+<tr>
+<td style='text-align: left;'>&nbsp;&nbsp;3</td>
+<td style='text-align: center;'>15 (79%)</td>
+<td style='text-align: center;'>0 (0%)</td>
+<td style='text-align: center;'></td>
 </tr>
 <tr>
-<td style="text-align: left;">
-  red
-</td>
-<td style="text-align: center;">
-9 (47%)
-</td>
-<td style="text-align: center;">
-3 (23%)
-</td>
-<td style="text-align: center;">
-</td>
+<td style='text-align: left;'>&nbsp;&nbsp;4</td>
+<td style='text-align: center;'>4 (21%)</td>
+<td style='text-align: center;'>8 (62%)</td>
+<td style='text-align: center;'></td>
 </tr>
 <tr>
-<td style="text-align: left;">
-  silver
-</td>
-<td style="text-align: center;">
-5 (26%)
-</td>
-<td style="text-align: center;">
-5 (38%)
-</td>
-<td style="text-align: center;">
-</td>
-</tr>
-<tr>
-<td colspan="3" style>
-Gears
-</td>
-<td style="text-align: center;">
-&lt; 0.0001
-</td>
-</tr>
-<tr>
-<td style="text-align: left;">
-  3
-</td>
-<td style="text-align: center;">
-15 (79%)
-</td>
-<td style="text-align: center;">
-0 (0%)
-</td>
-<td style="text-align: center;">
-</td>
-</tr>
-<tr>
-<td style="text-align: left;">
-  4
-</td>
-<td style="text-align: center;">
-4 (21%)
-</td>
-<td style="text-align: center;">
-8 (62%)
-</td>
-<td style="text-align: center;">
-</td>
-</tr>
-<tr>
-<td style="border-bottom: 2px solid grey; text-align: left;">
-  5
-</td>
-<td style="border-bottom: 2px solid grey; text-align: center;">
-0 (0%)
-</td>
-<td style="border-bottom: 2px solid grey; text-align: center;">
-5 (38%)
-</td>
-<td style="border-bottom: 2px solid grey; text-align: center;">
-</td>
+<td style='border-bottom: 2px solid grey; text-align: left;'>&nbsp;&nbsp;5</td>
+<td style='border-bottom: 2px solid grey; text-align: center;'>0 (0%)</td>
+<td style='border-bottom: 2px solid grey; text-align: center;'>5 (38%)</td>
+<td style='border-bottom: 2px solid grey; text-align: center;'></td>
 </tr>
 </tbody>
-<tfoot>
-<tr>
-<td colspan="4">
-† The weight is in 10<sup>3</sup> kg
-</td>
-</tr>
-</tfoot>
+<tfoot><tr><td colspan='4'>
+&dagger; The weight is in 10<sup>3</sup> kg</td></tr></tfoot>
 </table>
 <div id="custom-p-values" class="section level2">
 <h2>Custom p-values</h2>
@@ -639,158 +422,75 @@ t1[[<span class="st">&quot;Color&quot;</span>]] &lt;-<span class="st"> </span>
 <span class="st">  </span><span class="kw">htmlTable</span>(<span class="dt">css.rgroup =</span> <span class="st">&quot;&quot;</span>,
             <span class="dt">caption  =</span> <span class="st">&quot;P-values generated from a custom set of values&quot;</span>,
             <span class="dt">tfoot =</span> <span class="st">&quot;&amp;dagger; The weight is in 10&lt;sup&gt;3&lt;/sup&gt; kg&quot;</span>)</code></pre></div>
-<table class="gmisc_table" style="border-collapse: collapse; margin-top: 1em; margin-bottom: 1em;">
+<table class='gmisc_table' style='border-collapse: collapse; margin-top: 1em; margin-bottom: 1em;' >
 <thead>
+<tr><td colspan='4' style='text-align: left;'>
+P-values generated from a custom set of values</td></tr>
 <tr>
-<td colspan="4" style="text-align: left;">
-P-values generated from a custom set of values
-</td>
-</tr>
-<tr>
-<th style="border-bottom: 1px solid grey; border-top: 2px solid grey;">
-</th>
-<th style="border-bottom: 1px solid grey; border-top: 2px solid grey; text-align: center;">
-Automatic<br /> No. 19
-</th>
-<th style="border-bottom: 1px solid grey; border-top: 2px solid grey; text-align: center;">
-Manual<br /> No. 13
-</th>
-<th style="border-bottom: 1px solid grey; border-top: 2px solid grey; text-align: center;">
-P-value
-</th>
+<th style='border-bottom: 1px solid grey; border-top: 2px solid grey;'> </th>
+<th style='border-bottom: 1px solid grey; border-top: 2px solid grey; text-align: center;'>Automatic<br />
+ No. 19</th>
+<th style='border-bottom: 1px solid grey; border-top: 2px solid grey; text-align: center;'>Manual<br />
+ No. 13</th>
+<th style='border-bottom: 1px solid grey; border-top: 2px solid grey; text-align: center;'>P-value</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">
-Gas
-</td>
-<td style="text-align: center;">
-17 (15 - 19)
-</td>
-<td style="text-align: center;">
-23 (21 - 30)
-</td>
-<td style="text-align: center;">
-0.27
-</td>
+<td style='text-align: left;'>Gas</td>
+<td style='text-align: center;'>17 (15 - 19)</td>
+<td style='text-align: center;'>23 (21 - 30)</td>
+<td style='text-align: center;'>0.27</td>
 </tr>
 <tr>
-<td style="text-align: left;">
-Weight†
-</td>
-<td style="text-align: center;">
-4 (3 - 4)
-</td>
-<td style="text-align: center;">
-2 (2 - 3)
-</td>
-<td style="text-align: center;">
-0.37
-</td>
+<td style='text-align: left;'>Weight&dagger;</td>
+<td style='text-align: center;'>4 (3 - 4)</td>
+<td style='text-align: center;'>2 (2 - 3)</td>
+<td style='text-align: center;'>0.37</td>
+</tr> 
+<tr><td colspan='3' style=''>Color</td>
+<td style='text-align: center;'>1.00</td></tr>
+<tr>
+<td style='text-align: left;'>&nbsp;&nbsp;black</td>
+<td style='text-align: center;'>7 (37%)</td>
+<td style='text-align: center;'>5 (38%)</td>
+<td style='text-align: center;'></td>
 </tr>
 <tr>
-<td colspan="3" style>
-Color
-</td>
-<td style="text-align: center;">
-0.38
-</td>
+<td style='text-align: left;'>&nbsp;&nbsp;red</td>
+<td style='text-align: center;'>6 (32%)</td>
+<td style='text-align: center;'>4 (31%)</td>
+<td style='text-align: center;'></td>
 </tr>
 <tr>
-<td style="text-align: left;">
-  black
-</td>
-<td style="text-align: center;">
-5 (26%)
-</td>
-<td style="text-align: center;">
-5 (38%)
-</td>
-<td style="text-align: center;">
-</td>
+<td style='text-align: left;'>&nbsp;&nbsp;silver</td>
+<td style='text-align: center;'>6 (32%)</td>
+<td style='text-align: center;'>4 (31%)</td>
+<td style='text-align: center;'></td>
+</tr> 
+<tr><td colspan='3' style=''>Gears</td>
+<td style='text-align: center;'>&lt; 0.0001</td></tr>
+<tr>
+<td style='text-align: left;'>&nbsp;&nbsp;3</td>
+<td style='text-align: center;'>15 (79%)</td>
+<td style='text-align: center;'>0 (0%)</td>
+<td style='text-align: center;'></td>
 </tr>
 <tr>
-<td style="text-align: left;">
-  red
-</td>
-<td style="text-align: center;">
-9 (47%)
-</td>
-<td style="text-align: center;">
-3 (23%)
-</td>
-<td style="text-align: center;">
-</td>
+<td style='text-align: left;'>&nbsp;&nbsp;4</td>
+<td style='text-align: center;'>4 (21%)</td>
+<td style='text-align: center;'>8 (62%)</td>
+<td style='text-align: center;'></td>
 </tr>
 <tr>
-<td style="text-align: left;">
-  silver
-</td>
-<td style="text-align: center;">
-5 (26%)
-</td>
-<td style="text-align: center;">
-5 (38%)
-</td>
-<td style="text-align: center;">
-</td>
-</tr>
-<tr>
-<td colspan="3" style>
-Gears
-</td>
-<td style="text-align: center;">
-&lt; 0.0001
-</td>
-</tr>
-<tr>
-<td style="text-align: left;">
-  3
-</td>
-<td style="text-align: center;">
-15 (79%)
-</td>
-<td style="text-align: center;">
-0 (0%)
-</td>
-<td style="text-align: center;">
-</td>
-</tr>
-<tr>
-<td style="text-align: left;">
-  4
-</td>
-<td style="text-align: center;">
-4 (21%)
-</td>
-<td style="text-align: center;">
-8 (62%)
-</td>
-<td style="text-align: center;">
-</td>
-</tr>
-<tr>
-<td style="border-bottom: 2px solid grey; text-align: left;">
-  5
-</td>
-<td style="border-bottom: 2px solid grey; text-align: center;">
-0 (0%)
-</td>
-<td style="border-bottom: 2px solid grey; text-align: center;">
-5 (38%)
-</td>
-<td style="border-bottom: 2px solid grey; text-align: center;">
-</td>
+<td style='border-bottom: 2px solid grey; text-align: left;'>&nbsp;&nbsp;5</td>
+<td style='border-bottom: 2px solid grey; text-align: center;'>0 (0%)</td>
+<td style='border-bottom: 2px solid grey; text-align: center;'>5 (38%)</td>
+<td style='border-bottom: 2px solid grey; text-align: center;'></td>
 </tr>
 </tbody>
-<tfoot>
-<tr>
-<td colspan="4">
-† The weight is in 10<sup>3</sup> kg
-</td>
-</tr>
-</tfoot>
+<tfoot><tr><td colspan='4'>
+&dagger; The weight is in 10<sup>3</sup> kg</td></tr></tfoot>
 </table>
 </div>
 </div>
@@ -802,7 +502,7 @@ Gears
   (function () {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
     document.getElementsByTagName("head")[0].appendChild(script);
   })();
 </script>
