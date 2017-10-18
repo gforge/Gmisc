@@ -6,10 +6,14 @@
 \usage{
 boxPropGrob(label, label_left, label_right, prop, y = unit(0.5, "npc"),
   x = unit(0.5, "npc"), width, height, just = "center", bjust = "center",
-  txt_gp = gpar(color = "black"), txt_left_gp = gpar(col = "black"),
-  txt_right_gp = gpar(col = "black"), box_left_gp = gpar(fill = "#81BFD4"),
-  box_right_gp = gpar(fill = "#D8F0D1"), box_highlight_gp = gpar(fill =
-  "#ffffff55", col = NA), name = NULL)
+  txt_gp = getOption("boxPropGrobTxt", default = gpar(color = "black")),
+  txt_left_gp = getOption("boxPropGrobLeftTxt", default = gpar(col =
+  "black")), txt_right_gp = getOption("boxPropGrobRightTxt", default =
+  gpar(col = "black")), box_left_gp = getOption("boxPropGrobLeft", default =
+  gpar(fill = "#81BFD4")), box_right_gp = getOption("boxPropGrobRight",
+  default = gpar(fill = "#D8F0D1")),
+  box_highlight_gp = getOption("boxPropGrobHighlight", default = gpar(fill =
+  "#ffffff55", col = NA)), name = NULL)
 }
 \arguments{
 \item{label}{The label to print}
@@ -33,19 +37,26 @@ boxPropGrob(label, label_left, label_right, prop, y = unit(0.5, "npc"),
 \item{bjust}{The justification for the box: left, center, right, top or bottom.
 See the \code{just} option for the \code{\link[grid]{viewport}}}
 
-\item{txt_gp}{The \code{\link[grid]{gpar}} style to apply to the text.}
+\item{txt_gp}{The \code{\link[grid]{gpar}} style to apply to the text. Set \code{boxPropGrobTxt} option
+if you want to customize all the boxes at once.}
 
-\item{txt_left_gp}{The \code{\link[grid]{gpar}} style to apply to the left text.}
+\item{txt_left_gp}{The \code{\link[grid]{gpar}} style to apply to the left text. Set
+\code{boxPropGrobLeftTxt} option if you want to customize all the boxes at once.}
 
-\item{txt_right_gp}{The \code{\link[grid]{gpar}} style to apply to the right text.}
+\item{txt_right_gp}{The \code{\link[grid]{gpar}} style to apply to the right text. Set
+\code{boxPropGrobRightTxt} option if you want to customize all the boxes at once.}
 
-\item{box_left_gp}{The \code{\link[grid]{gpar}} style to apply to the left box.}
+\item{box_left_gp}{The \code{\link[grid]{gpar}} style to apply to the left box. Set
+\code{boxPropGrobLeft} option if you want to customize all the boxes at once.}
 
-\item{box_right_gp}{The \code{\link[grid]{gpar}} style to apply to the right box.}
+\item{box_right_gp}{The \code{\link[grid]{gpar}} style to apply to the right box. Set
+\code{boxPropGrobRight} option if you want to customize all the boxes at once.}
 
-\item{box_highlight_gp}{The \code{\link[grid]{gpar}} style to apply to the background of the main label.}
+\item{box_highlight_gp}{The \code{\link[grid]{gpar}} style to apply to the background
+of the main label. Set \code{boxPropGrobHighlight} option if you want to customize
+all the boxes at once.}
 
-\item{name}{a character identifier for the grob. Used to find the grob on the display 
+\item{name}{a character identifier for the grob. Used to find the grob on the display
 list and/or as a child of another grob.}
 }
 \value{

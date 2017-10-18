@@ -54,7 +54,8 @@ boxGrob(txt)
 grid.newpage()
 boxGrob("A large\noffset\nyellow\nbox", 
         width=.8, height=.8, 
-        x=.4, y=.4, 
+        x=0, y=0, 
+        bjust = c(0,0),
         txt_gp = gpar(col="darkblue", cex=2),
         box_gp = gpar(fill="lightyellow", col="darkblue"))
 
@@ -104,20 +105,52 @@ grid.circle(y = prop_bx_coords$bottom, x = prop_bx_coords$left, r = unit(2, "mm"
 grid.circle(y = prop_bx_coords$top, x = prop_bx_coords$left, r = unit(2, "mm"), gp=gpar(fill="orange"))
 
 
-## ----"Connected boxes", fig.width=5, fig.height=5------------------------
+## ----"Connected boxes", fig.width=7, fig.height=5------------------------
 grid.newpage()
 
 # Initiate the boxes that we want to connect
-start <- boxGrob("Top", x=.6, y=.8, box_gp = gpar(fill = "yellow"))
-end <- boxGrob("Bottom", x=.6, y=.2)
-side <- boxPropGrob("Side", "Left", "Right", prop=.3, x=0.05, bjust = "left", y=.8)
-sub_side_left <- boxGrob("Left", x = attr(side, "coords")$left_x, y = .5)
-sub_side_right <- boxGrob("Right", x = attr(side, "coords")$right_x, y = .5)
-exclude <- boxGrob("Exclude:\n - Too sick\n - Prev. surgery", x=.95, y=.5, just="left", bjust = "right")
+side <- boxPropGrob("Side", "Left", "Right", 
+                    prop=.3, 
+                    x=0, y=.9,
+                    bjust = c(0,1))
+start <- boxGrob("Top", 
+                 x=.6, y=coords(side)$y, 
+                 box_gp = gpar(fill = "yellow"))
+bottom <- boxGrob("Bottom", x=.6, y=0, 
+                  bjust="bottom")
+
+
+sub_side_left <- boxGrob("Left", 
+                         x = coords(side)$left_x, 
+                         y = 0,
+                         bjust = "bottom")
+sub_side_right <- boxGrob("Right", 
+                          x = coords(side)$right_x, 
+                          y = 0,
+                          bjust = "bottom")
+
+odd <- boxGrob("Odd\nbox", 
+               x=coords(side)$right, 
+               y=.5)
+
+odd2 <- boxGrob("Also odd", 
+               x=coords(odd)$right + 
+                 distance(bottom, odd, type="h", half=TRUE) -
+                 unit(2, "mm"), 
+               y=0,
+               bjust = c(1,0))
+
+exclude <- boxGrob("Exclude:\n - Too sick\n - Prev. surgery", 
+                   x=1, y=coords(bottom)$top + 
+                     distance(start, bottom, 
+                              type="v", half=TRUE), 
+                   just="left", bjust = "right")
 
 # Connect the boxes and print/plot them
-connectGrob(start, end, "vertical")
+connectGrob(start, bottom, "vertical")
 connectGrob(start, side, "horizontal")
+connectGrob(bottom, odd, "Z", "l")
+connectGrob(odd, odd2, "N", "l")
 connectGrob(side, sub_side_left, "v", "l")
 connectGrob(side, sub_side_right, "v", "r")
 connectGrob(start, exclude, "-", 
@@ -125,9 +158,11 @@ connectGrob(start, exclude, "-",
 
 # Print the grobs
 start
-end
+bottom
 side
 exclude
 sub_side_left
 sub_side_right
+odd
+odd2
 

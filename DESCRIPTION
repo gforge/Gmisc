@@ -33,7 +33,8 @@ Imports:
     stats,
     checkmate
 Suggests:
-    testthat
+    testthat,
+    datasets
 Roxygen: list(wrap = FALSE)
 Encoding: UTF-8
 NeedsCompilation: no
