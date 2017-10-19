@@ -2,14 +2,11 @@
 % Please edit documentation in R/assert.R
 \name{assert_unit}
 \alias{assert_unit}
-\alias{assert_just}
 \alias{assert_label}
 \alias{assert_just}
 \title{Checks if unit or number 0-1}
 \usage{
 assert_unit(var, allow_missing = TRUE)
-
-assert_just(var, allow_missing = TRUE)
 
 assert_label(var, allow_missing = TRUE)
 
@@ -27,14 +24,8 @@ assert_just(var, allow_missing = TRUE)
 \item{var}{Varible 2 check}
 
 \item{allow_missing}{Allow missing variables}
-
-\item{var}{Varible 2 check}
-
-\item{allow_missing}{Allow missing variables}
 }
 \value{
-void
-
 void
 
 void
@@ -43,8 +34,6 @@ void
 }
 \description{
 Checks if unit or number 0-1
-
-Assert that its a string or number 0-1
 
 Assert that its a string or number
 
