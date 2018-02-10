@@ -9,6 +9,12 @@
 This class simplifies the creating of transition plots. It also
 allows for advanced multi-column transitions.
 }
+\details{
+Transition plots are a type of \emph{Sankey diagrams}. These are a specific type
+of flow diagram, in which the width of the arrows is shown proportionally
+to the flow quantity. See \href{https://en.wikipedia.org/wiki/Sankey_diagram}{Wikipedia}
+for details.
+}
 \section{Fields}{
 
 \describe{
@@ -55,6 +61,8 @@ the spectrum then it can be of interest to focus the color change to the center 
 \item{\code{title}}{The plot title if any}
 
 \item{\code{title_cex}}{The fontsize multiplier for the title}
+
+\item{\code{skip_shadows}}{Skip the shadow effect on the boxes}
 
 \item{\code{mar}}{The margins for the plot.}
 

@@ -1,5 +1,9 @@
 NEWS for the Gmisc package
 
+Changes for 1.6
+-----------------
+* Added skip_shadows to Transition-class
+
 Changes for 1.4.3
 -----------------
 * Fixes non-existing values in different by-groups (issue #24)

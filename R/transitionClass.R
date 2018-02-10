@@ -3,6 +3,11 @@
 #' This class simplifies the creating of transition plots. It also
 #' allows for advanced multi-column transitions.
 #'
+#' Transition plots are a type of \emph{Sankey diagrams}. These are a specific type
+#' of flow diagram, in which the width of the arrows is shown proportionally
+#' to the flow quantity. See \href{https://en.wikipedia.org/wiki/Sankey_diagram}{Wikipedia}
+#' for details.
+#'
 #' @field transitions This is a >= 3 dimensional array with the transitions. Should not be direcly accessed.
 #' @field box_width The box width
 #' @field box_txt The texts of each box
@@ -27,6 +32,7 @@
 #' @field txt_clr The text color within the boxes
 #' @field title The plot title if any
 #' @field title_cex The fontsize multiplier for the title
+#' @field skip_shadows Skip the shadow effect on the boxes
 #' @field mar The margins for the plot.
 #' @field min_lwd The minimum line width that is still shown. The pixels will most likely
 #'  not have the same fine resolution as the data and you therefore may want to hide
@@ -459,6 +465,19 @@ Transition <-
           stop("Only numeric cex values are accepted")
 
         data$title_cex <<- value
+      },
+      skip_shadows = function(value){
+        if (missing(value)){
+          if (!is.null(data$skip_shadows))
+            return(data$skip_shadows)
+
+          return(FALSE)
+        }
+
+        if (!is.logical(value))
+          stop("Only logical values are accepted for skip_shadows")
+
+        data$skip_shadows <<- value
       },
       mar = function(value){
         if (missing(value)){
@@ -1150,9 +1169,11 @@ Transition <-
                            txt_clr = rep(grey(level = .3), times = .self$noRows(col)),
                            cex = box_cex)
 
-          seekViewport("shadows")
-          fastDoCall(prTcPlotBoxColumn, box_args)
-          upViewport()
+          if (!.self$skip_shadows) {
+            seekViewport("shadows")
+            fastDoCall(prTcPlotBoxColumn, box_args)
+            upViewport()
+          }
 
           seekViewport("regular")
           box_args[["proportions"]] <- proportions
