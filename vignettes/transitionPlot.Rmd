@@ -14,7 +14,7 @@ vignette: >
 Introduction
 ============
 
-The transitionPlot function aims at illustrating the transition between classes. The original intent was to show how [self-administered the Charnley classification](http://informahealthcare.com/doi/full/10.3109/17453674.2014.931199) behaves before and after surgery. The plot is a fancier version than what can be achieved using packages such as [*diagram*](https://CRAN.R-project.org/package=diagram) but at the cost of flexibility. The current function only allows to show a transition from one state to the next. 
+The transitionPlot function aims at illustrating the transition between classes. The original intent was to show how [self-administered the Charnley classification](https://www.tandfonline.com/doi/full/10.3109/17453674.2014.931199) behaves before and after surgery. The plot is a fancier version than what can be achieved using packages such as [*diagram*](https://CRAN.R-project.org/package=diagram) but at the cost of flexibility. The current function only allows to show a transition from one state to the next. 
 
 **Note**: The new Transition class will superseed the transitionPlot. See `vignette("Transition-class")` for more info.
 

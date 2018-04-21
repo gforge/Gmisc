@@ -3,3 +3,4 @@
 ^visual_tests
 ^\.travis\.yml$
 cran-comments.md
+^cran-comments\.md$
