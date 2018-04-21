@@ -26,11 +26,11 @@ Point generatePoint(double offs,
     offset_delta.x = 0;
   if (fabs(offset_delta.y) < FLT_EPSILON)
     offset_delta.y = 0;
-
+  
   // Notify that element goes in wrong direction
   if (i > 1 &&
-      (delta.x * offset_delta.x < -abs(offs_delta) ||
-      delta.y * offset_delta.y < -abs(offs_delta))){
+      (delta.x * offset_delta.x < -fabs(offs_delta) ||
+      delta.y * offset_delta.y < -fabs(offs_delta))){
     p.problematic = true;
     /* Nightmare to debug ....
     Rcout << "i = " << i << " offset delta = " << offs_delta

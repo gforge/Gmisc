@@ -9,6 +9,7 @@ output:
 # Header 1
 
 ```{r}
+stop("Asdasd")
 paste(rep(sprintf("test"), 40), collapse=" ")
 ```
 
