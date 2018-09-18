@@ -64,22 +64,18 @@ std::vector<bool> Line::getProblematic(){
 };
 
 int Line::_removeIntersect(std::vector<Point>::size_type err_point){
-	for (std::vector<Point>::size_type end = err_point;
-		end < m_Points.size() - 2; end++){
-		Point p0 = m_Points[end];
-		Point p1 = m_Points[end + 1];
-
-		for (size_t start = err_point - 1;
-			start > 1; start--){
-			Point p2 = m_Points[start];
-			Point p3 = m_Points[start - 1];
-
-			Point int_point = { -1, -1, false };
-			bool found = _getLineIntersection(p0 = p0,
-				p1 = p1,
-				p2 = p2,
-				p3 = p3,
-				&int_point);
+	for (
+	    std::vector<Point>::size_type end = err_point;
+      end < m_Points.size() - 2; 
+      end++
+  ) {
+		for (
+		    size_t start = err_point - 1;
+        start > 1;
+        start--
+    ) {
+		  Point int_point = { -1, -1, false };
+			bool found = _getLineIntersection(start, end, &int_point);
 
 			if (found){
 				_smoothLine(start, end, int_point);
@@ -90,12 +86,18 @@ int Line::_removeIntersect(std::vector<Point>::size_type err_point){
 	return(-1);
 };
 
-bool Line::_getLineIntersection(Point p0,
-	Point p1,
-	Point p2,
-	Point p3,
-	Point *i_p)
-{
+bool Line::_getLineIntersection(
+    int start,
+    int end,
+	  Point *i_p
+) {
+  // TODO: the points order is reversed due to old design pattern, 
+  // probably doesn't matter but it needs to be checked
+  Point p0 = m_Points[end];
+  Point p1 = m_Points[end + 1];
+  Point p2 = m_Points[start];
+  Point p3 = m_Points[start - 1];
+  
 	double s02_x, s02_y, s10_x, s10_y, s32_x, s32_y, s_numer, t_numer, denom, t;
 	s10_x = p1.x - p0.x;
 	s10_y = p1.y - p0.y;

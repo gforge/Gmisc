@@ -1,3 +1,5 @@
+[![](https://cranlogs.r-pkg.org/badges/Gmisc)](https://cran.r-project.org/package=Gmisc)
+
 # The Gmisc package
 
 Tools for making:

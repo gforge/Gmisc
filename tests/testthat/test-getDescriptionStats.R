@@ -136,10 +136,10 @@ test_that("Statistics work as expected",{
                              continuous_fn=describeMedian,
                              statistics=TRUE,
                              digits=2, statistics.sig_lim=10^-4)
-  
+
   true_fisher_pval <- txtPval(fisher.test(Loblolly$fvar, Loblolly$young)$p.value,
                               statistics.sig_lim=10^-4)
-  
+
   expect_equivalent(as.character(a[1, "P-value"]),
                     true_fisher_pval)
 
@@ -147,7 +147,7 @@ test_that("Statistics work as expected",{
                              continuous_fn=describeMedian,
                              statistics=list("factor" = getPvalFisher),
                              digits=2, statistics.sig_lim=10^-4)
-  
+
   expect_equivalent(as.character(a[1, "P-value"]),
                     true_fisher_pval)
 
@@ -155,17 +155,17 @@ test_that("Statistics work as expected",{
                                      continuous_fn=describeMedian,
                                      statistics=list("factor" = getNonExistentPvalueFunction),
                                      digits=2, statistics.sig_lim=10^-4))
-  
+
   a <- getDescriptionStatsBy(Loblolly$fvar, Loblolly$young, hrzl_prop=TRUE,
                              continuous_fn=describeMedian,
                              statistics=function(x, by){
                                return(.2)
                              },
                              digits=2, statistics.sig_lim=10^-4)
-  
+
   expect_equivalent(as.character(a[1, "P-value"]),
                     "0.20", "Custom p-value function problem")
-  
+
   a <- getDescriptionStatsBy(Loblolly$fvar, Loblolly$young, hrzl_prop=TRUE,
                              continuous_fn=describeMedian,
                              statistics=function(x, by){
@@ -174,10 +174,10 @@ test_that("Statistics work as expected",{
                                return(a)
                              },
                              digits=2, statistics.sig_lim=10^-4)
-  
+
   expect_equivalent(as.character(a[1, "test"]),
                     "test", "Errror when adding a string p-value alternative")
-  
+
   expect_error(getDescriptionStatsBy(Loblolly$fvar, Loblolly$young, hrzl_prop=TRUE,
                                      continuous_fn=describeMedian,
                                      statistics=function(x, by){
@@ -479,12 +479,12 @@ test_that("test header", {
 
 test_that("Test use_units", {
   data(mtcars)
-  
+
   mtcars$am <- factor(mtcars$am, levels=0:1, labels=c("Automatic", "Manual"))
   Hmisc::label(mtcars$am) <- "Transmission"
   set.seed(666)
   units(mtcars$mpg) <- "mpg"
-  
+
   out1 <- suppressWarnings(
     getDescriptionStatsBy(
       x=mtcars$mpg,
@@ -504,7 +504,7 @@ test_that("Test use_units", {
       statistics = TRUE
     )
   )
-  
+
   expect_equal(ncol(out1) + 1, ncol(out2))
 
   out3 <- suppressWarnings(
@@ -529,7 +529,7 @@ test_that("missing levels are handled correctly when using custom descriptive fu
   trial_missing_first <- trial[!((trial$visit == "randomisation") & (trial$arm == "control")),]
   trial_missing_second <- trial[!((trial$visit == "randomisation") & (trial$arm == "treatment")),]
   trial_missing_both <- trial[trial$visit != "week3",]
-  
+
   trial_2 <- data.frame(visit = sort(rep(c("randomisation", "week1", "week2", "week3"), 5)),
                       arm = sort(rep(c("control", "standard treatment", "new treatment"))),
                       outcome = rnorm(60))
@@ -537,19 +537,19 @@ test_that("missing levels are handled correctly when using custom descriptive fu
   trial_2_missing_second <- trial_2[!((trial_2$visit == "randomisation") & (trial_2$arm == "standard treatment")),]
   trial_2_missing_outer <- trial_2[!((trial_2$visit == "randomisation") & (trial_2$arm != "new treatment")),]
   trial_2_missing_all <- trial_2[trial_2$visit != "week3",]
-  
+
   descriptive_function <- function(x, ...) {
     result <- c(describeMean(x, ...),
                 describeMedian(x, ...))
     return(result)
   }
-  
+
   expected_no_missing <- structure(
-    c("0.1 (&plusmn;0.7)", "0.2 (-0.5 - 0.5)", "0.1 (&plusmn;0.5)", 
-      "0.2 (-0.2 - 0.5)", "0.4 (&plusmn;1.2)", "0.8 (-0.4 - 1.3)", 
-      "0.4 (&plusmn;0.7)", "0.4 (-0.1 - 0.9)", "0.1 (&plusmn;1.5)", 
-      "0.5 (-0.4 - 1.0)", "-0.2 (&plusmn;0.8)", "-0.2 (-0.7 - 0.3)", 
-      "-0.5 (&plusmn;1.2)", "-0.1 (-0.6 - 0.1)", "0.3 (&plusmn;0.5)", 
+    c("0.1 (&plusmn;0.7)", "0.2 (-0.5 - 0.5)", "0.1 (&plusmn;0.5)",
+      "0.2 (-0.2 - 0.5)", "0.4 (&plusmn;1.2)", "0.8 (-0.4 - 1.3)",
+      "0.4 (&plusmn;0.7)", "0.4 (-0.1 - 0.9)", "0.1 (&plusmn;1.5)",
+      "0.5 (-0.4 - 1.0)", "-0.2 (&plusmn;0.8)", "-0.2 (-0.7 - 0.3)",
+      "-0.5 (&plusmn;1.2)", "-0.1 (-0.6 - 0.1)", "0.3 (&plusmn;0.5)",
       "0.3 (-0.1 - 0.7)"),
     .Dim = c(8L, 2L),
     .Dimnames = list(c("Mean (SD)", "Median (IQR)",
@@ -561,12 +561,12 @@ test_that("missing levels are handled correctly when using custom descriptive fu
     n.rgroup = c(2, 2, 2, 2),
     htmlTable_args = structure(list(), .Names = character(0)),
     class = c("descMrg", "matrix"))
-  
+
   expected_missing_first <- structure(
-    c("-", "-", "0.1 (&plusmn;0.5)", "0.2 (-0.2 - 0.5)", 
-      "0.4 (&plusmn;1.2)", "0.8 (-0.4 - 1.3)", "0.4 (&plusmn;0.7)", 
-      "0.4 (-0.1 - 0.9)", "0.1 (&plusmn;1.5)", "0.5 (-0.4 - 1.0)", 
-      "-0.2 (&plusmn;0.8)", "-0.2 (-0.7 - 0.3)", "-0.5 (&plusmn;1.2)", 
+    c("-", "-", "0.1 (&plusmn;0.5)", "0.2 (-0.2 - 0.5)",
+      "0.4 (&plusmn;1.2)", "0.8 (-0.4 - 1.3)", "0.4 (&plusmn;0.7)",
+      "0.4 (-0.1 - 0.9)", "0.1 (&plusmn;1.5)", "0.5 (-0.4 - 1.0)",
+      "-0.2 (&plusmn;0.8)", "-0.2 (-0.7 - 0.3)", "-0.5 (&plusmn;1.2)",
       "-0.1 (-0.6 - 0.1)", "0.3 (&plusmn;0.5)", "0.3 (-0.1 - 0.7)"),
     .Dim = c(8L, 2L),
     .Dimnames = list(c("Mean (SD)", "Median (IQR)",
@@ -578,30 +578,30 @@ test_that("missing levels are handled correctly when using custom descriptive fu
     n.rgroup = c(2, 2, 2, 2),
     htmlTable_args = structure(list(), .Names = character(0)),
     class = c("descMrg", "matrix"))
-  
+
   expected_missing_second <- structure(
-    c("0.1 (&plusmn;0.7)", "0.2 (-0.5 - 0.5)", "0.1 (&plusmn;0.5)", 
-      "0.2 (-0.2 - 0.5)", "0.4 (&plusmn;1.2)", "0.8 (-0.4 - 1.3)", 
-      "0.4 (&plusmn;0.7)", "0.4 (-0.1 - 0.9)", "-", "-", "-0.2 (&plusmn;0.8)", 
-      "-0.2 (-0.7 - 0.3)", "-0.5 (&plusmn;1.2)", "-0.1 (-0.6 - 0.1)", 
+    c("0.1 (&plusmn;0.7)", "0.2 (-0.5 - 0.5)", "0.1 (&plusmn;0.5)",
+      "0.2 (-0.2 - 0.5)", "0.4 (&plusmn;1.2)", "0.8 (-0.4 - 1.3)",
+      "0.4 (&plusmn;0.7)", "0.4 (-0.1 - 0.9)", "-", "-", "-0.2 (&plusmn;0.8)",
+      "-0.2 (-0.7 - 0.3)", "-0.5 (&plusmn;1.2)", "-0.1 (-0.6 - 0.1)",
       "0.3 (&plusmn;0.5)", "0.3 (-0.1 - 0.7)"),
     .Dim = c(8L, 2L),
     .Dimnames = list(
         c("Mean (SD)", "Median (IQR)",
-          "Mean (SD)", "Median (IQR)", 
           "Mean (SD)", "Median (IQR)",
-          "Mean (SD)", "Median (IQR)"), 
+          "Mean (SD)", "Median (IQR)",
+          "Mean (SD)", "Median (IQR)"),
         c("control", "treatment")),
     rgroup = c("randomisation", "week1", "week2", "week3"),
     n.rgroup = c(2, 2, 2, 2),
     htmlTable_args = structure(list(), .Names = character(0)),
     class = c("descMrg", "matrix"))
-  
+
   expected_missing_both <- structure(
-    c("0.1 (&plusmn;0.7)", "0.2 (-0.5 - 0.5)", "0.1 (&plusmn;0.5)", 
-      "0.2 (-0.2 - 0.5)", "0.4 (&plusmn;1.2)", "0.8 (-0.4 - 1.3)", 
-      "-", "-", "0.1 (&plusmn;1.5)", "0.5 (-0.4 - 1.0)", "-0.2 (&plusmn;0.8)", 
-      "-0.2 (-0.7 - 0.3)", "-0.5 (&plusmn;1.2)", "-0.1 (-0.6 - 0.1)", 
+    c("0.1 (&plusmn;0.7)", "0.2 (-0.5 - 0.5)", "0.1 (&plusmn;0.5)",
+      "0.2 (-0.2 - 0.5)", "0.4 (&plusmn;1.2)", "0.8 (-0.4 - 1.3)",
+      "-", "-", "0.1 (&plusmn;1.5)", "0.5 (-0.4 - 1.0)", "-0.2 (&plusmn;0.8)",
+      "-0.2 (-0.7 - 0.3)", "-0.5 (&plusmn;1.2)", "-0.1 (-0.6 - 0.1)",
       "-", "-"),
     .Dim = c(8L, 2L),
     .Dimnames = list(c("Mean (SD)", "Median (IQR)",
@@ -613,9 +613,9 @@ test_that("missing levels are handled correctly when using custom descriptive fu
     n.rgroup = c(2, 2, 2, 2),
     htmlTable_args = structure(list(), .Names = character(0)),
     class = c("descMrg", "matrix"))
-  
+
   expected_no_missing_2 <-  structure(
-    c("0.2 (&plusmn;0.7)", "-0.0 (-0.2 - 0.6)", "0.7 (&plusmn;0.5)", 
+    c("0.2 (&plusmn;0.7)", "-0.0 (-0.2 - 0.6)", "0.7 (&plusmn;0.5)",
       "0.4 (0.4 - 0.9)", "0.5 (&plusmn;1.0)", "0.5 (0.3 - 1.2)",
       "0.2 (&plusmn;1.1)", "-0.4 (-0.6 - 0.6)", "-0.5 (&plusmn;0.8)",
       "-0.6 (-0.7 - -0.3)", "0.5 (&plusmn;0.4)", "0.3 (0.2 - 0.8)",
@@ -626,38 +626,38 @@ test_that("missing levels are handled correctly when using custom descriptive fu
     .Dim = c(8L, 3L),
     .Dimnames = list(
         c("Mean (SD)", "Median (IQR)",
-          "Mean (SD)", "Median (IQR)", 
           "Mean (SD)", "Median (IQR)",
-          "Mean (SD)", "Median (IQR)"), 
+          "Mean (SD)", "Median (IQR)",
+          "Mean (SD)", "Median (IQR)"),
         c("control", "new treatment", "standard treatment")),
     rgroup = c("randomisation", "week1", "week2", "week3"),
     n.rgroup = c(2, 2, 2, 2),
     htmlTable_args = structure(list(), .Names = character(0)),
     class = c("descMrg", "matrix"))
-  
+
   expected_missing_first_2 <- structure(
-    c("-", "-", "0.7 (&plusmn;0.5)", "0.4 (0.4 - 0.9)", 
-      "0.5 (&plusmn;1.0)", "0.5 (0.3 - 1.2)", "0.2 (&plusmn;1.1)", 
-      "-0.4 (-0.6 - 0.6)", "-0.5 (&plusmn;0.8)", "-0.6 (-0.7 - -0.3)", 
-      "0.5 (&plusmn;0.4)", "0.3 (0.2 - 0.8)", "-0.3 (&plusmn;1.0)", 
-      "-0.7 (-1.1 - 0.4)", "-0.2 (&plusmn;0.7)", "-0.1 (-0.4 - 0.0)", 
-      "0.7 (&plusmn;1.0)", "0.6 (0.0 - 0.7)", "-0.2 (&plusmn;1.5)", 
-      "-0.3 (-0.7 - -0.1)", "0.3 (&plusmn;0.9)", "0.6 (-0.5 - 0.7)", 
+    c("-", "-", "0.7 (&plusmn;0.5)", "0.4 (0.4 - 0.9)",
+      "0.5 (&plusmn;1.0)", "0.5 (0.3 - 1.2)", "0.2 (&plusmn;1.1)",
+      "-0.4 (-0.6 - 0.6)", "-0.5 (&plusmn;0.8)", "-0.6 (-0.7 - -0.3)",
+      "0.5 (&plusmn;0.4)", "0.3 (0.2 - 0.8)", "-0.3 (&plusmn;1.0)",
+      "-0.7 (-1.1 - 0.4)", "-0.2 (&plusmn;0.7)", "-0.1 (-0.4 - 0.0)",
+      "0.7 (&plusmn;1.0)", "0.6 (0.0 - 0.7)", "-0.2 (&plusmn;1.5)",
+      "-0.3 (-0.7 - -0.1)", "0.3 (&plusmn;0.9)", "0.6 (-0.5 - 0.7)",
       "-0.5 (&plusmn;0.7)", "-0.5 (-1.0 - 0.1)"),
     .Dim = c(8L, 3L),
     .Dimnames = list(
         c("Mean (SD)", "Median (IQR)",
-          "Mean (SD)", "Median (IQR)", 
           "Mean (SD)", "Median (IQR)",
-          "Mean (SD)", "Median (IQR)"), 
+          "Mean (SD)", "Median (IQR)",
+          "Mean (SD)", "Median (IQR)"),
         c("control", "new treatment", "standard treatment")),
     rgroup = c("randomisation", "week1", "week2", "week3"),
     n.rgroup = c(2, 2, 2, 2),
     htmlTable_args = structure(list(), .Names = character(0)),
     class = c("descMrg", "matrix"))
-  
+
   expected_missing_second_2 <- structure(
-    c("0.2 (&plusmn;0.7)", "-0.0 (-0.2 - 0.6)", "0.7 (&plusmn;0.5)", 
+    c("0.2 (&plusmn;0.7)", "-0.0 (-0.2 - 0.6)", "0.7 (&plusmn;0.5)",
       "0.4 (0.4 - 0.9)", "0.5 (&plusmn;1.0)", "0.5 (0.3 - 1.2)",
       "0.2 (&plusmn;1.1)", "-0.4 (-0.6 - 0.6)", "-0.5 (&plusmn;0.8)",
       "-0.6 (-0.7 - -0.3)", "0.5 (&plusmn;0.4)", "0.3 (0.2 - 0.8)",
@@ -676,14 +676,14 @@ test_that("missing levels are handled correctly when using custom descriptive fu
     n.rgroup = c(2, 2, 2, 2),
     htmlTable_args = structure(list(), .Names = character(0)),
     class = c("descMrg","matrix"))
-  
+
   expected_missing_outer <- structure(
-    c("-", "-", "0.7 (&plusmn;0.5)", "0.4 (0.4 - 0.9)", 
-      "0.5 (&plusmn;1.0)", "0.5 (0.3 - 1.2)", "0.2 (&plusmn;1.1)", 
-      "-0.4 (-0.6 - 0.6)", "-0.5 (&plusmn;0.8)", "-0.6 (-0.7 - -0.3)", 
-      "0.5 (&plusmn;0.4)", "0.3 (0.2 - 0.8)", "-0.3 (&plusmn;1.0)", 
-      "-0.7 (-1.1 - 0.4)", "-0.2 (&plusmn;0.7)", "-0.1 (-0.4 - 0.0)", 
-      "-", "-", "-0.2 (&plusmn;1.5)", "-0.3 (-0.7 - -0.1)", "0.3 (&plusmn;0.9)", 
+    c("-", "-", "0.7 (&plusmn;0.5)", "0.4 (0.4 - 0.9)",
+      "0.5 (&plusmn;1.0)", "0.5 (0.3 - 1.2)", "0.2 (&plusmn;1.1)",
+      "-0.4 (-0.6 - 0.6)", "-0.5 (&plusmn;0.8)", "-0.6 (-0.7 - -0.3)",
+      "0.5 (&plusmn;0.4)", "0.3 (0.2 - 0.8)", "-0.3 (&plusmn;1.0)",
+      "-0.7 (-1.1 - 0.4)", "-0.2 (&plusmn;0.7)", "-0.1 (-0.4 - 0.0)",
+      "-", "-", "-0.2 (&plusmn;1.5)", "-0.3 (-0.7 - -0.1)", "0.3 (&plusmn;0.9)",
       "0.6 (-0.5 - 0.7)", "-0.5 (&plusmn;0.7)", "-0.5 (-1.0 - 0.1)"),
     .Dim = c(8L, 3L),
     .Dimnames = list(
@@ -696,13 +696,13 @@ test_that("missing levels are handled correctly when using custom descriptive fu
     n.rgroup = c(2, 2, 2, 2),
     htmlTable_args = structure(list(), .Names = character(0)),
     class = c("descMrg", "matrix"))
-  
+
   expected_missing_all <- structure(
-    c("0.2 (&plusmn;0.7)", "-0.0 (-0.2 - 0.6)", "0.7 (&plusmn;0.5)", 
-      "0.4 (0.4 - 0.9)", "0.5 (&plusmn;1.0)", "0.5 (0.3 - 1.2)", "-", 
-      "-", "-0.5 (&plusmn;0.8)", "-0.6 (-0.7 - -0.3)", "0.5 (&plusmn;0.4)", 
-      "0.3 (0.2 - 0.8)", "-0.3 (&plusmn;1.0)", "-0.7 (-1.1 - 0.4)", 
-      "-", "-", "0.7 (&plusmn;1.0)", "0.6 (0.0 - 0.7)", "-0.2 (&plusmn;1.5)", 
+    c("0.2 (&plusmn;0.7)", "-0.0 (-0.2 - 0.6)", "0.7 (&plusmn;0.5)",
+      "0.4 (0.4 - 0.9)", "0.5 (&plusmn;1.0)", "0.5 (0.3 - 1.2)", "-",
+      "-", "-0.5 (&plusmn;0.8)", "-0.6 (-0.7 - -0.3)", "0.5 (&plusmn;0.4)",
+      "0.3 (0.2 - 0.8)", "-0.3 (&plusmn;1.0)", "-0.7 (-1.1 - 0.4)",
+      "-", "-", "0.7 (&plusmn;1.0)", "0.6 (0.0 - 0.7)", "-0.2 (&plusmn;1.5)",
       "-0.3 (-0.7 - -0.1)", "0.3 (&plusmn;0.9)", "0.6 (-0.5 - 0.7)", "-", "-"),
     .Dim = c(8L, 3L),
     .Dimnames = list(c("Mean (SD)", "Median (IQR)",
@@ -714,7 +714,7 @@ test_that("missing levels are handled correctly when using custom descriptive fu
     n.rgroup = c(2, 2, 2, 2),
     htmlTable_args = structure(list(), .Names = character(0)),
     class = c("descMrg", "matrix"))
-  
+
   out <- mergeDesc(lapply(levels(trial$visit), function(x)
     getDescriptionStatsBy(x = trial$outcome[trial$visit == x],
                           by = trial$arm[trial$visit == x],
@@ -722,7 +722,7 @@ test_that("missing levels are handled correctly when using custom descriptive fu
     htmlTable_args = list(rgroup = levels(trial$visit),
                           n.rgroup = rep(2, 4)))
   expect_identical(out, expected_no_missing)
-  
+
   out <- mergeDesc(lapply(levels(trial_missing_first$visit), function(x)
     getDescriptionStatsBy(x = trial_missing_first$outcome[trial_missing_first$visit == x],
                           by = trial_missing_first$arm[trial_missing_first$visit == x],
@@ -730,7 +730,7 @@ test_that("missing levels are handled correctly when using custom descriptive fu
     htmlTable_args = list(rgroup = levels(trial_missing_first$visit),
                           n.rgroup = rep(2, 4)))
   expect_identical(out, expected_missing_first)
-  
+
   out <- mergeDesc(lapply(levels(trial_missing_second$visit), function(x)
     getDescriptionStatsBy(x = trial_missing_second$outcome[trial_missing_second$visit == x],
                           by = trial_missing_second$arm[trial_missing_second$visit == x],
@@ -738,7 +738,7 @@ test_that("missing levels are handled correctly when using custom descriptive fu
     htmlTable_args = list(rgroup = levels(trial_missing_second$visit),
                           n.rgroup = rep(2, 4)))
   expect_identical(out, expected_missing_second)
-  
+
     out <- mergeDesc(lapply(levels(trial_missing_both$visit), function(x)
     getDescriptionStatsBy(x = trial_missing_both$outcome[trial_missing_both$visit == x],
                           by = trial_missing_both$arm[trial_missing_both$visit == x],
@@ -747,7 +747,7 @@ test_that("missing levels are handled correctly when using custom descriptive fu
     htmlTable_args = list(rgroup = levels(trial_missing_both$visit),
                           n.rgroup = rep(2, 4)))
   expect_identical(out, expected_missing_both)
-  
+
   out <- mergeDesc(lapply(levels(trial_2$visit), function(x)
     getDescriptionStatsBy(x = trial_2$outcome[trial_2$visit == x],
                           by = trial_2$arm[trial_2$visit == x],
@@ -755,7 +755,7 @@ test_that("missing levels are handled correctly when using custom descriptive fu
     htmlTable_args = list(rgroup = levels(trial_2$visit),
                           n.rgroup = rep(2, 4)))
   expect_identical(out, expected_no_missing_2)
-  
+
   out <- mergeDesc(lapply(levels(trial_2_missing_first$visit), function(x)
     getDescriptionStatsBy(x = trial_2_missing_first$outcome[trial_2_missing_first$visit == x],
                           by = trial_2_missing_first$arm[trial_2_missing_first$visit == x],
@@ -763,7 +763,7 @@ test_that("missing levels are handled correctly when using custom descriptive fu
     htmlTable_args = list(rgroup = levels(trial_2_missing_first$visit),
                           n.rgroup = rep(2, 4)))
   expect_identical(out, expected_missing_first_2)
-  
+
   out <- mergeDesc(lapply(levels(trial_2_missing_second$visit), function(x)
     getDescriptionStatsBy(x = trial_2_missing_second$outcome[trial_2_missing_second$visit == x],
                           by = trial_2_missing_second$arm[trial_2_missing_second$visit == x],
@@ -772,7 +772,7 @@ test_that("missing levels are handled correctly when using custom descriptive fu
     htmlTable_args = list(rgroup = levels(trial_2_missing_second$visit),
                           n.rgroup = rep(2, 4)))
   expect_identical(out, expected_missing_second_2)
-  
+
     out <- mergeDesc(lapply(levels(trial_2_missing_outer$visit), function(x)
     getDescriptionStatsBy(x = trial_2_missing_outer$outcome[trial_2_missing_outer$visit == x],
                           by = trial_2_missing_outer$arm[trial_2_missing_outer$visit == x],
@@ -781,7 +781,7 @@ test_that("missing levels are handled correctly when using custom descriptive fu
     htmlTable_args = list(rgroup = levels(trial_2_missing_outer$visit),
                           n.rgroup = rep(2, 4)))
   expect_identical(out, expected_missing_outer)
-  
+
     out <- mergeDesc(lapply(levels(trial_2_missing_all$visit), function(x)
     getDescriptionStatsBy(trial_2_missing_all$outcome[trial_2_missing_all$visit == x],
                           trial_2_missing_all$arm[trial_2_missing_all$visit == x],
@@ -790,13 +790,13 @@ test_that("missing levels are handled correctly when using custom descriptive fu
     htmlTable_args = list(rgroup = levels(trial_2_missing_all$visit),
                           n.rgroup = rep(2, 4)))
   expect_identical(out, expected_missing_all)
-  
+
   Hmisc::label(trial_2, self = FALSE) <- c("Study Visit", "Treatment Arm", "Outcome Measure")
   trial_2_missing_first <- trial_2[!((trial_2$visit == "randomisation") & (trial_2$arm == "control")),]
   trial_2_missing_second <- trial_2[!((trial_2$visit == "randomisation") & (trial_2$arm == "standard treatment")),]
   trial_2_missing_outer <- trial_2[!((trial_2$visit == "randomisation") & (trial_2$arm != "new treatment")),]
   trial_2_missing_all <- trial_2[trial_2$visit != "week3",]
-  
+
   out <- mergeDesc(lapply(levels(trial_2$visit), function(x)
     getDescriptionStatsBy(x = trial_2$outcome[trial_2$visit == x],
                           by = trial_2$arm[trial_2$visit == x],
@@ -804,7 +804,7 @@ test_that("missing levels are handled correctly when using custom descriptive fu
     htmlTable_args = list(rgroup = levels(trial_2$visit),
                           n.rgroup = rep(2, 4)))
   expect_equivalent(out, expected_no_missing_2)
-  
+
   out <- mergeDesc(lapply(levels(trial_2_missing_first$visit), function(x)
     getDescriptionStatsBy(x = trial_2_missing_first$outcome[trial_2_missing_first$visit == x],
                           by = trial_2_missing_first$arm[trial_2_missing_first$visit == x],
@@ -812,7 +812,7 @@ test_that("missing levels are handled correctly when using custom descriptive fu
     htmlTable_args = list(rgroup = levels(trial_2_missing_first$visit),
                           n.rgroup = rep(2, 4)))
   expect_equivalent(out, expected_missing_first_2)
-  
+
   out <- mergeDesc(lapply(levels(trial_2_missing_second$visit), function(x)
     getDescriptionStatsBy(x = trial_2_missing_second$outcome[trial_2_missing_second$visit == x],
                           by = trial_2_missing_second$arm[trial_2_missing_second$visit == x],
@@ -821,7 +821,7 @@ test_that("missing levels are handled correctly when using custom descriptive fu
     htmlTable_args = list(rgroup = levels(trial_2_missing_second$visit),
                           n.rgroup = rep(2, 4)))
   expect_equivalent(out, expected_missing_second_2)
-  
+
   out <- mergeDesc(lapply(levels(trial_2_missing_outer$visit), function(x)
     getDescriptionStatsBy(x = trial_2_missing_outer$outcome[trial_2_missing_outer$visit == x],
                           by = trial_2_missing_outer$arm[trial_2_missing_outer$visit == x],
@@ -830,7 +830,7 @@ test_that("missing levels are handled correctly when using custom descriptive fu
     htmlTable_args = list(rgroup = levels(trial_2_missing_outer$visit),
                           n.rgroup = rep(2, 4)))
   expect_equivalent(out, expected_missing_outer)
-  
+
   out <- mergeDesc(lapply(levels(trial_2_missing_all$visit), function(x)
     getDescriptionStatsBy(trial_2_missing_all$outcome[trial_2_missing_all$visit == x],
                           trial_2_missing_all$arm[trial_2_missing_all$visit == x],
@@ -852,15 +852,15 @@ test_that("Non-factor variables where values are missing in only one of the by-g
     as.character(mtcars$am), mtcars$gear,
     show_all_values = FALSE
   )
-  
+
   retAllRowDefault <- retAll["0",]
   retAllRowOther <- retAll["1",]
-  # Delete label as the 
+  # Delete label as the
   attributes(retAllRowDefault) <- NULL
   attributes(retAllRowOther) <- NULL
   attributes(retOne) <- NULL
   expect_equal(retAllRowDefault, retOne)
-  expect_false(all(retAllRowOther == retOne))  
+  expect_false(all(retAllRowOther == retOne))
 })
 
 ### checks for issue #32: display of p-values for multi-row summaries
@@ -879,7 +879,7 @@ test_that("p-values are displayed in multi-row summaries when rgroup and n.rgrou
     n.rgroup = 2,
     htmlTable_args = structure(list(), .Names = character(0)),
     class = c("descMrg", "matrix"))
-  
+
   out <- mergeDesc(getDescriptionStatsBy(x = cars_missing$mpg,
                                          by = cars_missing$cyl,
                                          statistics = TRUE),
@@ -900,7 +900,7 @@ test_that("p-vlues are displayed in multi-row summaries when rgroup and n.rgroup
     n.rgroup = 2L,
     htmlTable_args = structure(list(css.rgroup = ""), .Names = "css.rgroup"),
     class = c("descMrg", "matrix"))
-  
+
   out <- mergeDesc(getDescriptionStatsBy(x = cars_missing$mpg,
                                          by = cars_missing$cyl,
                                          statistics = TRUE))
@@ -920,7 +920,7 @@ test_that("p-values are displayed in the rgroup title for both multi- and one-ro
     n.rgroup = c(2, 1),
     htmlTable_args = structure(list(), .Names = character(0)),
     class = c("descMrg", "matrix"))
-  
+
   out <- mergeDesc(getDescriptionStatsBy(x = cars_missing$mpg,
                                          by = cars_missing$cyl,
                                          statistics = TRUE),
@@ -929,7 +929,7 @@ test_that("p-values are displayed in the rgroup title for both multi- and one-ro
                                          statistics = TRUE),
                    htmlTable_args = list(rgroup = c("Gas", "Displacement"),
                                          n.rgroup = c(2, 1)))
-  expect_equivalent(out, expected)  
+  expect_equivalent(out, expected)
 })
 
 test_that("p-values are displayed for both multi- and one-row summaries when rgroup and n.rgroup are not specified", {
@@ -946,7 +946,7 @@ test_that("p-values are displayed for both multi- and one-row summaries when rgr
     n.rgroup = c(2,1),
     htmlTable_args = structure(list(css.rgroup = ""), .Names = "css.rgroup"),
     class = c("descMrg", "matrix"))
-  
+
   out <- mergeDesc(getDescriptionStatsBy(x = cars_missing$mpg,
                                          by = cars_missing$cyl,
                                          statistics = TRUE),

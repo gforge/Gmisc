@@ -22,11 +22,7 @@ public:
 private:
 	std::vector<Point> m_Points;
 	int _removeIntersect(std::vector<Point>::size_type err_point);
-	bool _getLineIntersection(Point p0,
-		Point p1,
-		Point p2,
-		Point p3,
-		Point *i_p);
+	bool _getLineIntersection(int start, int end, Point *i_p);
 	void _smoothLine(int start, int end, Point int_point);
 	unsigned _nChooseK(unsigned n, unsigned k);
 };
