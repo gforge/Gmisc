@@ -22,9 +22,9 @@ Point generatePoint(double offs,
   // Strange things happen around 0
   Point offset_delta = { (p.x - offs_delta * cos_val - last.x),
                          (p.y - offs_delta * sin_val - last.y) };
-  if (fabs(offset_delta.x) < FLT_EPSILON)
+  if (fabs(offset_delta.x) < SINGLE_EPS)
     offset_delta.x = 0;
-  if (fabs(offset_delta.y) < FLT_EPSILON)
+  if (fabs(offset_delta.y) < SINGLE_EPS)
     offset_delta.y = 0;
   
   // Notify that element goes in wrong direction
@@ -125,14 +125,14 @@ Rcpp::List calculateLinesAndArrow(NumericVector x,
         delta.x = (x[ii+1] - x[ii]);
         ii++;
       }while(ii < x.size() &&
-           fabs(delta.x) < FLT_EPSILON &&
-           fabs(delta.y) < FLT_EPSILON);
+           fabs(delta.x) < SINGLE_EPS &&
+           fabs(delta.y) < SINGLE_EPS);
     }
 
     // Strange things happen around 0
-    if (fabs(delta.x) < FLT_EPSILON)
+    if (fabs(delta.x) < SINGLE_EPS)
       delta.x = 0;
-    if (fabs(delta.y) < FLT_EPSILON)
+    if (fabs(delta.y) < SINGLE_EPS)
       delta.y = 0;
 
     angle = atan2(delta.y, delta.x);
