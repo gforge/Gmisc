@@ -7,7 +7,8 @@ the interquartile range or the full range}
 \usage{
 describeMedian(x, iqr = TRUE, html = TRUE, digits = 1,
   number_first = TRUE, useNA = c("ifany", "no", "always"),
-  useNA.digits = digits, percentage_sign = TRUE, language = "en", ...)
+  useNA.digits = digits, percentage_sign = TRUE, language = "en",
+  ...)
 }
 \arguments{
 \item{x}{The variable that you want the statistics for}
@@ -62,3 +63,4 @@ Other descriptive functions: \code{\link{describeFactors}},
   \code{\link{getDescriptionStatsBy}},
   \code{\link{getPvalWilcox}}
 }
+\concept{descriptive functions}

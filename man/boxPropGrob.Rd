@@ -5,15 +5,16 @@
 \title{Create a box with a color split}
 \usage{
 boxPropGrob(label, label_left, label_right, prop, y = unit(0.5, "npc"),
-  x = unit(0.5, "npc"), width, height, just = "center", bjust = "center",
-  txt_gp = getOption("boxPropGrobTxt", default = gpar(color = "black")),
-  txt_left_gp = getOption("boxPropGrobLeftTxt", default = gpar(col =
-  "black")), txt_right_gp = getOption("boxPropGrobRightTxt", default =
-  gpar(col = "black")), box_left_gp = getOption("boxPropGrobLeft", default =
+  x = unit(0.5, "npc"), width, height, just = "center",
+  bjust = "center", txt_gp = getOption("boxPropGrobTxt", default =
+  gpar(color = "black")), txt_left_gp = getOption("boxPropGrobLeftTxt",
+  default = gpar(col = "black")),
+  txt_right_gp = getOption("boxPropGrobRightTxt", default = gpar(col =
+  "black")), box_left_gp = getOption("boxPropGrobLeft", default =
   gpar(fill = "#81BFD4")), box_right_gp = getOption("boxPropGrobRight",
   default = gpar(fill = "#D8F0D1")),
-  box_highlight_gp = getOption("boxPropGrobHighlight", default = gpar(fill =
-  "#ffffff55", col = NA)), name = NULL)
+  box_highlight_gp = getOption("boxPropGrobHighlight", default =
+  gpar(fill = "#ffffff55", col = NA)), name = NULL)
 }
 \arguments{
 \item{label}{The label to print}
@@ -77,3 +78,4 @@ boxPropGrob("Main label", "Left text", "Right text", prop = .3)
 Other box-functions: \code{\link{boxGrob}},
   \code{\link{connectGrob}}
 }
+\concept{box-functions}

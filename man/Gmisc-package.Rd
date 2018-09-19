@@ -33,7 +33,7 @@ descriptive purposes. It tries to illustrate the size of change
 between one state and the next, i.e. a transition. This is
 basically a graph of based upon \code{table(var1, var2)}.
 
-The \href{http://en.wikipedia.org/wiki/Singular_value_decomposition}{Singular value decomposition}
+The \href{https://en.wikipedia.org/wiki/Singular_value_decomposition}{Singular value decomposition}
 is a common method for reducing the number of variables. Unfortunately
 this compression can reduce the interpretability of the model. The \code{\link{getSvdMostInfluential}}
 function tries to remedy that by identifying the most influential

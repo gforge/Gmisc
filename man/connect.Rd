@@ -7,9 +7,10 @@
 \title{Connect boxes with an arrow}
 \usage{
 connectGrob(start, end, type = c("vertical", "horizontal", "L", "-", "Z",
-  "N"), subelmnt = c("right", "left"), lty_gp = getOption("connectGrob",
-  default = gpar(fill = "black")), arrow_obj = getOption("connectGrobArrow",
-  default = arrow(ends = "last", type = "closed")))
+  "N"), subelmnt = c("right", "left"),
+  lty_gp = getOption("connectGrob", default = gpar(fill = "black")),
+  arrow_obj = getOption("connectGrobArrow", default = arrow(ends =
+  "last", type = "closed")))
 
 \method{print}{connect_boxes}(x, ...)
 
@@ -47,8 +48,6 @@ The function creates a grob that links two boxes together. It looks for
 which side it should attach the arrow, e.g. if the start is on top of
 the bottom it should attach to the bottom edge of ther start box and then
 to the top at the end.
-
-The print/plot calls the \code{\link[grid]{grid.draw}} function on the object
 }
 \details{
 The exact positions of the line is stored at the \code{attr(..., "line")}.
@@ -87,3 +86,4 @@ sub_side_right
 Other box-functions: \code{\link{boxGrob}},
   \code{\link{boxPropGrob}}
 }
+\concept{box-functions}

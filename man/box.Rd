@@ -8,10 +8,10 @@
 \alias{plot.box}
 \title{Create a box with text}
 \usage{
-boxGrob(label, y = unit(0.5, "npc"), x = unit(0.5, "npc"), width, height,
-  just = "center", bjust = "center", txt_gp = getOption("boxGrobTxt",
-  default = gpar(color = "black")), box_gp = getOption("boxGrob", gpar(fill =
-  "#D8F0D1")), name = NULL)
+boxGrob(label, y = unit(0.5, "npc"), x = unit(0.5, "npc"), width,
+  height, just = "center", bjust = "center",
+  txt_gp = getOption("boxGrobTxt", default = gpar(color = "black")),
+  box_gp = getOption("boxGrob", gpar(fill = "#D8F0D1")), name = NULL)
 
 \method{widthDetails}{box}(x)
 
@@ -53,8 +53,6 @@ A grob
 }
 \description{
 Creates a grob box with text inside it.
-
-The print/plot calls the \code{\link[grid]{grid.draw}} function on the object
 }
 \examples{
 library(grid)
@@ -65,3 +63,4 @@ boxGrob("My box")
 Other box-functions: \code{\link{boxPropGrob}},
   \code{\link{connectGrob}}
 }
+\concept{box-functions}

@@ -5,12 +5,13 @@
 \title{Creating of description statistics}
 \usage{
 getDescriptionStatsBy(x, by, digits = 1, html = TRUE,
-  numbers_first = TRUE, statistics = FALSE, statistics.sig_lim = 10^-4,
-  statistics.two_dec_lim = 10^-2, statistics.suppress_warnings = TRUE,
-  useNA = c("ifany", "no", "always"), useNA.digits = digits,
-  continuous_fn = describeMean, prop_fn = describeProp,
-  factor_fn = describeFactors, show_all_values = FALSE, hrzl_prop = FALSE,
-  add_total_col, total_col_show_perc = TRUE, use_units = FALSE, default_ref,
+  numbers_first = TRUE, statistics = FALSE,
+  statistics.sig_lim = 10^-4, statistics.two_dec_lim = 10^-2,
+  statistics.suppress_warnings = TRUE, useNA = c("ifany", "no",
+  "always"), useNA.digits = digits, continuous_fn = describeMean,
+  prop_fn = describeProp, factor_fn = describeFactors,
+  show_all_values = FALSE, hrzl_prop = FALSE, add_total_col,
+  total_col_show_perc = TRUE, use_units = FALSE, default_ref,
   NEJMstyle = FALSE, percentage_sign = TRUE, header_count,
   missing_value = "-", names_of_missing = NULL, ...)
 }
@@ -232,3 +233,4 @@ Other descriptive functions: \code{\link{describeFactors}},
   \code{\link{describeMean}}, \code{\link{describeMedian}},
   \code{\link{describeProp}}, \code{\link{getPvalWilcox}}
 }
+\concept{descriptive functions}

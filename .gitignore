@@ -9,3 +9,5 @@ Gmisc.Rproj
 tests/visual_tests/FTP_test/FTP_test_files
 tests/testthat/*.pdf
 cran-comments.md
+vignettes/*.R
+vignettes/*.html

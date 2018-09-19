@@ -142,7 +142,7 @@ Using 3D matrices
 knitr::opts_chunk$set(fig.height = 5.5)
 ```
 
-We can enhance the [data-ink ratio](http://www.infovis-wiki.net/index.php/Data-Ink_Ratio) by adding a color split for the boxes. This works only for factors with 2 levels such as sex in our example.
+We can enhance the [data-ink ratio](https://www.infovis-wiki.net/wiki/Data-Ink_Ratio) by adding a color split for the boxes. This works only for factors with 2 levels such as sex in our example.
 
 ```{r}
 trn_mtrx_3D <-
