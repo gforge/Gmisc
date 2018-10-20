@@ -23,7 +23,7 @@ This is a handy function for retrieving items deep in a nested structure
 without causing error if not found
 }
 \examples{
-retrive(list(a = list(b = 1)), "a.b")
+retrieve(list(a = list(b = 1)), "a.b")
 
 }
 \seealso{

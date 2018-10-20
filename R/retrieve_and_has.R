@@ -12,7 +12,7 @@
 #' @return Returns a sub-element from \code{sourceList} or the \code{default} value.
 #' @importFrom stringr str_detect str_split
 #' @examples 
-#' retrive(list(a = list(b = 1)), "a.b")
+#' retrieve(list(a = list(b = 1)), "a.b")
 #' 
 #' @family lodash similar functions
 #' @export
@@ -51,11 +51,11 @@ retrieve <- function(sourceList, path, default = NA) {
 #' @export
 has <- function(sourceList, path, default = NA) {
   uniqueNotFoundId <- "__@GMISC_NOT_FOUND@__"
-  value <- retrieve(soruceList, path, default=uniqueNotFoundId)
+  value <- retrieve(sourceList, path, default=uniqueNotFoundId)
   if (length(value) > 1) {
-    return(FALSE)
+    return(TRUE)
   }
   
-  return (value == uniqueNotFoundId)
+  return (value != uniqueNotFoundId)
 }
 
