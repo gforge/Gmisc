@@ -1,5 +1,9 @@
 NEWS for the Gmisc package
 
+Changes for 1.7
+---------------
+* Added lodash similar functions 'retrieve' and 'has'
+
 Changes for 1.6.4
 -----------------
 * Removed changed constant for STRICT_R_HEADERS compliance

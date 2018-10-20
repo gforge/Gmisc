@@ -1,0 +1,61 @@
+#' An R alternative to the lodash \code{get} in JavaScript
+#' 
+#' This is a handy function for retrieving items deep in a nested structure
+#' without causing error if not found
+#' 
+#' @param sourceList The \code{list()}/\code{c()} that is to be searched for the element
+#' @param path A string that can be separated by [,] or ., the string \code{"elementname1.1.elementname"}
+#'  is equivalent to \code{"elementname1[[1]]]elementname"}. Note that the function doesn't check 
+#'  the validity of the path - it only separates and tries to address that element with `[[]]`.
+#' @param default The value to return if the element isn't found
+#' 
+#' @return Returns a sub-element from \code{sourceList} or the \code{default} value.
+#' @importFrom stringr str_detect str_split
+#' @examples 
+#' retrive(list(a = list(b = 1)), "a.b")
+#' 
+#' @family lodash similar functions
+#' @export
+retrieve <- function(sourceList, path, default = NA) {
+  path <- str_split(path, "[\\[\\].]+")[[1]]
+  for (element in path) {
+    if (str_detect(element, "^[0-9]+$")) {
+      element <- as.numeric(element)
+      if (length(sourceList) < element || element <= 0) {
+        return(default)
+      }
+    } else if (!(element %in% names(sourceList))) {
+      return(default)
+    }
+    
+    sourceList <- sourceList[[element]]
+  }
+  return(sourceList)
+}
+
+#' An R alternative to the lodash \code{has} in JavaScript
+#' 
+#' This is a handy function for checking if item exist in a nested structure
+#' 
+#' @param sourceList The \code{list()}/\code{c()} that is to be searched for the element
+#' @param path A string that can be separated by [,] or ., the string \code{"elementname1.1.elementname"}
+#'  is equivalent to \code{"elementname1[[1]]]elementname"}. Note that the function doesn't check 
+#'  the validity of the path - it only separates and tries to address that element with `[[]]`.
+#' 
+#' @return Returns a boolean.
+#' @importFrom stringr str_detect str_split
+#' @examples 
+#' retrive(list(a = list(b = 1)), "a.b")
+#' 
+#' @family lodash similar functions
+#' @export
+has <- function(sourceList, path, default = NA) {
+  uniqueNotFoundId <- "__@GMISC_NOT_FOUND@__"
+  value <- retrieve(soruceList, path, default=uniqueNotFoundId)
+  if (length(value) > 1) {
+    return(FALSE)
+  }
+  
+  return (value == uniqueNotFoundId)
+}
+
