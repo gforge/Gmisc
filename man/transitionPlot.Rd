@@ -6,14 +6,15 @@
 \usage{
 transitionPlot(transition_flow, type_of_arrow = c("grid", "simple",
   "gradient"), box_txt = rownames(transition_flow), tot_spacing = 0.2,
-  box_width = 1/4, fill_start_box = "darkgreen", txt_start_clr = "white",
-  fill_end_box = fill_start_box, txt_end_clr = txt_start_clr, cex = 2,
-  min_lwd = if (type_of_arrow == "grid") 1 else unit(0.1, "mm"),
-  max_lwd = if (type_of_arrow == "grid") 6 else unit(5, "mm"),
-  lwd_prop_total = TRUE, arrow_clr = "#000000", abs_arrow_width = FALSE,
+  box_width = 1/4, fill_start_box = "darkgreen",
+  txt_start_clr = "white", fill_end_box = fill_start_box,
+  txt_end_clr = txt_start_clr, cex = 2, min_lwd = if (type_of_arrow
+  == "grid") 1 else unit(0.1, "mm"), max_lwd = if (type_of_arrow ==
+  "grid") 6 else unit(5, "mm"), lwd_prop_total = TRUE,
+  arrow_clr = "#000000", abs_arrow_width = FALSE,
   overlap_bg_clr = "#FFFFFF", overlap_order = 1:nrow(transition_flow),
-  overlap_add_width = if (type_of_arrow == "grid") 1.5 else unit(1, "mm"),
-  box_prop, mar = unit(rep(3, times = 4), "mm"), main = NULL,
+  overlap_add_width = if (type_of_arrow == "grid") 1.5 else unit(1,
+  "mm"), box_prop, mar = unit(rep(3, times = 4), "mm"), main = NULL,
   box_label = NULL, box_label_pos = "top", box_label_cex = cex,
   color_bar = TRUE, color_bar_cex = cex * 0.33, color_bar_labels,
   color_bar_subspace = NULL, new_page = FALSE)

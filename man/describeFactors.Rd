@@ -78,3 +78,4 @@ Other descriptive functions: \code{\link{describeMean}},
   \code{\link{getDescriptionStatsBy}},
   \code{\link{getPvalWilcox}}
 }
+\concept{descriptive functions}

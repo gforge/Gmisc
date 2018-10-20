@@ -6,8 +6,8 @@
 the number and the percentage}
 \usage{
 describeProp(x, html = TRUE, digits = 1, number_first = TRUE,
-  useNA = c("ifany", "no", "always"), useNA.digits = digits, default_ref,
-  percentage_sign = TRUE, language = "en", ...)
+  useNA = c("ifany", "no", "always"), useNA.digits = digits,
+  default_ref, percentage_sign = TRUE, language = "en", ...)
 }
 \arguments{
 \item{x}{The variable that you want the statistics for}
@@ -61,3 +61,4 @@ Other descriptive functions: \code{\link{describeFactors}},
   \code{\link{getDescriptionStatsBy}},
   \code{\link{getPvalWilcox}}
 }
+\concept{descriptive functions}

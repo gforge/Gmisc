@@ -77,3 +77,4 @@ Other descriptive functions: \code{\link{describeFactors}},
   \code{\link{describeProp}},
   \code{\link{getDescriptionStatsBy}}
 }
+\concept{descriptive functions}
