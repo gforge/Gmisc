@@ -32,11 +32,11 @@ Imports:
     XML,
     utils,
     stats,
-    checkmate
+    checkmate,
+    stringr
 Suggests:
     testthat,
-    datasets,
-    stringr
+    datasets
 Roxygen: list(wrap = FALSE)
 Encoding: UTF-8
 NeedsCompilation: no

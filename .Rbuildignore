@@ -1,3 +1,5 @@
+^Meta$
+^doc$
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^visual_tests

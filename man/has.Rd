@@ -4,13 +4,12 @@
 \alias{has}
 \title{An R alternative to the lodash \code{has} in JavaScript}
 \usage{
-has(sourceList, path, default = NA)
+has(sourceList, path)
 }
 \arguments{
 \item{sourceList}{The \code{list()}/\code{c()} that is to be searched for the element}
 
 \item{path}{A string that can be separated by [,] or ., the string \code{"elementname1.1.elementname"}
-is equivalent to \code{"elementname1[[1]]]elementname"}. Note that the function doesn't check 
 the validity of the path - it only separates and tries to address that element with `[[]]`.}
 }
 \value{
@@ -20,7 +19,7 @@ Returns a boolean.
 This is a handy function for checking if item exist in a nested structure
 }
 \examples{
-retrive(list(a = list(b = 1)), "a.b")
+has(list(a = list(b = 1)), "a.b")
 
 }
 \seealso{

@@ -23,7 +23,10 @@ This is a handy function for retrieving items deep in a nested structure
 without causing error if not found
 }
 \examples{
-retrieve(list(a = list(b = 1)), "a.b")
+source <- list(a = list(b = 1, c(1,2,3)))
+retrieve(source, "a.b")
+retrieve(source, "a.b.1")
+retrieve(source, "a.not_in_list")
 
 }
 \seealso{

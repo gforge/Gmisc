@@ -12,7 +12,10 @@
 #' @return Returns a sub-element from \code{sourceList} or the \code{default} value.
 #' @importFrom stringr str_detect str_split
 #' @examples 
-#' retrieve(list(a = list(b = 1)), "a.b")
+#' source <- list(a = list(b = 1, c(1,2,3)))
+#' retrieve(source, "a.b")
+#' retrieve(source, "a.b.1")
+#' retrieve(source, "a.not_in_list")
 #' 
 #' @family lodash similar functions
 #' @export
@@ -39,17 +42,16 @@ retrieve <- function(sourceList, path, default = NA) {
 #' 
 #' @param sourceList The \code{list()}/\code{c()} that is to be searched for the element
 #' @param path A string that can be separated by [,] or ., the string \code{"elementname1.1.elementname"}
-#'  is equivalent to \code{"elementname1[[1]]]elementname"}. Note that the function doesn't check 
 #'  the validity of the path - it only separates and tries to address that element with `[[]]`.
 #' 
 #' @return Returns a boolean.
 #' @importFrom stringr str_detect str_split
 #' @examples 
-#' retrive(list(a = list(b = 1)), "a.b")
+#' has(list(a = list(b = 1)), "a.b")
 #' 
 #' @family lodash similar functions
 #' @export
-has <- function(sourceList, path, default = NA) {
+has <- function(sourceList, path) {
   uniqueNotFoundId <- "__@GMISC_NOT_FOUND@__"
   value <- retrieve(sourceList, path, default=uniqueNotFoundId)
   if (length(value) > 1) {
