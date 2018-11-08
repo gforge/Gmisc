@@ -132,7 +132,7 @@ bool Line::_getLineIntersection(
 	return true;
 }
 
-// From: http://stackoverflow.com/questions/9330915/number-of-combinations-n-choose-r-in-c
+// From: https://stackoverflow.com/questions/9330915/number-of-combinations-n-choose-r-in-c
 unsigned Line::_nChooseK(unsigned n, unsigned k){
 	if (k > n) return 0;
 	if (k * 2 > n) k = n - k;
