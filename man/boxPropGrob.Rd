@@ -17,7 +17,7 @@ boxPropGrob(label, label_left, label_right, prop, y = unit(0.5, "npc"),
   gpar(fill = "#ffffff55", col = NA)), name = NULL)
 }
 \arguments{
-\item{label}{The label to print}
+\item{label}{The label to print - should be a number, text or expression.}
 
 \item{label_left}{The label for the left area}
 

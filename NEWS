@@ -2,6 +2,7 @@ NEWS for the Gmisc package
 
 Changes for 1.7
 ---------------
+* Expressions are now allowed in boxGrob (Thanks Alan Haynes)
 * Added lodash similar functions 'retrieve' and 'has'
 
 Changes for 1.6.4

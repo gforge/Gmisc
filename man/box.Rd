@@ -22,7 +22,7 @@ boxGrob(label, y = unit(0.5, "npc"), x = unit(0.5, "npc"), width,
 \method{plot}{box}(x, ...)
 }
 \arguments{
-\item{label}{The label to print}
+\item{label}{The label to print - should be a number, text or expression.}
 
 \item{y}{The y position to put the box at. Can be either in \code{npc} (i.e. 0-1) or a \code{\link[grid]{unit}}.}
 

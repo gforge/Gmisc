@@ -2,7 +2,7 @@
 #'
 #' Creates a grob box with text inside it.
 #'
-#' @param label The label to print
+#' @param label The label to print - should be a number, text or expression.
 #' @param y The y position to put the box at. Can be either in \code{npc} (i.e. 0-1) or a \code{\link[grid]{unit}}.
 #' @param x The x position to put the box at. Can be either in \code{npc} (i.e. 0-1) or a \code{\link[grid]{unit}}.
 #' @param width The box autosizes but you can force by specifying the width
@@ -41,7 +41,7 @@ boxGrob <- function (label,
   assert(
     checkString(label),
     checkNumeric(label),
-	class(label) == "expression"
+	  is.expression(label)
   )
   assert_unit(y)
   assert_unit(x)
