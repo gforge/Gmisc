@@ -1,5 +1,10 @@
 NEWS for the Gmisc package
 
+Changes for 1.7.1
+-----------------
+* Fixed vignette names for CRAN
+* Fixed bug in retrieve
+
 Changes for 1.7
 ---------------
 * Expressions are now allowed in boxGrob (Thanks Alan Haynes)

@@ -12,6 +12,17 @@ test_that("Basic retrieve", {
   expect_equal(retrieve(var, "b.d.4.e"), 22)
 
   expect_true(is.na(retrieve(var, "b.ee")))
+
+  var <- list(list(c = 1, d = 2))
+  expect_equal(retrieve(var, "1.c"), 1)
+})
+
+test_that("Retrieve with special character", { 
+  var <- list(b = list(c = 1, `a.d` = list(1,2,3,list(e = 22))))
+  expect_equal(retrieve(var, "b.a\\.d.4.e"), 22)
+
+  var <- list(b = list(c = 1, `a[evilname]d` = list(1,2,3,list(e = 22))))
+  expect_equal(retrieve(var, "b.a\\[evilname\\]d.4.e"), 22)
 })
 
 

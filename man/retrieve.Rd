@@ -23,9 +23,10 @@ This is a handy function for retrieving items deep in a nested structure
 without causing error if not found
 }
 \examples{
-source <- list(a = list(b = 1, c(1,2,3)))
+source <- list(a = list(b = 1, `odd.name` = 'I hate . in names', c(1,2,3)))
 retrieve(source, "a.b")
 retrieve(source, "a.b.1")
+retrieve(source, "a.odd\\\\.name")
 retrieve(source, "a.not_in_list")
 
 }
