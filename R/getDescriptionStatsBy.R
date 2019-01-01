@@ -430,6 +430,8 @@ getDescriptionStatsBy <- function(x,
     }
 
   }else{
+    # Make sure that the total isn't using proportions (happens with hrzl_prop)
+    prop_fn <- factor_fn
     if (hrzl_prop){
       t <- by(x, by, FUN=factor_fn, html=html, digits=digits,
               number_first=numbers_first,
