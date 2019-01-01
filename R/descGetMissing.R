@@ -8,12 +8,12 @@
 #' @return \code{vector} A vector with the missing estimate
 #' @export
 descGetMissing <- function (x,
-                              html = TRUE,
-                              number_first = TRUE,
-                              percentage_sign = TRUE,
-                              language = "en",
-                              useNA.digits = 1,
-                              ...) {
+                            html = TRUE,
+                            number_first = TRUE,
+                            percentage_sign = TRUE,
+                            language = "en",
+                            useNA.digits = 1,
+                            ...) {
   if (!any(is.na(x))) return(invisible())
   df_arg_list <- list(x = is.na(x),
                       html = html,

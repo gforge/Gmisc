@@ -31,6 +31,7 @@
 #' @param by The variable that you want to split into different
 #'  columns
 #' @param digits The number of decimals used
+#' @param digits.nonzero The number of decimals used for values that are close to zero
 #' @param html If HTML compatible output should be used. If \code{FALSE}
 #'  it outputs LaTeX formatting
 #' @param NEJMstyle Adds - no (\%) at the end to proportions
@@ -108,13 +109,14 @@
 #' @export
 getDescriptionStatsBy <- function(x,
                                   by,
-                                  digits=1,
+                                  digits = 1,
+                                  digits.nonzero = NA,
                                   html = TRUE,
                                   numbers_first = TRUE,
-                                  statistics=FALSE,
-                                  statistics.sig_lim=10^-4,
-                                  statistics.two_dec_lim= 10^-2,
-                                  statistics.suppress_warnings=TRUE,
+                                  statistics = FALSE,
+                                  statistics.sig_lim = 10^-4,
+                                  statistics.two_dec_lim = 10^-2,
+                                  statistics.suppress_warnings =TRUE,
                                   useNA = c("ifany", "no", "always"),
                                   useNA.digits = digits,
                                   continuous_fn = describeMean,
@@ -158,7 +160,17 @@ getDescriptionStatsBy <- function(x,
   }
 
   useNA <- match.arg(useNA)
-
+  if (!is.na(digits.nonzero)) {
+    if (!is.numeric(digits.nonzero)
+        || floor(digits.nonzero) != digits.nonzero
+    ) {
+      stop("The digits.nonzero should be an integer, you provided: ", digits.nonzero)
+    }
+    if (digits.nonzero < digits) {
+      stop("The digits.nonzero must be smaller than digits")
+    }
+  }
+  
   if (!is.function(statistics)){
     if (is.list(statistics) ||
         (statistics != FALSE)){
@@ -324,14 +336,18 @@ getDescriptionStatsBy <- function(x,
     # If the numeric has horizontal_proportions then it's only so in the
     # missing category
     if (hrzl_prop)
-      t <- by(x, by, FUN=continuous_fn, html=html, digits=digits,
+      t <- by(x, by, FUN=continuous_fn, html=html, 
+              digits=digits,
+              digits.nonzero=digits.nonzero,              
               number_first=numbers_first,
               useNA = useNA,
               useNA.digits = useNA.digits,
               horizontal_proportions = table(is.na(x), useNA=useNA),
               percentage_sign = percentage_sign)
     else
-      t <- by(x, by, FUN=continuous_fn, html=html, digits=digits,
+      t <- by(x, by, FUN=continuous_fn, html=html, 
+              digits=digits,
+              digits.nonzero=digits.nonzero,              
               number_first=numbers_first,
               useNA = useNA,
               useNA.digits = useNA.digits,
@@ -376,7 +392,9 @@ getDescriptionStatsBy <- function(x,
 
     default_ref <- prDescGetAndValidateDefaultRef(x, default_ref)
 
-    t <- by(x, by, FUN=prop_fn, html=html, digits=digits,
+    t <- by(x, by, FUN=prop_fn, html=html, 
+            digits=digits,
+            digits.nonzero=digits.nonzero,              
             number_first=numbers_first,
             useNA = useNA,
             useNA.digits = useNA.digits,
@@ -433,14 +451,18 @@ getDescriptionStatsBy <- function(x,
     # Make sure that the total isn't using proportions (happens with hrzl_prop)
     prop_fn <- factor_fn
     if (hrzl_prop){
-      t <- by(x, by, FUN=factor_fn, html=html, digits=digits,
+      t <- by(x, by, FUN=factor_fn, html=html,
+              digits=digits,
+              digits.nonzero=digits.nonzero,              
               number_first=numbers_first,
               useNA = useNA,
               useNA.digits = useNA.digits,
               horizontal_proportions = table(x, useNA=useNA),
               percentage_sign = percentage_sign)
     }else{
-      t <- by(x, by, FUN=factor_fn, html=html, digits=digits,
+      t <- by(x, by, FUN=factor_fn, html=html,
+              digits=digits,
+              digits.nonzero=digits.nonzero,              
               number_first=numbers_first,
               useNA = useNA,
               useNA.digits = useNA.digits,

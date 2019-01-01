@@ -1,7 +1,9 @@
 NEWS for the Gmisc package
 
-Changes for 1.7.1
+Changes for 1.8
 -----------------
+* Added digits.nonzero for allowing values with extra digits where values are close to 0
+* Changed sprintf to txtRound for many of the descriptors
 * Fixed vignette names for CRAN
 * Fixed bug in retrieve
 
