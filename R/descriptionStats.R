@@ -298,11 +298,11 @@ describeProp <- function(x,
   else if(!is.character(percentage_sign))
     percentage_sign = ""
   
-  pecrentage_str <- paste0(txtRound(percent, digits = digits, digits.nonzero = digits.nonzero), percentage_sign)
+  percentage_str <- paste0(txtRound(percent, digits = digits, digits.nonzero = digits.nonzero), percentage_sign)
   if (number_first)
     ret <- sprintf("%s (%s)", 
                    no, 
-                   pecrentage_str)
+                   percentage_str)
   else
     ret <- sprintf("%s (%s)",
                    percentage_str, 
@@ -462,14 +462,14 @@ describeFactors <- function(x,
     percentage_sign = ""
   
   # The is.na(...) is a little overkill
-  pecrentage_str <- paste0(txtRound(percentages, 
+  percentage_str <- paste0(txtRound(percentages, 
                                     digits = ifelse(is.na(names(table_results)), useNA.digits, digits), 
                                     digits.nonzero = digits.nonzero), percentage_sign)
   
   if (number_first)
-    ret <- matrix(sprintf("%s (%s)", values, pecrentage_str), ncol=1)
+    ret <- matrix(sprintf("%s (%s)", values, percentage_str), ncol=1)
   else
-    ret <- matrix(sprintf("%s (%s)", pecrentage_str, values), ncol=1)
+    ret <- matrix(sprintf("%s (%s)", percentage_str, values), ncol=1)
 
   rn <- names(table_results)
   rn[is.na(rn)] <- "Missing"
