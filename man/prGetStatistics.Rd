@@ -5,8 +5,8 @@
 \title{Get statistics according to the type}
 \usage{
 prGetStatistics(x, show_perc = FALSE, html = TRUE, digits = 1,
-  numbers_first = TRUE, useNA = c("ifany", "no", "always"),
-  useNA.digits = digits, show_all_values = FALSE,
+  digits.nonzero = NA, numbers_first = TRUE, useNA = c("ifany", "no",
+  "always"), useNA.digits = digits, show_all_values = FALSE,
   continuous_fn = describeMean, factor_fn = describeFactors,
   prop_fn = factor_fn, percentage_sign = TRUE)
 }
@@ -17,6 +17,8 @@ prGetStatistics(x, show_perc = FALSE, html = TRUE, digits = 1,
 it outputs LaTeX formatting}
 
 \item{digits}{The number of decimals used}
+
+\item{digits.nonzero}{The number of decimals used for values that are close to zero}
 
 \item{numbers_first}{If the number should be given or if the percentage
 should be presented first. The second is encapsulated in parentheses ().}

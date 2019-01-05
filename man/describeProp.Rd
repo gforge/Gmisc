@@ -5,9 +5,10 @@
 \title{A function that returns a description proportion that contains
 the number and the percentage}
 \usage{
-describeProp(x, html = TRUE, digits = 1, number_first = TRUE,
-  useNA = c("ifany", "no", "always"), useNA.digits = digits,
-  default_ref, percentage_sign = TRUE, language = "en", ...)
+describeProp(x, html = TRUE, digits = 1, digits.nonzero = NA,
+  number_first = TRUE, useNA = c("ifany", "no", "always"),
+  useNA.digits = digits, default_ref, percentage_sign = TRUE,
+  language = "en", ...)
 }
 \arguments{
 \item{x}{The variable that you want the statistics for}
@@ -16,6 +17,8 @@ describeProp(x, html = TRUE, digits = 1, number_first = TRUE,
 it outputs LaTeX formatting}
 
 \item{digits}{The number of decimals used}
+
+\item{digits.nonzero}{The number of decimals used for values that are close to zero}
 
 \item{number_first}{If the number should be given or if the percentage
 should be presented first. The second is encapsulated in parentheses ().

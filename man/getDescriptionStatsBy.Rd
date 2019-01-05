@@ -4,8 +4,8 @@
 \alias{getDescriptionStatsBy}
 \title{Creating of description statistics}
 \usage{
-getDescriptionStatsBy(x, by, digits = 1, html = TRUE,
-  numbers_first = TRUE, statistics = FALSE,
+getDescriptionStatsBy(x, by, digits = 1, digits.nonzero = NA,
+  html = TRUE, numbers_first = TRUE, statistics = FALSE,
   statistics.sig_lim = 10^-4, statistics.two_dec_lim = 10^-2,
   statistics.suppress_warnings = TRUE, useNA = c("ifany", "no",
   "always"), useNA.digits = digits, continuous_fn = describeMean,
@@ -22,6 +22,8 @@ getDescriptionStatsBy(x, by, digits = 1, html = TRUE,
 columns}
 
 \item{digits}{The number of decimals used}
+
+\item{digits.nonzero}{The number of decimals used for values that are close to zero}
 
 \item{html}{If HTML compatible output should be used. If \code{FALSE}
 it outputs LaTeX formatting}
