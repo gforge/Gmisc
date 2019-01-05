@@ -50,24 +50,25 @@ NumericMatrix gnrlBezierPoints(SEXP& ctrl_points, int length_out = 100) {
 
   double t = 0.0;
   for(int i = 0; i < length_out; i++){
-    if (i + 1 == length_out)
+    if (i + 1 == length_out) {
       t = 1.0;
-    else
-      t += 1.0/double(length_out);
+    } else {
+      t += 1.0/double(length_out); 
+    }
 
-      // Now we need to sum up the elements according to the
-      // 1962 Pierre Bézier formula
-      // Note that P0 -> Pn the n in the formula is actually n - 1
-      int n = ctrl_mtrx.nrow() - 1;
-      for (int ii = 0; ii <= n; ii++){
-        double b_ii_n = R::choose(n, ii)*
-          pow(1-t, n - ii) *
-          pow(t, ii);
-        for (int col = 0; col < ctrl_mtrx.ncol(); col++){
-          ret(i + 1, col) +=  b_ii_n *
-            ctrl_mtrx(ii, col);
-        }
+    // Now we need to sum up the elements according to the
+    // 1962 Pierre Bézier formula
+    // Note that P0 -> Pn the n in the formula is actually n - 1
+    int n = ctrl_mtrx.nrow() - 1;
+    for (int ii = 0; ii <= n; ii++){
+      double b_ii_n = R::choose(n, ii)*
+        pow(1-t, n - ii) *
+        pow(t, ii);
+      for (int col = 0; col < ctrl_mtrx.ncol(); col++){
+        ret(i + 1, col) +=  b_ii_n *
+          ctrl_mtrx(ii, col);
       }
+    }
   };
 
 
