@@ -3,10 +3,10 @@ using namespace Rcpp;
 
 NumericMatrix getNumericMatrix(SEXP& x);
 
-//' Generates a generalized Bezier line
+//' Generates a generalized Bézier line
 //'
 //' This is a general form of bezier line that can be used for cubic, quadratic,
-//' and more advanced Bezier lines.
+//' and more advanced Bézier lines.
 //'
 //' @param ctrl_points The ctrl_points for the bezier control points. This should
 //'  either be a \code{matrix} or a \code{data.frame}.

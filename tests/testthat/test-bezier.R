@@ -1,6 +1,6 @@
 library(testthat)
 
-context("Bezier functions")
+context("Bézier functions")
 
 test_that("Basic funcitonality", {
   df <- data.frame(x = c(1, 2, 4, 5),
