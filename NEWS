@@ -1,5 +1,11 @@
 NEWS for the Gmisc package
 
+Changes for 1.9.0
+-----------------
+* Added id as a parameter to the Transtion-class
+* Fixed bad no. of popViewport() not adequately leaving the transitionclass viewport tree
+* Fixed bad viewport naming in Transition-class that was creating a conflict with multiple plots
+
 Changes for 1.8.1
 -----------------
 * Fixed cran requirement where class(x) != class(y) could be of length > 1

@@ -117,7 +117,7 @@ prDescGetAndValidateDefaultRef <- function(x, default_ref){
 #' @param top The margin object, either in npc or a \code{\link[grid]{unit}} object
 #' @param right The margin object, either in npc or a \code{\link[grid]{unit}} object
 #' @param name The name of the last viewport
-#' @return \code{void}
+#' @return \code{2} - the number of pushed viewports
 #'
 #' @keywords internal
 prPushMarginViewport <- function(bottom, left, top, right, name="margin"){
@@ -157,6 +157,7 @@ prPushMarginViewport <- function(bottom, left, top, right, name="margin"){
 
   pushViewport(viewport(layout=gl, name=layout_name))
   pushViewport(viewport(layout.pos.row=2, layout.pos.col=2, name=name))
+  return(2)
 }
 
 #' Adds a title to the plot

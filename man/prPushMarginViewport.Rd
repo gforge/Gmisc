@@ -19,7 +19,7 @@ or a vector of 4 if you want the same margins allover.}
 \item{name}{The name of the last viewport}
 }
 \value{
-\code{void}
+\code{2} - the number of pushed viewports
 }
 \description{
 A \code{\link[grid]{grid.layout}} object is used to

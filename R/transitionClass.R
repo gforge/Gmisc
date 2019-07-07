@@ -8,6 +8,11 @@
 #' to the flow quantity. See \href{https://en.wikipedia.org/wiki/Sankey_diagram}{Wikipedia}
 #' for details.
 #'
+#' @field id Optional id. The render uses named viewports that require a unique id if multiple transition plots
+#'  are combined. In order to avoid having overlapping graphs we need to generate a unique id for each viewport
+#'  and thus this variable exists. If left empty it will create a counter that is stored in the \code{\link[base]{options}}
+#'  (`"Gmisc.transitionClassCounter"`) and each viewport will have the name preceeded with `tc_[0-9]+`. Set this
+#'  if you intend to use \code{\link[grid]{seekViewport}}.
 #' @field transitions This is a >= 3 dimensional array with the transitions. Should not be direcly accessed.
 #' @field box_width The box width
 #' @field box_txt The texts of each box
@@ -54,6 +59,7 @@ Transition <-
   setRefClass(
     "Transition",
     fields = list(
+      id = "character",
       data = "list",
       transitions = function(value){
         if (missing(value)){
@@ -513,7 +519,7 @@ Transition <-
         data$lwd_prop_type <<- match.arg(value)
       }),
     methods = list(
-      initialize = function(transitions, label, txt, fill_clr, txt_clr, ...){
+      initialize = function(transitions, label, txt, fill_clr, txt_clr, id, ...){
         "Set up a Transition object. The \\code{transitions} should be a 2D or 3D matrix
         as defined in the \\code{$addTransitions} section and not as later internally stored."
         if (missing(transitions))
@@ -522,6 +528,26 @@ Transition <-
         if (is.character(transitions) &&
               all(transitions == "copy"))
           return(callSuper(...))
+        
+        if (missing(id)) {
+          option_name <- "Gmisc.transitionClassCounter"
+          last_id_no <- getOption(option_name)
+          if (is.null(last_id_no)) {
+            last_id_no <- 0
+          }
+          current_id_no <- last_id_no + 1
+          
+          args <- list()
+          args[option_name] <- 0
+          do.call(options, args)
+          getOption(option_name)
+          
+          .self$id <- paste0("tc_", current_id_no)
+        } else if (is.character(id)) {
+          .self$id <- id
+        } else {
+          stop("The id has to be a string, you provided: ", id)
+        }
 
         .self$addTransitions(transitions, label, txt = txt, fill_clr = fill_clr, txt_clr = txt_clr)
         callSuper(...)
@@ -996,6 +1022,9 @@ Transition <-
         }
         return(bx)
       },
+      getViewportName = function(name){
+        paste0(.self$id, "_", name)
+      },
       render = function(new_page = TRUE){
         "Call this to render the full graph. The \\code{new_page} argument
         is for creating a new plot, set this to \\code{FALSE}
@@ -1003,20 +1032,19 @@ Transition <-
         additional viewports that you intend to use."
         if (new_page)
           grid.newpage()
+        no_upview_ports <- 0
 
         prPushMarginViewport(bottom = mar[1],
                              left = mar[2],
                              top = mar[3],
                              right = mar[4],
-                             "main_margins")
-        on.exit(upViewport(2))
-
+                             name=.self$getViewportName("main_margins"))
+        no_upview_ports <- no_upview_ports + 2
 
         if (!is.null(title)){
           prGridPlotTitle(title, title_cex, cex_mult = 1)
-          on.exit(upViewport(2))
+          no_upview_ports <- no_upview_ports + 2
         }
-
 
         raw_width <- convertWidth(box_width, unitTo = "npc", valueOnly = TRUE)
         space_between <- (1- raw_width * .self$noCols())/(.self$noCols() - 1)
@@ -1055,14 +1083,23 @@ Transition <-
 
           pushViewport(viewport(layout = grid.layout(nrow = 2, ncol = length(widths),
                                                      heights = unit(box_label_heights, "npc"),
-                                                     widths = unit(widths, "npc"))))
+                                                     widths = unit(widths, "npc")),
+                                name = .self$getViewportName("box_label_grid")))
+          no_upview_ports <- no_upview_ports + 1
+
           for (i in 1:.self$noCols()){
-            pushViewport(viewport(layout.pos.row = label_pos, layout.pos.col = i + (i-1)))
+            col_no <- i + (i-1)
+            pushViewport(viewport(layout.pos.row = label_pos, 
+                                  layout.pos.col = col_no,
+                                  name = .self$getViewportName(paste0("box_label_grid_", label_pos, ":", col_no))))
             grid.draw(labels[[i]])
             upViewport()
           }
-          pushViewport(viewport(layout.pos.row = graph_pos, layout.pos.col = 1:length(widths)))
-          on.exit(upViewport(2))
+
+          pushViewport(viewport(layout.pos.row = graph_pos, 
+                                layout.pos.col = 1:length(widths),
+                                name = .self$getViewportName(paste0("box_graph_section_", graph_pos, ":1-", col_no))))
+          no_upview_ports <- no_upview_ports + 1
         }
 
         if (clr_bar != "none"){
@@ -1103,11 +1140,12 @@ Transition <-
                                                       box_width,
                                                     box_width))
 
-          pushViewport(viewport(layout=bar_layout, name="Bar_layout"))
+          pushViewport(viewport(layout=bar_layout, 
+                                name=.self$getViewportName("Bar_layout")))
 
           pushViewport(viewport(layout.pos.row=bar_pos,
                                 layout.pos.col=2,
-                                name="Color_bar"))
+                                name=.self$getViewportName("Color_bar")))
 
           bar_clrs <- prTpGetColors(clr_bar_clrs, space=clr_bar_subspace)
           grid.raster(t(as.raster(bar_clrs)), width=1, height=1, interpolate=FALSE)
@@ -1138,21 +1176,22 @@ Transition <-
 
           pushViewport(viewport(layout.pos.row=graph_pos,
                                 layout.pos.col=1:3,
-                                name="Main_exc_bar"))
-          on.exit(popViewport(2))
+                                name=.self$getViewportName("Main_exc_bar")))
+          no_upview_ports <- no_upview_ports + 2
         }
 
         shift <- unit(raw_width*.02, "snpc")
         pushViewport(viewport(x = unit(0.5, "npc")+shift,
                               y = unit(0.5, "npc")-shift,
                               height= unit(1, "npc")-shift-shift,
-                              width= unit(1, "npc")-shift-shift, name="shadows"))
+                              width= unit(1, "npc")-shift-shift, 
+                              name=.self$getViewportName("shadows")))
         upViewport()
         pushViewport(viewport(x = unit(0.5, "npc")-shift,
                               y = unit(0.5, "npc")+shift,
                               height= unit(1, "npc")-shift-shift,
                               width= unit(1, "npc")-shift-shift,
-                              name="regular"))
+                              name=.self$getViewportName("regular")))
         upViewport()
 
 
@@ -1170,12 +1209,12 @@ Transition <-
                            cex = box_cex)
 
           if (!.self$skip_shadows) {
-            seekViewport("shadows")
+            seekViewport(.self$getViewportName("shadows"))
             fastDoCall(prTcPlotBoxColumn, box_args)
             upViewport()
           }
 
-          seekViewport("regular")
+          seekViewport(.self$getViewportName("regular"))
           box_args[["proportions"]] <- proportions
           box_args[["fill"]] <- fill_clr[[col]]
           box_args[["txt"]] <- box_txt[[col]]
@@ -1201,6 +1240,10 @@ Transition <-
 
           fastDoCall(prTcPlotBoxColumn, box_args)
           upViewport()
+        }
+
+        if (no_upview_ports > 0) {
+          upViewport(no_upview_ports)
         }
       }
     )
