@@ -4,12 +4,24 @@
 \alias{bezierArrowGradient}
 \title{A bezier arrow with gradient}
 \usage{
-bezierArrowGradient(x = c(0.2, 0.7, 0.3, 0.9), y = c(0.2, 0.2, 0.9,
-  0.9), width = 0.05, clr = "#000000", default.units = "npc",
-  align_2_axis = TRUE, grdt_type = c("triangle", "rectangle"),
-  grdt_prop = 0.8, grdt_decrease_prop = 0.5, grdt_clr_prop = 0.7,
-  grdt_line_width, grdt_clr = "#2F4F2F", vp = NULL, gp = gpar(),
-  rm_intersect = 3L, ...)
+bezierArrowGradient(
+  x = c(0.2, 0.7, 0.3, 0.9),
+  y = c(0.2, 0.2, 0.9, 0.9),
+  width = 0.05,
+  clr = "#000000",
+  default.units = "npc",
+  align_2_axis = TRUE,
+  grdt_type = c("triangle", "rectangle"),
+  grdt_prop = 0.8,
+  grdt_decrease_prop = 0.5,
+  grdt_clr_prop = 0.7,
+  grdt_line_width,
+  grdt_clr = "#2F4F2F",
+  vp = NULL,
+  gp = gpar(),
+  rm_intersect = 3L,
+  ...
+)
 }
 \arguments{
 \item{x}{A numeric vector or unit object specifying x-locations of

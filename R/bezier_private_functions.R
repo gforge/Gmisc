@@ -110,20 +110,22 @@ validateAndConvertVectorInputs <- function(x, y,
       x_origo <- y_origo <- 0
   }
 
-  if (class(y_origo) != class(x_origo))
+  if (!setequal(class(y_origo), class(x_origo)))
     stop("The x and y point for the origo point don't have the same class,",
       " should be either numeric or units.",
       " Currently you have provided y=", class(y_origo),
       " & x=", class(x_origo))
 
-  if (class(y) != class(y_origo))
+  if (!setequal(class(y), class(y_origo)))
     stop("The angle won't make any sense if your x and y point",
       " don't have the same unit as the origo x and y point.",
       " Currently you have provided point class=", class(y),
       " & origo class=", class(y_origo))
 
-  return (list(y=y, x=x,
-      y_origo=y_origo, x_origo=x_origo))
+  return (list(y=y, 
+               x=x,
+               y_origo=y_origo, 
+               x_origo=x_origo))
 }
 
 #' Translates "npc" widths into absolute units

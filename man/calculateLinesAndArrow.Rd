@@ -4,8 +4,15 @@
 \alias{calculateLinesAndArrow}
 \title{Gets offsetted lines}
 \usage{
-calculateLinesAndArrow(x, y, offset, end_x = -1, end_y = -1,
-  arrow_offset = -1, rm_intersect = 3L)
+calculateLinesAndArrow(
+  x,
+  y,
+  offset,
+  end_x = -1,
+  end_y = -1,
+  arrow_offset = -1,
+  rm_intersect = 3L
+)
 }
 \arguments{
 \item{x}{A numeric vector containing all the x-elements}

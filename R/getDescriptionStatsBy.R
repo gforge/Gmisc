@@ -146,7 +146,7 @@ getDescriptionStatsBy <- function(x,
     old_name <- names(API_changes)[i]
     new_name <- API_changes[i]
     if (old_name %in% names(dots)){
-      if (class(fenv[[new_name]]) == "name"){
+      if ("name" %in% class(fenv[[new_name]])){
         fenv[[new_name]] <- dots[[old_name]]
         dots[[old_name]] <- NULL
         warning("Deprecated: '", old_name, "'",
@@ -524,7 +524,7 @@ getDescriptionStatsBy <- function(x,
 
 
   # Add the proper rownames
-  if (class(t[[1]]) == "matrix")
+  if ("matrix" %in% class(t[[1]]))
     rownames(results) <- rownames(t[[1]])
   else
     rownames(results) <- names(t[[1]])

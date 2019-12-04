@@ -4,10 +4,19 @@
 \alias{describeFactors}
 \title{Describes factor variables}
 \usage{
-describeFactors(x, html = TRUE, digits = 1, digits.nonzero = NA,
-  number_first = TRUE, useNA = c("ifany", "no", "always"),
-  useNA.digits = digits, horizontal_proportions,
-  percentage_sign = TRUE, language = "en", ...)
+describeFactors(
+  x,
+  html = TRUE,
+  digits = 1,
+  digits.nonzero = NA,
+  number_first = TRUE,
+  useNA = c("ifany", "no", "always"),
+  useNA.digits = digits,
+  horizontal_proportions,
+  percentage_sign = TRUE,
+  language = "en",
+  ...
+)
 }
 \arguments{
 \item{x}{The variable that you want the statistics for}
@@ -76,9 +85,11 @@ by(my_var,
 \seealso{
 \code{\link{getDescriptionStatsBy}}
 
-Other descriptive functions: \code{\link{describeMean}},
-  \code{\link{describeMedian}}, \code{\link{describeProp}},
-  \code{\link{getDescriptionStatsBy}},
-  \code{\link{getPvalWilcox}}
+Other descriptive functions: 
+\code{\link{describeMean}()},
+\code{\link{describeMedian}()},
+\code{\link{describeProp}()},
+\code{\link{getDescriptionStatsBy}()},
+\code{\link{getPvalWilcox}()}
 }
 \concept{descriptive functions}

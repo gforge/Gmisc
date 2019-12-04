@@ -4,8 +4,14 @@
 \alias{getSvdMostInfluential}
 \title{Gets the maximum contributor variables from svd()}
 \usage{
-getSvdMostInfluential(mtrx, quantile, similarity_threshold,
-  plot_selection = TRUE, plot_threshold = 0.05, varnames = NULL)
+getSvdMostInfluential(
+  mtrx,
+  quantile,
+  similarity_threshold,
+  plot_selection = TRUE,
+  plot_threshold = 0.05,
+  varnames = NULL
+)
 }
 \arguments{
 \item{mtrx}{A matrix or data frame with the variables. Note: if it contains missing

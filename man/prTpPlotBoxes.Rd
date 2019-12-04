@@ -4,13 +4,36 @@
 \alias{prTpPlotBoxes}
 \title{Plot boxes and arrows}
 \usage{
-prTpPlotBoxes(overlap_order, transition_flow, no_boxes, box_width,
-  tot_spacing, txt, cex, prop_start_sizes, prop_end_sizes, box_prop,
-  lwd_prop_total = lwd_prop_total, fill_start_clr, fill_end_clr,
-  txt_start_clr, txt_end_clr, lwd = 2, line_col = "#000000", min_lwd,
-  max_lwd, overlap_add_width, overlap_bg_clr, type_of_arrow,
-  abs_arrow_width, arrow_clr, transition_arrow_props, color_bar_subspace,
-  plot_arrows = TRUE, proportion = FALSE)
+prTpPlotBoxes(
+  overlap_order,
+  transition_flow,
+  no_boxes,
+  box_width,
+  tot_spacing,
+  txt,
+  cex,
+  prop_start_sizes,
+  prop_end_sizes,
+  box_prop,
+  lwd_prop_total = lwd_prop_total,
+  fill_start_clr,
+  fill_end_clr,
+  txt_start_clr,
+  txt_end_clr,
+  lwd = 2,
+  line_col = "#000000",
+  min_lwd,
+  max_lwd,
+  overlap_add_width,
+  overlap_bg_clr,
+  type_of_arrow,
+  abs_arrow_width,
+  arrow_clr,
+  transition_arrow_props,
+  color_bar_subspace,
+  plot_arrows = TRUE,
+  proportion = FALSE
+)
 }
 \arguments{
 \item{overlap_order}{The order from first->last for the lines. This means that the last

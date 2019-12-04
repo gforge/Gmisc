@@ -16,5 +16,5 @@ test_that("Keeps class", {
   class(test) <- c("new_class", class(test))
   test <- insertRowAndKeepAttr(test, 1)
 
-  expect_true("new_class" == class(test)[1])
+  expect_true("new_class" %in% class(test)[1])
 })

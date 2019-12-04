@@ -4,7 +4,6 @@
 \name{Gmisc-deprecated}
 \alias{Gmisc-deprecated}
 \alias{forestplot2}
-\alias{Gmisc-deprecated-package}
 \title{Deprecated function(s) in \pkg{Gmisc}}
 \usage{
 forestplot2(...)

@@ -4,10 +4,20 @@
 \alias{bezierArrowSmpl}
 \title{A simple bezier arrow}
 \usage{
-bezierArrowSmpl(x = c(0.2, 0.7, 0.3, 0.9), y = c(0.2, 0.2, 0.9, 0.9),
-  width = 0.05, clr = "#000000", default.units = "npc",
-  arrow = list(), rez = 200, align_2_axis = TRUE, name = NULL,
-  rm_intersect = 3L, gp = gpar(), vp = NULL)
+bezierArrowSmpl(
+  x = c(0.2, 0.7, 0.3, 0.9),
+  y = c(0.2, 0.2, 0.9, 0.9),
+  width = 0.05,
+  clr = "#000000",
+  default.units = "npc",
+  arrow = list(),
+  rez = 200,
+  align_2_axis = TRUE,
+  name = NULL,
+  rm_intersect = 3L,
+  gp = gpar(),
+  vp = NULL
+)
 }
 \arguments{
 \item{x}{A numeric vector or unit object specifying x-locations of

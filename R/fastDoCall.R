@@ -36,7 +36,7 @@ fastDoCall <- function(what, args, quote = FALSE, envir = parent.frame()){
     args <- args[names(args) != ""]
   }
 
-  if (class(what) == "character"){
+  if ("character" %in% class(what)){
     if(is.character(what)){
       fn <- strsplit(what, "[:]{2,3}")[[1]]
       what <- if(length(fn)==1) {
@@ -46,11 +46,11 @@ fastDoCall <- function(what, args, quote = FALSE, envir = parent.frame()){
       }
     }
     call <- as.call(c(list(what), argn))
-  }else if (class(what) == "function"){
+  }else if ("function" %in% class(what)){
     f_name <- deparse(substitute(what))
     call <- as.call(c(list(as.name(f_name)), argn))
     args[[f_name]] <- what
-  }else if (class(what) == "name"){
+  }else if ("name" %in% class(what)){
     call <- as.call(c(list(what, argn)))
   }
 

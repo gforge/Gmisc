@@ -389,7 +389,7 @@ describeFactors <- function(x,
         (!inherits(horizontal_proportions, "table") &&
          is.vector(horizontal_proportions) == FALSE))
       stop("You have not provided a proper table/vector variable for the function,",
-           " the class you've given is: '", class(horizontal_proportions) , "'",
+           " the class you've given is: '", paste(class(horizontal_proportions), collapse=" & ") , "'",
            ", instead of numeric vector or table")
     
     # The original table should always be longer than the subtable

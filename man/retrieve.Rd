@@ -31,6 +31,7 @@ retrieve(source, "a.not_in_list")
 
 }
 \seealso{
-Other lodash similar functions: \code{\link{has}}
+Other lodash similar functions: 
+\code{\link{has}()}
 }
 \concept{lodash similar functions}

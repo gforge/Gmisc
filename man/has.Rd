@@ -23,6 +23,7 @@ has(list(a = list(b = 1)), "a.b")
 
 }
 \seealso{
-Other lodash similar functions: \code{\link{retrieve}}
+Other lodash similar functions: 
+\code{\link{retrieve}()}
 }
 \concept{lodash similar functions}
