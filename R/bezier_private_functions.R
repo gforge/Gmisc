@@ -396,7 +396,7 @@ align2Axis <- function(bp, lines, width, internal.units, axis){
 #'
 #' @keywords internal
 getGridVal <- function(x, default.units, axisTo="x"){
-  if("unit" %in% class(x))
+  if ("unit" %in% class(x))
     return(convertUnit(x, unitTo=default.units, valueOnly=TRUE, axisTo=axisTo))
   else
     return(x)
