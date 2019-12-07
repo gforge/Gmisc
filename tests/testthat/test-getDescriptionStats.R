@@ -694,7 +694,7 @@ test_that("missing levels are handled correctly when using custom descriptive fu
     rgroup = c("randomisation", "week1", "week2", "week3"),
     n.rgroup = c(2, 2, 2, 2),
     htmlTable_args = structure(list(), .Names = character(0)),
-    class = c("descMrg","matrix"))
+    class = c("descMrg", class(matrix(1))))
 
   expected_missing_outer <- structure(
     c("-", "-", "0.7 (&plusmn;0.5)", "0.4 (0.4 - 0.9)",
