@@ -4,11 +4,19 @@
 \alias{docx_document}
 \title{Formatter wrapper for \code{\link[rmarkdown]{html_document}}, facilitates easier porting to docx}
 \usage{
-docx_document(..., self_contained = FALSE, mathjax = NULL,
-  theme = NULL, highlight = NULL, css = "rmarkdown/docx.css",
+docx_document(
+  ...,
+  self_contained = FALSE,
+  mathjax = NULL,
+  theme = NULL,
+  highlight = NULL,
+  css = "rmarkdown/docx.css",
   h1_style = "margin: 24pt 0pt 0pt 0pt;",
-  other_h_style = "margin: 10pt 0pt 0pt 0pt;", remove_scripts = TRUE,
-  force_captions = FALSE, css_max_width)
+  other_h_style = "margin: 10pt 0pt 0pt 0pt;",
+  remove_scripts = TRUE,
+  force_captions = FALSE,
+  css_max_width
+)
 }
 \arguments{
 \item{...}{Passed onto \code{\link[rmarkdown]{html_document}}.}

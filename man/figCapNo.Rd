@@ -4,8 +4,11 @@
 \alias{figCapNo}
 \title{Adds a figure caption number}
 \usage{
-figCapNo(str, roman = getOption("fig_caption_no_roman", FALSE),
-  sprintf_str = getOption("fig_caption_no_sprintf", "Fig. \%s: \%s"))
+figCapNo(
+  str,
+  roman = getOption("fig_caption_no_roman", FALSE),
+  sprintf_str = getOption("fig_caption_no_sprintf", "Fig. \%s: \%s")
+)
 }
 \arguments{
 \item{str}{The string that is to be prepended with string}
@@ -46,7 +49,8 @@ figCapNo("A plot with caption number =  2")
 options(org_opts)
 }
 \seealso{
-Other figure caption functions: \code{\link{figCapNoLast}},
-  \code{\link{figCapNoNext}}
+Other figure caption functions: 
+\code{\link{figCapNoLast}()},
+\code{\link{figCapNoNext}()}
 }
 \concept{figure caption functions}

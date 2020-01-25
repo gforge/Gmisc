@@ -4,10 +4,19 @@
 \alias{describeMean}
 \title{Describe the mean}
 \usage{
-describeMean(x, html = TRUE, digits = 1, digits.nonzero = NA,
-  number_first = TRUE, useNA = c("ifany", "no", "always"),
-  useNA.digits = digits, percentage_sign = TRUE, plusmin_str,
-  language = "en", ...)
+describeMean(
+  x,
+  html = TRUE,
+  digits = 1,
+  digits.nonzero = NA,
+  number_first = TRUE,
+  useNA = c("ifany", "no", "always"),
+  useNA.digits = digits,
+  percentage_sign = TRUE,
+  plusmin_str,
+  language = "en",
+  ...
+)
 }
 \arguments{
 \item{x}{The variable that you want the statistics for}
@@ -63,9 +72,11 @@ describeMean(c(1:10, NA), useNA="no")
 \seealso{
 \code{\link{getDescriptionStatsBy}}
 
-Other descriptive functions: \code{\link{describeFactors}},
-  \code{\link{describeMedian}}, \code{\link{describeProp}},
-  \code{\link{getDescriptionStatsBy}},
-  \code{\link{getPvalWilcox}}
+Other descriptive functions: 
+\code{\link{describeFactors}()},
+\code{\link{describeMedian}()},
+\code{\link{describeProp}()},
+\code{\link{getDescriptionStatsBy}()},
+\code{\link{getPvalWilcox}()}
 }
 \concept{descriptive functions}

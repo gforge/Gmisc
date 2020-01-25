@@ -41,9 +41,9 @@ bezierArrowSmpl <- function(x = c(0.2, .7, .3, .9),
                             name = NULL,
                             rm_intersect = 3L,
                             gp = gpar(), vp = NULL){
-  if (class(x) != "unit")
+  if (!("unit" %in% class(x)))
     x <- unit(x, default.units)
-  if (class(y) != "unit")
+  if (!("unit" %in% class(y)))
     y <- unit(y, default.units)
 
   width <- getAbsoluteWidth(w = width,

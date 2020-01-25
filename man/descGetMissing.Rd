@@ -4,8 +4,15 @@
 \alias{descGetMissing}
 \title{Get missingness statistics}
 \usage{
-descGetMissing(x, html = TRUE, number_first = TRUE,
-  percentage_sign = TRUE, language = "en", useNA.digits = 1, ...)
+descGetMissing(
+  x,
+  html = TRUE,
+  number_first = TRUE,
+  percentage_sign = TRUE,
+  language = "en",
+  useNA.digits = 1,
+  ...
+)
 }
 \arguments{
 \item{x}{The variable that you want the statistics for}

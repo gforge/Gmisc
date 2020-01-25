@@ -8,10 +8,18 @@
 \alias{plot.box}
 \title{Create a box with text}
 \usage{
-boxGrob(label, y = unit(0.5, "npc"), x = unit(0.5, "npc"), width,
-  height, just = "center", bjust = "center",
+boxGrob(
+  label,
+  y = unit(0.5, "npc"),
+  x = unit(0.5, "npc"),
+  width,
+  height,
+  just = "center",
+  bjust = "center",
   txt_gp = getOption("boxGrobTxt", default = gpar(color = "black")),
-  box_gp = getOption("boxGrob", gpar(fill = "#D8F0D1")), name = NULL)
+  box_gp = getOption("boxGrob", gpar(fill = "#D8F0D1")),
+  name = NULL
+)
 
 \method{widthDetails}{box}(x)
 
@@ -60,7 +68,8 @@ grid.newpage()
 boxGrob("My box")
 }
 \seealso{
-Other box-functions: \code{\link{boxPropGrob}},
-  \code{\link{connectGrob}}
+Other box-functions: 
+\code{\link{boxPropGrob}()},
+\code{\link{connectGrob}()}
 }
 \concept{box-functions}

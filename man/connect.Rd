@@ -6,11 +6,15 @@
 \alias{plot.connect_boxes}
 \title{Connect boxes with an arrow}
 \usage{
-connectGrob(start, end, type = c("vertical", "horizontal", "L", "-", "Z",
-  "N"), subelmnt = c("right", "left"),
+connectGrob(
+  start,
+  end,
+  type = c("vertical", "horizontal", "L", "-", "Z", "N"),
+  subelmnt = c("right", "left"),
   lty_gp = getOption("connectGrob", default = gpar(fill = "black")),
-  arrow_obj = getOption("connectGrobArrow", default = arrow(ends =
-  "last", type = "closed")))
+  arrow_obj = getOption("connectGrobArrow", default = arrow(ends = "last", type =
+    "closed"))
+)
 
 \method{print}{connect_boxes}(x, ...)
 
@@ -65,7 +69,7 @@ end <- boxGrob("Bottom", x=.5, y=.2)
 side <- boxPropGrob("Side", "Left", "Right", prop=.3, x=.2, y=.8)
 sub_side_left <- boxGrob("Left", x = attr(side, "coords")$left_x, y = .5)
 sub_side_right <- boxGrob("Right", x = attr(side, "coords")$right_x, y = .5)
-exclude <- boxGrob("Exclude:\\n - Too sick\\n - Prev. surgery", x=.8, y=.5,just="left")
+exclude <- boxGrob("Exclude:\n - Too sick\n - Prev. surgery", x=.8, y=.5,just="left")
 
 # Connect the boxes and print/plot them
 connectGrob(start, end, "vertical")
@@ -83,7 +87,8 @@ sub_side_left
 sub_side_right
 }
 \seealso{
-Other box-functions: \code{\link{boxGrob}},
-  \code{\link{boxPropGrob}}
+Other box-functions: 
+\code{\link{boxGrob}()},
+\code{\link{boxPropGrob}()}
 }
 \concept{box-functions}

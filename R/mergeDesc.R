@@ -190,7 +190,7 @@ htmlTable.descMrg <- function(x, ...)
   }
 
   # Merge calls
-  class(x) <- class(x)[class(x) != "descMrg"]
+  class(x) <- class(x)[!(class(x) %in% "descMrg")]
   args <- c(list(x = x),
             dots)
   if (!"rgroup" %in% names(args)){

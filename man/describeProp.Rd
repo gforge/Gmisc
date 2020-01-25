@@ -5,10 +5,19 @@
 \title{A function that returns a description proportion that contains
 the number and the percentage}
 \usage{
-describeProp(x, html = TRUE, digits = 1, digits.nonzero = NA,
-  number_first = TRUE, useNA = c("ifany", "no", "always"),
-  useNA.digits = digits, default_ref, percentage_sign = TRUE,
-  language = "en", ...)
+describeProp(
+  x,
+  html = TRUE,
+  digits = 1,
+  digits.nonzero = NA,
+  number_first = TRUE,
+  useNA = c("ifany", "no", "always"),
+  useNA.digits = digits,
+  default_ref,
+  percentage_sign = TRUE,
+  language = "en",
+  ...
+)
 }
 \arguments{
 \item{x}{The variable that you want the statistics for}
@@ -59,9 +68,11 @@ describeProp(factor(sample(50, x=c("A","B", NA), replace=TRUE)))
 
 }
 \seealso{
-Other descriptive functions: \code{\link{describeFactors}},
-  \code{\link{describeMean}}, \code{\link{describeMedian}},
-  \code{\link{getDescriptionStatsBy}},
-  \code{\link{getPvalWilcox}}
+Other descriptive functions: 
+\code{\link{describeFactors}()},
+\code{\link{describeMean}()},
+\code{\link{describeMedian}()},
+\code{\link{getDescriptionStatsBy}()},
+\code{\link{getPvalWilcox}()}
 }
 \concept{descriptive functions}

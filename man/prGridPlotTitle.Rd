@@ -4,8 +4,13 @@
 \alias{prGridPlotTitle}
 \title{Adds a title to the plot}
 \usage{
-prGridPlotTitle(title, base_cex, cex_mult = 1.2, fontface = "bold",
-  space_below = NULL)
+prGridPlotTitle(
+  title,
+  base_cex,
+  cex_mult = 1.2,
+  fontface = "bold",
+  space_below = NULL
+)
 }
 \arguments{
 \item{title}{The title as accepted by \code{\link[grid]{textGrob}}}
