@@ -37,3 +37,12 @@ with(my_data,
      table(Var_b, Var_c)) %>%
   transitions$addTransitions()
 transitions$render()
+
+
+# From issue #43
+
+transMatrix <- as.table(matrix(c(16, 4, 16, 64),ncol=2,byrow=T))
+transitions <- transMatrix %>%
+  getRefClass("Transition")$new(label=c("Step 1", "Step 2"))
+transitions$lwd_prop_type = "box"
+transitions$render()

@@ -850,7 +850,7 @@ Transition <-
         arrows <- list()
         for (org_row in 1:.self$noRows(set_no)){
           if (lwd_prop_type == "box"){
-            max_flow <- max(trnstn_set[row,])
+            max_flow <- max(trnstn_set[org_row,])
           }
 
           arrows[[org_row]] <-
