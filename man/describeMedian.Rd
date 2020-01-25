@@ -6,8 +6,9 @@
 the interquartile range or the full range}
 \usage{
 describeMedian(x, iqr = TRUE, html = TRUE, digits = 1,
-  number_first = TRUE, useNA = c("ifany", "no", "always"),
-  useNA.digits = digits, percentage_sign = TRUE, language = "en", ...)
+  digits.nonzero = NA, number_first = TRUE, useNA = c("ifany", "no",
+  "always"), useNA.digits = digits, percentage_sign = TRUE,
+  language = "en", ...)
 }
 \arguments{
 \item{x}{The variable that you want the statistics for}
@@ -18,6 +19,8 @@ describeMedian(x, iqr = TRUE, html = TRUE, digits = 1,
 it outputs LaTeX formatting}
 
 \item{digits}{The number of decimals used}
+
+\item{digits.nonzero}{The number of decimals used for values that are close to zero}
 
 \item{number_first}{If the number should be given or if the percentage
 should be presented first. The second is encapsulated in parentheses ().
@@ -62,3 +65,4 @@ Other descriptive functions: \code{\link{describeFactors}},
   \code{\link{getDescriptionStatsBy}},
   \code{\link{getPvalWilcox}}
 }
+\concept{descriptive functions}

@@ -93,6 +93,25 @@ test_that("Check median function",
               info="Expected the range")
 })
 
+test_that("Check small proportions", {
+  n <- 1e4
+  a <- getDescriptionStatsBy(LETTERS[c(rep(1, times=(n - 4)), rep(2, times = 4))], 
+                             letters[c(rep(1, times=(n - 10)), rep(2, times=10))], 
+                             hrzl_prop=TRUE,
+                             statistics=TRUE,
+                             digits=0,
+                             digits.nonzero=2,
+                             statistics.sig_lim=10^-4)
+  expect_equivalent(as.character(a["A", "b"]), "6 (0.06%)")
+  a <- getDescriptionStatsBy(LETTERS[c(rep(1, times=(n - 4)), rep(2, times = 4))], 
+                             letters[c(rep(1, times=(n - 10)), rep(2, times=10))], 
+                             hrzl_prop=TRUE,
+                             statistics=TRUE,
+                             digits=0,
+                             statistics.sig_lim=10^-4)
+  expect_equivalent(as.character(a["A", "b"]), "6 (0%)")
+})
+
 test_that("Check factor function",
 {
   stats <- table(Loblolly$fvar, Loblolly$young)
@@ -560,7 +579,7 @@ test_that("missing levels are handled correctly when using custom descriptive fu
     rgroup = c("randomisation", "week1", "week2", "week3"),
     n.rgroup = c(2, 2, 2, 2),
     htmlTable_args = structure(list(), .Names = character(0)),
-    class = c("descMrg", "matrix"))
+    class = c("descMrg", class(matrix(1)))
 
   expected_missing_first <- structure(
     c("-", "-", "0.1 (&plusmn;0.5)", "0.2 (-0.2 - 0.5)",
@@ -577,7 +596,7 @@ test_that("missing levels are handled correctly when using custom descriptive fu
     rgroup = c("randomisation", "week1", "week2", "week3"),
     n.rgroup = c(2, 2, 2, 2),
     htmlTable_args = structure(list(), .Names = character(0)),
-    class = c("descMrg", "matrix"))
+    class = c("descMrg", class(matrix(1)))
 
   expected_missing_second <- structure(
     c("0.1 (&plusmn;0.7)", "0.2 (-0.5 - 0.5)", "0.1 (&plusmn;0.5)",
@@ -595,7 +614,7 @@ test_that("missing levels are handled correctly when using custom descriptive fu
     rgroup = c("randomisation", "week1", "week2", "week3"),
     n.rgroup = c(2, 2, 2, 2),
     htmlTable_args = structure(list(), .Names = character(0)),
-    class = c("descMrg", "matrix"))
+    class = c("descMrg", class(matrix(1)))
 
   expected_missing_both <- structure(
     c("0.1 (&plusmn;0.7)", "0.2 (-0.5 - 0.5)", "0.1 (&plusmn;0.5)",
@@ -612,10 +631,10 @@ test_that("missing levels are handled correctly when using custom descriptive fu
     rgroup = c("randomisation", "week1", "week2", "week3"),
     n.rgroup = c(2, 2, 2, 2),
     htmlTable_args = structure(list(), .Names = character(0)),
-    class = c("descMrg", "matrix"))
+    class = c("descMrg", class(matrix(1)))
 
   expected_no_missing_2 <-  structure(
-    c("0.2 (&plusmn;0.7)", "-0.0 (-0.2 - 0.6)", "0.7 (&plusmn;0.5)",
+    c("0.2 (&plusmn;0.7)", "0.0 (-0.2 - 0.6)", "0.7 (&plusmn;0.5)",
       "0.4 (0.4 - 0.9)", "0.5 (&plusmn;1.0)", "0.5 (0.3 - 1.2)",
       "0.2 (&plusmn;1.1)", "-0.4 (-0.6 - 0.6)", "-0.5 (&plusmn;0.8)",
       "-0.6 (-0.7 - -0.3)", "0.5 (&plusmn;0.4)", "0.3 (0.2 - 0.8)",
@@ -633,7 +652,7 @@ test_that("missing levels are handled correctly when using custom descriptive fu
     rgroup = c("randomisation", "week1", "week2", "week3"),
     n.rgroup = c(2, 2, 2, 2),
     htmlTable_args = structure(list(), .Names = character(0)),
-    class = c("descMrg", "matrix"))
+    class = c("descMrg", class(matrix(1)))
 
   expected_missing_first_2 <- structure(
     c("-", "-", "0.7 (&plusmn;0.5)", "0.4 (0.4 - 0.9)",
@@ -654,10 +673,10 @@ test_that("missing levels are handled correctly when using custom descriptive fu
     rgroup = c("randomisation", "week1", "week2", "week3"),
     n.rgroup = c(2, 2, 2, 2),
     htmlTable_args = structure(list(), .Names = character(0)),
-    class = c("descMrg", "matrix"))
+    class = c("descMrg", class(matrix(1)))
 
   expected_missing_second_2 <- structure(
-    c("0.2 (&plusmn;0.7)", "-0.0 (-0.2 - 0.6)", "0.7 (&plusmn;0.5)",
+    c("0.2 (&plusmn;0.7)", "0.0 (-0.2 - 0.6)", "0.7 (&plusmn;0.5)",
       "0.4 (0.4 - 0.9)", "0.5 (&plusmn;1.0)", "0.5 (0.3 - 1.2)",
       "0.2 (&plusmn;1.1)", "-0.4 (-0.6 - 0.6)", "-0.5 (&plusmn;0.8)",
       "-0.6 (-0.7 - -0.3)", "0.5 (&plusmn;0.4)", "0.3 (0.2 - 0.8)",
@@ -695,10 +714,10 @@ test_that("missing levels are handled correctly when using custom descriptive fu
     rgroup = c("randomisation", "week1", "week2", "week3"),
     n.rgroup = c(2, 2, 2, 2),
     htmlTable_args = structure(list(), .Names = character(0)),
-    class = c("descMrg", "matrix"))
+    class = c("descMrg", class(matrix(1)))
 
   expected_missing_all <- structure(
-    c("0.2 (&plusmn;0.7)", "-0.0 (-0.2 - 0.6)", "0.7 (&plusmn;0.5)",
+    c("0.2 (&plusmn;0.7)", "0.0 (-0.2 - 0.6)", "0.7 (&plusmn;0.5)",
       "0.4 (0.4 - 0.9)", "0.5 (&plusmn;1.0)", "0.5 (0.3 - 1.2)", "-",
       "-", "-0.5 (&plusmn;0.8)", "-0.6 (-0.7 - -0.3)", "0.5 (&plusmn;0.4)",
       "0.3 (0.2 - 0.8)", "-0.3 (&plusmn;1.0)", "-0.7 (-1.1 - 0.4)",
@@ -713,7 +732,7 @@ test_that("missing levels are handled correctly when using custom descriptive fu
     rgroup = c("randomisation", "week1", "week2", "week3"),
     n.rgroup = c(2, 2, 2, 2),
     htmlTable_args = structure(list(), .Names = character(0)),
-    class = c("descMrg", "matrix"))
+    class = c("descMrg", class(matrix(1)))
 
   out <- mergeDesc(lapply(levels(trial$visit), function(x)
     getDescriptionStatsBy(x = trial$outcome[trial$visit == x],
@@ -878,7 +897,7 @@ test_that("p-values are displayed in multi-row summaries when rgroup and n.rgrou
                                        .Names = "1")),
     n.rgroup = 2,
     htmlTable_args = structure(list(), .Names = character(0)),
-    class = c("descMrg", "matrix"))
+    class = c("descMrg", class(matrix(1)))
 
   out <- mergeDesc(getDescriptionStatsBy(x = cars_missing$mpg,
                                          by = cars_missing$cyl,
@@ -899,7 +918,7 @@ test_that("p-vlues are displayed in multi-row summaries when rgroup and n.rgroup
                                        .Names = "1")),
     n.rgroup = 2L,
     htmlTable_args = structure(list(css.rgroup = ""), .Names = "css.rgroup"),
-    class = c("descMrg", "matrix"))
+    class = c("descMrg", class(matrix(1)))
 
   out <- mergeDesc(getDescriptionStatsBy(x = cars_missing$mpg,
                                          by = cars_missing$cyl,
@@ -919,7 +938,7 @@ test_that("p-values are displayed in the rgroup title for both multi- and one-ro
                        add = list("&lt; 0.0001", "&lt; 0.0001")),
     n.rgroup = c(2, 1),
     htmlTable_args = structure(list(), .Names = character(0)),
-    class = c("descMrg", "matrix"))
+    class = c("descMrg", class(matrix(1)))
 
   out <- mergeDesc(getDescriptionStatsBy(x = cars_missing$mpg,
                                          by = cars_missing$cyl,
@@ -945,7 +964,7 @@ test_that("p-values are displayed for both multi- and one-row summaries when rgr
                        add = structure(list(`1` = "&lt; 0.0001"), .Names = "1")),
     n.rgroup = c(2,1),
     htmlTable_args = structure(list(css.rgroup = ""), .Names = "css.rgroup"),
-    class = c("descMrg", "matrix"))
+    class = c("descMrg", class(matrix(1)))
 
   out <- mergeDesc(getDescriptionStatsBy(x = cars_missing$mpg,
                                          by = cars_missing$cyl,

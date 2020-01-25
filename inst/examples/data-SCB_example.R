@@ -5,7 +5,7 @@ library(pxweb)
 # Get the last 15 years of data (the data always lags 1 year)
 current_year <- as.integer(format(Sys.Date(), "%Y")) -1
 SCB <- get_pxweb_data(
-  url = "http://api.scb.se/OV0104/v1/doris/en/ssd/BE/BE0101/BE0101B/BefolkningMedelAlder",
+  url = "https://api.scb.se/OV0104/v1/doris/en/ssd/BE/BE0101/BE0101B/BefolkningMedelAlder",
   dims = list(Region = c('00', '01', '03', '25'),
               Kon = c('1', '2'),
               ContentsCode = c('BE0101G9'),

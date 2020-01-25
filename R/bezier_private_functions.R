@@ -97,7 +97,7 @@ validateAndConvertVectorInputs <- function(x, y,
     stop("You must specify both x and y points!")
 
   # Just som sanity input check
-  if (class(y) != class(x))
+  if (!identical(class(y), class(x)))
     stop("The x and y point don't have the same class,",
       " should be either numeric or units.",
       " Currently you have provided y=", class(y), " & x=", class(x))

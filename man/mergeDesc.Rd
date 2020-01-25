@@ -129,3 +129,4 @@ getDescriptionStatsBy(mtcars$col_with_missing, mtcars$am, statistics=TRUE,
         file="")
 }
 }
+\concept{table functions}

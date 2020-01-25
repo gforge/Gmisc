@@ -1,5 +1,31 @@
 NEWS for the Gmisc package
 
+Changes for 1.9.0
+-----------------
+* Added id as a parameter to the Transtion-class
+* Fixed bad no. of popViewport() not adequately leaving the transitionclass viewport tree
+* Fixed bad viewport naming in Transition-class that was creating a conflict with multiple plots
+
+Changes for 1.8.1
+-----------------
+* Fixed cran requirement where class(x) != class(y) could be of length > 1
+
+Changes for 1.8
+-----------------
+* Added digits.nonzero for allowing values with extra digits where values are close to 0
+* Changed sprintf to txtRound for many of the descriptors
+* Fixed vignette names for CRAN
+* Fixed bug in retrieve
+
+Changes for 1.7
+---------------
+* Expressions are now allowed in boxGrob (Thanks Alan Haynes)
+* Added lodash similar functions 'retrieve' and 'has'
+
+Changes for 1.6.4
+-----------------
+* Removed changed constant for STRICT_R_HEADERS compliance
+
 Changes for 1.6.3
 -----------------
 * Fixed minor issue related to new CPP error

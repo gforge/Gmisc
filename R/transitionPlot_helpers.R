@@ -510,7 +510,7 @@ prTpGetBoxPositions <- function (no, side,
   ret$y_exit <- rep(ret$y, times=no_boxes)
   ret$y_entry_height <- ret$height/3
   ret$y_entry <- rep(NA, times=no_boxes)
-  if (is.na(transitions) || sum(transitions[-1]) == 0){
+  if (any(is.na(transitions)) || any(sum(transitions[-1]) == 0)){
     # There are invalid transitions or it seems that
     # only one arrow exists
     if (any(is.na(transitions))){

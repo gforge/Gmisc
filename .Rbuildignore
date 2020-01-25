@@ -1,6 +1,9 @@
+^CRAN-RELEASE$
+^revdep$
+^Meta$
+^doc$
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^visual_tests
 ^\.travis\.yml$
-cran-comments.md
 ^cran-comments\.md$

@@ -4,9 +4,10 @@
 \alias{prTpPlotArrows}
 \title{Plots the arrows}
 \usage{
-prTpPlotArrows(type, box_row, transition_flow, max_flow, min_lwd, max_lwd, clr,
-  box_clr, transition_arrow_props, prop_start_sizes, prop_end_sizes,
-  tot_spacing, box_width, abs_arrow_width, color_bar_subspace, add_width = NA)
+prTpPlotArrows(type, box_row, transition_flow, max_flow, min_lwd, max_lwd,
+  clr, box_clr, transition_arrow_props, prop_start_sizes, prop_end_sizes,
+  tot_spacing, box_width, abs_arrow_width, color_bar_subspace,
+  add_width = NA)
 }
 \arguments{
 \item{type}{The type of arrow used}

@@ -8,10 +8,10 @@
 \alias{plot.box}
 \title{Create a box with text}
 \usage{
-boxGrob(label, y = unit(0.5, "npc"), x = unit(0.5, "npc"), width, height,
-  just = "center", bjust = "center", txt_gp = getOption("boxGrobTxt",
-  default = gpar(color = "black")), box_gp = getOption("boxGrob", gpar(fill =
-  "#D8F0D1")), name = NULL)
+boxGrob(label, y = unit(0.5, "npc"), x = unit(0.5, "npc"), width,
+  height, just = "center", bjust = "center",
+  txt_gp = getOption("boxGrobTxt", default = gpar(color = "black")),
+  box_gp = getOption("boxGrob", gpar(fill = "#D8F0D1")), name = NULL)
 
 \method{widthDetails}{box}(x)
 
@@ -22,7 +22,7 @@ boxGrob(label, y = unit(0.5, "npc"), x = unit(0.5, "npc"), width, height,
 \method{plot}{box}(x, ...)
 }
 \arguments{
-\item{label}{The label to print}
+\item{label}{The label to print - should be a number, text or expression.}
 
 \item{y}{The y position to put the box at. Can be either in \code{npc} (i.e. 0-1) or a \code{\link[grid]{unit}}.}
 
@@ -53,8 +53,6 @@ A grob
 }
 \description{
 Creates a grob box with text inside it.
-
-The print/plot calls the \code{\link[grid]{grid.draw}} function on the object
 }
 \examples{
 library(grid)
@@ -65,3 +63,4 @@ boxGrob("My box")
 Other box-functions: \code{\link{boxPropGrob}},
   \code{\link{connectGrob}}
 }
+\concept{box-functions}

@@ -4,16 +4,16 @@
 
 Line::Line(int length){
   m_Points.reserve(length);
-};
+}
 
 void Line::addPoint(Point p){
 	m_Points.push_back(p);
-};
+}
 
 void Line::addPoint(double x, double y, bool problematic){
 	Point p = { x, y, problematic };
 	m_Points.push_back(p);
-};
+}
 
 int Line::removeIntersections(){
 	int intersections_no = 0;
@@ -33,11 +33,11 @@ int Line::removeIntersections(){
 		}
 	}
 	return(intersections_no);
-};
+}
 
 int Line::size(){
 	return(m_Points.size());
-};
+}
 
 std::vector<double> Line::getX(){
 	std::vector<double> x(m_Points.size());
@@ -45,7 +45,7 @@ std::vector<double> Line::getX(){
 		x[i] = m_Points[i].x;
 
 	return(x);
-};
+}
 
 std::vector<double> Line::getY(){
 	std::vector<double> y(m_Points.size());
@@ -53,7 +53,7 @@ std::vector<double> Line::getY(){
 		y[i] = m_Points[i].y;
 
 	return(y);
-};
+}
 
 std::vector<bool> Line::getProblematic(){
 	std::vector<bool> prblm(m_Points.size());
@@ -61,7 +61,7 @@ std::vector<bool> Line::getProblematic(){
 		prblm[i] = m_Points[i].problematic;
 
 	return(prblm);
-};
+}
 
 int Line::_removeIntersect(std::vector<Point>::size_type err_point){
 	for (
@@ -84,7 +84,7 @@ int Line::_removeIntersect(std::vector<Point>::size_type err_point){
 		}
 	}
 	return(-1);
-};
+}
 
 bool Line::_getLineIntersection(
     int start,
@@ -132,7 +132,7 @@ bool Line::_getLineIntersection(
 	return true;
 }
 
-// From: http://stackoverflow.com/questions/9330915/number-of-combinations-n-choose-r-in-c
+// From: https://stackoverflow.com/questions/9330915/number-of-combinations-n-choose-r-in-c
 unsigned Line::_nChooseK(unsigned n, unsigned k){
 	if (k > n) return 0;
 	if (k * 2 > n) k = n - k;

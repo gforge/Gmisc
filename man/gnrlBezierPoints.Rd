@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{gnrlBezierPoints}
 \alias{gnrlBezierPoints}
-\title{Generates a generalized Bezier line}
+\title{Generates a generalized Bézier line}
 \usage{
 gnrlBezierPoints(ctrl_points, length_out = 100L)
 }
@@ -15,7 +15,7 @@ detailed the points should be.}
 }
 \description{
 This is a general form of bezier line that can be used for cubic, quadratic,
-and more advanced Bezier lines.
+and more advanced Bézier lines.
 }
 \examples{
 library(grid)

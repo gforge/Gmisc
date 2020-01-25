@@ -235,6 +235,29 @@ odd
 odd2
 ```
 
+# Expressions in boxes
+It is possible to use the R `expression` function to produce bold or italics text, or even formulae.  
+
+A few pointers on `expression`...
+
+* expressions with multiple elements should be combined using `paste`. E.g. `expression(paste(beta, "1"))` would produce $\beta1$
+* the behaviour of `paste` when used in expression is more like the normal behaviour or `paste0` (i.e. no separating space)
+* greek letters can be entered outside of quotes by typing the name e.g. `expression(beta)` will become $\beta$ and `expression(Gamma)` will become $\Gamma$ (note the case, not all greek letters are available in upper case)
+* superscripts are done via `expression(x^2)` and subscripts via `expression(x[2])`
+
+```{r}
+grid.newpage()
+boxGrob(expression(bold("Bold text")), 0.8, 0.3)
+boxGrob(expression(italic("Italics text")), 0.8, 0.7)
+boxGrob(expression(paste("Mixed: ", italic("Italics"), " and ", bold("bold"))), 0.6, 0.5)
+boxGrob(expression(paste("y = ", beta[0], " + ", beta[1], X[1], " + ", beta[2], X[2]^2)), 0.35, 0.5)
+boxGrob(expression(paste(beta, gamma, Gamma)), 0.15, 0.5)
+
+```
+
+See the `plotmath` helpfile for more details.
+
+
 # Tips for debugging
 
 If you find that your elements don't look as expected make sure that your not changing viewport/device. While most coordinates are relative some of them need to be fixed and therefore changing the viewport may impact where elements are renered.

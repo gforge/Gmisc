@@ -4,13 +4,14 @@
 \alias{getDescriptionStatsBy}
 \title{Creating of description statistics}
 \usage{
-getDescriptionStatsBy(x, by, digits = 1, html = TRUE,
-  numbers_first = TRUE, statistics = FALSE, statistics.sig_lim = 10^-4,
-  statistics.two_dec_lim = 10^-2, statistics.suppress_warnings = TRUE,
-  useNA = c("ifany", "no", "always"), useNA.digits = digits,
-  continuous_fn = describeMean, prop_fn = describeProp,
-  factor_fn = describeFactors, show_all_values = FALSE, hrzl_prop = FALSE,
-  add_total_col, total_col_show_perc = TRUE, use_units = FALSE, default_ref,
+getDescriptionStatsBy(x, by, digits = 1, digits.nonzero = NA,
+  html = TRUE, numbers_first = TRUE, statistics = FALSE,
+  statistics.sig_lim = 10^-4, statistics.two_dec_lim = 10^-2,
+  statistics.suppress_warnings = TRUE, useNA = c("ifany", "no",
+  "always"), useNA.digits = digits, continuous_fn = describeMean,
+  prop_fn = describeProp, factor_fn = describeFactors,
+  show_all_values = FALSE, hrzl_prop = FALSE, add_total_col,
+  total_col_show_perc = TRUE, use_units = FALSE, default_ref,
   NEJMstyle = FALSE, percentage_sign = TRUE, header_count,
   missing_value = "-", names_of_missing = NULL, ...)
 }
@@ -21,6 +22,8 @@ getDescriptionStatsBy(x, by, digits = 1, html = TRUE,
 columns}
 
 \item{digits}{The number of decimals used}
+
+\item{digits.nonzero}{The number of decimals used for values that are close to zero}
 
 \item{html}{If HTML compatible output should be used. If \code{FALSE}
 it outputs LaTeX formatting}
@@ -232,3 +235,4 @@ Other descriptive functions: \code{\link{describeFactors}},
   \code{\link{describeMean}}, \code{\link{describeMedian}},
   \code{\link{describeProp}}, \code{\link{getPvalWilcox}}
 }
+\concept{descriptive functions}

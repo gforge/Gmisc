@@ -1,7 +1,7 @@
 set.seed(1)
 library(magrittr)
 library(Gmisc)
-
+grid.newpage()
 names <-
   strsplit("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation",
          " ")[[1]] %>%
@@ -38,8 +38,33 @@ with(my_data,
   transitions$addTransitions()
 transitions$render()
 
+#######################
+# Side by side render #
+#######################
+data.1 <- data.frame(source = c("A", "A", "A", "B", "B", "C", "C"),
+                     target = c("A", "B", "C", "B", "C", "C", "C"))
+data.2 <- data.frame(source = c("D", "D", "E", "E", "E", "E", "F"),
+                     target = c("D", "E", "D", "E", "F", "F", "F"))
 
-# From issue #43
+transitions.1 <- getRefClass("Transition")$new(table(data.1$source, data.1$target), label = c("Before", "After"))
+transitions.2 <- getRefClass("Transition")$new(table(data.2$source, data.2$target), label = c("Before", "After"))
+
+transitions.1$title <- "one"
+transitions.2$title <- "two"
+
+# wish to render transition 1 and transition 2 next to each other
+library(grid)
+grid.newpage()
+pushViewport(viewport(name = "basevp", layout = grid.layout(nrow=1, ncol=2)))
+pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 1))
+transitions.1$render(new_page = FALSE)
+popViewport()
+pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 2))
+transitions.2$render(new_page = FALSE)
+
+##################
+# From issue #43 #
+##################
 
 transMatrix <- as.table(matrix(c(16, 4, 16, 64),ncol=2,byrow=T))
 transitions <- transMatrix %>%
