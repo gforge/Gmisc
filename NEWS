@@ -1,5 +1,10 @@
 NEWS for the Gmisc package
 
+
+Changes for 1.9.1
+-----------------
+* Fixed new handling of data.frame stringsAsFactors in next R release
+
 Changes for 1.9.0
 -----------------
 * Added id as a parameter to the Transtion-class
