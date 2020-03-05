@@ -544,7 +544,8 @@ test_that("missing levels are handled correctly when using custom descriptive fu
   set.seed(1)
   trial <- data.frame(visit = sort(rep(c("randomisation", "week1", "week2", "week3"), 5)),
                       arm = sort(rep(c("control", "treatment"))),
-                      outcome = rnorm(40))
+                      outcome = rnorm(40),
+                      stringsAsFactors = TRUE)
   trial_missing_first <- trial[!((trial$visit == "randomisation") & (trial$arm == "control")),]
   trial_missing_second <- trial[!((trial$visit == "randomisation") & (trial$arm == "treatment")),]
   trial_missing_both <- trial[trial$visit != "week3",]
