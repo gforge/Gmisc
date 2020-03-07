@@ -1,3 +1,4 @@
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/Gmisc)](https://cran.r-project.org/package=Gmisc)
 [![](https://cranlogs.r-pkg.org/badges/Gmisc)](https://cran.r-project.org/package=Gmisc)
 
 # The Gmisc package
