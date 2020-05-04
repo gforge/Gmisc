@@ -1,6 +1,6 @@
 Package: Gmisc
-Version: 1.9.2
-Date: 2020-03-06
+Version: 1.10.0
+Date: 2020-05-05
 Title: Descriptive Statistics, Transition Plots, and More
 Author: Max Gordon <max@gforge.se>
 Maintainer: Max Gordon <max@gforge.se>
@@ -18,22 +18,24 @@ Depends:
     Rcpp (>= 0.11.4),
     htmlTable (>= 1.13)
 Imports:
+    abind,
+    checkmate,
+    forestplot,
+    Hmisc,
     grid,
     grDevices,
     graphics,
-    lattice,
-    Hmisc,
-    forestplot,
-    abind,
-    methods,
     knitr,
+    lattice,
+    lubridate,
     magrittr,
+    methods,
     rmarkdown,
-    XML,
-    utils,
+    stringr,
     stats,
-    checkmate,
-    stringr
+    yaml,
+    XML,
+    utils
 Suggests:
     testthat,
     datasets
@@ -41,4 +43,4 @@ Encoding: UTF-8
 NeedsCompilation: no
 VignetteBuilder: knitr
 LinkingTo: Rcpp
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.0
