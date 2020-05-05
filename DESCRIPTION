@@ -22,6 +22,7 @@ Imports:
     checkmate,
     forestplot,
     Hmisc,
+    glue,
     grid,
     grDevices,
     graphics,

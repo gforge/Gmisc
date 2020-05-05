@@ -19,7 +19,10 @@ dense and useful not only for writing configs but also viewing them
 which `yamlDump` helps with.
 }
 \examples{
-yamlDump(list(complex = list(some_data = 1:3, other_data = list(name = "Max")), simple = "awesome overview"))
+some_fancy_list <- list(complex = list(some_data = 1:3, 
+                                       other_data = list(name = "Max")), 
+                        simple = "awesome overview")
+yamlDump(some_fancy_list)
 #complex:
 #  some_data:
 #  - 1

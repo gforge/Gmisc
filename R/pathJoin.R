@@ -15,8 +15,9 @@
 #' @export
 pathJoin <- function(...) {
   paths <- list(...) %>% unlist
-  paths %>%
-    map(~str_replace(.x, "/$", "")) %>%
-    do.call(file.path, .) %>%
-    str_replace("//", "/")
+  clean_paths <- paths %>%
+    lapply(function(x) str_replace(x, "[\\/]$", ""))
+  
+  fastDoCall(file.path, clean_paths) %>%
+    str_replace("//", .Platform$file.sep)
 }
