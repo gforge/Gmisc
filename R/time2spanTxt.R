@@ -14,8 +14,8 @@
 #' 
 #' @md
 #' @param times The dates or posix timestamps to used for timespan
-#' @param month_format The \code{\link[base]{strftime}} format string for months
-#' @param full_year_format The \code{\link[base]{strftime}} format string for the full year
+#' @param day_month_glue_txt The \code{\link[glue]{glue}} string to format days and months with `time` as the time input
+#' @param full_year_format The \code{\link[glue]{glue}} string to format the full year with `time` as the time input
 #' @param start_stop_glue_txt The string used in the \code{\link[glue]{glue}} for putting the 
 #'  start and stop dates together into one string
 #' @return \code{string} A string describing the time span
@@ -29,10 +29,10 @@
 #' @importFrom glue glue
 #' @export
 time2spanTxt <- function(times, 
-                         full_year_format = getOption("Gmisc_time2spanTxt_full_year", 
-                                                      default = "{mday(time)} {month(time, label = TRUE)} {year(time)}"),
                          day_month_glue_txt = getOption("Gmisc_time2spanTxt_day_month", 
                                                         default = "{mday(time)} {month(time, label = TRUE)}"),
+                         full_year_format = getOption("Gmisc_time2spanTxt_full_year", 
+                                                      default = "{mday(time)} {month(time, label = TRUE)} {year(time)}"),
                          start_stop_glue_txt = getOption("Gmisc_time2spanTxt_template", 
                                                          default = "{start} to {stop}")) {
   times <- as_date(times)

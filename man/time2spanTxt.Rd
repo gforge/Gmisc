@@ -6,10 +6,10 @@
 \usage{
 time2spanTxt(
   times,
-  full_year_format = getOption("Gmisc_time2spanTxt_full_year", default =
-    "{mday(time)} {month(time, label = TRUE)} {year(time)}"),
   day_month_glue_txt = getOption("Gmisc_time2spanTxt_day_month", default =
     "{mday(time)} {month(time, label = TRUE)}"),
+  full_year_format = getOption("Gmisc_time2spanTxt_full_year", default =
+    "{mday(time)} {month(time, label = TRUE)} {year(time)}"),
   start_stop_glue_txt = getOption("Gmisc_time2spanTxt_template", default =
     "{start} to {stop}")
 )
@@ -17,12 +17,12 @@ time2spanTxt(
 \arguments{
 \item{times}{The dates or posix timestamps to used for timespan}
 
-\item{full_year_format}{The \code{\link[base]{strftime}} format string for the full year}
+\item{day_month_glue_txt}{The \code{\link[glue]{glue}} string to format days and months with \code{time} as the time input}
+
+\item{full_year_format}{The \code{\link[glue]{glue}} string to format the full year with \code{time} as the time input}
 
 \item{start_stop_glue_txt}{The string used in the \code{\link[glue]{glue}} for putting the
 start and stop dates together into one string}
-
-\item{month_format}{The \code{\link[base]{strftime}} format string for months}
 }
 \value{
 \code{string} A string describing the time span
