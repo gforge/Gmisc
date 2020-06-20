@@ -13,7 +13,7 @@ assert_label(var, allow_missing = TRUE)
 assert_just(var, allow_missing = TRUE)
 }
 \arguments{
-\item{var}{Varible 2 check}
+\item{var}{Variable 2 check}
 
 \item{allow_missing}{Allow missing variables}
 }

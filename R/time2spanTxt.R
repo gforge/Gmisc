@@ -13,7 +13,7 @@
 #' * `Gmisc_time2spanTxt_template` The merge of the stop & start elements using \code{\link[glue]{glue}}.
 #' 
 #' @md
-#' @param times The dates or posix timestamps to used for timespan
+#' @param times The dates or POSIX timestamps to used for time span
 #' @param day_month_glue_txt The \code{\link[glue]{glue}} string to format days and months with `time` as the time input
 #' @param full_year_format The \code{\link[glue]{glue}} string to format the full year with `time` as the time input
 #' @param start_stop_glue_txt The string used in the \code{\link[glue]{glue}} for putting the 

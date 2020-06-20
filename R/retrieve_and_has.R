@@ -55,11 +55,11 @@ retrieve <- function(sourceList, path, default = NA) {
 #' @export
 has <- function(sourceList, path) {
   uniqueNotFoundId <- "__@GMISC_NOT_FOUND@__"
-  value <- retrieve(sourceList, path, default=uniqueNotFoundId)
+  value <- retrieve(sourceList, path, default = uniqueNotFoundId)
   if (length(value) > 1) {
     return(TRUE)
   }
   
-  return (value != uniqueNotFoundId)
+  return(value != uniqueNotFoundId)
 }
 

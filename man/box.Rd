@@ -36,9 +36,9 @@ boxGrob(
 
 \item{x}{The x position to put the box at. Can be either in \code{npc} (i.e. 0-1) or a \code{\link[grid]{unit}}.}
 
-\item{width}{The box autosizes but you can force by specifying the width}
+\item{width}{The box automatically adapts the size but you can force by specifying the width}
 
-\item{height}{The box autosizes but you can force by specifying the height}
+\item{height}{The box automatically adapts the size but you can force by specifying the height}
 
 \item{just}{The justification for the text: left, center or right.}
 
@@ -51,7 +51,7 @@ if you want to customize all the boxes at once.}
 \item{box_gp}{The \code{\link[grid]{gpar}} style to apply to the box. Set \code{boxGrob} option
 if you want to customize all the boxes at once.}
 
-\item{name}{a character identifier for the grob. Used to find the grob on the display
+\item{name}{a character identifier for the \code{grob}. Used to find the \code{grob} on the display
 list and/or as a child of another grob.}
 
 \item{...}{Passed to \code{\link[grid]{grid.draw}}}
@@ -60,7 +60,7 @@ list and/or as a child of another grob.}
 A grob
 }
 \description{
-Creates a grob box with text inside it.
+Creates a \code{\link[grid:grid.grob]{grob}} box with text inside it.
 }
 \examples{
 library(grid)

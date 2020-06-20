@@ -15,7 +15,7 @@ getSvdMostInfluential(
 }
 \arguments{
 \item{mtrx}{A matrix or data frame with the variables. Note: if it contains missing
-variables make sure to impute prior to this function as the \code{\link{svd}} can't
+variables make sure to impute prior to this function as the \code{\link[base]{svd}} can't
 handle missing values.}
 
 \item{quantile}{The SVD D-matrix gives an estimate for the amount that is explained.
@@ -41,7 +41,7 @@ Returns a list with vector with the column numbers
 }
 \description{
 This function is inspired by Jeff Leeks Data Analysis course where
-he suggests that one way to use the \code{\link{svd}} is to look
+he suggests that one way to use the \code{\link[base]{svd}} is to look
 at the most influential rows for first columns in the V matrix.
 }
 \details{

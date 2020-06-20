@@ -4,18 +4,18 @@
 \alias{figCapNoNext}
 \title{Gets the next figure caption number}
 \usage{
-figCapNoNext(roman = getOption("fig_caption_no_roman", FALSE))
+figCapNoNext(roman = getOption("fig_caption_no_roman", default = FALSE))
 }
 \arguments{
 \item{roman}{Whether or not to use roman numbers instead
-of arabic. Can also be set through \code{options(fig_caption_no_roman = TRUE)}}
+of Arabic. Can also be set through \code{options(fig_caption_no_roman = TRUE)}}
 }
 \description{
 The function relies on \code{options("fig_caption_no")}
 in order to keep track of the last number.
 }
 \examples{
-org_opts <- options(fig_caption_no=1)
+org_opts <- options(fig_caption_no = o)
 figCapNoNext()
 options(org_opts)
 }

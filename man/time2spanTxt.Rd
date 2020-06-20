@@ -15,7 +15,7 @@ time2spanTxt(
 )
 }
 \arguments{
-\item{times}{The dates or posix timestamps to used for timespan}
+\item{times}{The dates or POSIX timestamps to used for time span}
 
 \item{day_month_glue_txt}{The \code{\link[glue]{glue}} string to format days and months with \code{time} as the time input}
 

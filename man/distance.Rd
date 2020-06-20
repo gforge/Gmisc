@@ -23,7 +23,7 @@ a unit with \code{"mm"}
 Retrieves the distance between two boxes as absolute \code{"mm"} units.
 }
 \examples{
-box1 <- boxGrob("A test box", y=.8)
-box2 <- boxGrob("Another test box", y=.2)
+box1 <- boxGrob("A test box", y = .8)
+box2 <- boxGrob("Another test box", y = .2)
 distance(box1, box2, "v")
 }

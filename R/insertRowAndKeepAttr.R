@@ -16,7 +16,7 @@
 #'
 #' @export
 #' @author Max Gordon, Arne Henningsen
-insertRowAndKeepAttr <- function (m, r, v = NA, rName = "")
+insertRowAndKeepAttr <- function(m, r, v = NA, rName = "")
 {
   if (!inherits(m, "matrix")) {
     stop("argument 'm' must be a matrix")

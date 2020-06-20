@@ -6,7 +6,7 @@
 #' @return void
 #' @rdname assert
 #' @keywords internal
-#' @importFrom checkmate checkClass checkNumeric assert
+#' @importFrom checkmate assert checkClass checkNumeric
 assert_unit <- function(var, allow_missing = TRUE){
   if (missing(var) && allow_missing)
     return()
@@ -26,7 +26,7 @@ assert_unit <- function(var, allow_missing = TRUE){
 #' @return void
 #' @rdname assert
 #' @keywords internal
-#' @importFrom checkmate checkString checkNumeric assert
+#' @importFrom checkmate assert checkString checkNumeric
 assert_label <- function(var, allow_missing = TRUE){
   if (missing(var) && allow_missing)
     return()
@@ -40,13 +40,13 @@ assert_label <- function(var, allow_missing = TRUE){
 
 #' Assert valid color
 #'
-#' @param var Varible 2 check
+#' @param var Variable 2 check
 #' @param allow_missing Allow missing variables
 #'
 #' @return void
 #' @rdname assert
 #' @keywords internal
-#' @importFrom checkmate checkString assert
+#' @importFrom checkmate assert checkString checkNumeric
 assert_just <- function(var, allow_missing = TRUE){
   if (missing(var) && allow_missing)
     return()

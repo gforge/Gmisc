@@ -1,12 +1,12 @@
 #' Create a box with text
 #'
-#' Creates a grob box with text inside it.
+#' Creates a \code{\link[grid:grid.grob]{grob}} box with text inside it.
 #'
 #' @param label The label to print - should be a number, text or expression.
 #' @param y The y position to put the box at. Can be either in \code{npc} (i.e. 0-1) or a \code{\link[grid]{unit}}.
 #' @param x The x position to put the box at. Can be either in \code{npc} (i.e. 0-1) or a \code{\link[grid]{unit}}.
-#' @param width The box autosizes but you can force by specifying the width
-#' @param height The box autosizes but you can force by specifying the height
+#' @param width The box automatically adapts the size but you can force by specifying the width
+#' @param height The box automatically adapts the size but you can force by specifying the height
 #' @param just The justification for the text: left, center or right.
 #' @param bjust The justification for the box: left, center, right, top or bottom.
 #'  See the \code{just} option for the \code{\link[grid]{viewport}}
@@ -14,7 +14,7 @@
 #'  if you want to customize all the boxes at once.
 #' @param box_gp The \code{\link[grid]{gpar}} style to apply to the box. Set \code{boxGrob} option
 #'  if you want to customize all the boxes at once.
-#' @param name a character identifier for the grob. Used to find the grob on the display
+#' @param name a character identifier for the \code{grob}. Used to find the \code{grob} on the display
 #'  list and/or as a child of another grob.
 #'
 #' @return A grob
@@ -27,16 +27,16 @@
 #' library(grid)
 #' grid.newpage()
 #' boxGrob("My box")
-boxGrob <- function (label,
-                     y = unit(.5, "npc"),
-                     x = unit(.5, "npc"),
-                     width,
-                     height,
-                     just = "center",
-                     bjust = "center",
-                     txt_gp = getOption("boxGrobTxt", default=gpar(color="black")),
-                     box_gp = getOption("boxGrob", gpar(fill="#D8F0D1")),
-                     name = NULL) {
+boxGrob <- function(label,
+                    y = unit(.5, "npc"),
+                    x = unit(.5, "npc"),
+                    width,
+                    height,
+                    just = "center",
+                    bjust = "center",
+                    txt_gp = getOption("boxGrobTxt", default = gpar(color = "black")),
+                    box_gp = getOption("boxGrob", gpar(fill = "#D8F0D1")),
+                    name = NULL) {
 
   assert(
     checkString(label),
@@ -72,7 +72,7 @@ boxGrob <- function (label,
     width <- prAsUnit(width)
 
 
-  rect <- roundrectGrob(x=.5, y=.5, gp = box_gp, name = "rect_around")
+  rect <- roundrectGrob(x = .5, y = .5, gp = box_gp, name = "rect_around")
   gl <- grobTree(gList(rect,
                        txt),
                  vp = viewport(x = x, y = y,
@@ -159,30 +159,30 @@ plot.box <- print.box
 #' library(grid)
 #' grid.newpage()
 #' boxPropGrob("Main label", "Left text", "Right text", prop = .3)
-boxPropGrob <- function (label,
-                         label_left,
-                         label_right,
-                         prop,
-                         y = unit(.5, "npc"),
-                         x = unit(.5, "npc"),
-                         width,
-                         height,
-                         just = "center",
-                         bjust = "center",
-                         txt_gp = getOption("boxPropGrobTxt",
-                                            default=gpar(color="black")),
-                         txt_left_gp = getOption("boxPropGrobLeftTxt",
-                                                 default = gpar(col="black")),
-                         txt_right_gp = getOption("boxPropGrobRightTxt",
-                                                  default = gpar(col="black")),
-                         box_left_gp = getOption("boxPropGrobLeft",
-                                                 default = gpar(fill="#81BFD4")),
-                         box_right_gp = getOption("boxPropGrobRight",
-                                                  default = gpar(fill="#D8F0D1")),
-                         box_highlight_gp = getOption("boxPropGrobHighlight",
-                                                      default = gpar(fill="#ffffff55", col=NA)),
-                         name = NULL) {
-
+boxPropGrob <- function(label,
+                        label_left,
+                        label_right,
+                        prop,
+                        y = unit(.5, "npc"),
+                        x = unit(.5, "npc"),
+                        width,
+                        height,
+                        just = "center",
+                        bjust = "center",
+                        txt_gp = getOption("boxPropGrobTxt",
+                                           default = gpar(color = "black")),
+                        txt_left_gp = getOption("boxPropGrobLeftTxt",
+                                                default = gpar(col = "black")),
+                        txt_right_gp = getOption("boxPropGrobRightTxt",
+                                                 default = gpar(col = "black")),
+                        box_left_gp = getOption("boxPropGrobLeft",
+                                                default = gpar(fill = "#81BFD4")),
+                        box_right_gp = getOption("boxPropGrobRight",
+                                                 default = gpar(fill = "#D8F0D1")),
+                        box_highlight_gp = getOption("boxPropGrobHighlight",
+                                                     default = gpar(fill = "#ffffff55", col = NA)),
+                        name = NULL) {
+  
   assert_label(label)
   assert_label(label_left)
   assert_label(label_right)
@@ -217,12 +217,12 @@ boxPropGrob <- function (label,
   if (!missing(label)) {
     main_label <- grobTree(
       name = "main_label",
-      gList(roundrectGrob(gp=box_highlight_gp),
+      gList(roundrectGrob(gp = box_highlight_gp),
             textGrob(label = label,
                      x = prGetX4Txt(just, txt_padding), y = .5,
                      just = just,
                      name = "label")),
-      vp = viewport(height=unit(base_txt_height + 2, "mm"), y = 1, just="top"))
+      vp = viewport(height = unit(base_txt_height + 2, "mm"), y = 1, just = "top"))
   }
 
   sublabel <- list()
@@ -230,7 +230,7 @@ boxPropGrob <- function (label,
     sublabel <- c(sublabel,
                   list(textGrob(label = label_left, x = .5, y = 1,
                                 just = "center", vjust = 1,
-                                vp = viewport(x = prop/2, width=prop),
+                                vp = viewport(x = prop/2, width = prop),
                                 name = "label_left")))
   }
 
@@ -238,7 +238,7 @@ boxPropGrob <- function (label,
     sublabel <- c(sublabel,
                   list(textGrob(label = label_right, x = .5, y = 1,
                                 just = "center", vjust = 1,
-                                vp = viewport(x = prop + (1-prop)-(1-prop)/2, width=1-prop),
+                                vp = viewport(x = prop + (1-prop)-(1-prop)/2, width = 1-prop),
                                 name = "label_right")))
   }
 
@@ -258,7 +258,7 @@ boxPropGrob <- function (label,
                       height = unit(1, "npc") - unit(base_txt_height, "mm") - spacer$y))),
     vp = viewport(height = unit(1, "npc") - txt_padding - txt_padding,
                   width = unit(1, "npc") - txt_padding - txt_padding,
-                  clip="on"),
+                  clip = "on"),
     name = name,
     cl = "boxProp")
 
@@ -291,12 +291,12 @@ boxPropGrob <- function (label,
   half_height <- unit(prCnvrtY(height)/2, "mm")
   half_width <- unit(prCnvrtX(width)/2, "mm")
 
-  gl <- grobTree(roundrectGrob(gp=box_left_gp,
-                               width=width, x=0, just="left",
-                               vp=viewport(x=0, just="left", width=prop, clip="on")),
-                 roundrectGrob(gp=box_right_gp,
-                               width=width, x=1, just="right",
-                               vp=viewport(x=1, just="right", width=1-prop, clip="on")),
+  gl <- grobTree(roundrectGrob(gp = box_left_gp,
+                               width = width, x = 0, just = "left",
+                               vp = viewport(x = 0, just = "left", width = prop, clip = "on")),
+                 roundrectGrob(gp = box_right_gp,
+                               width = width, x = 1, just = "right",
+                               vp = viewport(x = 1, just = "right", width = 1-prop, clip = "on")),
                  txt,
                  vp = viewport(x = x, y = y, width = width, height = height, just = bjust),
                  cl = "box")
@@ -368,7 +368,7 @@ connectGrob <- function(
   type = c("vertical", "horizontal", "L", "-", "Z", "N"),
   subelmnt = c("right", "left"),
   lty_gp = getOption("connectGrob",
-                     default = gpar(fill="black")),
+                     default = gpar(fill = "black")),
   arrow_obj = getOption("connectGrobArrow",
                         default = arrow(ends = "last", type = "closed")))
 {
@@ -413,15 +413,15 @@ connectGrob <- function(
     if (prCnvrtX(start$x) < prCnvrtX(end$x)) {
       line$x <- unit.c(
         start$right,
-        start$right + distance(start, end, type="h", half=TRUE),
-        start$right + distance(start, end, type="h", half=TRUE),
+        start$right + distance(start, end, type = "h", half = TRUE),
+        start$right + distance(start, end, type = "h", half = TRUE),
         end$left
       )
     }else{
       line$x <- unit.c(
         start$left,
-        start$left - distance(start, end, type="h", half=TRUE),
-        start$left - distance(start, end, type="h", half=TRUE),
+        start$left - distance(start, end, type = "h", half = TRUE),
+        start$left - distance(start, end, type = "h", half = TRUE),
         end$right
       )
     }
@@ -433,7 +433,7 @@ connectGrob <- function(
       end$y
     )
   }else if (type == "N") {
-    dist_y <- distance(start, end, type="v", half=TRUE)
+    dist_y <- distance(start, end, type = "v", half = TRUE)
     if (prCnvrtY(start$y) < prCnvrtY(end$y)) {
       line$y <- unit.c(
         start$top,
@@ -587,10 +587,10 @@ coords <- function(box) {
 #' @importFrom checkmate assert_class assert checkString checkNumeric checkClass
 #' @export
 #' @examples
-#' box1 <- boxGrob("A test box", y=.8)
-#' box2 <- boxGrob("Another test box", y=.2)
+#' box1 <- boxGrob("A test box", y = .8)
+#' box2 <- boxGrob("Another test box", y = .2)
 #' distance(box1, box2, "v")
-distance <- function(box1, box2, type=c("vertical", "horizontal"), half=FALSE) {
+distance <- function(box1, box2, type = c("vertical", "horizontal"), half = FALSE) {
   assert(
     checkClass(box1, "box"),
     checkClass(box1, "coords")
