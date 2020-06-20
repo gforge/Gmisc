@@ -79,8 +79,9 @@ unit width. Note, it has only a end-arrow at this point.
 \examples{
 library(grid)
 grid.newpage()
-arrowGrob <- bezierArrowSmpl(x = c(.1,.3,.6,.9),
-                             y = c(0.2, 0.2, 0.9, 0.9))
+arrowGrob <- bezierArrowSmpl(
+  x = c(.1, .3, .6, .9),
+  y = c(0.2, 0.2, 0.9, 0.9)
+)
 grid.draw(arrowGrob)
-
 }

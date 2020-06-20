@@ -65,9 +65,8 @@ and not because it's the only option.
 }
 \examples{
 describeMean(1:10)
-describeMean(c(1:10, NA), useNA="always")
-describeMean(c(1:10, NA), useNA="no")
-
+describeMean(c(1:10, NA), useNA = "always")
+describeMean(c(1:10, NA), useNA = "no")
 }
 \seealso{
 \code{\link{getDescriptionStatsBy}}

@@ -15,7 +15,7 @@ The function relies on \code{options("fig_caption_no")}
 in order to keep track of the last number.
 }
 \examples{
-org_opts <- options(fig_caption_no = o)
+org_opts <- options(fig_caption_no = 1)
 figCapNoNext()
 options(org_opts)
 }

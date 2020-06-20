@@ -21,7 +21,7 @@ and \code{\link{describeFactors}} functions.
 
 The \code{\link{mergeDesc}} allows you to merge a set of outputs \code{\link{getDescriptionStatsBy}}
 into a \code{\link[htmlTable]{htmlTable}} with the rgroup arguments automatically
-generated, see \code{vignette("descriptives", package="Gmisc")} for a
+generated, see \code{vignette("descriptives", package = "Gmisc")} for a
 detailed workflow description.
 }
 

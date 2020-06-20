@@ -26,11 +26,11 @@
 #' figCapNo("A plot with caption number = 3")
 #'
 #' org_opts <- options(fig_caption_no = TRUE)
-#' figCapNo("A plot with caption number =  1")
+#' figCapNo("A plot with caption number = 1")
 #'
 #' # Use default setting
 #' options(fig_caption_no_sprintf = NULL)
-#' figCapNo("A plot with caption number =  2")
+#' figCapNo("A plot with caption number = 2")
 #'
 #' # Return the original settings
 #' options(org_opts)
@@ -69,7 +69,7 @@ figCapNo <- function(str,
 #' @inheritParams figCapNo
 #' @export
 #' @examples
-#' org_opts <- options(fig_caption_no = o)
+#' org_opts <- options(fig_caption_no = 1)
 #' figCapNoLast()
 #' options(org_opts)
 #' @importFrom utils as.roman
@@ -100,7 +100,7 @@ figCapNoLast <- function(roman = getOption("fig_caption_no_roman", FALSE)) {
 #' @inheritParams figCapNo
 #' @export
 #' @examples
-#' org_opts <- options(fig_caption_no = o)
+#' org_opts <- options(fig_caption_no = 1)
 #' figCapNoNext()
 #' options(org_opts)
 #' @importFrom utils as.roman

@@ -14,7 +14,7 @@ string
 }
 \description{
 The variable is supposed to be directly compatible with
-\code{\link[base]{table}}(..., useNA=show_missing). It throws an error
+\code{\link[base]{table}}(..., useNA = show_missing). It throws an error
 if not compatible. It is mostly useful for custom describe functions.
 }
 \details{

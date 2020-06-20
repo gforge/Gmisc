@@ -18,12 +18,16 @@
 #'
 #' @examples
 #' set.seed(123)
-#' getPvalFisher(sample(letters[1:3], size = 100, replace = TRUE),
-#'               sample(LETTERS[1:3], size = 100, replace = TRUE))
-#' getPvalWilcox(rnorm(100),
-#'               sample(LETTERS[1:2], size = 100, replace = TRUE))
+#' getPvalFisher(
+#'   sample(letters[1:3], size = 100, replace = TRUE),
+#'   sample(LETTERS[1:3], size = 100, replace = TRUE)
+#' )
+#' getPvalWilcox(
+#'   rnorm(100),
+#'   sample(LETTERS[1:2], size = 100, replace = TRUE)
+#' )
 #' @importFrom stats wilcox.test
-getPvalWilcox <- function(x, by){
+getPvalWilcox <- function(x, by) {
   wilcox.test(x ~ by, alternative = "two.sided")$p.value
 }
 
@@ -34,11 +38,11 @@ getPvalWilcox <- function(x, by){
 #'
 #' @rdname getPval
 #' @import magrittr
-#' @importFrom stats lm anova 
+#' @importFrom stats lm anova
 #' @export
-getPvalAnova <- function(x, by){
+getPvalAnova <- function(x, by) {
   out <- lm(x ~ by) %>%
-    anova
+    anova()
   out[["Pr(>F)"]][[1]]
 }
 
@@ -46,22 +50,27 @@ getPvalAnova <- function(x, by){
 #'
 #' @section getPvalFisher:
 #' Performs Fisher's exact test through the \code{\link[stats]{fisher.test}}.
-#' 
+#'
 #' @importFrom stats fisher.test
 #' @export
-getPvalFisher <- function(x, by){
+getPvalFisher <- function(x, by) {
   # This is a quick fix in case of large dataset
-  workspace = 10^5
-  if (length(x)*length(levels(x)) > 10^4)
-    workspace = 10^7
+  workspace <- 10^5
+  if (length(x) * length(levels(x)) > 10^4) {
+    workspace <- 10^7
+  }
 
   # Large statistics tend to be very heavy and therefore
   # i need to catch errors in fisher and redo by simulation
-  tryCatch({fisher.test(x, by, workspace=workspace)$p.value},
-           error = function(err){
-             warning("Simulating p-value for fisher due to high computational demands on the current varible")
-             fisher.test(x, by, simulate.p.value=TRUE, B=10^5)$p.value
-           })
+  tryCatch(
+    {
+      fisher.test(x, by, workspace = workspace)$p.value
+    },
+    error = function(err) {
+      warning("Simulating p-value for fisher due to high computational demands on the current varible")
+      fisher.test(x, by, simulate.p.value = TRUE, B = 10^5)$p.value
+    }
+  )
 }
 
 #' @section getPvalChiSq:
@@ -72,7 +81,7 @@ getPvalFisher <- function(x, by){
 #' @rdname getPval
 #' @importFrom stats chisq.test
 #' @export
-getPvalChiSq <- function(x, by){
+getPvalChiSq <- function(x, by) {
   chisq.test(x, by)$p.value
 }
 
@@ -85,6 +94,6 @@ getPvalChiSq <- function(x, by){
 #' @importFrom stats kruskal.test
 #' @rdname getPval
 #' @export
-getPvalKruskal <- function(x, by){
+getPvalKruskal <- function(x, by) {
   kruskal.test(x, by)$p.value
 }

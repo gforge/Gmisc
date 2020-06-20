@@ -66,10 +66,14 @@ through \code{\link[stats]{kruskal.test}}
 
 \examples{
 set.seed(123)
-getPvalFisher(sample(letters[1:3], size = 100, replace = TRUE),
-              sample(LETTERS[1:3], size = 100, replace = TRUE))
-getPvalWilcox(rnorm(100),
-              sample(LETTERS[1:2], size = 100, replace = TRUE))
+getPvalFisher(
+  sample(letters[1:3], size = 100, replace = TRUE),
+  sample(LETTERS[1:3], size = 100, replace = TRUE)
+)
+getPvalWilcox(
+  rnorm(100),
+  sample(LETTERS[1:2], size = 100, replace = TRUE)
+)
 }
 \seealso{
 Other descriptive functions: 

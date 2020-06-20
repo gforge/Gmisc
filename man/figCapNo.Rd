@@ -39,11 +39,11 @@ org_opts <- options(fig_caption_no = 2,
 figCapNo("A plot with caption number = 3")
 
 org_opts <- options(fig_caption_no = TRUE)
-figCapNo("A plot with caption number =  1")
+figCapNo("A plot with caption number = 1")
 
 # Use default setting
 options(fig_caption_no_sprintf = NULL)
-figCapNo("A plot with caption number =  2")
+figCapNo("A plot with caption number = 2")
 
 # Return the original settings
 options(org_opts)

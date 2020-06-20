@@ -9,15 +9,13 @@
 #' @return \code{matrix} Returns a matrix with one more row than the provided matrix \code{m}
 #'
 #' @examples
-#' test <- matrix(1:4, ncol=2)
-#' attr(test, 'wow') <- 1000
+#' test <- matrix(1:4, ncol = 2)
+#' attr(test, "wow") <- 1000
 #' test <- insertRowAndKeepAttr(test, 2)
-#' print(attr(test, 'wow'))
-#'
+#' print(attr(test, "wow"))
 #' @export
 #' @author Max Gordon, Arne Henningsen
-insertRowAndKeepAttr <- function(m, r, v = NA, rName = "")
-{
+insertRowAndKeepAttr <- function(m, r, v = NA, rName = "") {
   if (!inherits(m, "matrix")) {
     stop("argument 'm' must be a matrix")
   }
@@ -34,8 +32,10 @@ insertRowAndKeepAttr <- function(m, r, v = NA, rName = "")
     stop("argument 'r' must be positive")
   }
   if (r > nrow(m) + 1) {
-    stop("argument 'r' must not be larger than the number of rows",
-         " of matrix 'm' plus one")
+    stop(
+      "argument 'r' must not be larger than the number of rows",
+      " of matrix 'm' plus one"
+    )
   }
   if (!is.character(rName)) {
     stop("argument 'rName' must be a character string")
@@ -62,8 +62,10 @@ insertRowAndKeepAttr <- function(m, r, v = NA, rName = "")
     }
   }
   else {
-    m2 <- rbind(m[1:(r - 1), , drop = FALSE], matrix(v, ncol = nc),
-                m[r:nr, , drop = FALSE])
+    m2 <- rbind(
+      m[1:(r - 1), , drop = FALSE], matrix(v, ncol = nc),
+      m[r:nr, , drop = FALSE]
+    )
     if (!is.null(rNames)) {
       rownames(m2) <- c(rNames[1:(r - 1)], rName, rNames[r:nr])
     }
