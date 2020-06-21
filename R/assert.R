@@ -46,7 +46,7 @@ assert_label <- function(var, allow_missing = TRUE){
 #' @return void
 #' @rdname assert
 #' @keywords internal
-#' @importFrom checkmate assert checkString checkNumeric
+#' @importFrom checkmate assert checkCharacter checkNumeric
 assert_just <- function(var, allow_missing = TRUE){
   if (missing(var) && allow_missing)
     return()
