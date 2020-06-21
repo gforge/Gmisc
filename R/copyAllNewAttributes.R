@@ -20,8 +20,8 @@
 #' print(attr(b, 'wow'))
 #'
 #' @export
-copyAllNewAttributes <- function(from, to, attr2skip = c(), attr2force = c()){
-  for (name in names(attributes(from))){
+copyAllNewAttributes <- function(from, to, attr2skip = c(), attr2force = c()) {
+  for (name in names(attributes(from))) {
     # Don't overwrite attributes
     if (!name %in% names(attributes(to)) &
           !name %in% attr2skip |

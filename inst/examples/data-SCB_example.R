@@ -20,7 +20,7 @@ Swe_ltrs <- c("å" = "&aring;",
               "Ä" = "&Auml;",
               "ö" = "&ouml;",
               "Ö" = "&Ouml;")
-for (i in 1:length(Swe_ltrs)){
+for (i in 1:length(Swe_ltrs)) {
   levels(SCB$region) <- gsub(names(Swe_ltrs)[i],
               Swe_ltrs[i],
               levels(SCB$region))

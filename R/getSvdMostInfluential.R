@@ -43,7 +43,7 @@ getSvdMostInfluential <- function(mtrx,
                                   similarity_threshold,
                                   plot_selection      = TRUE,
                                   plot_threshold      = 0.05,
-                                  varnames            = NULL){
+                                  varnames            = NULL) {
 
   if (any(is.na(mtrx)))
     stop("Missing values are not allowed in this function. Impute prior to calling this function (try with mice or similar package).")
@@ -60,7 +60,7 @@ getSvdMostInfluential <- function(mtrx,
   cols_expl <- which(cumsum(perc_explained) <= quantile)
 
   # Select the variables of interest
-  getMostInfluentialVars <- function(){
+  getMostInfluentialVars <- function() {
     vars <- list()
     for (i in 1:length(perc_explained)) {
       v_abs <- abs(svd_out$v[,i])
@@ -75,7 +75,7 @@ getSvdMostInfluential <- function(mtrx,
   }
   vars <- getMostInfluentialVars()
 
-  plotSvdSelection <- function(){
+  plotSvdSelection <- function() {
     if (plot_threshold < 0 || plot_threshold > 1)
       stop("The plot_threshold must be between 0-1")
 

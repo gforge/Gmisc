@@ -37,11 +37,10 @@ boxGrob <- function(label,
                     txt_gp = getOption("boxGrobTxt", default = gpar(color = "black")),
                     box_gp = getOption("boxGrob", gpar(fill = "#D8F0D1")),
                     name = NULL) {
-
   assert(
     checkString(label),
     checkNumeric(label),
-	  is.expression(label)
+    is.expression(label)
   )
   assert_unit(y)
   assert_unit(x)
@@ -56,67 +55,80 @@ boxGrob <- function(label,
   y <- prAsUnit(y)
 
   txt_padding <- unit(4, "mm")
-  txt <- textGrob(label = label,
-                  x = prGetX4Txt(just, txt_padding), y = .5,
-                  just = just, gp = txt_gp,
-                  name = "label")
+  txt <- textGrob(
+    label = label,
+    x = prGetX4Txt(just, txt_padding), y = .5,
+    just = just, gp = txt_gp,
+    name = "label"
+  )
 
-  if (missing(height))
+  if (missing(height)) {
     height <- grobHeight(txt) + txt_padding + txt_padding
-  else
+  } else {
     height <- prAsUnit(height)
+  }
 
-  if (missing(width))
+  if (missing(width)) {
     width <- grobWidth(txt) + txt_padding + txt_padding
-  else
+  } else {
     width <- prAsUnit(width)
+  }
 
 
   rect <- roundrectGrob(x = .5, y = .5, gp = box_gp, name = "rect_around")
-  gl <- grobTree(gList(rect,
-                       txt),
-                 vp = viewport(x = x, y = y,
-                               width = width, height = height,
-                               just = bjust),
-                 name = name,
-                 cl = "box")
+  gl <- grobTree(gList(
+    rect,
+    txt
+  ),
+  vp = viewport(
+    x = x, y = y,
+    width = width, height = height,
+    just = bjust
+  ),
+  name = name,
+  cl = "box"
+  )
 
   # Adjust center depending on the viewport position
   x <- prAdjustXPos(bjust, x, width)
   y <- prAdjustYPos(bjust, y, height)
-  half_width <- unit(prCnvrtX(width)/2, "mm")
-  half_height <- unit(prCnvrtY(height)/2, "mm")
+  half_width <- unit(prCnvrtX(width) / 2, "mm")
+  half_height <- unit(prCnvrtY(height) / 2, "mm")
 
   structure(gl,
-            coords = prCreateCoords(
-              list(
-                left = x - half_width,
-                right = x + half_width,
-                bottom = y - half_height,
-                top = y + half_height,
-                x = x,
-                y = y,
-                width = width,
-                height = height)))
+    coords = prCreateCoords(
+      list(
+        left = x - half_width,
+        right = x + half_width,
+        bottom = y - half_height,
+        top = y + half_height,
+        x = x,
+        y = y,
+        width = width,
+        height = height
+      )
+    )
+  )
 }
 
 
 #' @rdname box
 #' @export
-widthDetails.box <- function(x)
+widthDetails.box <- function(x) {
   attr(x, "coords")$width
+}
 
 #' @rdname box
 #' @export
-heightDetails.box <- function(x)
+heightDetails.box <- function(x) {
   attr(x, "coords")$height
+}
 
 #' The print/plot calls the \code{\link[grid]{grid.draw}} function on the object
 #' @param ... Passed to \code{\link[grid]{grid.draw}}
 #' @rdname box
 #' @export
-print.box <- function(x, ...)
-{
+print.box <- function(x, ...) {
   grid.draw(x, ...)
 }
 
@@ -170,19 +182,24 @@ boxPropGrob <- function(label,
                         just = "center",
                         bjust = "center",
                         txt_gp = getOption("boxPropGrobTxt",
-                                           default = gpar(color = "black")),
+                          default = gpar(color = "black")
+                        ),
                         txt_left_gp = getOption("boxPropGrobLeftTxt",
-                                                default = gpar(col = "black")),
+                          default = gpar(col = "black")
+                        ),
                         txt_right_gp = getOption("boxPropGrobRightTxt",
-                                                 default = gpar(col = "black")),
+                          default = gpar(col = "black")
+                        ),
                         box_left_gp = getOption("boxPropGrobLeft",
-                                                default = gpar(fill = "#81BFD4")),
+                          default = gpar(fill = "#81BFD4")
+                        ),
                         box_right_gp = getOption("boxPropGrobRight",
-                                                 default = gpar(fill = "#D8F0D1")),
+                          default = gpar(fill = "#D8F0D1")
+                        ),
                         box_highlight_gp = getOption("boxPropGrobHighlight",
-                                                     default = gpar(fill = "#ffffff55", col = NA)),
+                          default = gpar(fill = "#ffffff55", col = NA)
+                        ),
                         name = NULL) {
-  
   assert_label(label)
   assert_label(label_left)
   assert_label(label_right)
@@ -205,46 +222,62 @@ boxPropGrob <- function(label,
   y <- prAsUnit(y)
 
   txt_padding <- unit(4, "mm")
-  spacer <- list(x = unit(2, "mm"),
-                 y = unit(5, "mm"))
+  spacer <- list(
+    x = unit(2, "mm"),
+    y = unit(5, "mm")
+  )
 
   base_txt_height <- prConvTxt2Height(label) + 2
   add_height <- max(prConvTxt2Height(label_left), prConvTxt2Height(label_right))
-  if (missing(height))
+  if (missing(height)) {
     height <- unit(base_txt_height + add_height, "mm") + spacer$y + txt_padding + txt_padding
+  }
 
   main_label <- NULL
   if (!missing(label)) {
     main_label <- grobTree(
       name = "main_label",
-      gList(roundrectGrob(gp = box_highlight_gp),
-            textGrob(label = label,
-                     x = prGetX4Txt(just, txt_padding), y = .5,
-                     just = just,
-                     name = "label")),
-      vp = viewport(height = unit(base_txt_height + 2, "mm"), y = 1, just = "top"))
+      gList(
+        roundrectGrob(gp = box_highlight_gp),
+        textGrob(
+          label = label,
+          x = prGetX4Txt(just, txt_padding), y = .5,
+          just = just,
+          name = "label"
+        )
+      ),
+      vp = viewport(height = unit(base_txt_height + 2, "mm"), y = 1, just = "top")
+    )
   }
 
   sublabel <- list()
-  if (!missing(label_left)){
-    sublabel <- c(sublabel,
-                  list(textGrob(label = label_left, x = .5, y = 1,
-                                just = "center", vjust = 1,
-                                vp = viewport(x = prop/2, width = prop),
-                                name = "label_left")))
+  if (!missing(label_left)) {
+    sublabel <- c(
+      sublabel,
+      list(textGrob(
+        label = label_left, x = .5, y = 1,
+        just = "center", vjust = 1,
+        vp = viewport(x = prop / 2, width = prop),
+        name = "label_left"
+      ))
+    )
   }
 
-  if (!missing(label_right)){
-    sublabel <- c(sublabel,
-                  list(textGrob(label = label_right, x = .5, y = 1,
-                                just = "center", vjust = 1,
-                                vp = viewport(x = prop + (1-prop)-(1-prop)/2, width = 1-prop),
-                                name = "label_right")))
+  if (!missing(label_right)) {
+    sublabel <- c(
+      sublabel,
+      list(textGrob(
+        label = label_right, x = .5, y = 1,
+        just = "center", vjust = 1,
+        vp = viewport(x = prop + (1 - prop) - (1 - prop) / 2, width = 1 - prop),
+        name = "label_right"
+      ))
+    )
   }
 
   if (length(sublabel) == 0) {
     sublabel <- NULL
-  }else{
+  } else {
     sublabel <- do.call(gList, sublabel)
   }
 
@@ -254,21 +287,29 @@ boxPropGrob <- function(label,
       grobTree(
         sublabel,
         name = "sublabel",
-        vp = viewport(y = 0, just = "bottom",
-                      height = unit(1, "npc") - unit(base_txt_height, "mm") - spacer$y))),
-    vp = viewport(height = unit(1, "npc") - txt_padding - txt_padding,
-                  width = unit(1, "npc") - txt_padding - txt_padding,
-                  clip = "on"),
+        vp = viewport(
+          y = 0, just = "bottom",
+          height = unit(1, "npc") - unit(base_txt_height, "mm") - spacer$y
+        )
+      )
+    ),
+    vp = viewport(
+      height = unit(1, "npc") - txt_padding - txt_padding,
+      width = unit(1, "npc") - txt_padding - txt_padding,
+      clip = "on"
+    ),
     name = name,
-    cl = "boxProp")
+    cl = "boxProp"
+  )
 
 
   # Calculate the width of the grob
   base_width <-
-    max(prCnvrtX(grobWidth(textGrob(label))),
-        (prCnvrtX(grobWidth(textGrob(label_left))) +
-           prCnvrtX(spacer$x)+
-           prCnvrtX(grobWidth(textGrob(label_right))))
+    max(
+      prCnvrtX(grobWidth(textGrob(label))),
+      (prCnvrtX(grobWidth(textGrob(label_left))) +
+        prCnvrtX(spacer$x) +
+        prCnvrtX(grobWidth(textGrob(label_right))))
     )
 
   # Due to the proportions we may need to force a larger window
@@ -282,44 +323,55 @@ boxPropGrob <- function(label,
     base_width <- min_left / prop
   }
   if (base_width * (1 - prop) < min_right) {
-    base_width <- min_right / (1-prop)
+    base_width <- min_right / (1 - prop)
   }
 
-  if (missing(width))
+  if (missing(width)) {
     width <- unit(base_width, "mm") + txt_padding + txt_padding
+  }
 
-  half_height <- unit(prCnvrtY(height)/2, "mm")
-  half_width <- unit(prCnvrtX(width)/2, "mm")
+  half_height <- unit(prCnvrtY(height) / 2, "mm")
+  half_width <- unit(prCnvrtX(width) / 2, "mm")
 
-  gl <- grobTree(roundrectGrob(gp = box_left_gp,
-                               width = width, x = 0, just = "left",
-                               vp = viewport(x = 0, just = "left", width = prop, clip = "on")),
-                 roundrectGrob(gp = box_right_gp,
-                               width = width, x = 1, just = "right",
-                               vp = viewport(x = 1, just = "right", width = 1-prop, clip = "on")),
-                 txt,
-                 vp = viewport(x = x, y = y, width = width, height = height, just = bjust),
-                 cl = "box")
+  gl <- grobTree(roundrectGrob(
+    gp = box_left_gp,
+    width = width, x = 0, just = "left",
+    vp = viewport(x = 0, just = "left", width = prop, clip = "on")
+  ),
+  roundrectGrob(
+    gp = box_right_gp,
+    width = width, x = 1, just = "right",
+    vp = viewport(x = 1, just = "right", width = 1 - prop, clip = "on")
+  ),
+  txt,
+  vp = viewport(x = x, y = y, width = width, height = height, just = bjust),
+  cl = "box"
+  )
   x <- prAdjustXPos(bjust, x, width)
   y <- prAdjustYPos(bjust, y, height)
 
   structure(gl,
-            coords = prCreateCoords(
-              list(
-                left = x - half_width,
-                right = x + half_width,
-                bottom = y - half_height,
-                top = y + half_height,
-                x = x,
-                left_x = x - half_width +
-                  unit(prCnvrtX(width)*prop/2, "mm"),
-                right_x = x - half_width +
-                  unit(prCnvrtX(width)*prop +
-                         prCnvrtX(width)*(1-prop)/2,
-                       "mm"),
-                y = y,
-                height = height,
-                width = width)))
+    coords = prCreateCoords(
+      list(
+        left = x - half_width,
+        right = x + half_width,
+        bottom = y - half_height,
+        top = y + half_height,
+        x = x,
+        left_x = x - half_width +
+          unit(prCnvrtX(width) * prop / 2, "mm"),
+        right_x = x - half_width +
+          unit(
+            prCnvrtX(width) * prop +
+              prCnvrtX(width) * (1 - prop) / 2,
+            "mm"
+          ),
+        y = y,
+        height = height,
+        width = width
+      )
+    )
+  )
 }
 
 #' @importFrom checkmate assert_list
@@ -363,15 +415,16 @@ prCreateCoords <- function(coords) {
 #' @rdname connect
 #' @example inst/examples/connectGrob_example.R
 connectGrob <- function(
-  start,
-  end,
-  type = c("vertical", "horizontal", "L", "-", "Z", "N"),
-  subelmnt = c("right", "left"),
-  lty_gp = getOption("connectGrob",
-                     default = gpar(fill = "black")),
-  arrow_obj = getOption("connectGrobArrow",
-                        default = arrow(ends = "last", type = "closed")))
-{
+                        start,
+                        end,
+                        type = c("vertical", "horizontal", "L", "-", "Z", "N"),
+                        subelmnt = c("right", "left"),
+                        lty_gp = getOption("connectGrob",
+                          default = gpar(fill = "black")
+                        ),
+                        arrow_obj = getOption("connectGrobArrow",
+                          default = arrow(ends = "last", type = "closed")
+                        )) {
   assert_class(start, "box")
   assert_class(end, "box")
   assert_class(lty_gp, "gpar")
@@ -381,35 +434,36 @@ connectGrob <- function(
   start <- coords(start)
   end <- coords(end)
 
-  type = match.arg(type)
+  type <- match.arg(type)
   if (missing(subelmnt)) {
     subelmnt <- ""
   } else {
     subelmnt <- sprintf("%s_", match.arg(subelmnt))
   }
-  getX4elmnt <- function(elmnt, side = c("left", "right", "x")){
-    side = match.arg(side)
+  getX4elmnt <- function(elmnt, side = c("left", "right", "x")) {
+    side <- match.arg(side)
     if (side == "x" && !is.null(elmnt[[sprintf("%s%s", subelmnt, side)]])) {
-      return (elmnt[[sprintf("%s%s", subelmnt, side)]])
-    }else{
-      return (elmnt[[side]])
+      return(elmnt[[sprintf("%s%s", subelmnt, side)]])
+    } else {
+      return(elmnt[[side]])
     }
   }
   line <- list()
-  cnvrt <- function(val)
+  cnvrt <- function(val) {
     convertHeight(val, unitTo = "mm", valueOnly = TRUE)
+  }
   if (type %in% c("L", "-")) {
     if (type == "-") {
       line$y <- unit.c(end$y, end$y, end$y)
-    }else{
+    } else {
       line$y <- unit.c(start$bottom, end$y, end$y)
     }
     if (cnvrt(getX4elmnt(start, "x")) < cnvrt(getX4elmnt(end, "x"))) {
       line$x <- unit.c(getX4elmnt(start, "x"), getX4elmnt(start, "x"), end$left)
-    }else{
+    } else {
       line$x <- unit.c(getX4elmnt(start, "x"), getX4elmnt(start, "x"), end$right)
     }
-  }else if (type == "Z") {
+  } else if (type == "Z") {
     if (prCnvrtX(start$x) < prCnvrtX(end$x)) {
       line$x <- unit.c(
         start$right,
@@ -417,7 +471,7 @@ connectGrob <- function(
         start$right + distance(start, end, type = "h", half = TRUE),
         end$left
       )
-    }else{
+    } else {
       line$x <- unit.c(
         start$left,
         start$left - distance(start, end, type = "h", half = TRUE),
@@ -432,7 +486,7 @@ connectGrob <- function(
       end$y,
       end$y
     )
-  }else if (type == "N") {
+  } else if (type == "N") {
     dist_y <- distance(start, end, type = "v", half = TRUE)
     if (prCnvrtY(start$y) < prCnvrtY(end$y)) {
       line$y <- unit.c(
@@ -441,7 +495,7 @@ connectGrob <- function(
         start$top + dist_y,
         end$bottom
       )
-    }else{
+    } else {
       line$y <- unit.c(
         start$bottom,
         start$bottom - dist_y,
@@ -456,29 +510,32 @@ connectGrob <- function(
       end$x,
       end$x
     )
-  }else if (type == "vertical") {
+  } else if (type == "vertical") {
     line$x <- unit.c(getX4elmnt(start, "x"), getX4elmnt(end, "x"))
     if (cnvrt(start$y) < cnvrt(end$y)) {
       line$y <- unit.c(start$top, end$bottom)
-    }else{
+    } else {
       line$y <- unit.c(start$bottom, end$top)
     }
-  }else{
+  } else {
     line$y <- unit.c(start$y, end$y)
     if (cnvrt(getX4elmnt(start, "x")) < cnvrt(getX4elmnt(end, "x"))) {
       line$x <- unit.c(start$right, end$left)
-    }else{
+    } else {
       line$x <- unit.c(start$left, end$right)
     }
   }
 
-  lg <- linesGrob(x = line$x,
-                  y = line$y,
-                  gp = lty_gp,
-                  arrow = arrow_obj)
+  lg <- linesGrob(
+    x = line$x,
+    y = line$y,
+    gp = lty_gp,
+    arrow = arrow_obj
+  )
   structure(lg,
-            line = line,
-            class = c("connect_boxes", class(lg)))
+    line = line,
+    class = c("connect_boxes", class(lg))
+  )
 }
 
 #' The print/plot calls the \code{\link[grid]{grid.draw}} function on the object
@@ -486,8 +543,7 @@ connectGrob <- function(
 #' @param ... Passed to \code{\link[grid]{grid.draw}}
 #' @rdname connect
 #' @export
-print.connect_boxes <- function(x, ...)
-{
+print.connect_boxes <- function(x, ...) {
   grid.draw(x, ...)
 }
 
@@ -496,60 +552,64 @@ print.connect_boxes <- function(x, ...)
 plot.connect_boxes <- print.connect_boxes
 
 
-prAsUnit <- function(val){
-  if (is.unit(val))
+prAsUnit <- function(val) {
+  if (is.unit(val)) {
     return(val)
+  }
 
   return(unit(val, "npc"))
 }
 
-prCnvrtY <- function(val)
+prCnvrtY <- function(val) {
   convertHeight(val, unitTo = "mm", valueOnly = TRUE)
+}
 
-prCnvrtX <- function(val)
+prCnvrtX <- function(val) {
   convertWidth(val, unitTo = "mm", valueOnly = TRUE)
+}
 
 prAdjustXPos <- function(bjust, x, width) {
   width <- prCnvrtX(width)
   if (any(grepl("left", bjust))) {
-    x <- x + unit(width/2, "mm")
+    x <- x + unit(width / 2, "mm")
   } else if (any(grepl("right", bjust))) {
-    x <- x - unit(width/2, "mm")
+    x <- x - unit(width / 2, "mm")
   } else if (is.numeric(bjust)) {
-    x <- x + unit(width*(0.5 - bjust[1]), "mm")
+    x <- x + unit(width * (0.5 - bjust[1]), "mm")
   }
-  return (x)
+  return(x)
 }
 
 prAdjustYPos <- function(bjust, y, height) {
   height <- prCnvrtY(height)
   if (any(grepl("top", bjust))) {
-    y <- y - unit(height/2, "mm")
+    y <- y - unit(height / 2, "mm")
   } else if (any(grepl("bottom", bjust))) {
-    y <- y + unit(height/2, "mm")
+    y <- y + unit(height / 2, "mm")
   } else if (is.numeric(bjust) && length(bjust) == 2) {
-    y <- y + unit(height*(0.5 - bjust[2]), "mm")
+    y <- y + unit(height * (0.5 - bjust[2]), "mm")
   }
-  return (y)
+  return(y)
 }
 
 prGetX4Txt <- function(just, txt_padding) {
   x <- .5
-  if (just == "left"){
+  if (just == "left") {
     x <- txt_padding
-  }else if (just == "right"){
+  } else if (just == "right") {
     x <- unit(1, "npc") - txt_padding
   }
   return(x)
 }
 
-prConvTxt2Height <- function(str){
-  if (missing(str))
+prConvTxt2Height <- function(str) {
+  if (missing(str)) {
     return(0)
+  }
 
   length(strsplit(as.character(str), "\n")[[1]]) %>%
     unit("lines") %>%
-    prCnvrtY
+    prCnvrtY()
 }
 
 #' Get the box coordinates
@@ -567,7 +627,7 @@ prConvTxt2Height <- function(str){
 coords <- function(box) {
   # Check if not already a coordinate element
   if (inherits(box, "coords")) {
-    return (box)
+    return(box)
   }
   assert_class(box, "box")
   attr(box, "coords")
@@ -600,32 +660,34 @@ distance <- function(box1, box2, type = c("vertical", "horizontal"), half = FALS
     checkClass(box2, "coords")
   )
   type <- match.arg(type)
-  if (!inherits(box1, "coords"))
+  if (!inherits(box1, "coords")) {
     box1 <- coords(box1)
+  }
 
-  if (!inherits(box2, "coords"))
+  if (!inherits(box2, "coords")) {
     box2 <- coords(box2)
+  }
 
   if (type == "vertical") {
     if (prCnvrtY(box1$y) > prCnvrtY(box2$y)) {
       ret <-
         (prCnvrtY(box1$bottom) - prCnvrtY(box2$top))
-    }else{
+    } else {
       ret <-
         (prCnvrtY(box2$bottom) - prCnvrtY(box1$top))
     }
-  }else{
+  } else {
     if (prCnvrtX(box1$x) < prCnvrtX(box2$x)) {
       ret <-
         (prCnvrtX(box2$left) - prCnvrtX(box1$right))
-    }else{
+    } else {
       ret <-
         (prCnvrtX(box1$left) - prCnvrtX(box2$right))
     }
   }
   if (half) {
-    ret <- ret/2
+    ret <- ret / 2
   }
 
-  return (unit(ret, "mm"))
+  return(unit(ret, "mm"))
 }

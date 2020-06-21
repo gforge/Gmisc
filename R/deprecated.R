@@ -9,7 +9,7 @@
 #' @rdname Gmisc-deprecated
 #' @name Gmisc-deprecated
 #' @docType package
-forestplot2 <- function(...){
+forestplot2 <- function(...) {
   .Deprecated(new = "forestplot",
               package = "forestplot",
               old = "forestplot2",

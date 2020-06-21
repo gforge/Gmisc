@@ -7,9 +7,10 @@
 #' @rdname assert
 #' @keywords internal
 #' @importFrom checkmate assert checkClass checkNumeric
-assert_unit <- function(var, allow_missing = TRUE){
-  if (missing(var) && allow_missing)
+assert_unit <- function(var, allow_missing = TRUE) {
+  if (missing(var) && allow_missing) {
     return()
+  }
 
   assert(
     checkClass(var, "unit"),
@@ -27,9 +28,10 @@ assert_unit <- function(var, allow_missing = TRUE){
 #' @rdname assert
 #' @keywords internal
 #' @importFrom checkmate assert checkString checkNumeric
-assert_label <- function(var, allow_missing = TRUE){
-  if (missing(var) && allow_missing)
+assert_label <- function(var, allow_missing = TRUE) {
+  if (missing(var) && allow_missing) {
     return()
+  }
 
   assert(
     checkString(var),
@@ -47,9 +49,10 @@ assert_label <- function(var, allow_missing = TRUE){
 #' @rdname assert
 #' @keywords internal
 #' @importFrom checkmate assert checkCharacter checkNumeric
-assert_just <- function(var, allow_missing = TRUE){
-  if (missing(var) && allow_missing)
+assert_just <- function(var, allow_missing = TRUE) {
+  if (missing(var) && allow_missing) {
     return()
+  }
 
   assert(
     checkCharacter(var, pattern = "^left|right|top|bottom|center|centre$", max.len = 2),
@@ -62,6 +65,6 @@ dep_var <- function(x) {
   nn <- substitute(x)
   on <- do.call("substitute", list(as.name(nn), parent.frame(1)))
   paste0(deparse(deparse(on), width.cutoff = 500),
-         collapse = "\n")
+    collapse = "\n"
+  )
 }
-

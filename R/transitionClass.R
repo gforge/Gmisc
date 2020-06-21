@@ -669,7 +669,7 @@ Transition <-
         }
 
         if (length(transitions) > 0) {
-          #           if (!is.null(attr(mtrx, "transition"))){
+          #           if (!is.null(attr(mtrx, "transition"))) {
           #             transitions <<- list(mtrx)
           #             return()
           #           }
