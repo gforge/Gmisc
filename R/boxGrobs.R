@@ -35,7 +35,7 @@ boxGrob <- function(label,
                     just = "center",
                     bjust = "center",
                     txt_gp = getOption("boxGrobTxt", default = gpar(color = "black")),
-                    box_gp = getOption("boxGrob", gpar(fill = "#D8F0D1")),
+                    box_gp = getOption("boxGrob", gpar(fill = "white")),
                     name = NULL) {
   assert(
     checkString(label),
@@ -74,40 +74,26 @@ boxGrob <- function(label,
     width <- prAsUnit(width)
   }
 
+  vp_args <- list(x = x, 
+                  y = y, 
+                  width = width,
+                  height = height,
+                  just = bjust)
 
   rect <- roundrectGrob(x = .5, y = .5, gp = box_gp, name = "rect_around")
-  gl <- grobTree(gList(
-    rect,
-    txt
-  ),
-  vp = viewport(
-    x = x, y = y,
-    width = width, height = height,
-    just = bjust
-  ),
-  name = name,
-  cl = "box"
+  gl <- grobTree(
+    gList(
+      rect,
+      txt
+    ),
+    vp = do.call(viewport, vp_args),
+    name = name,
+    cl = "box"
   )
 
-  # Adjust center depending on the viewport position
-  x <- prAdjustXPos(bjust, x, width)
-  y <- prAdjustYPos(bjust, y, height)
-  half_width <- unit(prCnvrtX(width) / 2, "mm")
-  half_height <- unit(prCnvrtY(height) / 2, "mm")
-
   structure(gl,
-    coords = prCreateCoords(
-      list(
-        left = x - half_width,
-        right = x + half_width,
-        bottom = y - half_height,
-        top = y + half_height,
-        x = x,
-        y = y,
-        width = width,
-        height = height
-      )
-    )
+    coords = prCreateBoxCoordinates(viewport_data = vp_args),
+    viewport_data = vp_args
   )
 }
 
@@ -191,10 +177,10 @@ boxPropGrob <- function(label,
                           default = gpar(col = "black")
                         ),
                         box_left_gp = getOption("boxPropGrobLeft",
-                          default = gpar(fill = "#81BFD4")
+                          default = gpar(fill = "#D6D8DD")
                         ),
                         box_right_gp = getOption("boxPropGrobRight",
-                          default = gpar(fill = "#D8F0D1")
+                          default = gpar(fill = "#FFFDF6")
                         ),
                         box_highlight_gp = getOption("boxPropGrobHighlight",
                           default = gpar(fill = "#ffffff55", col = NA)
@@ -330,55 +316,94 @@ boxPropGrob <- function(label,
     width <- unit(base_width, "mm") + txt_padding + txt_padding
   }
 
-  half_height <- unit(prCnvrtY(height) / 2, "mm")
-  half_width <- unit(prCnvrtX(width) / 2, "mm")
-
-  gl <- grobTree(roundrectGrob(
-    gp = box_left_gp,
-    width = width, x = 0, just = "left",
-    vp = viewport(x = 0, just = "left", width = prop, clip = "on")
-  ),
-  roundrectGrob(
-    gp = box_right_gp,
-    width = width, x = 1, just = "right",
-    vp = viewport(x = 1, just = "right", width = 1 - prop, clip = "on")
-  ),
-  txt,
-  vp = viewport(x = x, y = y, width = width, height = height, just = bjust),
-  cl = "box"
+  
+  vp_args <- list(x = x, 
+                  y = y, 
+                  width = width,
+                  height = height,
+                  just = bjust)
+  
+  gl <- grobTree(
+    roundrectGrob(
+      gp = box_left_gp,
+      width = width, x = 0, just = "left",
+      vp = viewport(x = 0, just = "left", width = prop, clip = "on")
+    ),
+    roundrectGrob(
+      gp = box_right_gp,
+      width = width, x = 1, just = "right",
+      vp = viewport(x = 1, just = "right", width = 1 - prop, clip = "on")
+    ),
+    txt,
+    vp = do.call(viewport, vp_args),
+    cl = "box"
   )
-  x <- prAdjustXPos(bjust, x, width)
-  y <- prAdjustYPos(bjust, y, height)
-
+  
+  xtr_coordinate_fns = list(
+    left_x = function(x, width, half_width) x - half_width + unit(prCnvrtX(width) * prop / 2, "mm"),
+    right_x = function(x, width, half_width) x - half_width + 
+      unit(prCnvrtX(width) * prop + prCnvrtX(width) * (1 - prop) / 2, "mm")
+  )
+  
   structure(gl,
-    coords = prCreateCoords(
-      list(
-        left = x - half_width,
-        right = x + half_width,
-        bottom = y - half_height,
-        top = y + half_height,
-        x = x,
-        left_x = x - half_width +
-          unit(prCnvrtX(width) * prop / 2, "mm"),
-        right_x = x - half_width +
-          unit(
-            prCnvrtX(width) * prop +
-              prCnvrtX(width) * (1 - prop) / 2,
-            "mm"
-          ),
-        y = y,
-        height = height,
-        width = width
-      )
-    )
+    coords = prCreateBoxCoordinates(viewport_data = vp_args, extra_coordinate_functions = xtr_coordinate_fns),
+    extra_coordinate_functions = xtr_coordinate_fns,
+    viewport_data = vp_args
   )
 }
 
+#' Creates coordinates for box
+#' 
+#' @param viewport_data The arguments that will be used for generating the \code{viewport}
+#' @param extra_coordinate_functions A list with named functions if we want additional
+#'  parameters
+#' @return \code{list} of class \code{coords}
 #' @importFrom checkmate assert_list
-prCreateCoords <- function(coords) {
-  assert_list(coords)
-  class(coords) <- c("coords", class(coords))
-  return(coords)
+prCreateBoxCoordinates <- function(viewport_data, extra_coordinate_functions = NULL) {
+  # Adjust center depending on the viewport position
+  x <- prAdjustXPos(viewport_data$bjust, viewport_data$x, viewport_data$width)
+  y <- prAdjustYPos(viewport_data$bjust, viewport_data$y, viewport_data$height)
+  half_height <- unit(prCnvrtY(viewport_data$height) / 2, "mm")
+  half_width <- unit(prCnvrtX(viewport_data$width) / 2, "mm")
+  
+  coordinates <- list(
+    left = viewport_data$x - half_width,
+    right = viewport_data$x + half_width,
+    bottom = viewport_data$y - half_height,
+    top = viewport_data$y + half_height,
+    x = x,
+    y = y,
+    width = viewport_data$width,
+    height = viewport_data$height
+  )
+  
+  if (!is.null(extra_coordinate_functions)) {
+    assert_list(extra_coordinate_functions, names = "strict")
+    
+    
+    available_inputs = coordinates
+    available_inputs$half_width <- half_width
+    available_inputs$half_height <- half_height
+    
+    for (n in names(extra_coordinate_functions)) {
+      required <- formals(extra_coordinate_functions[[n]]) %>% names
+      missing <- !(required %in% names(available_inputs))
+      if (any(missing)) {
+        stop("The extra coordinate generated from function '", n,  "'",
+             " requires '", paste(required[missing], collapse = "', '"), "'", 
+             " but it is not among the available '", paste(sort(names(available_inputs)), collapse = "', '"), "'")
+      }
+      
+      args <- list()
+      for (argname in required) {
+        args[[argname]] <- available_inputs[[argname]]
+      }
+      coordinates[[n]] <- do.call(extra_coordinate_functions[[n]], args)
+    }
+  }
+  
+  class(coordinates) <- c("coords", class(coordinates))
+  return(coordinates)
 }
 
 #' Connect boxes with an arrow

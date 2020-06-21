@@ -17,7 +17,7 @@ boxGrob(
   just = "center",
   bjust = "center",
   txt_gp = getOption("boxGrobTxt", default = gpar(color = "black")),
-  box_gp = getOption("boxGrob", gpar(fill = "#D8F0D1")),
+  box_gp = getOption("boxGrob", gpar(fill = "white")),
   name = NULL
 )
 
