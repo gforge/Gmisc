@@ -20,7 +20,9 @@ prCreateBoxCoordinates <- function(viewport_data, extra_coordinate_functions = N
     x = x,
     y = y,
     width = viewport_data$width,
-    height = viewport_data$height
+    height = viewport_data$height,
+    half_height = half_height,
+    half_width = half_width
   )
 
   if (!is.null(extra_coordinate_functions)) {

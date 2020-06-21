@@ -1,0 +1,73 @@
+#' Align boxes
+#'
+#' Aligns a set of [`boxGrob`]/[`boxPropGrob`] according to the first positional argument.
+#'
+#' @param reference A [`boxGrob`]/[`boxPropGrob`] object.
+#' @param ... A set of boxes.
+#' @param .position How to align the boxes, differs slightly for vertical and horizontal alignment
+#'  see the accepted arguments
+#' @return `list` with the boxes that are to be aligned
+#'
+#' @md
+#' @export
+#' @name align
+#' @example inst/examples/alignBox_ex.R
+#' @rdname align
+alignVertical <- function(reference, ..., .position = c('center', 'top', 'bottom')) {
+  position = match.arg(.position)
+  assert_class(reference, 'box')
+  boxes2align <- list(...)
+  assert_list(boxes2align, min.len = 1)
+  for (box in boxes2align) {
+    assert_class(box, 'box')
+  }
+  
+  sapply(boxes2align,
+         FUN = function(box, ref_pos) {
+           box_pos <- coords(box)
+           if (position == "center") {
+             new_y <- ref_pos$y
+           } else if (position == "bottom") {
+             new_y <- ref_pos$bottom + box_pos$half_height
+           } else if (position == "top") {
+             new_y <- ref_pos$top - box_pos$half_height
+           } else {
+             # Should be unreachable to get here
+             stop("Invalid position: ", position)
+           }
+           moveBox(box, y = new_y)
+         },
+         ref_pos = coords(reference),
+         simplify = FALSE)
+}
+
+#' @rdname align
+#' @export
+alignHorizontal <- function(reference, ..., .position = c('center', 'left', 'right')) {
+  position = match.arg(.position)
+  assert_class(reference, 'box')
+  boxes2align <- list(...)
+  assert_list(boxes2align, min.len = 1)
+  for (box in boxes2align) {
+    assert_class(box, 'box')
+  }
+  
+  sapply(boxes2align, 
+         FUN = function(box, ref_pos) {
+           box_pos <- coords(box)
+           if (position == "center") {
+             new_x <- ref_pos$x
+           } else if (position == "left") {
+             new_x <- ref_pos$left + box_pos$half_width
+           } else if (position == "right") {
+             new_x <- ref_pos$right - box_pos$half_width
+           } else {
+             # Should be unreachable to get here
+             stop("Invalid position: ", position)
+           }
+           
+           moveBox(box, x = new_x)
+         },
+         ref_pos = coords(reference),
+         simplify = FALSE)
+}
