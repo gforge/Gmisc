@@ -1,5 +1,9 @@
 NEWS for the Gmisc package
 
+Changes for 1.10.1
+------------------
+* Fix for adjustment in box justification, thanks Carl Suster
+
 Changes for 1.10.0
 ------------------
 * Added yamlDump for quick object review
