@@ -4,6 +4,7 @@ Changes for 1.11.0
 ------------------
 * Fix for adjustment in box justification, thanks Carl Suster
 * Slightly changed color scheme for boxGrobs
+* Added moveBox for moving boxGrob objects
 
 Changes for 1.10.0
 ------------------
