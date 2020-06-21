@@ -52,8 +52,8 @@ assert_just <- function(var, allow_missing = TRUE){
     return()
 
   assert(
-    checkString(var, pattern = "left|right|top|bottom|center"),
-    checkNumeric(var, lower = 0, upper = 1),
+    checkCharacter(var, pattern = "^left|right|top|bottom|center|centre$", max.len = 2),
+    checkNumeric(var, lower = 0, upper = 1, max.len = 2),
     .var.name = dep_var(var)
   )
 }
