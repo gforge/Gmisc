@@ -7,16 +7,16 @@
 #' @importFrom checkmate assert_list
 prCreateBoxCoordinates <- function(viewport_data, extra_coordinate_functions = NULL) {
   # Adjust center depending on the viewport position
-  x <- prAdjustXPos(viewport_data$bjust, viewport_data$x, viewport_data$width)
-  y <- prAdjustYPos(viewport_data$bjust, viewport_data$y, viewport_data$height)
+  x <- prAdjustXPos(viewport_data$just, viewport_data$x, viewport_data$width)
+  y <- prAdjustYPos(viewport_data$just, viewport_data$y, viewport_data$height)
   half_height <- unit(prCnvrtY(viewport_data$height) / 2, "mm")
   half_width <- unit(prCnvrtX(viewport_data$width) / 2, "mm")
 
   coordinates <- list(
-    left = viewport_data$x - half_width,
-    right = viewport_data$x + half_width,
-    bottom = viewport_data$y - half_height,
-    top = viewport_data$y + half_height,
+    left = x - half_width,
+    right = x + half_width,
+    bottom = y - half_height,
+    top = y + half_height,
     x = x,
     y = y,
     width = viewport_data$width,

@@ -67,12 +67,13 @@ test_that("Box auto height", {
 test_that("Box adjustment and coord consistency", {
   txt <- "AAAAAAAAAA\n  - BBBB"
   bx1 <- boxGrob(txt, x = .8)
-  bx2 <- boxGrob(txt, 
+  bx2 <- boxGrob(txt,
                  x = coords(bx1)$left, 
                  bjust = "left")
-  diff <- sum(sapply(coords(bx1), function(x) convertUnit(x, unitTo = "npc", valueOnly = TRUE)) -
-                sapply(coords(bx2), function(x) convertUnit(x, unitTo = "npc", valueOnly = TRUE)))
-  
-  expect_equal(diff, 0)
+  measures <- rbind(bx1 = sapply(coords(bx1), function(x) convertUnit(x, unitTo = "npc", valueOnly = TRUE)),
+                    bx2 = sapply(coords(bx2), function(x) convertUnit(x, unitTo = "npc", valueOnly = TRUE)))
+  diff_per_measure <- measures[1,] - measures[2,]
+  expect_equivalent(diff_per_measure,
+                    rep(0, times = length(diff_per_measure)))
 })
 
