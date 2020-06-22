@@ -2,10 +2,10 @@
 #'
 #' Retrieves the boxes \code{"coords"} attribute.
 #'
-#' @param box The boxGrob
-#' @return A list with the cooordinates
+#' @param box The \code{\link{boxGrob}} or \code{\link{boxPropGrob}}
+#' @return A list with the coordinates
 #'
-#' @importFrom checkmate assert_class assert checkString checkNumeric
+#' @importFrom checkmate assert_class
 #' @export
 #' @examples
 #' box <- boxGrob("A test box")
@@ -15,6 +15,7 @@ coords <- function(box) {
   if (inherits(box, "coords")) {
     return(box)
   }
+
   assert_class(box, "box")
   attr(box, "coords")
 }

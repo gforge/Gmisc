@@ -16,6 +16,7 @@
 #' @export
 #' @example inst/examples/moveBox_ex.R
 #' @importFrom checkmate assert_class assert_list
+#' @family flowchart components
 moveBox <- function(element, x = NULL, y = NULL, space = c('absolute', 'relative')) {
   space <- match.arg(space)
   assert_class(element, "box")

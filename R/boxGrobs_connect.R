@@ -28,7 +28,7 @@
 #' @export
 #'
 #' @importFrom checkmate assert_class
-#' @family box-functions
+#' @family flowchart components
 #' @rdname connect
 #' @example inst/examples/connectGrob_example.R
 connectGrob <- function(

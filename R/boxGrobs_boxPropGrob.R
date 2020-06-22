@@ -27,7 +27,7 @@
 #' @export
 #'
 #' @importFrom checkmate assert_class assert checkString checkNumeric assert_number
-#' @family box-functions
+#' @family flowchart components
 #' @examples
 #' library(grid)
 #' grid.newpage()
