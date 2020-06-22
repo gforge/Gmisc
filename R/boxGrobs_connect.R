@@ -122,10 +122,10 @@ connectGrob <- function(
     }
 
     line$x <- unit.c(
-      start$x,
-      start$x,
-      end$x,
-      end$x
+      getX4elmnt(start, "x"),
+      getX4elmnt(start, "x"),
+      getX4elmnt(end, "x"),
+      getX4elmnt(end, "x")
     )
   } else if (type == "vertical") {
     line$x <- unit.c(getX4elmnt(start, "x"), getX4elmnt(end, "x"))
