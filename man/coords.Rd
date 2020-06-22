@@ -7,10 +7,10 @@
 coords(box)
 }
 \arguments{
-\item{box}{The boxGrob}
+\item{box}{The \code{\link{boxGrob}} or \code{\link{boxPropGrob}}}
 }
 \value{
-A list with the cooordinates
+A list with the coordinates
 }
 \description{
 Retrieves the boxes \code{"coords"} attribute.
@@ -19,3 +19,13 @@ Retrieves the boxes \code{"coords"} attribute.
 box <- boxGrob("A test box")
 coords(box)
 }
+\seealso{
+Other flowchart components: 
+\code{\link{boxGrob}()},
+\code{\link{boxPropGrob}()},
+\code{\link{connectGrob}()},
+\code{\link{distance}()},
+\code{\link{moveBox}()},
+\code{\link{spread}}
+}
+\concept{flowchart components}

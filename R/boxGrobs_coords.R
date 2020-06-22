@@ -6,6 +6,7 @@
 #' @return A list with the coordinates
 #'
 #' @importFrom checkmate assert_class
+#' @family flowchart components
 #' @export
 #' @examples
 #' box <- boxGrob("A test box")

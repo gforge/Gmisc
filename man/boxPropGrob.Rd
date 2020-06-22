@@ -84,8 +84,12 @@ grid.newpage()
 boxPropGrob("Main label", "Left text", "Right text", prop = .3)
 }
 \seealso{
-Other box-functions: 
+Other flowchart components: 
+\code{\link{boxGrob}()},
 \code{\link{connectGrob}()},
-\code{\link{print.box}()}
+\code{\link{coords}()},
+\code{\link{distance}()},
+\code{\link{moveBox}()},
+\code{\link{spread}}
 }
-\concept{box-functions}
+\concept{flowchart components}

@@ -31,3 +31,13 @@ grid.newpage()
 box <- boxGrob("A simple box", x = .5, y = .8)
 moveBox(box, x = -.2, space = "relative")
 }
+\seealso{
+Other flowchart components: 
+\code{\link{boxGrob}()},
+\code{\link{boxPropGrob}()},
+\code{\link{connectGrob}()},
+\code{\link{coords}()},
+\code{\link{distance}()},
+\code{\link{spread}}
+}
+\concept{flowchart components}

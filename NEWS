@@ -6,6 +6,7 @@ Changes for 1.11.0
 * Slightly changed color scheme for boxGrobs
 * Added moveBox for moving boxGrob objects
 * Added alignVertical and alignHorizontal for aligning boxGrob objects
+* Added spreadVertival and spreadHorizontal for spreading boxGrob objects over the viewport
 
 Changes for 1.10.0
 ------------------
