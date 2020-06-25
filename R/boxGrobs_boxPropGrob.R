@@ -88,14 +88,12 @@ boxPropGrob <- function(label,
     y = unit(5, "mm")
   )
 
-  base_txt_height <- prConvTxt2Height(label) + 2
-  add_height <- max(prConvTxt2Height(label_left), prConvTxt2Height(label_right))
-  if (missing(height)) {
-    height <- unit(base_txt_height + add_height, "mm") + spacer$y + txt_padding + txt_padding
-  }
+  base_txt_height <- 0
 
   main_label <- NULL
   if (!missing(label)) {
+    base_txt_height <- prConvTxt2Height(label) + 2
+    
     main_label <- grobTree(
       name = "main_label",
       gList(
@@ -130,12 +128,17 @@ boxPropGrob <- function(label,
       list(textGrob(
         label = label_right, x = .5, y = 1,
         just = "center", vjust = 1,
-        vp = viewport(x = prop + (1 - prop) - (1 - prop) / 2, width = 1 - prop),
+        vp = viewport(x = prop + (1 - prop) / 2, width = 1 - prop),
         name = "label_right"
       ))
     )
   }
 
+  if (missing(height)) {
+    add_height <- max(sapply(sublabel, function(x) grobHeight(x) %>% prCnvrtY))
+    height <- unit(base_txt_height + add_height, "mm") + spacer$y + txt_padding + txt_padding
+  }
+  
   if (length(sublabel) == 0) {
     sublabel <- NULL
   } else {
