@@ -102,7 +102,8 @@ boxPropGrob <- function(label,
           label = label,
           x = prGetX4Txt(just, txt_padding), y = .5,
           just = just,
-          name = "label"
+          name = "label",
+          gp = txt_gp
         )
       ),
       vp = viewport(height = unit(base_txt_height + 2, "mm"), y = 1, just = "top")
@@ -117,7 +118,8 @@ boxPropGrob <- function(label,
         label = label_left, x = .5, y = 1,
         just = "center", vjust = 1,
         vp = viewport(x = prop / 2, width = prop),
-        name = "label_left"
+        name = "label_left",
+        gp = txt_left_gp
       ))
     )
   }
@@ -129,7 +131,8 @@ boxPropGrob <- function(label,
         label = label_right, x = .5, y = 1,
         just = "center", vjust = 1,
         vp = viewport(x = prop + (1 - prop) / 2, width = 1 - prop),
-        name = "label_right"
+        name = "label_right",
+        gp = txt_right_gp
       ))
     )
   }
