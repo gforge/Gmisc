@@ -10,90 +10,102 @@ vignette: >
   %\usepackage[utf8]{inputenc}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options:
-  chunk_output_type: console
+  chunk_output_type: inline
 ---
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Intro
+# Flowchart
 
-The `grid` package is what makes R graphics great. All the popular tools with awesome graphics use the `grid` as the back-end, e.g. `ggplot2` and `lattice`. When I started working on the `forestplot` package I first encountered the `grid` and it was instant love. In this vignette I'll show how you can use the box-functions in this package together with `grid` in order to generate a flowchart.
+A flowchart is a type of diagram that represents a workflow or process. In research we often want to explain how we recruited our patients, how many that were available from the start, how many that were excluded and how many were left at the final analysis. The **Gmisc** package provides a convenient set of functions for doing this using the R's built-in `grid` package with some bells and whistles. Below is a simple example that illustrates what we're aiming for.
 
-# Basics
-
-The grid package splits the plot into views. You can define a viewport and it will work as an isolated part of the plot, ignorant of the world around it. You do this via `viewport`, below I create a plot and add a rectangle to it:
-
-```{r basic_plot, fig.height = 2, fig.width = 2}
-# Load the grid library
-# part of standard R libraries so no need installing
+```{r, fig.height = 7, fig.width = 6}
+library(Gmisc, quietly = TRUE)
+library(glue)
+library(htmlTable)
 library(grid)
+library(magrittr)
 
-# Create a new graph
+org_cohort <- boxGrob(glue("Stockholm population",
+                           "n = {pop}",
+                           pop = txtInt(1632798),
+                           .sep = "\n"))
+eligible <- boxGrob(glue("Eligible",
+                          "n = {pop}",
+                           pop = txtInt(10032),
+                           .sep = "\n"))
+included <- boxGrob(glue("Randomized",
+                         "n = {incl}",
+                         incl = txtInt(122),
+                         .sep = "\n"))
+grp_a <- boxGrob(glue("Treatment A",
+                      "n = {recr}",
+                      recr = txtInt(43),
+                      .sep = "\n"))
+
+grp_b <- boxGrob(glue("Treatment B",
+                      "n = {recr}",
+                      recr = txtInt(122 - 43 - 30),
+                      .sep = "\n"))
+
+excluded <- boxGrob(glue("Excluded (n = {tot}):",
+                         " - not interested: {uninterested}",
+                         " - contra-indicated: {contra}",
+                         tot = 30,
+                         uninterested = 12,
+                         contra = 30 - 12,
+                         .sep = "\n"),
+                    just = "left")
+
 grid.newpage()
+vert <- spreadVertical(org_cohort,
+                       eligible = eligible,
+                       included = included,
+                       grps = grp_a)
+grps <- alignVertical(reference = vert$grps,
+                      grp_a, grp_b) %>% 
+  spreadHorizontal()
+vert$grps <- NULL
 
-pushViewport(viewport(width = .5, height = .8))
+excluded <- moveBox(excluded, 
+                    x = .8,
+                    y = coords(vert$included)$top + distance(vert$eligible, vert$included, half = TRUE, center = FALSE))
 
-grid.rect(gp = gpar(fill = "#D8F0D1"))
+for (i in 1:(length(vert) - 1)) {
+  connectGrob(vert[[i]], vert[[i + 1]], type = "vert") %>% 
+    print
+}
+connectGrob(vert$included, grps[[1]], type = "N")
+connectGrob(vert$included, grps[[2]], type = "N")
 
-popViewport()
+connectGrob(vert$eligible, excluded, type = "L")
+
+# Print boxes
+vert
+grps
+excluded
 ```
 
-Important to note is that the grid allows you to define precise units or relative units.
 
-## Relative units
+# Basic components explained
 
+There is a basic set of components that are used for generating flowcharts:
 
-* `npc` - ranges from 0-1 where 1 is 100% of the viewport width.
-* `snpc` - similar to npc but is the same length in height/width.
-* `lines` - the height of a line. The go-to method if you want to know the height of a few lines of text. It's relative to the viewport's `fontsize` and  `lineheight`.
-* `char` - the `lines` without the `lineheight` part.
+- Boxes, these are generated through the `boxGrob` and `boxPropGrob` functions.
+- Arrows between boxes, these are generated through the `connectGrob` function.
 
-Below we draw a line with relative units in two nested viewports. Note that the to lines are generated  from the exact same grob object but appear different depending on the viewport they are in:
+These can be positioned directly or preferably manipulated according to the following principles:
 
-```{r relative_lines, fig.height = 3, fig.width = 3}
-grid.newpage()
-pushViewport(viewport(width = .5, height = .8, clip = "on"))
-grid.rect(gp = gpar(lty = 2, fill = "lightyellow"))
-lg <- linesGrob(x = unit(c(.2, 1), "npc"),
-                y = unit(c(.2, 1), "npc"),
-                gp = gpar(lwd = 2))
-grid.draw(lg)
-pushViewport(viewport(x = 0, y = .6, just = "left", width = .4, height = .4, angle = 20))
-grid.rect(gp = gpar(fill = "lightblue")) # A translucent box to indicate the new viewport
-grid.draw(lg)
-popViewport()
-```
-
-
-## Absolute units
-
-* `mm` - probably my go-to unit when I want something absolute.
-* `inch` - if you prefer inches I guess this is the go-to choice.
-
-Below we draw a line with absolute units in two nested viewports. Note that the lines have the exact same length:
-
-```{r absolute_lines, fig.height = 3, fig.width = 3}
-grid.newpage()
-pushViewport(viewport(width = .5, height = .8, clip = "on"))
-grid.rect(gp = gpar(lty = 2, fill = "lightyellow"))
-lg <- linesGrob(x = unit(c(2, 10), "mm"),
-                y = unit(c(2, 10), "mm"),
-                gp = gpar(lwd = 2))
-grid.draw(lg)
-pushViewport(viewport(x = 0, y = .6, just = "left", width = .4, height = .4, angle = 20))
-grid.rect(gp = gpar(fill = "lightblue")) # A translucent box to indicate the new viewport
-grid.draw(lg)
-popViewport()
-```
+- Spread - we want to use the full plot and either we position each element or we automatically spread them in a vertical or horizontal direction, `spreadHorizontal` and `spreadVertical` functions.
+- Alignment of boxes - before or after spreading we may want to align boxes: `alignHorizontal` and `alignVertical` functions.
 
 # A basic box
 
-Now we can start exploring how to use the `Gmics::box` functions. We'll strt with outputting a single box:
+We can start with outputting a single box:
 
 ```{r basic_box, fig.height = 1.5, fig.width = 3, message = FALSE}
-library(Gmisc)
 grid.newpage()
 txt <-
 "Just a plain box
@@ -150,7 +162,7 @@ prop_bx <- boxPropGrob(
 plot(smpl_bx)
 plot(prop_bx)
 
-smpl_bx_coords <- attr(smpl_bx, "coords")
+smpl_bx_coords <- coords(smpl_bx)
 grid.circle(y = smpl_bx_coords$y,
             x = smpl_bx_coords$x,
             r = unit(2, "mm"),
@@ -172,7 +184,7 @@ grid.circle(y = smpl_bx_coords$top,
             r = unit(1, "mm"),
             gp = gpar(fill = "orange"))
 
-prop_bx_coords <- attr(prop_bx, "coords")
+prop_bx_coords <- coords(prop_bx)
 grid.circle(y = prop_bx_coords$y,
             x = prop_bx_coords$x,
             r = unit(2, "mm"),
@@ -218,7 +230,6 @@ In order to make connecting boxes with an arrow there is the `connectGrob` funct
 
 ```{r "Connected boxes", fig.width = 7, fig.height = 5}
 grid.newpage()
-
 # Initiate the boxes that we want to connect
 side <- boxPropGrob("Side", "Left", "Right",
                     prop = .3,
@@ -298,9 +309,79 @@ boxGrob(expression(paste("y = ", beta[0], " + ", beta[1], X[1], " + ", beta[2], 
 boxGrob(expression(paste(beta, gamma, Gamma)), 0.15, 0.5)
 ```
 
-See the `plotmath` helpfile for more details.
+See the `plotmath` help file for more details.
 
+# Grid & some background info
+
+The `grid` package is what makes R graphics great. All the popular tools with awesome graphics use the `grid` as the back-end, e.g. `ggplot2` and `lattice`. When I started working on the `forestplot` package I first encountered the `grid` and it was instant love. In this vignette I'll show how you can use the flowchart-functions in this package together with `grid` in order to generate a flowchart.
+
+## Basics
+
+The grid package splits the plot into views. You can define a *viewport* and it will work as an isolated part of the plot, ignorant of the world around it. You do this via `viewport()`, below I create a plot and add a rectangle to it:
+
+```{r basic_plot, fig.height = 2, fig.width = 2}
+# Load the grid library
+# part of standard R libraries so no need installing
+library(grid)
+
+# Create a new graph
+grid.newpage()
+
+pushViewport(viewport(width = .5, height = .8))
+
+grid.rect(gp = gpar(fill = "#D8F0D1"))
+
+popViewport()
+```
+
+Important to note is that the grid allows you to define precise units or relative units.
+
+## Relative units
+
+
+* `npc` - ranges from 0-1 where 1 is 100% of the viewport width.
+* `snpc` - similar to npc but is the same length in height/width.
+* `lines` - the height of a line. The go-to method if you want to know the height of a few lines of text. It's relative to the viewport's `fontsize` and  `lineheight`.
+* `char` - the `lines` without the `lineheight` part.
+
+Below we draw a line with relative units in two nested viewports. Note that the to lines are generated  from the exact same grob object but appear different depending on the viewport they are in:
+
+```{r relative_lines, fig.height = 3, fig.width = 3}
+grid.newpage()
+pushViewport(viewport(width = .5, height = .8, clip = "on"))
+grid.rect(gp = gpar(lty = 2, fill = "lightyellow"))
+lg <- linesGrob(x = unit(c(.2, 1), "npc"),
+                y = unit(c(.2, 1), "npc"),
+                gp = gpar(lwd = 2))
+grid.draw(lg)
+pushViewport(viewport(x = 0, y = .6, just = "left", width = .4, height = .4, angle = 20))
+grid.rect(gp = gpar(fill = "lightblue")) # A translucent box to indicate the new viewport
+grid.draw(lg)
+popViewport()
+```
+
+
+## Absolute units
+
+* `mm` - probably my go-to unit when I want something absolute.
+* `inch` - if you prefer inches I guess this is the go-to choice.
+
+Below we draw a line with absolute units in two nested `viewports`. Note that the lines have the exact same length:
+
+```{r absolute_lines, fig.height = 3, fig.width = 3}
+grid.newpage()
+pushViewport(viewport(width = .5, height = .8, clip = "on"))
+grid.rect(gp = gpar(lty = 2, fill = "lightyellow"))
+lg <- linesGrob(x = unit(c(2, 10), "mm"),
+                y = unit(c(2, 10), "mm"),
+                gp = gpar(lwd = 2))
+grid.draw(lg)
+pushViewport(viewport(x = 0, y = .6, just = "left", width = .4, height = .4, angle = 20))
+grid.rect(gp = gpar(fill = "lightblue")) # A translucent box to indicate the new viewport
+grid.draw(lg)
+popViewport()
+```
 
 # Tips for debugging
 
-If you find that your elements don't look as expected make sure that your not changing viewport/device. While most coordinates are relative some of them need to be fixed and therefore changing the viewport may impact where elements are renered.
+If you find that your elements don't look as expected make sure that your not changing viewport/device. While most coordinates are relative some of them need to be fixed and therefore changing the viewport may impact where elements are rendered.
