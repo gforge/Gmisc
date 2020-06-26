@@ -44,3 +44,16 @@ test_that("Check that not providing label reduces the height of the box", {
             grobHeight(b1) %>% prCnvrtY)
 })
 
+test_that("Label with two lines increases the height", {
+  b1 <- boxPropGrob(label = "A",
+                    label_left = "A",
+                    label_right = "A", prop = .5) %>% 
+    grobHeight %>% 
+    convertY(unitTo = "mm", valueOnly = TRUE)
+  b2 <- boxPropGrob(label = "A\nA", 
+                    label_left = "AA",
+                    label_right = "AA", prop = .5) %>% 
+    grobHeight %>% 
+    convertY(unitTo = "mm", valueOnly = TRUE)
+  expect_gt(b2, b1, label = "Prop box height should be defined from the width of the text")
+})

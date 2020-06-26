@@ -54,14 +54,6 @@ test_that("Box auto height", {
     grobHeight %>% 
     convertY(unitTo = "mm", valueOnly = TRUE)
   expect_lt(A, AA, label = "Box height should be defined from the width of the text")
-  
-  A <- boxPropGrob("A", "A", "A", prop = .5) %>% 
-    grobHeight %>% 
-    convertY(unitTo = "mm", valueOnly = TRUE)
-  AA <- boxPropGrob("A\nA", "AA", "AA", prop = .5) %>% 
-    grobHeight %>% 
-    convertY(unitTo = "mm", valueOnly = TRUE)
-  expect_lt(A, AA, label = "Prop box height should be defined from the width of the text")
 })
 
 test_that("Box adjustment and coord consistency", {

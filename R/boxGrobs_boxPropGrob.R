@@ -100,7 +100,7 @@ boxPropGrob <- function(label,
       name = "label",
       gp = txt_gp
     )
-    label_measures$height <- (prCnvrtX(grobWidth(tg)) + 2)
+    label_measures$height <- (prCnvrtX(grobHeight(tg)) + 2)
     label_measures$width <- prCnvrtX(grobWidth(tg))
     
     main_label <- grobTree(
@@ -114,47 +114,32 @@ boxPropGrob <- function(label,
   }
 
   sublabel <- list()
-  sublabel_measures <- list(
-    left = list(width = 0,
-                height = 0),
-    right = list(width = 0,
-                 height = 0)
-  )
   if (!missing(label_left)) {
-    tg <- textGrob(
-      label = label_left, x = .5, y = 1,
-      just = "center", vjust = 1,
-      vp = viewport(x = prop / 2, width = prop),
-      name = "label_left",
-      gp = txt_left_gp
-    )
-    sublabel <- c(sublabel, list(tg))
-    
-    sublabel_measures$left$height <- prCnvrtY(grobHeight(tg) + unit(.5, units = "lines"))
-    sublabel_measures$left$width <- prCnvrtX(grobWidth(tg) + unit(.5, units = "lines"))
+    sublabel$left <- prBuildSubLabel(label = label_left,
+                                     prop = prop,
+                                     txt_gp = txt_left_gp,
+                                     side = "left")
   }
 
   if (!missing(label_right)) {
-    tg <- textGrob(
-      label = label_right, x = .5, y = 1,
-      just = "center", vjust = 1,
-      vp = viewport(x = prop + (1 - prop) / 2, width = 1 - prop),
-      name = "label_right",
-      gp = txt_right_gp
-    )
-    sublabel <- c(sublabel, list(tg))
-    
-    sublabel_measures$right$height <- prCnvrtY(grobHeight(tg))
-    sublabel_measures$right$width <- prCnvrtX(grobWidth(tg))
+    sublabel$right <- prBuildSubLabel(label = label_right,
+                                      prop = prop,
+                                      txt_gp = txt_right_gp,
+                                      side = "right")
   }
 
+  space_between_label_and_sublabel <- unit(0, "mm")
   if (missing(height)) {
     add_height <- 0
     if (length(sublabel) > 0) {
-      add_height <- max(sapply(sublabel_measures, function(x) x$height))
+      add_height <- max(sapply(sublabel, function(x) attr(x, "height")))
     }
     
-    height <- unit(label_measures$height + add_height, "mm") + spacer$y + txt_padding + txt_padding
+    if (label_measures$height > 0 && add_height > 0) {
+      space_between_label_and_sublabel <- spacer$y  
+    }
+    
+    height <- unit(label_measures$height + add_height, "mm") + space_between_label_and_sublabel + txt_padding + txt_padding
   }
   
   if (length(sublabel) == 0) {
@@ -171,7 +156,7 @@ boxPropGrob <- function(label,
         name = "sublabel",
         vp = viewport(
           y = 0, just = "bottom",
-          height = unit(1, "npc") - unit(label_measures$height, "mm") - spacer$y
+          height = unit(1, "npc") - unit(label_measures$height, "mm") - space_between_label_and_sublabel
         )
       )
     ),
@@ -187,24 +172,31 @@ boxPropGrob <- function(label,
 
   # Calculate the width of the grob
   if (missing(width)) {
-    base_width <-
-      max(
-        label_measures$width,
-        (sublabel_measures$left$width +
-           prCnvrtX(spacer$x) +
-           sublabel_measures$right$width)
-      )
+    total_sublabel_width <- 0
+    if (length(sublabel) > 0) {
+      total_sublabel_width <- sum(sapply(sublabel, function(x) attr(x, "width"))) +
+        prCnvrtX(spacer$x)
+    }
+    
+    base_width <- max(label_measures$width, total_sublabel_width  )
     
     # Due to the proportions we may need to force a larger window
-    min_left <- sublabel_measures$left$width +
-      prCnvrtX(txt_padding) +
-      prCnvrtX(spacer$x)
-    min_right <- sublabel_measures$right$width +
-      prCnvrtX(txt_padding) +
-      prCnvrtX(spacer$x)
+    get_min_width <- function(sl) {
+      if (is.null(sl)) {
+        return(0)
+      }
+
+      attr(sl, "width") +
+        prCnvrtX(txt_padding) +
+        prCnvrtX(spacer$x)
+    }
+    
+    min_left <- get_min_width(sublabel$left)
     if (base_width * prop < min_left) {
       base_width <- min_left / prop
     }
+    
+    min_right <- get_min_width(sublabel$right)
     if (base_width * (1 - prop) < min_right) {
       base_width <- min_right / (1 - prop)
     }
@@ -250,4 +242,42 @@ boxPropGrob <- function(label,
     extra_coordinate_functions = xtr_coordinate_fns,
     viewport_data = vp_args
   )
+}
+
+
+#' Add a sub-label to \code{boxPropGrob}
+#' 
+#' @param prop The proportion
+#' @param label The text of the label
+#' @param txt_gp The style as defined by \code{\link[grid]{gpar}()}
+#' @param side The side that the label belongs to
+#' @return A \code{textGrob} with he additional attributes \code{width} and \code{height}.
+prBuildSubLabel <- function(label,
+                            prop, 
+                            txt_gp, 
+                            side = c("left", "right")) {
+  side <- match.arg(side)
+  if (side == "left") {
+    x = prop / 2
+    width = prop
+  } else {
+    x <- prop + (1 - prop) / 2
+    width <- 1 - prop
+  }
+  
+  vp <- viewport(x = x, width = width,
+                 y = 1,
+                 just = c('centre', 'top'),
+                 name = paste0("vp_label_", side))
+  tg <- textGrob(
+    label = label, 
+    x = .5, y = 0.5,
+    just = "center",
+    vp = vp,
+    name = paste0("label_", side),
+    gp = txt_gp
+  )
+  structure(tg,
+            height = prCnvrtY(grobHeight(tg) + unit(.5, units = "lines")),
+            width = prCnvrtX(grobWidth(tg) + unit(.5, units = "lines")))
 }
