@@ -213,6 +213,9 @@ prApplyBoxSpread <- function(boxes2spread, distances, move_fn) {
       }
     }
   }
-  return(ret)
+  
+  structure(
+    ret,
+    class = c("Gmisc_list_of_boxes", class(ret)))
 }
 
