@@ -3,6 +3,7 @@ NEWS for the Gmisc package
 Changes for 1.11.0
 ------------------
 * Fix for adjustment in box justification, thanks Carl Suster
+* Fix for incorrect boxPropGrob height calculation, bad handling of missing arguments and ignored gpar arguments (issue #46)
 * Slightly changed color scheme for boxGrobs
 
 Changes for 1.10.0
