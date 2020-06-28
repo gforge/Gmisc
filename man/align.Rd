@@ -8,7 +8,12 @@
 \usage{
 alignVertical(reference, ..., .position = c("center", "top", "bottom"))
 
-alignHorizontal(reference, ..., .position = c("center", "left", "right"))
+alignHorizontal(
+  reference,
+  ...,
+  .position = c("center", "left", "right"),
+  .sub_position = c("none", "left", "right")
+)
 }
 \arguments{
 \item{reference}{A \code{\link{boxGrob}}/\code{\link{boxPropGrob}} object.}

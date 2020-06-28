@@ -63,7 +63,9 @@ distance <- function(box1,
       left = v,
       right = v,
       height = unit(0, "npc"),
-      half_height = unit(0, "npc")
+      half_height = unit(0, "npc"),
+      width = unit(0, "npc"),
+      half_width = unit(0, "npc")
     ))
   }
 
@@ -77,7 +79,6 @@ distance <- function(box1,
   box_coords1 <- get_borders(box1)
   box_coords2 <- get_borders(box2)
 
-  positive <- TRUE
   type = match.arg(type)
   converter_fn <- ifelse(type == "horizontal", prCnvrtX, prCnvrtY)
   from = NA
@@ -91,25 +92,24 @@ distance <- function(box1,
         from <- box_coords1$bottom
         to <- box_coords2$top
       }
-      positive <- FALSE
     } else {
       if (center) {
         from <- box_coords1$y
         to <- box_coords2$y
       } else {
-        from <- box_coords2$bottom
-        to <- box_coords1$top
+        from <- box_coords1$top
+        to <- box_coords2$bottom
       }
     }
-    ret <- converter_fn(from) - converter_fn(to)
+    ret <- converter_fn(to) - converter_fn(from)
   } else if (type == "horizontal") {
     if (prCnvrtX(box_coords1$x) < prCnvrtX(box_coords2$x)) {
       if (center) {
-        to <- box_coords1$x
-        from <- box_coords2$x
+        from <- box_coords1$x
+        to <- box_coords2$x
       } else {
-        from <- box_coords2$left
-        to <- box_coords1$right
+        from <- box_coords1$right
+        to <- box_coords2$left
       }
     } else {
       if (center) {
@@ -119,15 +119,21 @@ distance <- function(box1,
         from <- box_coords1$left
         to <- box_coords2$right
       }
-      positive <- FALSE
     }
-    ret <- converter_fn(from) - converter_fn(to)
+    ret <- converter_fn(to) - converter_fn(from)
   } else if (type == "euclidean") {
     ydist <- distance(box1 = box1, box2 = box2, type = "vertical", center = center)
     xdist <- distance(box1 = box1, box2 = box2, type = "horizontal", center = center)
     ret <- sqrt(prCnvrtY(ydist)^2 + prCnvrtX(xdist)^2)
   } else {
     stop("Unreachable code")
+  }
+  
+  if (ret < 0) {
+    positive <- FALSE
+    ret <- -1 * ret
+  } else {
+    positive <- TRUE
   }
 
   if (half) {

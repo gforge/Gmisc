@@ -44,7 +44,7 @@ spreadVertical <- function(..., .from = NULL, .to = NULL, .type = c('between', '
   prApplyBoxSpread(boxes2spread = boxes2spread,
                    distances = new_y_distances,
                    move_fn = function(box, pos) {
-                     moveBox(box, y = pos, space = "absolute")
+                     moveBox(box, y = pos, space = "absolute", just = c(NA, "center"))
                    })
 }
 
@@ -79,7 +79,7 @@ spreadHorizontal <- function(..., .from = NULL, .to = NULL, .type = c('between',
   prApplyBoxSpread(boxes2spread = boxes2spread,
                    distances = new_x_distances,
                    move_fn = function(box, pos) {
-                     moveBox(box, x = pos, space = "absolute")
+                     moveBox(box, x = pos, space = "absolute", just = "center")
                    })
 }
 
@@ -89,21 +89,36 @@ prGetSpanSpace <- function(boxes2spread, .from, .to, type, orientation = c("vert
   type_half_size_key <- paste0("half_", type_size_key)
   
   extra_space <- unit(0, units = "mm")
+  dist_sign <- NA
   if (!is.null(.from)) {
     if (is.null(.to)) {
       stop("If you provide a .from box then the to has to exist")
     }
     dist <- distance(box1 = .from, box2 = .to, type = orientation)
+    dist_sign <- ifelse(attr(dist, "positive"), 1, -1)
     start_pos <- attr(dist, "from")
     end_pos <- attr(dist, "to")
     
-    first <- NULL
-    last <- NULL
+    if (inherits(.from, 'box')) {
+      first <- .from
+    } else {
+      first <- boxes2spread[[1]]
+      boxes2spread <- boxes2spread[2:length(boxes2spread)]
+      start_pos <- start_pos + dist_sign * coords(first)[[type_size_key]]
+      dist <- dist - coords(first)[[type_size_key]]
+    }
+    
+    if (inherits(.to, 'box')) {
+      last <- .to      
+    } else {
+      last <- tail(boxes2spread, 1)[[1]]
+      boxes2spread <- boxes2spread[1:(length(boxes2spread) - 1)]
+      end_pos <- end_pos - dist_sign * coords(last)[[type_size_key]]
+      dist <- dist - coords(last)[[type_size_key]]
+    }
+
     boxes_in_between <- boxes2spread
     
-    if (type == "center") {
-      extra_space <- attr(dist, "box_coords1")[[type_half_size_key]] + attr(dist, "box_coords2")[[type_half_size_key]]
-    }
   } else {
     if (length(boxes2spread) <= 1) {
       stop("Can't spread a single box")
@@ -121,18 +136,24 @@ prGetSpanSpace <- function(boxes2spread, .from, .to, type, orientation = c("vert
     }
 
     dist <- distance(box1 = start_pos, box2 = end_pos, type = orientation)
+    dist_sign <- ifelse(attr(dist, "positive"), 1, -1)
     
     boxes_in_between <- c()
     if (length(boxes2spread) > 2) {
       boxes_in_between <- boxes2spread[2:(length(boxes2spread) - 1)]
     }
-    
-    if (type == "center") {
-      extra_space <- coords(first)[[type_half_size_key]] + coords(last)[[type_half_size_key]]
-    }
+  }
+  
+  if (type == "center") {
+    extra_space <- coords(first)[[type_half_size_key]] + coords(last)[[type_half_size_key]]
+  }
+  
+  if (orientation == "horizontal") {
+    available_space <- prCnvrtX(dist + extra_space) %>% unit(units = "mm")
+  } else {
+    available_space <- prCnvrtY(dist + extra_space) %>% unit(units = "mm")
   }
 
-  available_space <- prCnvrtX(dist + extra_space) %>% unit(units = "mm")
   if (type == "between") {
     for (b in boxes_in_between) {
       available_space <- available_space - coords(b)[[type_size_key]]
@@ -146,7 +167,7 @@ prGetSpanSpace <- function(boxes2spread, .from, .to, type, orientation = c("vert
     start_pos = start_pos, 
     end_pos = end_pos,
     available_space = available_space,
-    sign = ifelse(attr(dist, "positive"), 1, -1)
+    sign = dist_sign
   )
 }
 

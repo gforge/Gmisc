@@ -4,7 +4,13 @@
 \alias{moveBox}
 \title{Move a boxGrob}
 \usage{
-moveBox(element, x = NULL, y = NULL, space = c("absolute", "relative"))
+moveBox(
+  element,
+  x = NULL,
+  y = NULL,
+  space = c("absolute", "relative"),
+  just = NULL
+)
 }
 \arguments{
 \item{element}{A \code{\link{boxGrob}}/\code{\link{boxPropGrob}} object.}

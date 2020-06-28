@@ -12,12 +12,15 @@
 #' @return The element with updated 
 #'
 #' @md
-#' @importFrom checkmate assert_class assert checkString checkNumeric
+#' @importFrom checkmate assert_class assert checkString checkNumeric checkCharacter
 #' @export
 #' @example inst/examples/moveBox_ex.R
 #' @importFrom checkmate assert_class assert_list
 #' @family flowchart components
-moveBox <- function(element, x = NULL, y = NULL, space = c('absolute', 'relative')) {
+moveBox <- function(element, 
+                    x = NULL, y = NULL, 
+                    space = c('absolute', 'relative'),
+                    just = NULL) {
   space <- match.arg(space)
   assert_class(element, "box")
   if (is.null(x) && is.null(y)) {
@@ -26,6 +29,46 @@ moveBox <- function(element, x = NULL, y = NULL, space = c('absolute', 'relative
   
   vp_args <- attr(element, 'viewport_data')
   assert_list(vp_args)
+  
+  if (!is.null(just)) {
+    assert(checkCharacter(just, min.len = 1, max.len = 2),
+           checkNumeric(just, lower = 0, upper = 1, min.len = 1, max.len = 2))
+    if (is.null(vp_args$just)) {
+      vp_args$just <- just
+    } else {
+      if (length(just) == 1) {
+        if (just %in% c("bottom", "top")) {
+          vp_args$just[2] <- just
+        } else {
+          vp_args$just[1] <- just
+        }
+      } else {
+        for (i in 1:2) {
+          if (!is.na(just[i])) {
+            vp_args$just[i] <- just[i]
+          }
+        }
+      }
+      if (!all(vp_args$just %in% c("center", "centre", "left", "right", "bottom", "top"))) {
+        vp_args$just <- sapply(vp_args$just,
+                               function(x) {
+                                 if (x %in% c("center", "centre")) {
+                                   return(0.5)
+                                 }
+                                 if (x %in% c("left", "bottom")) {
+                                   return(0)
+                                 }
+                                 if (x %in% c("right", "top")) {
+                                   return(1)
+                                 }
+                                 if (!is.na(as.numeric(x))) {
+                                   return(as.numeric(x))
+                                 }
+                                 stop("The justification ", x, " has not been implemented")
+                               })
+      }
+    }
+  }
   
   toUnit <- function(x) {
     if (is.unit(x) || is.null(x)) {
