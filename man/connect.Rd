@@ -87,8 +87,13 @@ sub_side_left
 sub_side_right
 }
 \seealso{
-Other box-functions: 
+Other flowchart components: 
+\code{\link{align}},
+\code{\link{boxGrob}()},
 \code{\link{boxPropGrob}()},
-\code{\link{print.box}()}
+\code{\link{coords}()},
+\code{\link{distance}()},
+\code{\link{moveBox}()},
+\code{\link{spread}}
 }
-\concept{box-functions}
+\concept{flowchart components}

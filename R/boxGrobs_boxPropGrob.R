@@ -27,7 +27,7 @@
 #' @export
 #'
 #' @importFrom checkmate assert_class assert checkString checkNumeric assert_number
-#' @family box-functions
+#' @family flowchart components
 #' @examples
 #' library(grid)
 #' grid.newpage()
@@ -52,7 +52,7 @@ boxPropGrob <- function(label,
                           default = gpar(col = "black")
                         ),
                         box_left_gp = getOption("boxPropGrobLeft",
-                          default = gpar(fill = "#D6D8DD")
+                          default = gpar(fill = "#E6E8EF")
                         ),
                         box_right_gp = getOption("boxPropGrobRight",
                           default = gpar(fill = "#FFFDF6")
@@ -102,12 +102,12 @@ boxPropGrob <- function(label,
     )
     label_measures$height <- (prCnvrtX(grobHeight(tg)) + 2)
     label_measures$width <- prCnvrtX(grobWidth(tg))
-    
+
     main_label <- grobTree(
       name = "main_label",
       gList(roundrectGrob(gp = box_highlight_gp), tg),
-      vp = viewport(height = unit(label_measures$height, "mm"), 
-                    y = 1, 
+      vp = viewport(height = unit(label_measures$height, "mm"),
+                    y = 1,
                     just = "top")
     )
 
@@ -134,14 +134,14 @@ boxPropGrob <- function(label,
     if (length(sublabel) > 0) {
       add_height <- max(sapply(sublabel, function(x) attr(x, "height")))
     }
-    
+
     if (label_measures$height > 0 && add_height > 0) {
-      space_between_label_and_sublabel <- spacer$y  
+      space_between_label_and_sublabel <- spacer$y
     }
-    
+
     height <- unit(label_measures$height + add_height, "mm") + space_between_label_and_sublabel + txt_padding + txt_padding
   }
-  
+
   if (length(sublabel) == 0) {
     sublabel <- NULL
   } else {
@@ -177,9 +177,9 @@ boxPropGrob <- function(label,
       total_sublabel_width <- sum(sapply(sublabel, function(x) attr(x, "width"))) +
         prCnvrtX(spacer$x)
     }
-    
+
     base_width <- max(label_measures$width, total_sublabel_width  )
-    
+
     # Due to the proportions we may need to force a larger window
     get_min_width <- function(sl) {
       if (is.null(sl)) {
@@ -190,17 +190,17 @@ boxPropGrob <- function(label,
         prCnvrtX(txt_padding) +
         prCnvrtX(spacer$x)
     }
-    
+
     min_left <- get_min_width(sublabel$left)
     if (base_width * prop < min_left) {
       base_width <- min_left / prop
     }
-    
+
     min_right <- get_min_width(sublabel$right)
     if (base_width * (1 - prop) < min_right) {
       base_width <- min_right / (1 - prop)
     }
-    
+
     width <- unit(base_width, "mm") + txt_padding + txt_padding
   }
 
@@ -234,6 +234,9 @@ boxPropGrob <- function(label,
     right_x = function(x, width, half_width) {
       x - half_width +
         unit(prCnvrtX(width) * prop + prCnvrtX(width) * (1 - prop) / 2, "mm")
+    },
+    prop_x = function(x, width, half_width) {
+      x - half_width + unit(prCnvrtX(width) * prop, "mm")
     }
   )
 
@@ -246,15 +249,15 @@ boxPropGrob <- function(label,
 
 
 #' Add a sub-label to \code{boxPropGrob}
-#' 
+#'
 #' @param prop The proportion
 #' @param label The text of the label
 #' @param txt_gp The style as defined by \code{\link[grid]{gpar}()}
 #' @param side The side that the label belongs to
 #' @return A \code{textGrob} with he additional attributes \code{width} and \code{height}.
 prBuildSubLabel <- function(label,
-                            prop, 
-                            txt_gp, 
+                            prop,
+                            txt_gp,
                             side = c("left", "right")) {
   side <- match.arg(side)
   if (side == "left") {
@@ -264,13 +267,13 @@ prBuildSubLabel <- function(label,
     x <- prop + (1 - prop) / 2
     width <- 1 - prop
   }
-  
+
   vp <- viewport(x = x, width = width,
                  y = 1,
                  just = c('centre', 'top'),
                  name = paste0("vp_label_", side))
   tg <- textGrob(
-    label = label, 
+    label = label,
     x = .5, y = 0.5,
     just = "center",
     vp = vp,

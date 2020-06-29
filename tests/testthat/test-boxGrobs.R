@@ -1,7 +1,5 @@
 library(testthat)
 
-context("boxGrob")
-
 test_that("Box auto width", {
   A <- boxGrob("A") %>% 
     grobWidth %>% 

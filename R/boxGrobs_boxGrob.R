@@ -22,7 +22,8 @@
 #'
 #' @rdname box
 #' @importFrom checkmate assert_class assert checkString checkNumeric
-#' @family box-functions
+#' @family flowchart components
+#' @order 1
 #' @examples
 #' library(grid)
 #' grid.newpage()
