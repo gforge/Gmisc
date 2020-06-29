@@ -22,6 +22,9 @@ alignHorizontal(
 
 \item{.position}{How to align the boxes, differs slightly for vertical and horizontal alignment
 see the accepted arguments}
+
+\item{.sub_position}{When the box is a \code{\link{boxPropGrob}} it not only has the general \code{.positions} but
+also \code{left} and \code{right} which can be viewed as separate boxes that have simply been merged.}
 }
 \value{
 \code{list} with the boxes that are to be aligned
@@ -67,3 +70,14 @@ for (b in alignedBoxes) {
   print(b)
 }
 }
+\seealso{
+Other flowchart components: 
+\code{\link{boxGrob}()},
+\code{\link{boxPropGrob}()},
+\code{\link{connectGrob}()},
+\code{\link{coords}()},
+\code{\link{distance}()},
+\code{\link{moveBox}()},
+\code{\link{spread}}
+}
+\concept{flowchart components}

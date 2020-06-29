@@ -21,6 +21,7 @@ coords(box)
 }
 \seealso{
 Other flowchart components: 
+\code{\link{align}},
 \code{\link{boxGrob}()},
 \code{\link{boxPropGrob}()},
 \code{\link{connectGrob}()},

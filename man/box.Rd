@@ -85,6 +85,7 @@ boxGrob("My box")
 }
 \seealso{
 Other flowchart components: 
+\code{\link{align}},
 \code{\link{boxPropGrob}()},
 \code{\link{connectGrob}()},
 \code{\link{coords}()},

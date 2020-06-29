@@ -21,6 +21,11 @@ moveBox(
 
 \item{space}{We can provide \code{absolute} that confers the box absolute position within the parent
 \code{\link[grid:viewport]{viewport}}. If \code{relative} the movement is related to the current position.}
+
+\item{just}{The justification of an argument as used by \code{\link[grid:viewport]{viewport}} some tiny differences:
+(1) you only want to change the justification in the vertical direction you can retain the
+existing justification by using \code{NA}, e.g. \code{c(NA, 'top')}, (2) if you specify only one string
+and that string is either \code{top} or \code{bottom} it will assume vertical justification.}
 }
 \value{
 The element with updated
@@ -39,6 +44,7 @@ moveBox(box, x = -.2, space = "relative")
 }
 \seealso{
 Other flowchart components: 
+\code{\link{align}},
 \code{\link{boxGrob}()},
 \code{\link{boxPropGrob}()},
 \code{\link{connectGrob}()},

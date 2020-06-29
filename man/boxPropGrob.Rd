@@ -85,6 +85,7 @@ boxPropGrob("Main label", "Left text", "Right text", prop = .3)
 }
 \seealso{
 Other flowchart components: 
+\code{\link{align}},
 \code{\link{boxGrob}()},
 \code{\link{connectGrob}()},
 \code{\link{coords}()},

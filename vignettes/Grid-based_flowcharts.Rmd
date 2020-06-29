@@ -426,20 +426,32 @@ alignVertical(reference = align_3,
 
 Similarly to alignment we often want to spread our boxes within a space so that we use all the available space in the `viewport`. This can be done through the `spreadHorizontal()` and `spreadVertical()`. You can both spread the entire span or only between a subspan that is defined using the `.to` and `.from` arguments.
 
-```{r horizontal_spread, fig.width=10, fig.height=6}
+```{r horizontal_spread, fig.width=11, fig.height=6}
 b1 <- boxGrob("B1",
-              y = .8,
+              y = .85,
               x = 0.1,
               bjust = c(0, 0))
-b2 <- boxGrob("B2 with long\ndescription",
-              y = .5,
-              x = .3)
+b2 <- boxGrob("B2",
+              y = .65,
+              x = .6)
 b3 <- boxGrob("B3",
-              y = .2,
-              x = .8)
-b4 <- boxGrob("B4",
+              y = .45,
+              x = .6)
+b4 <- boxGrob("B4 with long\ndescription",
               y = .7,
               x = .8)
+
+from <- boxGrob("from",
+                y = .25,
+                x = .05,
+                box_gp = gpar(fill = "darkgreen"),
+                txt_gp = gpar(col = "white"))
+to <- boxGrob("to this wide box",
+              y = coords(from)$y,
+              x = .95,
+              bjust = "right",
+              box_gp = gpar(fill = "darkred"),
+              txt_gp = gpar(col = "white"))
 
 
 txtOut <- function(txt, refBx) {
@@ -470,6 +482,27 @@ alignVertical(reference = b3,
               .position = "top") %>% 
   spreadHorizontal(.from = .7,
                    .to = .2,
+                   .type = "center")
+
+txtOut("Between boxes", from)
+from
+to
+alignVertical(reference = from, 
+              b1, b2, b3, b4,
+              .position = "top") %>% 
+  spreadHorizontal(.from = from,
+                   .to = to)
+
+# Now we switch the order and set the type to center the distance between the boxes
+bottom_from <- moveBox(from, x = coords(to)$right, y = 0, just = c(1, 0))
+bottom_to <- moveBox(to, x = coords(from)$left, y = 0, just = c(0, 0))
+bottom_from
+bottom_to
+alignVertical(reference = bottom_from, 
+              b1, b2, b3, b4,
+              .position = "bottom") %>% 
+  spreadHorizontal(.from = bottom_from,
+                   .to = bottom_to,
                    .type = "center")
 ```
 

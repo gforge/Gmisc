@@ -11,6 +11,7 @@
 #' @md
 #' @export
 #' @name align
+#' @family flowchart components
 #' @example inst/examples/alignBox_ex.R
 #' @rdname align
 alignVertical <- function(reference, ..., .position = c('center', 'top', 'bottom')) {
@@ -21,7 +22,7 @@ alignVertical <- function(reference, ..., .position = c('center', 'top', 'bottom
   for (box in boxes2align) {
     assert_class(box, 'box')
   }
-  
+
   ret <- sapply(boxes2align,
                 FUN = function(box, ref_pos) {
                   box_pos <- coords(box)
@@ -39,13 +40,16 @@ alignVertical <- function(reference, ..., .position = c('center', 'top', 'bottom
                 },
                 ref_pos = coords(reference),
                 simplify = FALSE)
-  
+
   structure(
     ret,
     class = c("Gmisc_list_of_boxes", class(ret)))
 }
 
 #' @rdname align
+#' @param .sub_position When the box is a [`boxPropGrob`] it not only has the general `.positions` but
+#'  also `left` and `right` which can be viewed as separate boxes that have simply been merged.
+#' @md
 #' @export
 alignHorizontal <- function(reference, ..., .position = c('center', 'left', 'right'), .sub_position = c('none', 'left', 'right')) {
   position = match.arg(.position)
@@ -69,8 +73,8 @@ alignHorizontal <- function(reference, ..., .position = c('center', 'left', 'rig
       ref_positions$left <- ref_positions$prop_x
     }
   }
-  
-  ret <- sapply(boxes2align, 
+
+  ret <- sapply(boxes2align,
                 FUN = function(box, ref_pos) {
                   box_pos <- coords(box)
                   if (position == "center") {
@@ -83,12 +87,12 @@ alignHorizontal <- function(reference, ..., .position = c('center', 'left', 'rig
                     # Should be unreachable to get here
                     stop("Invalid position: ", position)
                   }
-                  
+
                   moveBox(box, x = new_x, just = "center")
                 },
                 ref_pos = ref_positions,
                 simplify = FALSE)
-  
+
   structure(
     ret,
     class = c("Gmisc_list_of_boxes", class(ret)))

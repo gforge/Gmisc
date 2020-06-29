@@ -7,9 +7,13 @@
 #' @param element A [`boxGrob`]/[`boxPropGrob`] object.
 #' @param x A [`unit`][grid::unit] element or a numeric that can be converted to a `npc` unit object.
 #' @param y A [`unit`][grid::unit] element or a numeric that can be converted to a `npc` unit object.
-#' @param space We can provide `absolute` that confers the box absolute position within the parent 
-#'  [`viewport`][grid::viewport]. If `relative` the movement is related to the current position. 
-#' @return The element with updated 
+#' @param space We can provide `absolute` that confers the box absolute position within the parent
+#'  [`viewport`][grid::viewport]. If `relative` the movement is related to the current position.
+#' @param just The justification of an argument as used by [`viewport`][grid::viewport] some tiny differences:
+#'  (1) you only want to change the justification in the vertical direction you can retain the
+#'  existing justification by using `NA`, e.g. `c(NA, 'top')`, (2) if you specify only one string
+#'  and that string is either `top` or `bottom` it will assume vertical justification.
+#' @return The element with updated
 #'
 #' @md
 #' @importFrom checkmate assert_class assert checkString checkNumeric checkCharacter
@@ -17,8 +21,8 @@
 #' @example inst/examples/moveBox_ex.R
 #' @importFrom checkmate assert_class assert_list
 #' @family flowchart components
-moveBox <- function(element, 
-                    x = NULL, y = NULL, 
+moveBox <- function(element,
+                    x = NULL, y = NULL,
                     space = c('absolute', 'relative'),
                     just = NULL) {
   space <- match.arg(space)
@@ -26,10 +30,10 @@ moveBox <- function(element,
   if (is.null(x) && is.null(y)) {
     stop('You have to specify at least x or y move parameters')
   }
-  
+
   vp_args <- attr(element, 'viewport_data')
   assert_list(vp_args)
-  
+
   if (!is.null(just)) {
     assert(checkCharacter(just, min.len = 1, max.len = 2),
            checkNumeric(just, lower = 0, upper = 1, min.len = 1, max.len = 2))
@@ -69,18 +73,18 @@ moveBox <- function(element,
       }
     }
   }
-  
+
   toUnit <- function(x) {
     if (is.unit(x) || is.null(x)) {
       return(x)
     }
-    
+
     unit(x, units = "npc")
   }
 
   x <- toUnit(x)
   y <- toUnit(y)
-  
+
   if (space == "relative") {
     if (!is.null(x)) {
       x <- vp_args$x + x
@@ -97,7 +101,7 @@ moveBox <- function(element,
   if (!is.null(y)) {
     vp_args$y <- y
   }
-  
+
   gl <- editGrob(element, vp = do.call(viewport, vp_args))
   attr(gl, 'viewport_data') <- vp_args
   attr(gl, 'coords') <- prCreateBoxCoordinates(viewport_data = vp_args,
