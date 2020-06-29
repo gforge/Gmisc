@@ -2,39 +2,39 @@
 % Please edit documentation in R/mergeDesc.R
 \name{mergeDesc}
 \alias{mergeDesc}
-\title{Prepares a matrix for htmlTable from a list}
+\title{Prepares a matrix for \code{htmlTable} from a list}
 \usage{
-mergeDesc(..., htmlTable_args = list(css.rgroup = ""))
+mergeDesc(..., htmlTable_args = list())
 }
 \arguments{
 \item{...}{One or more elements coming from \code{\link{getDescriptionStatsBy}}.
 You can also provide pure output from the \code{\link{getDescriptionStatsBy}} function
 and have the function merge this together with the \code{...} argument.
-\emph{Note} that all elements myst have the same \code{by} argument or you
+\emph{Note} that all elements must have the same \code{by} argument or you
 will not be able to merge it into a list.}
 
 \item{htmlTable_args}{Any arguments that should be passed to
 \code{\link[htmlTable]{htmlTable}} function. The default is to remove
-any css formatting for the rgroup.}
+any css formatting for the \code{rgroup}.}
 }
 \value{
 \code{matrix} Returns a matrix object of class descList
 }
 \description{
 By putting all the output from the \code{\link{getDescriptionStatsBy}}
-into a list, naming each element that we want in an rgroup we can
+into a list, naming each element that we want in an \code{rgroup} we can
 automatically merge everything and create an object ready for the
-htmlTable.
+\code{\link[htmlTable]{htmlTable}}.
 }
 \section{The \code{rgroup} value}{
 
 
-The value for the rgroup is by default the name of the list element. If you have
+The value for the \code{rgroup} is by default the name of the list element. If you have
 passed a list without a name for that particular element or if you have passed a
 matrix it will look for a label set by the \pkg{Hmisc}\code{::\link[Hmisc]{label}} function.
-For those elements that have only one row no rgroup is set, and the naming sequence
+For those elements that have only one row no \code{rgroup} is set, and the naming sequence
 is the same as above but with an additional \code{\link[base]{rownames}} if the previous
-two turn out empty. All this behaviour is exemplified in the example.
+two turn out empty. All this behavior is exemplified in the example.
 
 The \code{rgroup} value can be overridden by simply specifying a custom rgroup when
 calling the \code{\link{htmlTable}} function.
@@ -84,7 +84,8 @@ tll <- c(tll,
          list(getDescriptionStatsBy(mtcars$col, mtcars$am)))
 
 mergeDesc(tll,
-          htmlTable_args = list(caption  = "Factored variables"))
+          htmlTable_args = list(caption  = "Factored variables")) \%>\%
+  htmlTable::addHtmlTableStyle(css.rgroup = "")
 
 tl_no_units <- list()
 tl_no_units[["Gas (mile/gallons)"]] <-
@@ -93,9 +94,9 @@ tl_no_units[["Gas (mile/gallons)"]] <-
 tl_no_units[["Weight (10<sup>3</sup> kg)"]] <-
   getDescriptionStatsBy(mtcars$wt, mtcars$am,
                         header_count = TRUE)
-mergeDesc(tl_no_units, tll,
-          # Remove the formatting for the groups
-          htmlTable_args = list(css.rgroup = ""))
+mergeDesc(tl_no_units,
+          tll) \%>\%
+  htmlTable::addHtmlTableStyle(css.rgroup = "")
 
 
 # A little more advanced

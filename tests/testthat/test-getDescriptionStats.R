@@ -1209,7 +1209,6 @@ test_that("p-vlues are displayed in multi-row summaries when rgroup and n.rgroup
       )
     ),
     n.rgroup = 2L,
-    htmlTable_args = structure(list(css.rgroup = ""), .Names = "css.rgroup"),
     class = c("descMrg", class(matrix(1)))
   )
 
@@ -1276,7 +1275,6 @@ test_that("p-values are displayed for both multi- and one-row summaries when rgr
       add = structure(list(`1` = "&lt; 0.0001"), .Names = "1")
     ),
     n.rgroup = c(2, 1),
-    htmlTable_args = structure(list(css.rgroup = ""), .Names = "css.rgroup"),
     class = c("descMrg", class(matrix(1)))
   )
 

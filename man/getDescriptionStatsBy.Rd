@@ -204,7 +204,8 @@ tll <- c(tll,
          list(getDescriptionStatsBy(mtcars$col, mtcars$am)))
 
 mergeDesc(tll,
-          htmlTable_args = list(caption  = "Factored variables"))
+          htmlTable_args = list(caption  = "Factored variables")) \%>\%
+  htmlTable::addHtmlTableStyle(css.rgroup = "")
 
 tl_no_units <- list()
 tl_no_units[["Gas (mile/gallons)"]] <-
@@ -213,9 +214,9 @@ tl_no_units[["Gas (mile/gallons)"]] <-
 tl_no_units[["Weight (10<sup>3</sup> kg)"]] <-
   getDescriptionStatsBy(mtcars$wt, mtcars$am,
                         header_count = TRUE)
-mergeDesc(tl_no_units, tll,
-          # Remove the formatting for the groups
-          htmlTable_args = list(css.rgroup = ""))
+mergeDesc(tl_no_units,
+          tll) \%>\%
+  htmlTable::addHtmlTableStyle(css.rgroup = "")
 
 
 # A little more advanced
