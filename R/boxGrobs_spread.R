@@ -109,7 +109,11 @@ prGetSpanSpace <- function(boxes2spread, .from, .to, type, orientation = c("vert
       }
     } else {
       first <- boxes2spread[[1]]
-      boxes2spread <- boxes2spread[2:length(boxes2spread)]
+      if (length(boxes2spread) == 1) {
+        boxes2spread <- list()
+      } else {
+        boxes2spread <- boxes2spread[2:length(boxes2spread)]
+      }
       start_pos <- start_pos + dist_sign * coords(first)[[type_size_key]]
       dist <- dist - coords(first)[[type_size_key]]
     }
@@ -121,8 +125,13 @@ prGetSpanSpace <- function(boxes2spread, .from, .to, type, orientation = c("vert
         end_pos <- end_pos + dist_sign * coords(last)[[type_half_size_key]]
       }
     } else {
+      stopifnot(length(boxes2spread) > 0)
       last <- tail(boxes2spread, 1)[[1]]
-      boxes2spread <- boxes2spread[1:(length(boxes2spread) - 1)]
+      if (length(boxes2spread) == 1) {
+        boxes2spread <- list()
+      } else {
+        boxes2spread <- boxes2spread[1:(length(boxes2spread) - 1)]
+      }
       end_pos <- end_pos - dist_sign * coords(last)[[type_size_key]]
       dist <- dist - coords(last)[[type_size_key]]
     }
