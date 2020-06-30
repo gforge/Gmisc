@@ -41,7 +41,7 @@ boxGrob <- function(label,
   assert(
     checkString(label),
     checkNumeric(label),
-    is.expression(label)
+    is.language(label)
   )
   assert_unit(y)
   assert_unit(x)
