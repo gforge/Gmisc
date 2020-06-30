@@ -10,6 +10,7 @@ Changes for 1.11.0
 * Added spreadVertival and spreadHorizontal for spreading boxGrob objects over the viewport
 * Styling of htmlTable removed due to the 2.0 api change, nbow. the css.rgroup should be set using set htmlTable::setHtmlTableTheme
   or by passing the output thorugh htmlTable::addHtmlTableStyle.
+* The boxes now accept language input, thanks Carl Suster
 
 Changes for 1.10.0
 ------------------

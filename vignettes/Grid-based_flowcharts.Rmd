@@ -290,23 +290,47 @@ odd
 odd2
 ```
 
-# Expressions in boxes
-It is possible to use the R `expression` function to produce bold or italics text, or even formulae.
+# Math expressions in boxes
+It is possible to use the R `expression` or the `bquote` functions to produce bold or italics text, or even formulas.
 
 A few pointers on `expression`...
 
 * expressions with multiple elements should be combined using `paste`. E.g. `expression(paste(beta, "1"))` would produce $\beta1$
-* the behaviour of `paste` when used in expression is more like the normal behaviour or `paste0` (i.e. no separating space)
-* greek letters can be entered outside of quotes by typing the name e.g. `expression(beta)` will become $\beta$ and `expression(Gamma)` will become $\Gamma$ (note the case, not all greek letters are available in upper case)
+* the behavior of `paste` when used in expression is more like the normal behavior or `paste0` (i.e. no separating space)
+* Greek letters can be entered outside of quotes by typing the name e.g. `expression(beta)` will become $\beta$ and `expression(Gamma)` will become $\Gamma$ (note the case, not all Greek letters are available in upper case)
 * superscripts are done via `expression(x^2)` and subscripts via `expression(x[2])`
 
-```{r}
+```{r math_expressions, fig.width=6, fig.height=4}
 grid.newpage()
-boxGrob(expression(bold("Bold text")), 0.8, 0.3)
-boxGrob(expression(italic("Italics text")), 0.8, 0.7)
-boxGrob(expression(paste("Mixed: ", italic("Italics"), " and ", bold("bold"))), 0.6, 0.5)
-boxGrob(expression(paste("y = ", beta[0], " + ", beta[1], X[1], " + ", beta[2], X[2]^2)), 0.35, 0.5)
-boxGrob(expression(paste(beta, gamma, Gamma)), 0.15, 0.5)
+###############
+# Expressions #
+###############
+# Font style
+spreadHorizontal(
+  boxGrob(expression(bold("Bold text")), y = 0.8),
+  boxGrob(expression(italic("Italics text")), y = 0.8),
+  boxGrob(expression(paste("Mixed: ", italic("Italics"), " and ", bold("bold"))), y = 0.8)
+)
+
+# Math
+spreadHorizontal(
+  boxGrob(expression(paste("y = ", beta[0], " + ", beta[1], X[1], " + ", beta[2], X[2]^2)), y = 0.5),
+  boxGrob(expression(sum(n, i == 1, x) %subset% " \u211D"), y = 0.5),
+  boxGrob(expression(paste(beta, gamma, Gamma)), y = 0.5)
+)
+
+##########
+# Quotes #
+##########
+a = 5
+spreadHorizontal(
+  bquote(alpha == theta[1] * .(a) + ldots) %>% 
+    boxGrob(y = .2),
+  paste("argument", sQuote("x"), "\nmust be non-zero") %>% 
+    boxGrob(y = .2),
+  .from = .2,
+  .to = .8
+)
 ```
 
 See the `plotmath` help file for more details.
@@ -563,7 +587,7 @@ The `grid` package is what makes R graphics great. All the popular tools with aw
 
 ## Basics
 
-The grid package splits the plot into views. You can define a *viewport* and it will work as an isolated part of the plot, ignorant of the world around it. You do this via `viewport()`, below I create a plot and add a rectangle to it:
+The grid package splits the plot into views. You can define a `viewport` and it will work as an isolated part of the plot, ignorant of the world around it. You do this via `viewport()`, below I create a plot and add a rectangle to it:
 
 ```{r basic_plot, fig.height = 2, fig.width = 2}
 # Load the grid library
@@ -585,12 +609,12 @@ Important to note is that the grid allows you to define precise units or relativ
 ## Relative units
 
 
-* `npc` - ranges from 0-1 where 1 is 100% of the viewport width.
-* `snpc` - similar to npc but is the same length in height/width.
-* `lines` - the height of a line. The go-to method if you want to know the height of a few lines of text. It's relative to the viewport's `fontsize` and  `lineheight`.
+* `npc` - ranges from 0-1 where 1 is 100% of the `viewport` width.
+* `snpc` - similar to `npc` but is the same length in height/width.
+* `lines` - the height of a line. The go-to method if you want to know the height of a few lines of text. It's relative to the `viewport`'s `fontsize` and  `lineheight`.
 * `char` - the `lines` without the `lineheight` part.
 
-Below we draw a line with relative units in two nested viewports. Note that the to lines are generated  from the exact same grob object but appear different depending on the viewport they are in:
+Below we draw a line with relative units in two nested viewports. Note that the to lines are generated  from the exact same `grob` object but appear different depending on the `viewport` they are in:
 
 ```{r relative_lines, fig.height = 3, fig.width = 3}
 grid.newpage()
@@ -630,4 +654,4 @@ popViewport()
 
 # Tips for debugging
 
-If you find that your elements don't look as expected make sure that your not changing viewport/device. While most coordinates are relative some of them need to be fixed and therefore changing the viewport may impact where elements are rendered.
+If you find that your elements don't look as expected make sure that your not changing `viewport`/device. While most coordinates are relative some of them need to be fixed and therefore changing the `viewport` may impact where elements are rendered.
