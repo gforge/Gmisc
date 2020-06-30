@@ -16,7 +16,8 @@ alignHorizontal(
 )
 }
 \arguments{
-\item{reference}{A \code{\link{boxGrob}}/\code{\link{boxPropGrob}} object.}
+\item{reference}{A \code{\link{boxGrob}}/\code{\link{boxPropGrob}}/\code{\link{coords}} object or a \code{\link[grid:unit]{unit}} or a
+numerical value that can be converted into a \code{\link[grid:unit]{unit}} of \code{npc} type.}
 
 \item{...}{A set of boxes.}
 

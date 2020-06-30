@@ -12,8 +12,8 @@
 #' @param half If set to true it returns half the distance. This is convenient
 #'  when positioning boxes between each other.
 #' @param center Calculate the distance from the center of each object
-#' @return A \code{unit} in \code{"mm"} with an absolute value. The attribute 
-#'  \code{positive} indicates the direction of the value, i.e. if it is \code{TRUE} the 
+#' @return A \code{unit} in \code{"mm"} with an absolute value. The attribute
+#'  \code{positive} indicates the direction of the value, i.e. if it is \code{TRUE} the
 #'  distance was calculated from the first to the second, otherwise it is \code{FALSE}.
 #'  For \code{euclidean} distance the \code{positive} attribute is \code{NA}. There is also the
 #'  \code{from} and \code{to} attributes that has the coordinates that were used for the
@@ -28,9 +28,9 @@
 #' box2 <- boxGrob("Another test box", y = .2)
 #' distance(box1, box2, "v")
 #' @rdname distance
-distance <- function(box1, 
-                     box2, 
-                     type = c("vertical", "horizontal", "euclidean"), 
+distance <- function(box1,
+                     box2,
+                     type = c("vertical", "horizontal", "euclidean"),
                      half = FALSE,
                      center = FALSE) {
   assert_input <- function(v) {
@@ -39,35 +39,9 @@ distance <- function(box1,
       checkClass(v, "coords"),
       checkNumeric(v),
       checkTRUE(is.unit(v))
-    )  
+    )
   }
-  
-  get_borders <- function(v) {
-    if (inherits(v, "coords")) {
-      return(v)
-    }
-    
-    if (inherits(v, "box")) {
-      return(coords(v))
-    }
-    
-    if (!is.unit(v)) {
-      v <- unit(v, "npc")
-    }
 
-    return(list(
-      y = v,
-      x = v,
-      top = v,
-      bottom = v,
-      left = v,
-      right = v,
-      height = unit(0, "npc"),
-      half_height = unit(0, "npc"),
-      width = unit(0, "npc"),
-      half_width = unit(0, "npc")
-    ))
-  }
 
   type <- match.arg(type)
   if (missing(box2) && is.list(box1) && length(box1) == 2) {
@@ -76,8 +50,8 @@ distance <- function(box1,
   }
   assert_input(box1)
   assert_input(box2)
-  box_coords1 <- get_borders(box1)
-  box_coords2 <- get_borders(box2)
+  box_coords1 <- prConvert2Coords(box1)
+  box_coords2 <- prConvert2Coords(box2)
 
   type = match.arg(type)
   converter_fn <- ifelse(type == "horizontal", prCnvrtX, prCnvrtY)
@@ -128,7 +102,7 @@ distance <- function(box1,
   } else {
     stop("Unreachable code")
   }
-  
+
   if (ret < 0) {
     positive <- FALSE
     ret <- -1 * ret

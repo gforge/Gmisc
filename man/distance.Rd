@@ -34,8 +34,8 @@ when positioning boxes between each other.}
 \item{...}{Passed on to print}
 }
 \value{
-A \code{unit} in \code{"mm"} with an absolute value. The attribute 
- \code{positive} indicates the direction of the value, i.e. if it is \code{TRUE} the 
+A \code{unit} in \code{"mm"} with an absolute value. The attribute
+ \code{positive} indicates the direction of the value, i.e. if it is \code{TRUE} the
  distance was calculated from the first to the second, otherwise it is \code{FALSE}.
  For \code{euclidean} distance the \code{positive} attribute is \code{NA}. There is also the
  \code{from} and \code{to} attributes that has the coordinates that were used for the

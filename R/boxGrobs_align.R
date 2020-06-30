@@ -2,7 +2,8 @@
 #'
 #' Aligns a set of [`boxGrob`]/[`boxPropGrob`] according to the first positional argument.
 #'
-#' @param reference A [`boxGrob`]/[`boxPropGrob`] object.
+#' @param reference A [`boxGrob`]/[`boxPropGrob`]/[`coords`] object or a [`unit`][grid::unit] or a
+#'  numerical value that can be converted into a [`unit`][grid::unit] of `npc` type.
 #' @param ... A set of boxes.
 #' @param .position How to align the boxes, differs slightly for vertical and horizontal alignment
 #'  see the accepted arguments
@@ -16,7 +17,7 @@
 #' @rdname align
 alignVertical <- function(reference, ..., .position = c('center', 'top', 'bottom')) {
   position = match.arg(.position)
-  assert_class(reference, 'box')
+  ref_positions <- prConvert2Coords(reference)
   boxes2align <- list(...)
   assert_list(boxes2align, min.len = 1)
   for (box in boxes2align) {
@@ -38,7 +39,7 @@ alignVertical <- function(reference, ..., .position = c('center', 'top', 'bottom
                   }
                   moveBox(box, y = new_y, just = c(NA, "center"))
                 },
-                ref_pos = coords(reference),
+                ref_pos = ref_positions,
                 simplify = FALSE)
 
   structure(
@@ -54,14 +55,13 @@ alignVertical <- function(reference, ..., .position = c('center', 'top', 'bottom
 alignHorizontal <- function(reference, ..., .position = c('center', 'left', 'right'), .sub_position = c('none', 'left', 'right')) {
   position = match.arg(.position)
   sub_position = match.arg(.sub_position)
-  assert_class(reference, 'box')
   boxes2align <- list(...)
   assert_list(boxes2align, min.len = 1)
   for (box in boxes2align) {
     assert_class(box, 'box')
   }
 
-  ref_positions <- coords(reference)
+  ref_positions <- prConvert2Coords(reference)
   if (sub_position != "none") {
     if (sub_position == 'left') {
       assert_class(ref_positions$left_x, "unit")

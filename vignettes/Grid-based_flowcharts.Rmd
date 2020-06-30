@@ -290,52 +290,6 @@ odd
 odd2
 ```
 
-# Math expressions in boxes
-It is possible to use the R `expression` or the `bquote` functions to produce bold or italics text, or even formulas.
-
-A few pointers on `expression`...
-
-* expressions with multiple elements should be combined using `paste`. E.g. `expression(paste(beta, "1"))` would produce $\beta1$
-* the behavior of `paste` when used in expression is more like the normal behavior or `paste0` (i.e. no separating space)
-* Greek letters can be entered outside of quotes by typing the name e.g. `expression(beta)` will become $\beta$ and `expression(Gamma)` will become $\Gamma$ (note the case, not all Greek letters are available in upper case)
-* superscripts are done via `expression(x^2)` and subscripts via `expression(x[2])`
-
-```{r math_expressions, fig.width=6, fig.height=4}
-grid.newpage()
-###############
-# Expressions #
-###############
-# Font style
-spreadHorizontal(
-  boxGrob(expression(bold("Bold text")), y = 0.8),
-  boxGrob(expression(italic("Italics text")), y = 0.8),
-  boxGrob(expression(paste("Mixed: ", italic("Italics"), " and ", bold("bold"))), y = 0.8)
-)
-
-# Math
-spreadHorizontal(
-  boxGrob(expression(paste("y = ", beta[0], " + ", beta[1], X[1], " + ", beta[2], X[2]^2)), y = 0.5),
-  boxGrob(expression(sum(n, i == 1, x) %subset% " \u211D"), y = 0.5),
-  boxGrob(expression(paste(beta, gamma, Gamma)), y = 0.5)
-)
-
-##########
-# Quotes #
-##########
-a = 5
-spreadHorizontal(
-  bquote(alpha == theta[1] * .(a) + ldots) %>% 
-    boxGrob(y = .2),
-  paste("argument", sQuote("x"), "\nmust be non-zero") %>% 
-    boxGrob(y = .2),
-  .from = .2,
-  .to = .8
-)
-```
-
-See the `plotmath` help file for more details.
-
-
 # Alignment
 
 We frequently want to align boxes in either a horizontal or a vertical row. For this there are two functions, `alignHorizontal()` and `alignVertical()`.
@@ -580,6 +534,53 @@ alignHorizontal(reference = b3,
                  .to = .2,
                  .type = "center")
 ```
+
+# Math expressions in boxes
+
+It is possible to use the R `expression` or the `bquote` functions to produce bold or italics text, or even formulas.
+
+A few pointers on `expression`...
+
+* expressions with multiple elements should be combined using `paste`. E.g. `expression(paste(beta, "1"))` would produce $\beta1$
+* the behavior of `paste` when used in expression is more like the normal behavior or `paste0` (i.e. no separating space)
+* Greek letters can be entered outside of quotes by typing the name e.g. `expression(beta)` will become $\beta$ and `expression(Gamma)` will become $\Gamma$ (note the case, not all Greek letters are available in upper case)
+* superscripts are done via `expression(x^2)` and subscripts via `expression(x[2])`
+
+```{r math_expressions, fig.width=6, fig.height=3}
+grid.newpage()
+###############
+# Expressions #
+###############
+# Font style
+alignVertical(
+  reference = 1,
+  .position = "top",
+  boxGrob(expression(bold("Bold text"))),
+  boxGrob(expression(italic("Italics text"))),
+  boxGrob(expression(paste("Mixed: ", italic("Italics"), " and ", bold("bold"))))) %>% 
+  spreadHorizontal
+
+# Math
+alignVertical(
+  reference = .5,
+  boxGrob(expression(paste("y = ", beta[0], " + ", beta[1], X[1], " + ", beta[2], X[2]^2))),
+  boxGrob(expression(sum(n, i == 1, x) %subset% " \u211D")),
+  boxGrob(expression(beta ~~ gamma ~~ Gamma))) %>% 
+  spreadHorizontal
+
+##########
+# Quotes #
+##########
+a = 5
+alignVertical(
+  reference = 0,
+  .position = "bottom",
+  bquote(alpha == theta[1] * .(a) + ldots) %>% boxGrob,
+  paste("argument", sQuote("x"), "\nmust be non-zero") %>% boxGrob) %>% 
+  spreadHorizontal(.from = .2, .to = .8)
+```
+
+See the `plotmath` help file for more details.
 
 # Grid & some background info
 
