@@ -36,7 +36,7 @@ For those elements that have only one row no \code{rgroup} is set, and the namin
 is the same as above but with an additional \code{\link[base]{rownames}} if the previous
 two turn out empty. All this behavior is exemplified in the example.
 
-The \code{rgroup} value can be overridden by simply specifying a custom rgroup when
+The \code{rgroup} value can be overridden by simply specifying a custom \code{rgroup} when
 calling the \code{\link{htmlTable}} function.
 }
 

@@ -23,9 +23,8 @@
 #' the function will choose accordingly. If you fail to define a certain category
 #' it will default to the above.
 #'
-#' You can also use a custom function that returns a string with the attribute 'colname' set that will be appended
-#' to the results instead of the p-value column.
-#' to the results instead of the p-value column.
+#' You can also use a custom function that returns a string with the attribute \code{'colname'}
+#' set that will be appended to the results instead of the p-value column.
 #'
 #' @param x The variable that you want the statistics for
 #' @param by The variable that you want to split into different

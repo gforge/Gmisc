@@ -11,32 +11,32 @@
 #' @field id Optional id. The render uses named viewports that require a unique id if multiple transition plots
 #'  are combined. In order to avoid having overlapping graphs we need to generate a unique id for each viewport
 #'  and thus this variable exists. If left empty it will create a counter that is stored in the \code{\link[base]{options}}
-#'  (`"Gmisc.transitionClassCounter"`) and each viewport will have the name preceeded with `tc_[0-9]+`. Set this
+#'  (`"Gmisc.transitionClassCounter"`) and each viewport will have the name preceded with `tc_[0-9]+`. Set this
 #'  if you intend to use \code{\link[grid]{seekViewport}}.
-#' @field transitions This is a >= 3 dimensional array with the transitions. Should not be direcly accessed.
+#' @field transitions This is a >= 3 dimensional array with the transitions. Should not be directly accessed.
 #' @field box_width The box width
 #' @field box_txt The texts of each box
 #' @field box_label Box labels
 #' @field box_label_pos The label's positions, either "top"/"bottom"
 #' @field box_label_cex The size of the box labels
-#' @field box_cex The fontsize multiplier for the text within the boxes
+#' @field box_cex The font-size multiplier for the text within the boxes
 #' @field arrow_type The type of arrow to use, defaults to "gradient", but can also be "simple".
 #'  The corresponding functions are \code{\link{bezierArrowGradient}}, and
-#'  \code{\link{bezierArrowSmpl}}. \emph{Note} The bezierGrob ("grid") has been deprecated
-#'  as it is no longer faster than the bezierArrows and there is a difference in design.
+#'  \code{\link{bezierArrowSmpl}}. \emph{Note} The \code{bezierGrob} has been deprecated
+#'  as it is no longer faster than the bezier arrows and there is a difference in design.
 #' @field arrow_clr The arrow color
 #' @field arrow_rez The resolution of the arrow
 #' @field vertical_space The space between the boxes
 #' @field fill_clr The box fill color
 #' @field clr_bar Shows a color bar if there are proportions. Can be \code{"none"}, \code{"top"}, \code{"bottom"}
-#' @field clr_bar_clrs Extracts the colors for the colorbar from the \code{fill_clr} if none is provided
+#' @field clr_bar_clrs Extracts the colors for the color bar from the \code{fill_clr} if none is provided
 #' @field clr_bar_cex The size of the ticks in the color bar
 #' @field clr_bar_subspace  If little or no difference exists at the low/high proportions of
 #'  the spectrum then it can be of interest to focus the color change to the center leaving the tails constant
-#' @field clr_bar_labels The labels of the color bars. Defaults to the dimnames for the proportions.
+#' @field clr_bar_labels The labels of the color bars. Defaults to the dim names for the proportions.
 #' @field txt_clr The text color within the boxes
 #' @field title The plot title if any
-#' @field title_cex The fontsize multiplier for the title
+#' @field title_cex The font-size multiplier for the title
 #' @field skip_shadows Skip the shadow effect on the boxes
 #' @field mar The margins for the plot.
 #' @field min_lwd The minimum line width that is still shown. The pixels will most likely
