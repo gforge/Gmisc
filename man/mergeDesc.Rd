@@ -2,41 +2,41 @@
 % Please edit documentation in R/mergeDesc.R
 \name{mergeDesc}
 \alias{mergeDesc}
-\title{Prepares a matrix for htmlTable from a list}
+\title{Prepares a matrix for \code{htmlTable} from a list}
 \usage{
-mergeDesc(..., htmlTable_args = list(css.rgroup = ""))
+mergeDesc(..., htmlTable_args = list())
 }
 \arguments{
 \item{...}{One or more elements coming from \code{\link{getDescriptionStatsBy}}.
 You can also provide pure output from the \code{\link{getDescriptionStatsBy}} function
 and have the function merge this together with the \code{...} argument.
-\emph{Note} that all elements myst have the same \code{by} argument or you
+\emph{Note} that all elements must have the same \code{by} argument or you
 will not be able to merge it into a list.}
 
 \item{htmlTable_args}{Any arguments that should be passed to
 \code{\link[htmlTable]{htmlTable}} function. The default is to remove
-any css formatting for the rgroup.}
+any css formatting for the \code{rgroup}.}
 }
 \value{
 \code{matrix} Returns a matrix object of class descList
 }
 \description{
 By putting all the output from the \code{\link{getDescriptionStatsBy}}
-into a list, naming each element that we want in an rgroup we can
+into a list, naming each element that we want in an \code{rgroup} we can
 automatically merge everything and create an object ready for the
-htmlTable.
+\code{\link[htmlTable]{htmlTable}}.
 }
 \section{The \code{rgroup} value}{
 
 
-The value for the rgroup is by default the name of the list element. If you have
+The value for the \code{rgroup} is by default the name of the list element. If you have
 passed a list without a name for that particular element or if you have passed a
 matrix it will look for a label set by the \pkg{Hmisc}\code{::\link[Hmisc]{label}} function.
-For those elements that have only one row no rgroup is set, and the naming sequence
-is the same as above but with an additional \code{\link[base]{rownames}} if the previous
-two turn out empty. All this behaviour is exemplified in the example.
+For those elements that have only one row no \code{rgroup} is set, and the naming sequence
+is the same as above but with an additional \code{\link[base:colnames]{rownames}} if the previous
+two turn out empty. All this behavior is exemplified in the example.
 
-The \code{rgroup} value can be overridden by simply specifying a custom rgroup when
+The \code{rgroup} value can be overridden by simply specifying a custom \code{rgroup} when
 calling the \code{\link{htmlTable}} function.
 }
 
@@ -52,6 +52,7 @@ data(mtcars)
 # For labelling we use the label()
 # function from the Hmisc package
 library(Hmisc)
+library(magrittr)
 
 label(mtcars$mpg) <- "Gas"
 units(mtcars$mpg) <- "Miles/(US) gallon"
@@ -59,7 +60,7 @@ units(mtcars$mpg) <- "Miles/(US) gallon"
 label(mtcars$wt) <- "Weight"
 units(mtcars$wt) <- "10<sup>3</sup> kg" # not sure the unit is correct
 
-mtcars$am <- factor(mtcars$am, levels=0:1, labels=c("Automatic", "Manual"))
+mtcars$am <- factor(mtcars$am, levels = 0:1, labels = c("Automatic", "Manual"))
 label(mtcars$am) <- "Transmission"
 
 mtcars$gear <- factor(mtcars$gear)
@@ -67,7 +68,7 @@ label(mtcars$gear) <- "Gears"
 
 # Make up some data for making it slightly more interesting
 mtcars$col <- factor(sample(c("red", "black", "silver"),
-                     size=NROW(mtcars), replace=TRUE))
+                     size = NROW(mtcars), replace = TRUE))
 label(mtcars$col) <- "Car color"
 
 mergeDesc(getDescriptionStatsBy(mtcars$mpg, mtcars$am,
@@ -84,7 +85,8 @@ tll <- c(tll,
          list(getDescriptionStatsBy(mtcars$col, mtcars$am)))
 
 mergeDesc(tll,
-          htmlTable_args = list(caption  = "Factored variables"))
+          htmlTable_args = list(caption  = "Factored variables")) \%>\%
+  htmlTable::addHtmlTableStyle(css.rgroup = "")
 
 tl_no_units <- list()
 tl_no_units[["Gas (mile/gallons)"]] <-
@@ -93,28 +95,28 @@ tl_no_units[["Gas (mile/gallons)"]] <-
 tl_no_units[["Weight (10<sup>3</sup> kg)"]] <-
   getDescriptionStatsBy(mtcars$wt, mtcars$am,
                         header_count = TRUE)
-mergeDesc(tl_no_units, tll,
-          # Remove the formatting for the groups
-          htmlTable_args = list(css.rgroup = ""))
+mergeDesc(tl_no_units,
+          tll) \%>\%
+  htmlTable::addHtmlTableStyle(css.rgroup = "")
 
 
 # A little more advanced
-mtcars$mpg[sample(1:NROW(mtcars), size=5)] <- NA
-getDescriptionStatsBy(mtcars$mpg, mtcars$am, statistics=TRUE)
+mtcars$mpg[sample(1:NROW(mtcars), size = 5)] <- NA
+getDescriptionStatsBy(mtcars$mpg, mtcars$am, statistics = TRUE)
 
 # Do the horizontal version
 getDescriptionStatsBy(mtcars$col, mtcars$am,
-                      statistics=TRUE, hrzl_prop = TRUE)
+                      statistics = TRUE, hrzl_prop = TRUE)
 
 mtcars$wt_with_missing <- mtcars$wt
-mtcars$wt_with_missing[sample(1:NROW(mtcars), size=8)] <- NA
-getDescriptionStatsBy(mtcars$wt_with_missing, mtcars$am, statistics=TRUE,
+mtcars$wt_with_missing[sample(1:NROW(mtcars), size = 8)] <- NA
+getDescriptionStatsBy(mtcars$wt_with_missing, mtcars$am, statistics = TRUE,
                       hrzl_prop = TRUE, total_col_show_perc = FALSE)
 
 
 mtcars$col_with_missing <- mtcars$col
-mtcars$col_with_missing[sample(1:NROW(mtcars), size=5)] <- NA
-getDescriptionStatsBy(mtcars$col_with_missing, mtcars$am, statistics=TRUE,
+mtcars$col_with_missing[sample(1:NROW(mtcars), size = 5)] <- NA
+getDescriptionStatsBy(mtcars$col_with_missing, mtcars$am, statistics = TRUE,
                       hrzl_prop = TRUE, total_col_show_perc = FALSE)
 
 
@@ -126,7 +128,7 @@ getDescriptionStatsBy(mtcars$col_with_missing, mtcars$am, statistics=TRUE,
 
   latex(mergeDesc(tll),
         caption  = "Factored variables",
-        file="")
+        file = "")
 }
 }
 \concept{table functions}

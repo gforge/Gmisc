@@ -13,3 +13,6 @@ tests/testthat/*.pdf
 cran-comments.md
 vignettes/*.R
 vignettes/*.html
+inst/extdata/*.html
+inst/extdata/*.css
+inst/extdata/Full_test_suite_files/*

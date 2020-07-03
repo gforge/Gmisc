@@ -8,7 +8,7 @@ prTpGetColors(colors, proportion, space = NULL, no = 101)
 }
 \arguments{
 \item{colors}{A set of min. two colors that is used
-for \code{\link[grDevices]{colorRampPalette}}.}
+for \code{\link[grDevices:colorRamp]{colorRampPalette}}.}
 
 \item{proportion}{A proportion or a set of proportions
 between 0 and 1. If you leave this out then the full color

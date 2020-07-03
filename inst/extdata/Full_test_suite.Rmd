@@ -47,6 +47,7 @@ Second paragraph
 ```{r htmlTable, results='asis', echo=FALSE, message=FALSE}
 set.seed(1)
 library(Gmisc)
+library(magrittr)
 
 f <- function(...) sample(..., 100, replace = TRUE)
 data <- data.frame(age = rpois(100, 50),
@@ -55,7 +56,7 @@ data <- data.frame(age = rpois(100, 50),
                    race = f(c('Black','White','Asian')),
                    treat = factor(f(1:3),
                                   # The factor helps arranging the order
-                                  labels=c('Treatment A', 'Treatment B', 'Placebo')))
+                                  labels = c('Treatment A', 'Treatment B', 'Placebo')))
 
 
 getT1stat <- function(varname, digits = 0) {
@@ -105,32 +106,34 @@ colnames(output_data) <-
            '</span>'))
 
 
-htmlTable(output_data, align = 'rccc',
-          rgroup = rgroup, n.rgroup = n.rgroup,
-          css.rgroup.sep = '',
-          col.rgroup = c('white','lightblue1'),
-          cgroup = cgroup,
-          n.cgroup = n.cgroup,
-          tspanner=c("Base", "Other"),
-          n.tspanner=c(sum(sapply(table_data, nrow)[1:2]),
-                       sum(sapply(table_data, nrow)[3:4])),
-          rowlabel = '',
-          ctable = TRUE, # latex-style table lines
-          caption = "Table 1: Patient demographics",
-          tfoot = paste0(
-            '<span style="font-size: .6em;">',
+output_data %>% 
+  addHtmlTableStyle(align = 'rccc',
+                    css.rgroup = '',
+                    css.rgroup.sep = '',
+                    col.rgroup = c('white','lightblue1')) %>% 
+  htmlTable(rgroup = rgroup,
+            n.rgroup = n.rgroup,
+            cgroup = cgroup,
+            n.cgroup = n.cgroup,
+            tspanner = c("Base", "Other"),
+            n.tspanner = c(sum(sapply(table_data, nrow)[1:2]),
+                           sum(sapply(table_data, nrow)[3:4])),
+            rowlabel = '',
+            ctable = TRUE, # latex-style table lines
+            caption = "Table 1: Patient demographics",
+            tfoot = paste0(
+              '<span style="font-size: .6em;">',
               'Abbreviations:',
               ' ECOG, Eastern Cooperative Oncology Group;',
               ' PS, performance score',
-            '</span><br />\n',
-            '<span style="font-size: .6em;">',
+              '</span><br />\n',
+              '<span style="font-size: .6em;">',
               '<sup>&dagger;</sup>',
               ' Note 1. Trial groups for a new wonder drug</span><br />\n',
-            '<span style="font-size: .6em;">',
+              '<span style="font-size: .6em;">',
               '<sup>&Dagger;</sup>',
               ' Note 2. Twice the dosage of treatment A',
-            '</span>'),
-          useViewer=FALSE)
+              '</span>'))
 ```
 
 # Graph tests
@@ -164,7 +167,10 @@ plot(cars)
 
 $$y=X\beta$$
 
+next:
+
 $$\sum_{n}^{i=1}{x_i+1}$$
+
 
 $$\frac{a}{(\sum_{n}^{i=1}{x_i+1})+k}$$
 

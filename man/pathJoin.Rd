@@ -13,12 +13,11 @@ pathJoin(...)
 \code{string} A string with the merged path
 }
 \description{
-This function joins strings into a valid path. It is a simple version of python's 
+This function joins strings into a valid path. It is a simple version of python's
 \code{os.path.join} and fixes simple problems such as having/not having trailing /
 in each section.
 }
 \examples{
-pathJoin('my_base_path/helpers', 'superfunction.R')
+pathJoin("my_base_path/helpers", "superfunction.R")
 # 'my_base_path/helpers/superfunction.R'
-
 }

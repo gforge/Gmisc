@@ -86,7 +86,7 @@ the original width, note the gradient's width is thus 90 \%.}
 \item{...}{Passed on to \code{\link{bezierArrowSmpl}}}
 }
 \value{
-\code{grid::gList()} A grob of \code{\link[grid]{gList}}-type
+A grob of \code{\link[grid:grid.grob]{gList}}-type
 }
 \description{
 This is an experimental addition to the original \code{\link{bezierArrowSmpl}}
@@ -100,7 +100,9 @@ The triangle section of the arrow is not currently included in the gradient.
 \examples{
 library(grid)
 grid.newpage()
-arrowGrob <- bezierArrowGradient(x = c(.1,.3,.6,.9),
-                                     y = c(0.2, 0.2, 0.9, 0.9))
+arrowGrob <- bezierArrowGradient(
+  x = c(.1, .3, .6, .9),
+  y = c(0.2, 0.2, 0.9, 0.9)
+)
 grid.draw(arrowGrob)
 }

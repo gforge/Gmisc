@@ -103,7 +103,7 @@ as a unit which is recommended as it looks better. If the scalar is < 1 then the
 to follow arrows the arrows have a background color to separate them from those underneath.}
 
 \item{type_of_arrow}{The types of arrow may be grid, simple, or gradient. Simple grid
-arrows are the \code{\link[grid]{bezierGrob}} arrows (not that pretty),
+arrows are the \code{\link[grid:grid.bezier]{bezierGrob}} arrows (not that pretty),
 simple is the \code{\link{bezierArrowSmpl}} that I've created to get a more exact
 control of the arrow position and width, while gradient
 corresponds to \code{\link{bezierArrowGradient}}

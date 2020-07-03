@@ -21,10 +21,10 @@ for details.
 \item{\code{id}}{Optional id. The render uses named viewports that require a unique id if multiple transition plots
 are combined. In order to avoid having overlapping graphs we need to generate a unique id for each viewport
 and thus this variable exists. If left empty it will create a counter that is stored in the \code{\link[base]{options}}
-(`"Gmisc.transitionClassCounter"`) and each viewport will have the name preceeded with `tc_[0-9]+`. Set this
-if you intend to use \code{\link[grid]{seekViewport}}.}
+(\code{"Gmisc.transitionClassCounter"}) and each viewport will have the name preceded with \code{tc_[0-9]+}. Set this
+if you intend to use \code{\link[grid:viewports]{seekViewport}}.}
 
-\item{\code{transitions}}{This is a >= 3 dimensional array with the transitions. Should not be direcly accessed.}
+\item{\code{transitions}}{This is a >= 3 dimensional array with the transitions. Should not be directly accessed.}
 
 \item{\code{box_width}}{The box width}
 
@@ -36,12 +36,12 @@ if you intend to use \code{\link[grid]{seekViewport}}.}
 
 \item{\code{box_label_cex}}{The size of the box labels}
 
-\item{\code{box_cex}}{The fontsize multiplier for the text within the boxes}
+\item{\code{box_cex}}{The font-size multiplier for the text within the boxes}
 
 \item{\code{arrow_type}}{The type of arrow to use, defaults to "gradient", but can also be "simple".
 The corresponding functions are \code{\link{bezierArrowGradient}}, and
-\code{\link{bezierArrowSmpl}}. \emph{Note} The bezierGrob ("grid") has been deprecated
-as it is no longer faster than the bezierArrows and there is a difference in design.}
+\code{\link{bezierArrowSmpl}}. \emph{Note} The \code{bezierGrob} has been deprecated
+as it is no longer faster than the bezier arrows and there is a difference in design.}
 
 \item{\code{arrow_clr}}{The arrow color}
 
@@ -53,20 +53,20 @@ as it is no longer faster than the bezierArrows and there is a difference in des
 
 \item{\code{clr_bar}}{Shows a color bar if there are proportions. Can be \code{"none"}, \code{"top"}, \code{"bottom"}}
 
-\item{\code{clr_bar_clrs}}{Extracts the colors for the colorbar from the \code{fill_clr} if none is provided}
+\item{\code{clr_bar_clrs}}{Extracts the colors for the color bar from the \code{fill_clr} if none is provided}
 
 \item{\code{clr_bar_cex}}{The size of the ticks in the color bar}
 
 \item{\code{clr_bar_subspace}}{If little or no difference exists at the low/high proportions of
 the spectrum then it can be of interest to focus the color change to the center leaving the tails constant}
 
-\item{\code{clr_bar_labels}}{The labels of the color bars. Defaults to the dimnames for the proportions.}
+\item{\code{clr_bar_labels}}{The labels of the color bars. Defaults to the dim names for the proportions.}
 
 \item{\code{txt_clr}}{The text color within the boxes}
 
 \item{\code{title}}{The plot title if any}
 
-\item{\code{title_cex}}{The fontsize multiplier for the title}
+\item{\code{title_cex}}{The font-size multiplier for the title}
 
 \item{\code{skip_shadows}}{Skip the shadow effect on the boxes}
 
@@ -153,24 +153,33 @@ set.seed(1)
 n <- 10
 my_data <-
   data.frame(
-    Var_a = sample(c("Test 1",
-                     "Test 2",
-                     "Test 3"),
-                   size = n,
-                   replace = TRUE,
-                   prob = 3:1),
-    Var_b = sample(c("Test 1",
-                     "Test 2",
-                     "Test 3"),
-                   size = n,
-                   replace = TRUE,
-                   prob = 1:3))
-mtrx <- with(my_data,
-             table(Var_a, Var_b))
+    Var_a = sample(c(
+      "Test 1",
+      "Test 2",
+      "Test 3"
+    ),
+    size = n,
+    replace = TRUE,
+    prob = 3:1
+    ),
+    Var_b = sample(c(
+      "Test 1",
+      "Test 2",
+      "Test 3"
+    ),
+    size = n,
+    replace = TRUE,
+    prob = 1:3
+    )
+  )
+mtrx <- with(
+  my_data,
+  table(Var_a, Var_b)
+)
 
 # Initialize the transition plot
 transitions <-
-  getRefClass("Transition")$new(mtrx, label=c("Before", "After"))
+  getRefClass("Transition")$new(mtrx, label = c("Before", "After"))
 
 # Render the plot
 transitions$render()

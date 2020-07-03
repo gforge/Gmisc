@@ -8,14 +8,14 @@ figCapNoLast(roman = getOption("fig_caption_no_roman", FALSE))
 }
 \arguments{
 \item{roman}{Whether or not to use roman numbers instead
-of arabic. Can also be set through \code{options(fig_caption_no_roman = TRUE)}}
+of Arabic. Can also be set through \code{options(fig_caption_no_roman = TRUE)}}
 }
 \description{
 The function relies on \code{options("fig_caption_no")}
 in order to keep track of the last number.
 }
 \examples{
-org_opts <- options(fig_caption_no=1)
+org_opts <- options(fig_caption_no = 1)
 figCapNoLast()
 options(org_opts)
 }

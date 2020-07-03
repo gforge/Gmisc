@@ -13,7 +13,7 @@ prGridPlotTitle(
 )
 }
 \arguments{
-\item{title}{The title as accepted by \code{\link[grid]{textGrob}}}
+\item{title}{The title as accepted by \code{\link[grid:grid.text]{textGrob}}}
 
 \item{base_cex}{The base cex used for the plot}
 

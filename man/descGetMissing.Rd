@@ -2,7 +2,7 @@
 % Please edit documentation in R/descGetMissing.R
 \name{descGetMissing}
 \alias{descGetMissing}
-\title{Get missingness statistics}
+\title{Get statistics for missing data}
 \usage{
 descGetMissing(
   x,
@@ -43,7 +43,7 @@ missing percentage, defaults to the overall \code{digits}.}
 \code{vector} A vector with the missing estimate
 }
 \description{
-This function calculates the missingness row for \code{\link{describeMean}},
+This function calculates the amount of missing per row for \code{\link{describeMean}},
 \code{\link{describeMedian}} and custom description functions.
 It will return invisibly when no missing values are present.
 }

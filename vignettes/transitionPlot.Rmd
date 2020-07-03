@@ -1,5 +1,5 @@
 ---
-title: "Introduction to the transitionPlot"
+title: "Introduction to the transitionPlot (deprecated)"
 author: "Max Gordon"
 date: "`r Sys.Date()`"
 output: 

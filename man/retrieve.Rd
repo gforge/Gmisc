@@ -10,7 +10,7 @@ retrieve(sourceList, path, default = NA)
 \item{sourceList}{The \code{list()}/\code{c()} that is to be searched for the element}
 
 \item{path}{A string that can be separated by [,] or ., the string \code{"elementname1.1.elementname"}
-is equivalent to \code{"elementname1[[1]]]elementname"}. Note that the function doesn't check 
+is equivalent to \code{"elementname1[[1]]]elementname"}. Note that the function doesn't check
 the validity of the path - it only separates and tries to address that element with `[[]]`.}
 
 \item{default}{The value to return if the element isn't found}

@@ -63,8 +63,7 @@ the interquartile range or the full range
 }
 \examples{
 describeMedian(1:10)
-describeMedian(c(1:10, NA), useNA="ifany")
-
+describeMedian(c(1:10, NA), useNA = "ifany")
 }
 \seealso{
 \code{\link{getDescriptionStatsBy}}

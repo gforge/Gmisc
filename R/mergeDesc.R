@@ -1,20 +1,20 @@
-#' Prepares a matrix for htmlTable from a list
+#' Prepares a matrix for \code{htmlTable} from a list
 #'
 #' By putting all the output from the \code{\link{getDescriptionStatsBy}}
-#' into a list, naming each element that we want in an rgroup we can
+#' into a list, naming each element that we want in an \code{rgroup} we can
 #' automatically merge everything and create an object ready for the
-#' htmlTable.
+#' \code{\link[htmlTable]{htmlTable}}.
 #'
 #' @section The \code{rgroup} value:
 #'
-#' The value for the rgroup is by default the name of the list element. If you have
+#' The value for the \code{rgroup} is by default the name of the list element. If you have
 #' passed a list without a name for that particular element or if you have passed a
 #' matrix it will look for a label set by the \pkg{Hmisc}\code{::\link[Hmisc]{label}} function.
-#' For those elements that have only one row no rgroup is set, and the naming sequence
-#' is the same as above but with an additional \code{\link[base]{rownames}} if the previous
-#' two turn out empty. All this behaviour is exemplified in the example.
+#' For those elements that have only one row no \code{rgroup} is set, and the naming sequence
+#' is the same as above but with an additional \code{\link[base:colnames]{rownames}} if the previous
+#' two turn out empty. All this behavior is exemplified in the example.
 #'
-#' The \code{rgroup} value can be overridden by simply specifying a custom rgroup when
+#' The \code{rgroup} value can be overridden by simply specifying a custom \code{rgroup} when
 #' calling the \code{\link{htmlTable}} function.
 #'
 #' @section The \code{colnames} of the matrix:
@@ -25,87 +25,106 @@
 #' @param ... One or more elements coming from \code{\link{getDescriptionStatsBy}}.
 #'  You can also provide pure output from the \code{\link{getDescriptionStatsBy}} function
 #'  and have the function merge this together with the \code{...} argument.
-#'  \emph{Note} that all elements myst have the same \code{by} argument or you
+#'  \emph{Note} that all elements must have the same \code{by} argument or you
 #'  will not be able to merge it into a list.
 #' @param htmlTable_args Any arguments that should be passed to
 #'  \code{\link[htmlTable]{htmlTable}} function. The default is to remove
-#'  any css formatting for the rgroup.
+#'  any css formatting for the \code{rgroup}.
 #' @return \code{matrix} Returns a matrix object of class descList
 #' @export
 #' @example inst/examples/getDescriptionStatsBy_example.R
 #' @importFrom utils tail
 #' @family table functions
-mergeDesc <- function(..., htmlTable_args = list(css.rgroup = "")){
+mergeDesc <- function(..., htmlTable_args = list()) {
   tlist <- list()
   dots <- list(...)
-  if (length(dots) > 0){
-    for (i in 1:length(dots)){
+  if (length(dots) > 0) {
+    for (i in 1:length(dots)) {
       add_lst <- dots[[i]]
-      if (!is.list(add_lst)){
+      if (!is.list(add_lst)) {
         add_lst <- list(add_lst)
         if (!is.null(names(dots)) &&
-              names(dots)[i] != "")
+          names(dots)[i] != "") {
           names(add_lst) <- names(dots)[i]
+        }
       }
 
-      tlist <- append(tlist,
-                      add_lst)
+      tlist <- append(
+        tlist,
+        add_lst
+      )
     }
   }
 
   mx <- NULL
   rgroup <- n.rgroup <- c()
   pvals_rgroup <- list()
-  for(i in 1:length(tlist)){
+  for (i in 1:length(tlist)) {
     n <- names(tlist)[i]
-    if (is.null(n) || n == ""){
-      if (label(tlist[[i]]) != ""){
+    if (is.null(n) || n == "") {
+      if (label(tlist[[i]]) != "") {
         n <- label(tlist[[i]])
-      }else if (nrow(tlist[[i]]) == 1){
+      } else if (nrow(tlist[[i]]) == 1) {
         n <- rownames(tlist[[i]])
-      }else{
+      } else {
         n <- ""
       }
     }
 
-    mx <- rbind(mx,
-                tlist[[i]])
-    if (nrow(tlist[[i]]) > 1){
+    mx <- rbind(
+      mx,
+      tlist[[i]]
+    )
+    if (nrow(tlist[[i]]) > 1) {
       rgname <- n
       rgno <- nrow(tlist[[i]])
-      if (tolower(tail(colnames(mx), 1)) == "p-value"){
-        pval <- list(mx[nrow(mx) - nrow(tlist[[i]]) + 1,
-                        ncol(mx)])
-        mx[nrow(mx) - nrow(tlist[[i]]) + 1,
-           ncol(mx)] <- ""
+      if (tolower(tail(colnames(mx), 1)) == "p-value") {
+        pval <- list(mx[
+          nrow(mx) - nrow(tlist[[i]]) + 1,
+          ncol(mx)
+        ])
+        mx[
+          nrow(mx) - nrow(tlist[[i]]) + 1,
+          ncol(mx)
+        ] <- ""
         names(pval)[1] <- as.character(i)
-        pvals_rgroup <- c(pvals_rgroup,
-                          pval)
+        pvals_rgroup <- c(
+          pvals_rgroup,
+          pval
+        )
       }
-    }else{
+    } else {
       rownames(mx)[NROW(mx)] <- n
       rgname <- ""
       rgno <- 1
     }
 
-    if (rgno != ""){
-      rgroup <- c(rgroup,
-                  rgname)
-      n.rgroup <- c(n.rgroup,
-                    rgno)
-    }else{
-      if (length(rgroup) == 0){
+    if (rgno != "") {
+      rgroup <- c(
+        rgroup,
+        rgname
+      )
+      n.rgroup <- c(
+        n.rgroup,
+        rgno
+      )
+    } else {
+      if (length(rgroup) == 0) {
         rgroup <- ""
         n.rgroup <- rgno
-      }else{
-        if (tail(rgroup, 1) == rgname){
+      } else {
+        if (tail(rgroup, 1) == rgname) {
           n.rgroup[length(n.rgroup)] <-
             n.rgroup[length(n.rgroup)] + rgno
-        }else{
-          rgroup <- c(rgroup,
-                      rgname)
-          n.rgroup <- c(n.rgroup,
-                        rgno)
+        } else {
+          rgroup <- c(
+            rgroup,
+            rgname
+          )
+          n.rgroup <- c(
+            n.rgroup,
+            rgno
+          )
         }
       }
     }
@@ -114,37 +133,43 @@ mergeDesc <- function(..., htmlTable_args = list(css.rgroup = "")){
   colnames(mx) <- colnames(tlist[[1]])
 
   if (any(rgroup %in% names(htmlTable_args)) ||
-        any(n.rgroup %in% names(htmlTable_args)))
-    stop("You have provided rgroup elements within",
-         " htmlTable_args argument and these will conflict",
-         " with the autogenerated rgroups.")
+    any(n.rgroup %in% names(htmlTable_args))) {
+    stop(
+      "You have provided rgroup elements within",
+      " htmlTable_args argument and these will conflict",
+      " with the autogenerated rgroups."
+    )
+  }
   if ("rgroup" %in% names(htmlTable_args) &
-      "n.rgroup" %in% names(htmlTable_args)) {
+    "n.rgroup" %in% names(htmlTable_args)) {
     rgroup <- htmlTable_args$rgroup
     n.rgroup <- htmlTable_args$n.rgroup
     htmlTable_args$rgroup <- NULL
     htmlTable_args$n.rgroup <- NULL
-    if("P-value" %in% colnames(mx) & length(pvals_rgroup) != length(rgroup)) {
+    if ("P-value" %in% colnames(mx) & length(pvals_rgroup) != length(rgroup)) {
       replacement_pvals <- rep(NA, length(rgroup))
       replacement_pvals[n.rgroup > 1] <- pvals_rgroup
-      replacement_pvals[n.rgroup ==1 ] <-mx[, "P-value"][mx[,"P-value"] != ""]
+      replacement_pvals[n.rgroup == 1] <- mx[, "P-value"][mx[, "P-value"] != ""]
       mx[, "P-value"] <- ""
       pvals_rgroup <- replacement_pvals
     }
   }
-  if (length(pvals_rgroup) > 0){
+  if (length(pvals_rgroup) > 0) {
     attr(rgroup, "add") <- pvals_rgroup
   }
-  if (is.null(names(htmlTable_args)))
+  if (length(htmlTable_args) > 0 && is.null(names(htmlTable_args))) {
     stop("The htmlTable_args has to be a list or a vector with named elements")
-  if (!is.list(htmlTable_args))
+  }
+  if (!is.list(htmlTable_args)) {
     htmlTable_args <- as.list(htmlTable_args)
+  }
 
   return(structure(mx,
-                   rgroup = rgroup,
-                   n.rgroup = n.rgroup,
-                   htmlTable_args = htmlTable_args,
-                   class = c("descMrg", class(mx))))
+    rgroup = rgroup,
+    n.rgroup = n.rgroup,
+    htmlTable_args = htmlTable_args,
+    class = c("descMrg", class(mx))
+  ))
 }
 
 
@@ -160,18 +185,21 @@ mergeDesc <- function(..., htmlTable_args = list(css.rgroup = "")){
 #' @importFrom Hmisc latex
 #' @keywords internal
 #' @export
-latex.descMrg <- function(x, ...)
-{
+latex.descMrg <- function(x, ...) {
   dots <- list(...)
-  if (!"rgroup" %in% names(dots)){
-    return(NextMethod(generic = NULL, object = x,
-                      rgroup = attr(x, "rgroup"),
-                      n.rgroup = attr(x, "n.rgroup"),
-                      ...))
+  if (!"rgroup" %in% names(dots)) {
+    return(NextMethod(
+      generic = NULL, object = x,
+      rgroup = attr(x, "rgroup"),
+      n.rgroup = attr(x, "n.rgroup"),
+      ...
+    ))
   }
 
-  return(NextMethod(generic = NULL, object = x,
-                    ...))
+  return(NextMethod(
+    generic = NULL, object = x,
+    ...
+  ))
 }
 
 
@@ -179,21 +207,22 @@ latex.descMrg <- function(x, ...)
 #' @export
 #' @import htmlTable
 #' @import magrittr
-htmlTable.descMrg <- function(x, ...)
-{
+htmlTable.descMrg <- function(x, ...) {
   dots <- list(...)
   htmlTable_args <- attr(x, "htmlTable_args")
-  for (n in names(htmlTable_args)){
-    if (!n %in% names(dots)){
+  for (n in names(htmlTable_args)) {
+    if (!n %in% names(dots)) {
       dots[[n]] <- htmlTable_args[[n]]
     }
   }
 
   # Merge calls
   class(x) <- class(x)[!(class(x) %in% "descMrg")]
-  args <- c(list(x = x),
-            dots)
-  if (!"rgroup" %in% names(args)){
+  args <- c(
+    list(x = x),
+    dots
+  )
+  if (!"rgroup" %in% names(args)) {
     args[["rgroup"]] <- attr(x, "rgroup")
     args[["n.rgroup"]] <- attr(x, "n.rgroup")
   }
@@ -205,10 +234,9 @@ htmlTable.descMrg <- function(x, ...)
 #' @rdname htmlTable_latex
 #' @export
 #' @import htmlTable
-print.descMrg <- function(x, ...)
-{
+print.descMrg <- function(x, ...) {
   htmlTable(x, ...) %>%
-    print
+    print()
 }
 
 
@@ -217,8 +245,7 @@ print.descMrg <- function(x, ...)
 #' @export
 #' @importFrom knitr asis_output
 #' @importFrom knitr knit_print
-knit_print.descMrg <- function(x, ...)
-{
+knit_print.descMrg <- function(x, ...) {
   htmlTable(x, ...) %>%
-    knit_print
+    knit_print()
 }

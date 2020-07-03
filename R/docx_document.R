@@ -61,34 +61,34 @@ docx_document <- function(...,
                           highlight = NULL,
                           # docx_specific
                           css = "rmarkdown/docx.css",
-                          h1_style="margin: 24pt 0pt 0pt 0pt;",
-                          other_h_style="margin: 10pt 0pt 0pt 0pt;",
+                          h1_style = "margin: 24pt 0pt 0pt 0pt;",
+                          other_h_style = "margin: 10pt 0pt 0pt 0pt;",
                           remove_scripts = TRUE,
                           force_captions = FALSE,
                           css_max_width) {
 
-  if (css == "rmarkdown/docx.css"){
+  if (css == "rmarkdown/docx.css") {
     css <- system.file(css, package = "Gmisc")
     if (css == "")
       stop("Error locating the docx.css that should be included in the Gmisc package")
-    if (!self_contained){
-      file.copy(from = css, to="docx.css", overwrite = TRUE)
+    if (!self_contained) {
+      file.copy(from = css, to = "docx.css", overwrite = TRUE)
       css <- "docx.css"
-      if (!missing(css_max_width)){
+      if (!missing(css_max_width)) {
         css <- prSetMaxWidth(max_width = css_max_width,
                              css_file = css)
       }
-    }else{
-      if (!missing(css_max_width)){
+    } else {
+      if (!missing(css_max_width)) {
         tmp_css <- tempfile()
-        file.copy(from = css, to=tmp_css, overwrite = TRUE)
+        file.copy(from = css, to = tmp_css, overwrite = TRUE)
         css <- prSetMaxWidth(max_width = css_max_width,
                              css_file = tmp_css)
       }
     }
-  }else if(!all(sapply(css, file.exists))){
+  } else if (!all(sapply(css, file.exists))) {
     alt_css <- list.files(pattern = ".css$")
-    if (length(alt_css) > 0){
+    if (length(alt_css) > 0) {
       alt_css <- paste0("\n You do have alternative file name(s) in current directory that you may intend to use.",
                         " You may want to have a YAML section that looks something like:",
                         "\n---",
@@ -96,14 +96,14 @@ docx_document <- function(...,
                         "\n  Gmisc::docx_document:",
                         "\n    css: \"", paste(alt_css, collapse = "\", \""), "\"",
                         "\n---")
-    }else{
+    } else {
       alt_css <- ""
     }
 
     stop("You should have the default css for optimal docx compatibility.",
          " The one or more of the css-file(s) that you've specified can't be identified.",
          " The file(s) '", paste(css[!sapply(css, file.exists)],
-                                collapse="', '"), "'",
+                                collapse = "', '"), "'",
          " can't be found from the directory '", getwd(), "'",
          " - i.e. the directory where you have your .Rmd-file",
          alt_css)
@@ -123,7 +123,7 @@ docx_document <- function(...,
 
   output_ret_val$post_processor <-
     post_processor <- function(metadata, input_file, output_file, clean, verbose,
-                               old_post_processor =  output_ret_val$post_processor_old) {
+                               old_post_processor = output_ret_val$post_processor_old) {
       # Call the original post-processor in order to limit the changes that this function
       # has on the original functionality
       output_file <-
@@ -145,10 +145,10 @@ docx_document <- function(...,
       # it works and can be tweaked for most things.
       output_str <-
         prFtpHeaderStyle(output_str,
-                         h1_style=h1_style,
-                         other_h_style=h1_style)
+                         h1_style = h1_style,
+                         other_h_style = h1_style)
 
-      if (remove_scripts){
+      if (remove_scripts) {
         output_str <-
           prFtpScriptRemoval(output_str)
 
@@ -162,7 +162,7 @@ docx_document <- function(...,
 
       writeLines(output_str, output_file, useBytes = TRUE)
 
-      if (force_captions){
+      if (force_captions) {
         prCaptionFix(output_file)
       }
       return(output_file)
@@ -182,21 +182,21 @@ docx_document <- function(...,
 #'  if LibreOffice_adapt is \code{TRUE}.
 #' @return string
 #' @keywords internal
-prFtpHeaderStyle <- function(output_str, h1_style, other_h_style){
+prFtpHeaderStyle <- function(output_str, h1_style, other_h_style) {
   gsub(
     paste0('<h([0-9]+)',
            '(| ',
-           '([ ]*class="[^"]+"',
-           '|[ ]*id="[^"]+")+',
+           '([ ]*class = "[^"]+"',
+           '|[ ]*id = "[^"]+")+',
            ')[ ]*>'),
-    paste0('<h\\1\\2 style="', other_h_style, '">'),
+    paste0('<h\\1\\2 style = "', other_h_style, '">'),
     gsub(
       paste0('<h1+',
              '(| ',
-             '([ ]*class="[^"]+"',
-             '|[ ]*id="[^"]+")+',
+             '([ ]*class = "[^"]+"',
+             '|[ ]*id = "[^"]+")+',
              ')[ ]*>'),
-      paste0('<h1\\1 style="', h1_style, '">'),
+      paste0('<h1\\1 style = "', h1_style, '">'),
       output_str
     )
   )
@@ -207,7 +207,7 @@ prFtpHeaderStyle <- function(output_str, h1_style, other_h_style){
 #' @param output_str The input from readLines()
 #' @return string Returns without the script elements
 #' @keywords internal
-prFtpScriptRemoval <- function(output_str){
+prFtpScriptRemoval <- function(output_str) {
   start_scripts <- grep("<script", output_str)
   end_scripts <- grep("</script", output_str)
   if (length(start_scripts) == 0)
@@ -224,15 +224,15 @@ prFtpScriptRemoval <- function(output_str){
 #' @param output_str The input from readLines()
 #' @return string Returns without the unwanted lines
 #' @keywords internal
-prFtpOtherRemoval <- function(output_str){
+prFtpOtherRemoval <- function(output_str) {
   lines_2_remove <-
     c(# html-validator complains
-      "<meta http-equiv=\"Content-Style-Type\" content=\"text/css\" />",
+      "<meta http-equiv = \"Content-Style-Type\" content = \"text/css\" />",
 
       # Invalid formatting --s although this shouldn't be in the doc. start with
       "<!-- dynamically load mathjax for compatibility with --self-contained -->"
       )
-  for (line in lines_2_remove){
+  for (line in lines_2_remove) {
     rm_line <- grep(sprintf("^%s$", line),
                     output_str)
     if (length(rm_line) == 1)
@@ -247,10 +247,10 @@ prFtpOtherRemoval <- function(output_str){
 #' @param output_str The input from readLines()
 #' @return string Returns with changes
 #' @keywords internal
-prFtpOtherChanges <- function(output_str){
+prFtpOtherChanges <- function(output_str) {
   lines_2_change <-
-    c(`<meta charset="utf-8">` = '<meta charset="utf-8" />')
-  for (line in names(lines_2_change)){
+    c(`<meta charset = "utf-8">` = '<meta charset = "utf-8" />')
+  for (line in names(lines_2_change)) {
     ch_line <- grep(sprintf("^%s$", line),
                     output_str)
     if (length(ch_line) == 1)
@@ -266,29 +266,29 @@ prFtpOtherChanges <- function(output_str){
 #' @return outFile The name of the file
 #' @keywords internal
 #' @import XML
-prCaptionFix <- function(outFile){
+prCaptionFix <- function(outFile) {
   # Encapsulate within a try since there is a high risk of error
   tryCatch({
     # Read in the full file through the html parser
-    tmp <- XML::htmlParse(outFile, encoding="utf-8", replaceEntities = FALSE)
+    tmp <- XML::htmlParse(outFile, encoding = "utf-8", replaceEntities = FALSE)
 
     # The caption-less images are currently located under a p-element instead of a div
     caption_less_images <- xpathApply(tmp, "/html/body//p/img")
-    for (i in 1:length(caption_less_images)){
+    for (i in 1:length(caption_less_images)) {
       old_node <- xmlParent(caption_less_images[[i]])
       img_clone <- xmlClone(caption_less_images[[i]])
       new_node <- newXMLNode("div",
                              img_clone,
                              newXMLNode("p",
                                         xmlAttrs(img_clone)["title"],
-                                        attrs=c(class="caption")),
-                             attrs=c(class="figure"))
+                                        attrs = c(class = "caption")),
+                             attrs = c(class = "figure"))
       replaceNodes(oldNode = old_node,
                    newNode = new_node)
     }
 
-    saveXML(tmp, encoding = "utf-8", file=outFile)
-  }, error=function(err)warning("Could not force captions - error occurred: '", err, "'"))
+    saveXML(tmp, encoding = "utf-8", file = outFile)
+  }, error = function(err) warning("Could not force captions - error occurred: '", err, "'"))
 
   return(outFile)
 }
@@ -302,14 +302,14 @@ prCaptionFix <- function(outFile){
 #' @param css_file The CSS file name
 #' @return \code{string} The file name
 #' @keywords internal
-prSetMaxWidth <- function(max_width, css_file){
+prSetMaxWidth <- function(max_width, css_file) {
   content <- readLines(css_file)
   content <-
     sub(pattern = "max-width: 40em; /* Body */",
-        replacement =  sprintf("max-width: %s; /* Body */",
+        replacement = sprintf("max-width: %s; /* Body */",
                                max_width),
         x = content,
-        fixed=TRUE)
+        fixed = TRUE)
   writeLines(text = content,
              con = css_file)
   return(css_file)

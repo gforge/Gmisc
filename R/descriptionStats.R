@@ -35,9 +35,8 @@
 #'
 #' @examples
 #' describeMean(1:10)
-#' describeMean(c(1:10, NA), useNA="always")
-#' describeMean(c(1:10, NA), useNA="no")
-#'
+#' describeMean(c(1:10, NA), useNA = "always")
+#' describeMean(c(1:10, NA), useNA = "no")
 #' @family descriptive functions
 #' @importFrom stats sd
 #' @export
@@ -51,66 +50,76 @@ describeMean <- function(x,
                          percentage_sign = TRUE,
                          plusmin_str,
                          language = "en",
-                         ...){
+                         ...) {
   dot_args <- list(...)
-  
+
   # Warnings due to interface changes in 1.0
-  if ("show_missing_digits" %in% names(dot_args)){
+  if ("show_missing_digits" %in% names(dot_args)) {
     useNA.digits <- dot_args$show_missing_digits
     dot_args$show_missing_digits <- NULL
     warning("Deprecated: show_missing_digits argument is now useNA.digits as of ver. 1.0")
   }
-  
-  if ("show_missing" %in% names(dot_args)){
-    if (missing(useNA)){
+
+  if ("show_missing" %in% names(dot_args)) {
+    if (missing(useNA)) {
       useNA <- convertShowMissing(dot_args$show_missing)
     }
     dot_args$show_missing <- NULL
     warning("Deprecated: show_missing argument is now useNA as of ver. 1.0")
   }
-  
+
   useNA <- match.arg(useNA)
-  
-  if (missing(plusmin_str))
-    if (html)
+
+  if (missing(plusmin_str)) {
+    if (html) {
       plusmin_str <- "&plusmn;"
-  else
-    plusmin_str <- "\\pm"
-  
-  ret <- c(sprintf("%s (%s%s)", 
-                   txtRound(mean(x, na.rm=T), digits = digits, digits.nonzero = digits.nonzero), 
-                   plusmin_str, 
-                   txtRound(sd(x, na.rm=T), digits = digits, digits.nonzero = digits.nonzero)))
-  
+    } else {
+      plusmin_str <- "\\pm"
+    }
+  }
+
+  ret <- c(sprintf(
+    "%s (%s%s)",
+    txtRound(mean(x, na.rm = T), digits = digits, digits.nonzero = digits.nonzero),
+    plusmin_str,
+    txtRound(sd(x, na.rm = T), digits = digits, digits.nonzero = digits.nonzero)
+  ))
+
   # LaTeX complains if any formula isn't encapsulated within $ signs
-  if (html == FALSE)
+  if (html == FALSE) {
     ret <- sprintf("$%s$", ret)
-  
-  if (useNA %in% c("ifany", "always") & sum(is.na(x))>0){
-    ret <- rbind(ret,
-                 descGetMissing(x = x,
-                                html = html,
-                                number_first = number_first,
-                                percentage_sign = percentage_sign,
-                                language = language,
-                                useNA.digits = useNA.digits,
-                                digits.nonzero = digits.nonzero,
-                                dot_args = dot_args))
+  }
+
+  if (useNA %in% c("ifany", "always") & sum(is.na(x)) > 0) {
+    ret <- rbind(
+      ret,
+      descGetMissing(
+        x = x,
+        html = html,
+        number_first = number_first,
+        percentage_sign = percentage_sign,
+        language = language,
+        useNA.digits = useNA.digits,
+        digits.nonzero = digits.nonzero,
+        dot_args = dot_args
+      )
+    )
     rownames(ret) <- c("Mean (SD)", "Missing")
-  } else if (useNA == "always"){
-    if(percentage_sign == TRUE)
-      percentage_sign <- ifelse (html, "%", "\\%")
-    else if(is.character(percentage_sign) == FALSE)
-      percentage_sign = ""
-    
+  } else if (useNA == "always") {
+    if (percentage_sign == TRUE) {
+      percentage_sign <- ifelse(html, "%", "\\%")
+    } else if (is.character(percentage_sign) == FALSE) {
+      percentage_sign <- ""
+    }
+
     empty <- sprintf(ifelse(number_first, "0 (0%s)", "0%s (0)"), percentage_sign)
-    ret <- rbind(ret, rep(empty, times=NCOL(ret)))
+    ret <- rbind(ret, rep(empty, times = NCOL(ret)))
     rownames(ret) <- c("Mean (SD)", "Missing")
   } else {
     names(ret) <- "Mean (SD)"
   }
-  
-  return (ret)
+
+  return(ret)
 }
 
 
@@ -125,8 +134,7 @@ describeMean <- function(x,
 #'
 #' @examples
 #' describeMedian(1:10)
-#' describeMedian(c(1:10, NA), useNA="ifany")
-#'
+#' describeMedian(c(1:10, NA), useNA = "ifany")
 #' @family descriptive functions
 #' @importFrom stats median quantile
 #' @export
@@ -140,66 +148,76 @@ describeMedian <- function(x,
                            useNA.digits = digits,
                            percentage_sign = TRUE,
                            language = "en",
-                           ...){
+                           ...) {
   dot_args <- list(...)
-  
+
   # Warnings due to interface changes in 1.0
-  if ("show_missing_digits" %in% names(dot_args)){
+  if ("show_missing_digits" %in% names(dot_args)) {
     show_missing.digits <- dot_args$show_missing_digits
     dot_args$show_missing_digits <- NULL
     warning("Deprecated: show_missing_digits argument is now show_missing.digits as of ver. 1.0")
   }
-  
-  if ("show_missing" %in% names(dot_args)){
-    if (missing(useNA)){
+
+  if ("show_missing" %in% names(dot_args)) {
+    if (missing(useNA)) {
       useNA <- convertShowMissing(dot_args$show_missing)
     }
     dot_args$show_missing <- NULL
     warning("Deprecated: show_missing argument is now useNA as of ver. 1.0")
   }
-  
+
   useNA <- match.arg(useNA)
-  
-  if (iqr)
-    range_quantiles = c(1/4, 3/4)
-  else
-    range_quantiles = c(0, 1)
-  
-  ret <- sprintf("%s (%s - %s)", 
-                 txtRound(median(x, na.rm=TRUE), digits = digits, digits.nonzero = digits.nonzero), 
-                 txtRound(quantile(x, probs=range_quantiles[1], na.rm=TRUE), digits = digits, digits.nonzero = digits.nonzero),
-                 txtRound(quantile(x, probs=range_quantiles[2], na.rm=TRUE), digits = digits, digits.nonzero = digits.nonzero))
-  
-  if (useNA %in% c("ifany", "always") & sum(is.na(x))>0){
-    ret <- rbind(ret,
-                 descGetMissing(x = x,
-                                html = html,
-                                number_first = number_first,
-                                percentage_sign = percentage_sign,
-                                language = language,
-                                useNA.digits = useNA.digits,
-                                digits.nonzero = digits.nonzero,
-                                dot_args = dot_args))
-    
+
+  if (iqr) {
+    range_quantiles <- c(1 / 4, 3 / 4)
+  } else {
+    range_quantiles <- c(0, 1)
+  }
+
+  ret <- sprintf(
+    "%s (%s - %s)",
+    txtRound(median(x, na.rm = TRUE), digits = digits, digits.nonzero = digits.nonzero),
+    txtRound(quantile(x, probs = range_quantiles[1], na.rm = TRUE), digits = digits, digits.nonzero = digits.nonzero),
+    txtRound(quantile(x, probs = range_quantiles[2], na.rm = TRUE), digits = digits, digits.nonzero = digits.nonzero)
+  )
+
+  if (useNA %in% c("ifany", "always") & sum(is.na(x)) > 0) {
+    ret <- rbind(
+      ret,
+      descGetMissing(
+        x = x,
+        html = html,
+        number_first = number_first,
+        percentage_sign = percentage_sign,
+        language = language,
+        useNA.digits = useNA.digits,
+        digits.nonzero = digits.nonzero,
+        dot_args = dot_args
+      )
+    )
+
     rownames(ret) <- c(
       ifelse(iqr, "Median (IQR)", "Median (range)"),
-      "Missing")
-  } else if (useNA == "always"){
-    if(percentage_sign == TRUE)
-      percentage_sign <- ifelse (html, "%", "\\%")
-    else if(is.character(percentage_sign) == FALSE)
-      percentage_sign = ""
-    
+      "Missing"
+    )
+  } else if (useNA == "always") {
+    if (percentage_sign == TRUE) {
+      percentage_sign <- ifelse(html, "%", "\\%")
+    } else if (is.character(percentage_sign) == FALSE) {
+      percentage_sign <- ""
+    }
+
     empty <- sprintf(ifelse(number_first, "0 (0%s)", "0%s (0)"), percentage_sign)
-    ret <- rbind(ret, rep(empty, times=NCOL(ret)))
+    ret <- rbind(ret, rep(empty, times = NCOL(ret)))
     rownames(ret) <- c(
       ifelse(iqr, "Median (IQR)", "Median (range)"),
-      "Missing")
+      "Missing"
+    )
   } else {
     names(ret) <- ifelse(iqr, "Median (IQR)", "Median (range)")
   }
-  
-  return (ret)
+
+  return(ret)
 }
 
 #' A function that returns a description proportion that contains
@@ -210,8 +228,7 @@ describeMedian <- function(x,
 #' @inheritParams describeMean
 #' @inheritParams prDescGetAndValidateDefaultRef
 #' @examples
-#' describeProp(factor(sample(50, x=c("A","B", NA), replace=TRUE)))
-#'
+#' describeProp(factor(sample(50, x = c("A", "B", NA), replace = TRUE)))
 #' @family descriptive functions
 #' @export
 describeProp <- function(x,
@@ -224,91 +241,101 @@ describeProp <- function(x,
                          default_ref,
                          percentage_sign = TRUE,
                          language = "en",
-                         ...){
+                         ...) {
   dot_args <- list(...)
-  
+
   # Warnings due to interface changes in 1.0
-  if ("show_missing_digits" %in% names(dot_args)){
+  if ("show_missing_digits" %in% names(dot_args)) {
     useNA.digits <- dot_args$show_missing_digits
     dot_args$show_missing_digits <- NULL
     warning("Deprecated: show_missing_digits argument is now useNA.digits as of ver. 1.0")
   }
-  
-  if ("show_missing" %in% names(dot_args)){
-    if (missing(useNA)){
+
+  if ("show_missing" %in% names(dot_args)) {
+    if (missing(useNA)) {
       useNA <- convertShowMissing(dot_args$show_missing)
     }
     dot_args$show_missing <- NULL
     warning("Deprecated: show_missing argument is now useNA as of ver. 1.0")
   }
-  
+
   useNA <- match.arg(useNA)
-  
+
   default_ref <- prDescGetAndValidateDefaultRef(x, default_ref)
-  
+
   # If we're to use the horizontal proportions then
   # it's better to report the variable as a factor
   # instead of a single proportion.
   # When we have missing it also gets more difficult
   # to just report one percentage as it suddenly uncertain
   # for what percentage the number applies to
-  if("horizontal_proportions" %in% names(dot_args) ||
-     (useNA == "ifany" &&
+  if ("horizontal_proportions" %in% names(dot_args) ||
+    (useNA == "ifany" &&
       any(is.na(x))) ||
-     useNA == "always"){
-    
-    df_arg_list <- list(x = x,
-                        html = html,
-                        number_first = number_first,
-                        percentage_sign=percentage_sign,
-                        language = language,
-                        digits = digits,
-                        digits.nonzero = digits.nonzero,
-                        useNA = useNA,
-                        useNA.digits = useNA.digits)
-    for (n in names(dot_args)){
-      if (!n %in% names(df_arg_list)){
+    useNA == "always") {
+    df_arg_list <- list(
+      x = x,
+      html = html,
+      number_first = number_first,
+      percentage_sign = percentage_sign,
+      language = language,
+      digits = digits,
+      digits.nonzero = digits.nonzero,
+      useNA = useNA,
+      useNA.digits = useNA.digits
+    )
+    for (n in names(dot_args)) {
+      if (!n %in% names(df_arg_list)) {
         df_arg_list[[n]] <- dot_args[[n]]
       }
     }
     return(fastDoCall(describeFactors, df_arg_list))
   }
-  
-  if (!is.factor(x))
+
+  if (!is.factor(x)) {
     x <- factor(x)
-  
-  no <- sum(x == levels(x)[default_ref], na.rm=T)
-  
+  }
+
+  no <- sum(x == levels(x)[default_ref], na.rm = T)
+
   # Don't count missing since those are treated as factors if any
-  percent <- 100*no/length(x[is.na(x)==FALSE])
-  
-  oi_args <- list(x = no,
-                  language = language,
-                  html = html)
-  for (n in names(dot_args)){
-    if (!n %in% names(oi_args)){
+  percent <- 100 * no / length(x[is.na(x) == FALSE])
+
+  oi_args <- list(
+    x = no,
+    language = language,
+    html = html
+  )
+  for (n in names(dot_args)) {
+    if (!n %in% names(oi_args)) {
       oi_args[[n]] <- dot_args[[n]]
     }
   }
   no <- fastDoCall(txtInt, oi_args)
-  
+
   # LaTeX treats % as comments unless it's properly escaped
-  if(percentage_sign == TRUE)
-    percentage_sign <- ifelse (html, "%", "\\%")
-  else if(!is.character(percentage_sign))
-    percentage_sign = ""
-  
+  if (percentage_sign == TRUE) {
+    percentage_sign <- ifelse(html, "%", "\\%")
+  } else if (!is.character(percentage_sign)) {
+    percentage_sign <- ""
+  }
+
   percentage_str <- paste0(txtRound(percent, digits = digits, digits.nonzero = digits.nonzero), percentage_sign)
-  if (number_first)
-    ret <- sprintf("%s (%s)", 
-                   no, 
-                   percentage_str)
-  else
-    ret <- sprintf("%s (%s)",
-                   percentage_str, 
-                   no)
-  
-  return (ret)
+  if (number_first) {
+    ret <- sprintf(
+      "%s (%s)",
+      no,
+      percentage_str
+    )
+  } else {
+    ret <- sprintf(
+      "%s (%s)",
+      percentage_str,
+      no
+    )
+  }
+
+  return(ret)
 }
 
 
@@ -334,18 +361,18 @@ describeProp <- function(x,
 #'
 #' @examples
 #' set.seed(1)
-#' describeFactors(sample(50, x=c("A","B", "C"), replace=TRUE))
+#' describeFactors(sample(50, x = c("A", "B", "C"), replace = TRUE))
 #'
 #' n <- 500
-#' my_var <- factor(sample(size=n, x=c("A","B", "C", NA), replace=TRUE))
-#' my_exp <- rbinom(n=n, size=1, prob=0.2)
-#' total <- table(my_var, useNA="ifany")
+#' my_var <- factor(sample(size = n, x = c("A", "B", "C", NA), replace = TRUE))
+#' my_exp <- rbinom(n = n, size = 1, prob = 0.2)
+#' total <- table(my_var, useNA = "ifany")
 #' by(my_var,
-#'    INDICES=my_exp,
-#'    FUN=describeFactors,
-#'    useNA="ifany",
-#'    horizontal_proportions = total)
-#'
+#'   INDICES = my_exp,
+#'   FUN = describeFactors,
+#'   useNA = "ifany",
+#'   horizontal_proportions = total
+#' )
 #' @export
 describeFactors <- function(x,
                             html = TRUE,
@@ -359,64 +386,74 @@ describeFactors <- function(x,
                             language = "en",
                             ...) {
   dot_args <- list(...)
-  
+
   # Warnings due to interface changes in 1.0
-  if ("show_missing_digits" %in% names(dot_args)){
+  if ("show_missing_digits" %in% names(dot_args)) {
     useNA.digits <- dot_args$show_missing_digits
     dot_args$show_missing_digits <- NULL
     warning("Deprecated: show_missing_digits argument is now useNA.digits as of ver. 1.0")
   }
-  
-  if ("show_missing" %in% names(dot_args)){
-    if (missing(useNA)){
+
+  if ("show_missing" %in% names(dot_args)) {
+    if (missing(useNA)) {
       useNA <- convertShowMissing(dot_args$show_missing)
     }
     dot_args$show_missing <- NULL
     warning("Deprecated: show_missing argument is now useNA as of ver. 1.0")
   }
-  
+
   useNA <- match.arg(useNA)
-  
+
   # Get basic data
-  table_results <- table(x, useNA= useNA)
-  
+  table_results <- table(x, useNA = useNA)
+
   # Check if we should relate to an external total
-  if (!missing(horizontal_proportions)){
-    
+  if (!missing(horizontal_proportions)) {
+
     # Error check the horizontal_proportions variable
     # First check that it's a table or at least a vector
     if (is.numeric(horizontal_proportions) == FALSE ||
-        (!inherits(horizontal_proportions, "table") &&
-         is.vector(horizontal_proportions) == FALSE))
-      stop("You have not provided a proper table/vector variable for the function,",
-           " the class you've given is: '", paste(class(horizontal_proportions), collapse=" & ") , "'",
-           ", instead of numeric vector or table")
-    
+      (!inherits(horizontal_proportions, "table") &&
+        is.vector(horizontal_proportions) == FALSE)) {
+      stop(
+        "You have not provided a proper table/vector variable for the function,",
+        " the class you've given is: '", paste(class(horizontal_proportions), collapse = " & "), "'",
+        ", instead of numeric vector or table"
+      )
+    }
+
     # The original table should always be longer than the subtable
-    if (length(horizontal_proportions) < length(table_results))
-      stop("There is a length discrepancy between the number of groups in the given sample",
-           " and the reference sample, ",
-           length(horizontal_proportions), " < ", length(table_results) , "!")
-    
+    if (length(horizontal_proportions) < length(table_results)) {
+      stop(
+        "There is a length discrepancy between the number of groups in the given sample",
+        " and the reference sample, ",
+        length(horizontal_proportions), " < ", length(table_results), "!"
+      )
+    }
+
     # All variables should exist in the horizontal table
-    if (all(names(table_results) %in% names(horizontal_proportions)) == FALSE)
-      stop("Your results contain results that are not in ",
-           "the reference horizontal_proportions: ",
-           paste(names(table_results)[names(table_results) %in% names(horizontal_proportions)],
-                 collapse=", "))
-    
+    if (all(names(table_results) %in% names(horizontal_proportions)) == FALSE) {
+      stop(
+        "Your results contain results that are not in ",
+        "the reference horizontal_proportions: ",
+        paste(names(table_results)[names(table_results) %in% names(horizontal_proportions)],
+          collapse = ", "
+        )
+      )
+    }
+
     # Create a equal length array with the same order
-    if(length(horizontal_proportions) > length(table_results)){
+    if (length(horizontal_proportions) > length(table_results)) {
       # There seems to be a few variables more in the horizontal version and
       # then we need to fill in those values with 0
       # Initiate an empty array
-      tmp <- rep(0, times=length(horizontal_proportions))
+      tmp <- rep(0, times = length(horizontal_proportions))
       # The array should have the names of the results
       # to be able to reference them
       names(tmp) <- names(horizontal_proportions)
       # Iterate and copy the values
-      for (n in names(tmp)){
-        if (n %in% names(table_results)){
+      for (n in names(tmp)) {
+        if (n %in% names(table_results)) {
           tmp[n] <- table_results[n]
         }
       }
@@ -424,52 +461,58 @@ describeFactors <- function(x,
       table_results <- tmp
       class(tmp) <- "table"
     }
-    
+
     # Initiate an empty array
-    percentages <- rep(NA, times=length(horizontal_proportions))
+    percentages <- rep(NA, times = length(horizontal_proportions))
     # The array should have the names of the results
     # to be able to reference them
     names(percentages) <- names(horizontal_proportions)
-    for (n in names(horizontal_proportions)){
+    for (n in names(horizontal_proportions)) {
       # Strange things happen with NA
       # Need to find that element in a slightly odd way
-      if (is.na(n))
+      if (is.na(n)) {
         percentages[is.na(names(percentages))] <-
-          table_results[is.na(names(table_results))]/horizontal_proportions[is.na(names(horizontal_proportions))]*100
-      else
-        percentages[n] <- table_results[n]/horizontal_proportions[n]*100
+          table_results[is.na(names(table_results))] / horizontal_proportions[is.na(names(horizontal_proportions))] * 100
+      } else {
+        percentages[n] <- table_results[n] / horizontal_proportions[n] * 100
+      }
     }
-  }else{
-    percentages <- table_results/sum(table_results)*100
+  } else {
+    percentages <- table_results / sum(table_results) * 100
   }
-  
+
   # Format the values
-  sa_args <- list(X = table_results,
-                  FUN = txtInt,
-                  language = language,
-                  html = html)
-  for (n in names(dot_args)){
-    if (!n %in% names(sa_args)){
+  sa_args <- list(
+    X = table_results,
+    FUN = txtInt,
+    language = language,
+    html = html
+  )
+  for (n in names(dot_args)) {
+    if (!n %in% names(sa_args)) {
       sa_args[[n]] <- dot_args[[n]]
     }
   }
   values <- fastDoCall(sapply, sa_args)
-  
+
   # LaTeX treats % as comments unless it's properly escaped
-  if(percentage_sign == TRUE)
-    percentage_sign <- ifelse (html, "%", "\\%")
-  else if(is.character(percentage_sign) == FALSE)
-    percentage_sign = ""
-  
+  if (percentage_sign == TRUE) {
+    percentage_sign <- ifelse(html, "%", "\\%")
+  } else if (is.character(percentage_sign) == FALSE) {
+    percentage_sign <- ""
+  }
+
   # The is.na(...) is a little overkill
-  percentage_str <- paste0(txtRound(percentages, 
-                                    digits = ifelse(is.na(names(table_results)), useNA.digits, digits), 
-                                    digits.nonzero = digits.nonzero), percentage_sign)
-  
-  if (number_first)
-    ret <- matrix(sprintf("%s (%s)", values, percentage_str), ncol=1)
-  else
-    ret <- matrix(sprintf("%s (%s)", percentage_str, values), ncol=1)
+  percentage_str <- paste0(txtRound(percentages,
+    digits = ifelse(is.na(names(table_results)), useNA.digits, digits),
+    digits.nonzero = digits.nonzero
+  ), percentage_sign)
+
+  if (number_first) {
+    ret <- matrix(sprintf("%s (%s)", values, percentage_str), ncol = 1)
+  } else {
+    ret <- matrix(sprintf("%s (%s)", percentage_str, values), ncol = 1)
+  }
 
   rn <- names(table_results)
   rn[is.na(rn)] <- "Missing"

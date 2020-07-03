@@ -22,11 +22,10 @@ insertRowAndKeepAttr(m, r, v = NA, rName = "")
 Inserts a row and keeps the attributes \code{\link{copyAllNewAttributes}}
 }
 \examples{
-test <- matrix(1:4, ncol=2)
-attr(test, 'wow') <- 1000
+test <- matrix(1:4, ncol = 2)
+attr(test, "wow") <- 1000
 test <- insertRowAndKeepAttr(test, 2)
-print(attr(test, 'wow'))
-
+print(attr(test, "wow"))
 }
 \author{
 Max Gordon, Arne Henningsen

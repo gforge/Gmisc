@@ -7,3 +7,5 @@
 ^visual_tests
 ^\.travis\.yml$
 ^cran-comments\.md$
+.vscode
+Gmisc/inst/extdata/Full_test_suite_files/*
