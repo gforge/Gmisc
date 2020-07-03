@@ -178,7 +178,7 @@ prPushMarginViewport <- function(bottom, left, top, right, name = "margin") {
 #' Adds the title and generates a new
 #' main viewport below the title
 #'
-#' @param title The title as accepted by \code{\link[grid]{textGrob}}
+#' @param title The title as accepted by \code{\link[grid:grid.text]{textGrob}}
 #' @param base_cex The base cex used for the plot
 #' @param cex_mult The multiplier of the base - i.e. the increase of the
 #'  text size for the title as compared to the general

@@ -13,7 +13,7 @@
 #'  rows third column is the number of observations that go from the first class to the
 #'  third class.
 #' @param type_of_arrow The types of arrow may be grid, simple, or gradient. Simple grid
-#'  arrows are the \code{\link[grid]{bezierGrob}} arrows (not that pretty),
+#'  arrows are the \code{\link[grid:grid.bezier]{bezierGrob}} arrows (not that pretty),
 #'  simple is the \code{\link{bezierArrowSmpl}} that I've created to get a more exact
 #'  control of the arrow position and width, while gradient
 #'  corresponds to \code{\link{bezierArrowGradient}}

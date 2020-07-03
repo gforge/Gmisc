@@ -72,7 +72,7 @@ aligned. This is useful for instance if the arrow attaches to a box.}
  correspond to the bezier points.
 }
 \description{
-This is an alternative to the grid packages \code{\link[grid]{bezierGrob}}
+This is an alternative to the grid packages \code{\link[grid:grid.bezier]{bezierGrob}}
 with the advantage that it allows you to draw an arrow with a specific
 unit width. Note, it has only a end-arrow at this point.
 }

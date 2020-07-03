@@ -33,7 +33,7 @@ shorten it to \emph{3 - 10 jun} while retaining month and year info only if the 
 crosses between months or years.
 }
 \details{
-There are options that can be set using the \code{\link[base]{option}}:
+There are options that can be set using the \code{\link[base:options]{options}}:
 \itemize{
 \item \code{Gmisc_time2spanTxt_day_month} The date with day + month as formatted by \code{\link[glue]{glue}} where the time is passed as \code{time}.
 \item \code{Gmisc_time2spanTxt_full_year} The full date with day + month + year as formatted by \code{\link[glue]{glue}} where the time is passed as \code{time}.

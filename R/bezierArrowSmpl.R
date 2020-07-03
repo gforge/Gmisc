@@ -1,6 +1,6 @@
 #' A simple bezier arrow
 #'
-#' This is an alternative to the grid packages \code{\link[grid]{bezierGrob}}
+#' This is an alternative to the grid packages \code{\link[grid:grid.bezier]{bezierGrob}}
 #' with the advantage that it allows you to draw an arrow with a specific
 #' unit width. Note, it has only a end-arrow at this point.
 #'

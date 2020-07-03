@@ -25,7 +25,7 @@
 #'  the original width, note the gradient's width is thus 90 \%.
 #' @param grdt_clr The color of the gradient.
 #' @param ... Passed on to \code{\link{bezierArrowSmpl}}
-#' @return \code{grid::gList()} A grob of \code{\link[grid]{gList}}-type
+#' @return A grob of \code{\link[grid:grob]{gList}}-type
 #'
 #' @inheritParams calculateLinesAndArrow
 #' @examples

@@ -57,7 +57,7 @@ to the top at the end.
 The exact positions of the line is stored at the \code{attr(..., "line")}.
 If you want to draw your own custom line all you need to do is check which
 \code{attr(my_line, "line")$x} and \code{attr(my_line, "line")$y} you want
-to attach to and then create your own custom \code{\link[grid]{linesGrob}}.
+to attach to and then create your own custom \code{\link[grid:grid.lines]{linesGrob}}.
 }
 \examples{
 library(grid)

@@ -33,7 +33,7 @@ The value for the \code{rgroup} is by default the name of the list element. If y
 passed a list without a name for that particular element or if you have passed a
 matrix it will look for a label set by the \pkg{Hmisc}\code{::\link[Hmisc]{label}} function.
 For those elements that have only one row no \code{rgroup} is set, and the naming sequence
-is the same as above but with an additional \code{\link[base]{rownames}} if the previous
+is the same as above but with an additional \code{\link[base:colnames]{rownames}} if the previous
 two turn out empty. All this behavior is exemplified in the example.
 
 The \code{rgroup} value can be overridden by simply specifying a custom \code{rgroup} when
