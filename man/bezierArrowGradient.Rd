@@ -86,7 +86,7 @@ the original width, note the gradient's width is thus 90 \%.}
 \item{...}{Passed on to \code{\link{bezierArrowSmpl}}}
 }
 \value{
-A grob of \code{\link[grid:grob]{gList}}-type
+A grob of \code{\link[grid:grid.grob]{gList}}-type
 }
 \description{
 This is an experimental addition to the original \code{\link{bezierArrowSmpl}}

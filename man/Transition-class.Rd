@@ -22,7 +22,7 @@ for details.
 are combined. In order to avoid having overlapping graphs we need to generate a unique id for each viewport
 and thus this variable exists. If left empty it will create a counter that is stored in the \code{\link[base]{options}}
 (\code{"Gmisc.transitionClassCounter"}) and each viewport will have the name preceded with \code{tc_[0-9]+}. Set this
-if you intend to use \code{\link[grid:pushViewport]{seekViewport}}.}
+if you intend to use \code{\link[grid:viewports]{seekViewport}}.}
 
 \item{\code{transitions}}{This is a >= 3 dimensional array with the transitions. Should not be directly accessed.}
 
