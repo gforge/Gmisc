@@ -1,5 +1,9 @@
 NEWS for the Gmisc package
 
+Changes for 2.0.0
+-----------------
+* BREAKING: The mergeList merges vectors into vectors instead of assuming that they should be bound as a matrix
+
 Changes for 1.11.0
 ------------------
 * Fix for adjustment in box justification, thanks Carl Suster

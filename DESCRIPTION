@@ -1,6 +1,6 @@
 Package: Gmisc
-Version: 1.11.0
-Date: 2020-06-30
+Version: 2.0.0
+Date: 2020-10-31
 Title: Descriptive Statistics, Transition Plots, and More
 Author: Max Gordon <max@gforge.se>
 Maintainer: Max Gordon <max@gforge.se>

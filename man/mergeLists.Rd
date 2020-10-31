@@ -4,13 +4,20 @@
 \alias{mergeLists}
 \title{Merging of multiple lists}
 \usage{
-mergeLists(..., lapplyOutput = NULL)
+mergeLists(
+  ...,
+  lapplyOutput = NULL,
+  sortNames = getOption("Gmisc.mergeList.sort", default = TRUE)
+)
 }
 \arguments{
 \item{...}{Any number of lists that you want to merge}
 
 \item{lapplyOutput}{The \code{\link[base]{lapply}} function outputs a number
 of lists and this is for specifically merging all of those.}
+
+\item{sortNames}{Set to false if you don't want the names to be sorted.
+This can also be done via the option `Gmisc.mergeList.sort`.}
 }
 \value{
 Returns a list with all the given lists.

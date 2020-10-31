@@ -8,11 +8,13 @@
 #' @param ... Any number of lists that you want to merge
 #' @param lapplyOutput The \code{\link[base]{lapply}} function outputs a number
 #'  of lists and this is for specifically merging all of those.
+#' @param sortNames Set to false if you don't want the names to be sorted.
+#'  This can also be done via the option `Gmisc.mergeList.sort`.
 #' @return Returns a list with all the given lists.
 #'
 #' @example  inst/examples/mergeLists_example.R
 #' @export
-mergeLists <- function(..., lapplyOutput = NULL) {
+mergeLists <- function(..., lapplyOutput = NULL, sortNames = getOption("Gmisc.mergeList.sort", default = TRUE)) {
   lst <- list(...)
   if (is.list(lapplyOutput)) {
     lst <- c(lst, lapplyOutput)
@@ -29,8 +31,34 @@ mergeLists <- function(..., lapplyOutput = NULL) {
   }
 
   m <- lst[[1]]
-  for (i in 2:length(lst)) {
-    m <- mapply(mergeLists_internal, m, lst[[i]], SIMPLIFY = FALSE)
+  if (is.null(names(m))) {
+    for (i in 2:length(lst)) {
+      nextList <- lst[[i]]
+      if (!is.null(names(nextList))) {
+        stop("The list ", nextList, " has names - cannot merge list with no-name elements with named elements.",
+             " Handling the merge becomes unpredictable and unsafe. You should consider writing your own routine for this.")
+      }
+      m <- mapply(mergeLists_internal, m, nextList, SIMPLIFY = FALSE)
+    }
+  } else {
+    for (i in 2:length(lst)) {
+      nextList <- lst[[i]]
+      if (is.null(names(nextList))) {
+        stop("The list ", nextList, " does not have names - cannot merge list with named elements with no-named elements.",
+             " Handling the merge becomes unpredictable and unsafe. You should consider writing your own routine for this.")
+      }
+      elementNames <- union(names(m), names(nextList))
+      if (sortNames) {
+        elementNames <- sort(elementNames)
+      }
+      for (n in elementNames) {
+        if (is.null(m[[n]])) {
+          m[[n]] <- nextList[[n]]
+        } else if (!is.null(m[[n]])) {
+          m[[n]] <- mergeLists_internal(o_element = m[[n]], n_element = nextList[[n]])
+        }
+      }
+    }
   }
   return(m)
 }
@@ -43,6 +71,10 @@ mergeLists <- function(..., lapplyOutput = NULL) {
 #'
 #' @keywords internal
 mergeLists_internal <- function(o_element, n_element) {
+  if (is.list(o_element) != is.list(n_element)) {
+    stop("Can't mix list and non-lists check out the sections containing ", o_element, " and ", n_element)
+  }
+
   if (is.list(n_element)) {
     # Fill in non-existant element with NA elements
     if (length(n_element) != length(o_element)) {
@@ -85,9 +117,14 @@ mergeLists_internal <- function(o_element, n_element) {
       n_element
     ))
   }
+
   if (length(n_element) > 1) {
     new_cols <- ifelse(is.matrix(n_element), ncol(n_element), length(n_element))
     old_cols <- ifelse(is.matrix(o_element), ncol(o_element), length(o_element))
+    if (is.null(dim(n_element)) && is.null(dim(o_element))) {
+      return(c(o_element, n_element))
+    }
+
     if (new_cols != old_cols) {
       stop(
         "Your length doesn't match on the elements,",
@@ -99,8 +136,8 @@ mergeLists_internal <- function(o_element, n_element) {
 
   if (length(n_element) > 1) {
     return(rbind(o_element,
-      n_element,
-      deparse.level = 0
+                 n_element,
+                 deparse.level = 0
     ))
   }
   return(c(
