@@ -8,10 +8,9 @@ knitr::opts_chunk$set(
   echo = FALSE,
   dpi = 96,
   fig.width = 4, fig.height = 4, # Default figure widths
-  dev = "png", dev.args = list(type = "cairo"), # The png device
+  dev = "png", # The png device
   # Change to dev = "postscript" if you want the EPS-files
-  # for submitting. Also remove the dev.args() as the postscript
-  # doesn't accept the type = "cairo" argument.
+  # for submitting. 
   error = FALSE
 )
 

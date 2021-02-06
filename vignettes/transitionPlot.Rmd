@@ -78,8 +78,7 @@ rm(prob)
 Basic use
 =========
 ```{r, echo=FALSE, }
-knitr::opts_chunk$set(dev.args=list(type="cairo"), 
-                      message=FALSE, 
+knitr::opts_chunk$set(message=FALSE, 
                       warnings=FALSE)
 ```
 
