@@ -10,7 +10,7 @@ Description: Tools for making the descriptive "Table 1" used in medical
     a method for variable selection based on the SVD, Bézier lines with arrows
     complementing the ones in the 'grid' package, and more.
 License: GPL (>= 3)
-URL: http://gforge.se
+URL: https://gforge.se
 BugReports: https://github.com/gforge/Gmisc/issues
 Biarch: yes
 Depends:
