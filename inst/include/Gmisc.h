@@ -2,6 +2,7 @@
 # include <iostream>
 # include <iomanip>
 # include <vector>
+# include <cfloat>
 
 struct Point{
   double x;

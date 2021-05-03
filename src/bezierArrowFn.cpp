@@ -22,9 +22,9 @@ Point generatePoint(double offs,
   // Strange things happen around 0
   Point offset_delta = { (p.x - offs_delta * cos_val - last.x),
                          (p.y - offs_delta * sin_val - last.y) };
-  if (fabs(offset_delta.x) < SINGLE_EPS)
+  if (fabs(offset_delta.x) < FLT_EPSILON)
     offset_delta.x = 0;
-  if (fabs(offset_delta.y) < SINGLE_EPS)
+  if (fabs(offset_delta.y) < FLT_EPSILON)
     offset_delta.y = 0;
   
   // Notify that element goes in wrong direction
@@ -125,21 +125,21 @@ Rcpp::List calculateLinesAndArrow(NumericVector x,
         delta.x = (x[ii+1] - x[ii]);
         ii++;
       }while(ii < x.size() &&
-           fabs(delta.x) < SINGLE_EPS &&
-           fabs(delta.y) < SINGLE_EPS);
+           fabs(delta.x) < FLT_EPSILON &&
+           fabs(delta.y) < FLT_EPSILON);
     }
 
     // Strange things happen around 0
-    if (fabs(delta.x) < SINGLE_EPS)
+    if (fabs(delta.x) < FLT_EPSILON)
       delta.x = 0;
-    if (fabs(delta.y) < SINGLE_EPS)
+    if (fabs(delta.y) < FLT_EPSILON)
       delta.y = 0;
 
     angle = atan2(delta.y, delta.x);
 
     Point p = generatePoint(offs,
                       offs_delta,
-                      angle -  PI/2,
+                      angle -  M_PI/2,
                       x[i],
                       y[i],
                       last_right,
@@ -150,7 +150,7 @@ Rcpp::List calculateLinesAndArrow(NumericVector x,
 
     p = generatePoint(offs,
                       offs_delta,
-                      angle +  PI/2,
+                      angle +  M_PI/2,
                       x[i],
                       y[i],
                       last_left,
@@ -164,15 +164,15 @@ Rcpp::List calculateLinesAndArrow(NumericVector x,
   // Add the arrow if requested
   if (arrow_offset > 0){
     // Same angle as last angle
-    left.addPoint(arrow_offset * cos(angle +  PI/2) + x[x.size() - 1],
-                  arrow_offset * sin(angle +  PI/2) + y[x.size() - 1],
+    left.addPoint(arrow_offset * cos(angle +  M_PI/2) + x[x.size() - 1],
+                  arrow_offset * sin(angle +  M_PI/2) + y[x.size() - 1],
                   false);
     left.addPoint(end_x,
                   end_y,
                   false);
 
-    right.addPoint(arrow_offset * cos(angle -  PI/2) + x[x.size() - 1],
-                   arrow_offset * sin(angle -  PI/2) + y[x.size() - 1],
+    right.addPoint(arrow_offset * cos(angle -  M_PI/2) + x[x.size() - 1],
+                   arrow_offset * sin(angle -  M_PI/2) + y[x.size() - 1],
                    false);
     right.addPoint(end_x,
                    end_y,
