@@ -65,8 +65,8 @@ the original width, note the gradient's width is thus 90 \%.}
 
 \item{vp}{A Grid viewport object (or NULL).}
 
-\item{gp}{An object of class \code{gpar}, typically the output
-    from a call to the function \code{gpar}.  This is basically
+\item{gp}{An object of class \code{"gpar"}, typically the output
+    from a call to the function \code{\link[grid]{gpar}}.  This is basically
     a list of graphical parameter settings.}
 
 \item{rm_intersect}{Set to 0 if you want to skip intersection removal, 1 only to remove left or
