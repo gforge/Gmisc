@@ -4,7 +4,7 @@
 #' MS Word for importing html-documents in the .docx-format. The advantage of html documents is
 #' the ability to create advanced formatting frequently needed in medical publications
 #' and that is available in the \code{\link[htmlTable]{htmlTable}} function. You can view
-#' \href{https://gforge.se/2014-07/fast-track-publishing-using-rmarkdown}{the series}
+#' \href{https://gforge.se/2014/07/fast-track-publishing-using-rmarkdown/}{the series}
 #' for more details regarding how to achieve
 #' fast-track-publishing (ftp) together with knitr.
 #'

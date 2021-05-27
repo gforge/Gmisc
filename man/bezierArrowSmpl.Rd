@@ -61,8 +61,8 @@ aligned. This is useful for instance if the arrow attaches to a box.}
  top and bottom lines match. It can also cause some unexpected behaviour why you may want to
  remove this feature if the arrow behaves erratically.}
 
-\item{gp}{An object of class \code{gpar}, typically the output
-    from a call to the function \code{gpar}.  This is basically
+\item{gp}{An object of class \code{"gpar"}, typically the output
+    from a call to the function \code{\link[grid]{gpar}}.  This is basically
     a list of graphical parameter settings.}
 
 \item{vp}{A Grid viewport object (or NULL).}
