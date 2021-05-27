@@ -140,10 +140,9 @@ getSvdMostInfluential <- function(mtrx,
     print(p1)
   }
 
-  if (plot_selection)
-    plotSvdSelection()
+  if (plot_selection) plotSvdSelection()
 
   ret <- list(most_influential = unique(unlist(vars[cols_expl])),
-      svd = svd_out)
-  return(ret)
+              svd = svd_out)
+  invisible(ret)
 }
