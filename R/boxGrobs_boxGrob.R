@@ -37,7 +37,8 @@ boxGrob <- function(label,
                     height,
                     just = "center",
                     bjust = "center",
-                    txt_gp = getOption("boxGrobTxt", default = gpar(color = "black")),
+                    txt_gp = getOption("boxGrobTxt", default = gpar(color = "black",
+                                                                    cex = 1)),
                     box_gp = getOption("boxGrob", gpar(fill = "white")),
                     shape  = c("roundrect", "rect"),
                     name = NULL) {
@@ -60,7 +61,7 @@ boxGrob <- function(label,
   x <- prAsUnit(x)
   y <- prAsUnit(y)
 
-  txt_padding <- unit(4, "mm")
+  txt_padding <- unit(4*txt_gp$cex, "mm")
   txt <- textGrob(
     label = label,
     x = prGetX4Txt(just, txt_padding), y = .5,
