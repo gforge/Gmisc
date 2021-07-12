@@ -14,6 +14,8 @@
 #'  if you want to customize all the boxes at once.
 #' @param box_gp The \code{\link[grid]{gpar}} style to apply to the box. Set \code{boxGrob} option
 #'  if you want to customize all the boxes at once.
+#'  @param shape Box decorator, rectangle with rounded corners or not. Possible string values are: "`roundrect`",
+#'  "`rect`". 
 #' @param name a character identifier for the \code{grob}. Used to find the \code{grob} on the display
 #'  list and/or as a child of another grob.
 #'
@@ -37,6 +39,7 @@ boxGrob <- function(label,
                     bjust = "center",
                     txt_gp = getOption("boxGrobTxt", default = gpar(color = "black")),
                     box_gp = getOption("boxGrob", gpar(fill = "white")),
+                    shape  = c("roundrect", "rect"),
                     name = NULL) {
   assert(
     checkString(label),
@@ -51,6 +54,8 @@ boxGrob <- function(label,
   assert_just(bjust)
   assert_class(txt_gp, "gpar")
   assert_class(box_gp, "gpar")
+  
+  shape <- match.arg(shape)
 
   x <- prAsUnit(x)
   y <- prAsUnit(y)
@@ -83,7 +88,9 @@ boxGrob <- function(label,
     just = bjust
   )
 
-  rect <- roundrectGrob(x = .5, y = .5, gp = box_gp, name = "rect_around")
+  rect <- switch(shape,
+                 "roundrect" = roundrectGrob(x = .5, y = .5, gp = box_gp, name = "rect_around"),
+                 "rect" = rectGrob(x = .5, y = .5, gp = box_gp, name = "rect_around"))
   gl <- grobTree(
     gList(
       rect,
