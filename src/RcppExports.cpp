@@ -6,6 +6,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // calculateLinesAndArrow
 Rcpp::List calculateLinesAndArrow(NumericVector x, NumericVector y, NumericVector offset, double end_x, double end_y, double arrow_offset, int rm_intersect);
 RcppExport SEXP _Gmisc_calculateLinesAndArrow(SEXP xSEXP, SEXP ySEXP, SEXP offsetSEXP, SEXP end_xSEXP, SEXP end_ySEXP, SEXP arrow_offsetSEXP, SEXP rm_intersectSEXP) {

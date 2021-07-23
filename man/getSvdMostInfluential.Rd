@@ -155,10 +155,9 @@ print(b4, position = c(0.5, 0, 1, .5))
 # Let's look at how well the SVD identifies
 # the most influential columns
 getSvdMostInfluential(dataMatrix,
-  quantile = .8,
-  similarity_threshold = .9,
-  plot_threshold = .05,
-  plot_selection = TRUE
-)
+                      quantile = .8,
+                      similarity_threshold = .9,
+                      plot_threshold = .05,
+                      plot_selection = TRUE)
 par(org_par)
 }

@@ -3,8 +3,7 @@ NEWS for the Gmisc package
 Changes for 2.1.0
 -----------------
 * getSvdMostInfluential now returns the data needed for plotting
-* added font size dependent padding to `boxGrob` (thanks Alim Dayim)
-* added box function dependent padding to `boxGrob` (thanks Alim Dayim)
+* added fontsize dependent padding to `boxGrob`
 
 Changes for 2.0.2
 -----------------
