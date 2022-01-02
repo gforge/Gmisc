@@ -132,37 +132,7 @@ getDescriptionStatsBy <- function(x,
                                   header_count,
                                   missing_value = "-",
                                   names_of_missing = NULL,
-                                  ...) {
-  API_changes <-
-    c(
-      show_missing_digits = "show_missing.digits",
-      show_missing = "useNA",
-      sig.limit = "statistics.sig_lim",
-      two_dec.limit = "statistics.two_dec_lim"
-    )
-  dots <- list(...)
-  fenv <- environment()
-  for (i in 1:length(API_changes)) {
-    old_name <- names(API_changes)[i]
-    new_name <- API_changes[i]
-    if (old_name %in% names(dots)) {
-      if ("name" %in% class(fenv[[new_name]])) {
-        fenv[[new_name]] <- dots[[old_name]]
-        dots[[old_name]] <- NULL
-        warning(
-          "Deprecated: '", old_name, "'",
-          " argument is now '", new_name, "'",
-          " as of ver. 1.0"
-        )
-      } else {
-        stop(
-          "You have set both the old parameter name: '", old_name, "'",
-          " and the new parameter name: '", new_name, "'."
-        )
-      }
-    }
-  }
-
+                                  ...)
   useNA <- match.arg(useNA)
   if (!is.na(digits.nonzero)) {
     if (!is.numeric(digits.nonzero)

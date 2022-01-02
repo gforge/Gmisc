@@ -1,5 +1,12 @@
 NEWS for the Gmisc package
 
+Changes for 3.0.0
+-----------------
+* **BREAKING:** The input parameters have changed for `getDescriptionStatsBy` and dropped old deprecated parameter conversion:
+  * `show_missing_digits` -> `show_missing.digits`
+  * `show_missing` -> `useNA`
+  * `sig.limit` -> `statistics.sig_lim`
+  * `two_dec.limit` -> `statistics.two_dec_lim`
 Changes for 2.1.0
 -----------------
 * getSvdMostInfluential now returns the data needed for plotting
