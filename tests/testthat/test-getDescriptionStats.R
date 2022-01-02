@@ -151,6 +151,8 @@ test_that("Check small proportions", {
                              by = fake_data$Small)
   b <- getDescriptionStatsBy(fake_data$Large,
                              by = fake_data$Small_factor)
+  attr(a, "raw_data") <- NULL
+  attr(b, "raw_data") <- NULL
   expect_identical(a, b)
 })
 

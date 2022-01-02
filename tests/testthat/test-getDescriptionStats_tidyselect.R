@@ -17,5 +17,8 @@ test_that("Check basic tidyselect functionality", {
                           digits = 2,
                           statistics.sig_lim = 10^-4)
 
-  expect_length(out, 2)
+  expect_equal(length(out), nrow(Loblolly))
+
+  class(out) <- tail(class(out), -1)
+  expect_equal(length(out), 2)
 })

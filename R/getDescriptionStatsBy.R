@@ -213,7 +213,9 @@ getDescriptionStatsBy.data.frame <- function(x,
                              SIMPLIFY = FALSE,
                              USE.NAMES = FALSE)
   structure(multiple_results,
-            class = c("Gmisc.getDescriptionStatsBy.multiple", class(multiple_results)))
+            class = c("Gmisc_getDescriptionStatsBy", class(multiple_results)),
+            multiple = TRUE,
+            raw_data = x)
 }
 
 #' @exportS3Method
@@ -489,6 +491,8 @@ getDescriptionStatsBy.default <- function(x,
   label(results) <- attr(results, "label")
 
   structure(results,
-            class = c("Gmisc.getDescriptionStatsBy", class(results)))
+            class = c("Gmisc_getDescriptionStatsBy", class(results)),
+            multiple = FALSE,
+            raw_data = list(x = x, by = by))
 }
 

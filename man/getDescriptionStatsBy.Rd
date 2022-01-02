@@ -3,12 +3,10 @@
 %   R/getDescriptionStatsBy_S3_fns.R
 \name{getDescriptionStatsBy}
 \alias{getDescriptionStatsBy}
-\alias{htmlTable.Gmisc.getDescriptionStatsBy.multiple}
-\alias{htmlTable.Gmisc.getDescriptionStatsBy}
-\alias{print.Gmisc.getDescriptionStatsBy.multiple}
-\alias{print.Gmisc.getDescriptionStatsBy}
-\alias{knit_print.Gmisc.getDescriptionStatsBy.multiple}
-\alias{knit_print.Gmisc.getDescriptionStatsBy}
+\alias{htmlTable.Gmisc_getDescriptionStatsBy}
+\alias{print.Gmisc_getDescriptionStatsBy}
+\alias{knit_print.Gmisc_getDescriptionStatsBy}
+\alias{length.Gmisc_getDescriptionStatsBy}
 \title{Creating of description statistics}
 \usage{
 getDescriptionStatsBy(
@@ -42,17 +40,13 @@ getDescriptionStatsBy(
   names_of_missing = NULL
 )
 
-\method{htmlTable}{Gmisc.getDescriptionStatsBy.multiple}(x, ...)
+\method{htmlTable}{Gmisc_getDescriptionStatsBy}(x, ...)
 
-\method{htmlTable}{Gmisc.getDescriptionStatsBy}(x, ...)
+\method{print}{Gmisc_getDescriptionStatsBy}(x, ...)
 
-\method{print}{Gmisc.getDescriptionStatsBy.multiple}(x, ...)
+\method{knit_print}{Gmisc_getDescriptionStatsBy}(x, ...)
 
-\method{print}{Gmisc.getDescriptionStatsBy}(x, ...)
-
-\method{knit_print}{Gmisc.getDescriptionStatsBy.multiple}(x, ...)
-
-\method{knit_print}{Gmisc.getDescriptionStatsBy}(x, ...)
+\method{length}{Gmisc_getDescriptionStatsBy}(x)
 }
 \arguments{
 \item{x}{If a data.frame it will be used as the data source for the variables in the \code{...} parameter.
