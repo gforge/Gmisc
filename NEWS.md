@@ -7,6 +7,9 @@ Changes for 3.0.0
   * `show_missing` -> `useNA`
   * `sig.limit` -> `statistics.sig_lim`
   * `two_dec.limit` -> `statistics.two_dec_lim`
+* Fixed bug in `getDescriptionStatsBy` when providing a character input
+* The `yamlDump` can now take a character string and assume that is a json that needs conversion
+
 Changes for 2.1.0
 -----------------
 * getSvdMostInfluential now returns the data needed for plotting

@@ -140,11 +140,17 @@ test_that("Check small proportions", {
                              statistics.sig_lim = 10^-4)
   expect_equivalent(as.character(a["A", "b"]), "6 (0%)")
 
+  # Make sure to handle character input and make it default to the
+  # first factor level
   set.seed(1)
   fake_data <- data.frame(Large = sample(LETTERS[1:2], size = n, replace = TRUE),
                           Small = sample(letters[1:2], size = n, replace = TRUE))
-  getDescriptionStatsBy(fake_data$Large,
-                        fake_data$Small)
+  fake_data$Small_factor <- factor(fake_data$Small)
+  a <- getDescriptionStatsBy(fake_data$Large,
+                             by = fake_data$Small)
+  b <- getDescriptionStatsBy(fake_data$Large,
+                             by = fake_data$Small_factor)
+  expect_identical(a, b)
 })
 
 test_that("Check factor function", {
@@ -169,8 +175,10 @@ test_that("Check factor function", {
                              statistics = TRUE,
                              digits = 2,
                              statistics.sig_lim = 10^-4)
+  label(a) <- ""
+  label(b) <- ""
   for (colname in colnames(b)) {
-    expect_identical(a[,colname], b[, colname])
+    expect_equal(a[,colname], b[, colname])
   }
   vertical_perc_stats <- format(apply(stats, 2, function(x) {
     x / sum(x) * 100

@@ -133,10 +133,11 @@ getDescriptionStatsBy <- function(x,
                                   missing_value = "-",
                                   names_of_missing = NULL,
                                   ...)
+{
   useNA <- match.arg(useNA)
   if (!is.na(digits.nonzero)) {
     if (!is.numeric(digits.nonzero)
-    || floor(digits.nonzero) != digits.nonzero
+        || floor(digits.nonzero) != digits.nonzero
     ) {
       stop("The digits.nonzero should be an integer, you provided: ", digits.nonzero)
     }
@@ -147,7 +148,7 @@ getDescriptionStatsBy <- function(x,
 
   if (!is.function(statistics)) {
     if (is.list(statistics) ||
-      (statistics != FALSE)) {
+        (statistics != FALSE)) {
       if (is.list(statistics)) {
         types <- c(
           "continuous",
@@ -163,7 +164,7 @@ getDescriptionStatsBy <- function(x,
         }
 
         if (is.numeric(x) &&
-          length(unique(x)) != 2) {
+            length(unique(x)) != 2) {
           statistics <- statistics[["continuous"]]
         } else if (length(unique(x)) == 2) {
           if ("proportion" %in% names(statistics)) {
@@ -216,7 +217,7 @@ getDescriptionStatsBy <- function(x,
   # Always have a total column if the description statistics
   # are presented in a horizontal fashion
   if (missing(add_total_col) &&
-    hrzl_prop) {
+      hrzl_prop) {
     add_total_col <- TRUE
   }
 
@@ -270,7 +271,7 @@ getDescriptionStatsBy <- function(x,
   }
 
   if (useNA == "ifany" &&
-    any(is.na(x))) {
+      any(is.na(x))) {
     useNA <- "always"
   }
 
@@ -335,24 +336,26 @@ getDescriptionStatsBy <- function(x,
     # missing category
     if (hrzl_prop) {
       t <- by(x, by,
-        FUN = continuous_fn, html = html,
-        digits = digits,
-        digits.nonzero = digits.nonzero,
-        number_first = numbers_first,
-        useNA = useNA,
-        useNA.digits = useNA.digits,
-        horizontal_proportions = table(is.na(x), useNA = useNA),
-        percentage_sign = percentage_sign
+              FUN = continuous_fn,
+              html = html,
+              digits = digits,
+              digits.nonzero = digits.nonzero,
+              number_first = numbers_first,
+              useNA = useNA,
+              useNA.digits = useNA.digits,
+              horizontal_proportions = table(is.na(x), useNA = useNA),
+              percentage_sign = percentage_sign
       )
     } else {
       t <- by(x, by,
-        FUN = continuous_fn, html = html,
-        digits = digits,
-        digits.nonzero = digits.nonzero,
-        number_first = numbers_first,
-        useNA = useNA,
-        useNA.digits = useNA.digits,
-        percentage_sign = percentage_sign
+              FUN = continuous_fn,
+              html = html,
+              digits = digits,
+              digits.nonzero = digits.nonzero,
+              number_first = numbers_first,
+              useNA = useNA,
+              useNA.digits = useNA.digits,
+              percentage_sign = percentage_sign
       )
     }
 
@@ -387,21 +390,23 @@ getDescriptionStatsBy <- function(x,
       }
     }
   } else if ((!is.factor(x) &&
-    length(unique(na.omit(x))) == 2) ||
-    (is.factor(x) &&
-      length(levels(x)) == 2) &&
-      hrzl_prop == FALSE) {
+              length(unique(na.omit(x))) == 2) ||
+             (is.factor(x) &&
+              length(levels(x)) == 2) &&
+             hrzl_prop == FALSE) {
     default_ref <- prDescGetAndValidateDefaultRef(x, default_ref)
 
-    t <- by(x, by,
-      FUN = prop_fn, html = html,
-      digits = digits,
-      digits.nonzero = digits.nonzero,
-      number_first = numbers_first,
-      useNA = useNA,
-      useNA.digits = useNA.digits,
-      default_ref = default_ref, percentage_sign = percentage_sign
-    )
+    t <- by(x,
+            by,
+            FUN = prop_fn,
+            html = html,
+            digits = digits,
+            digits.nonzero = digits.nonzero,
+            number_first = numbers_first,
+            useNA = useNA,
+            useNA.digits = useNA.digits,
+            default_ref = default_ref,
+            percentage_sign = percentage_sign)
 
     missing_t <- sapply(t, is.null)
     if (any(missing_t)) {
@@ -425,14 +430,15 @@ getDescriptionStatsBy <- function(x,
 
     # Check that we're dealing with only one row
     if (unique(sapply(t, length)) == 1) {
+      if (is.factor(x)) {
+        factor_name <- levels(x)[default_ref]
+      } else {
+        factor_name <- levels(factor(x))[default_ref]
+      }
       # Set the rowname to a special format
       # if there was missing and this is an matrix
       # then we should avoid using this format
-      name <- sprintf(
-        "%s %s",
-        capitalize(levels(x)[default_ref]),
-        tolower(name)
-      )
+      name <- glue("{capitalize(factor_name)} {tolower(name)}")
     }
 
     if (NEJMstyle) {
@@ -443,9 +449,9 @@ getDescriptionStatsBy <- function(x,
       percent_sign <- ifelse(html, "%", "\\%")
 
       if (numbers_first) {
-        name <- sprintf("%s - no (%s)", name, percent_sign)
+        name <- glue("{name} - no ({percent_sign})")
       } else {
-        name <- sprintf("%s - %s (no)", name, percent_sign)
+        name <- glue("{name} - {percent_sign} (no)")
       }
     }
 
@@ -458,24 +464,24 @@ getDescriptionStatsBy <- function(x,
     prop_fn <- factor_fn
     if (hrzl_prop) {
       t <- by(x, by,
-        FUN = factor_fn, html = html,
-        digits = digits,
-        digits.nonzero = digits.nonzero,
-        number_first = numbers_first,
-        useNA = useNA,
-        useNA.digits = useNA.digits,
-        horizontal_proportions = table(x, useNA = useNA),
-        percentage_sign = percentage_sign
+              FUN = factor_fn, html = html,
+              digits = digits,
+              digits.nonzero = digits.nonzero,
+              number_first = numbers_first,
+              useNA = useNA,
+              useNA.digits = useNA.digits,
+              horizontal_proportions = table(x, useNA = useNA),
+              percentage_sign = percentage_sign
       )
     } else {
       t <- by(x, by,
-        FUN = factor_fn, html = html,
-        digits = digits,
-        digits.nonzero = digits.nonzero,
-        number_first = numbers_first,
-        useNA = useNA,
-        useNA.digits = useNA.digits,
-        percentage_sign = percentage_sign
+              FUN = factor_fn, html = html,
+              digits = digits,
+              digits.nonzero = digits.nonzero,
+              number_first = numbers_first,
+              useNA = useNA,
+              useNA.digits = useNA.digits,
+              percentage_sign = percentage_sign
       )
     }
     missing_t <- sapply(t, is.null)
@@ -507,7 +513,7 @@ getDescriptionStatsBy <- function(x,
 
   getHeader <- function(tbl_cnt, header_count, html) {
     if (missing(header_count) ||
-      identical(header_count, FALSE)) {
+        identical(header_count, FALSE)) {
       return(names(tbl_cnt))
     }
 
@@ -529,9 +535,9 @@ getDescriptionStatsBy <- function(x,
     }
 
     return(mapply(txtMergeLines,
-      names(tbl_cnt),
-      cnt_str,
-      html = html
+                  names(tbl_cnt),
+                  cnt_str,
+                  html = html
     ))
   }
 
@@ -552,19 +558,19 @@ getDescriptionStatsBy <- function(x,
   }
 
   if (!missing(add_total_col) &&
-    add_total_col != FALSE) {
+      add_total_col != FALSE) {
     total_table <- prGetStatistics(x[is.na(by) == FALSE],
-      numbers_first = numbers_first,
-      show_perc = total_col_show_perc,
-      show_all_values = show_all_values,
-      useNA = useNA,
-      useNA.digits = useNA.digits,
-      html = html,
-      digits = digits,
-      continuous_fn = continuous_fn,
-      factor_fn = factor_fn,
-      prop_fn = prop_fn,
-      percentage_sign = percentage_sign
+                                   numbers_first = numbers_first,
+                                   show_perc = total_col_show_perc,
+                                   show_all_values = show_all_values,
+                                   useNA = useNA,
+                                   useNA.digits = useNA.digits,
+                                   html = html,
+                                   digits = digits,
+                                   continuous_fn = continuous_fn,
+                                   factor_fn = factor_fn,
+                                   prop_fn = prop_fn,
+                                   percentage_sign = percentage_sign
     )
 
     if (!is.matrix(total_table)) {
@@ -618,12 +624,12 @@ getDescriptionStatsBy <- function(x,
 
   if (is.function(statistics)) {
     if (is.numeric(pval) &&
-      pval <= 1 &&
-      pval >= 0) {
+        pval <= 1 &&
+        pval >= 0) {
       pval <- txtPval(pval,
-        lim.sig = statistics.sig_lim,
-        lim.2dec = statistics.two_dec_lim,
-        html = html
+                      lim.sig = statistics.sig_lim,
+                      lim.2dec = statistics.two_dec_lim,
+                      html = html
       )
       results <- cbind(results, c(pval, rep("", nrow(results) - 1)))
       cn <- c(cn, "P-value")
