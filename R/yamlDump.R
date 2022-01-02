@@ -22,8 +22,28 @@
 #' #    name: Max
 #' #simple: awesome overview
 #'
+#' # If you got a character json you can also input it directly
+#' # and the function will automatically convert it to a list
+#' yamlDump('{"a":{"b":["1"]}}')
+#'
 #' @importFrom yaml as.yaml
 #' @export
 yamlDump <- function(x) {
+  UseMethod("yamlDump")
+}
+
+#' @exportS3Method
+yamlDump.default <- function(x) {
   as.yaml(x) %>% cat
+}
+
+#' @exportS3Method
+yamlDump.character <- function(x) {
+  safeLoadPkg("jsonlite")
+  yamlDump(jsonlite::fromJSON(x, simplifyVector = FALSE))
+}
+
+#' @exportS3Method
+yamlDump.json <- function(x) {
+  yamlDump.character(x)
 }

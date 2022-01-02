@@ -32,4 +32,8 @@ yamlDump(some_fancy_list)
 #    name: Max
 #simple: awesome overview
 
+# If you got a character json you can also input it directly
+# and the function will automatically convert it to a list
+yamlDump('{"a":{"b":["1"]}}')
+
 }
