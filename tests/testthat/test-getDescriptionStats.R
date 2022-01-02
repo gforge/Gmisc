@@ -17,10 +17,11 @@ Loblolly$height_w_missing[sample(1:nrow(Loblolly), size = 4)] <- NA
 
 test_that("Check mean function", {
   stats <- by(Loblolly$height, Loblolly$young, mean)
-  a <- getDescriptionStatsBy(Loblolly$height, Loblolly$young,
-    statistics = TRUE,
-    digits = 2, statistics.sig_lim = 10^-4
-  )
+  a <- getDescriptionStatsBy(Loblolly$height,
+                             Loblolly$young,
+                             statistics = TRUE,
+                             digits = 2,
+                             statistics.sig_lim = 10^-4)
   # Check that it contains the true mean
   expect_true(grepl(round(stats[["No"]], 2), a[1, "No"]),
     info = "Expected the mean"
@@ -210,12 +211,12 @@ test_that("Check factor function", {
 })
 
 test_that("Check total column position", {
-  a <- getDescriptionStatsBy(Loblolly$fvar, Loblolly$young,
-    hrzl_prop = TRUE, add_total_col = TRUE,
-    continuous_fn = describeMedian,
-    statistics = TRUE,
-    digits = 2, statistics.sig_lim = 10^-4
-  )
+  a <- getDescriptionStatsBy(Loblolly$fvar,
+                             Loblolly$young,
+                             hrzl_prop = TRUE, add_total_col = TRUE,
+                             continuous_fn = describeMedian,
+                             statistics = TRUE,
+                             digits = 2, statistics.sig_lim = 10^-4)
   expect_equivalent(colnames(a)[1], "Total")
   expect_equivalent(ncol(a), 4)
 

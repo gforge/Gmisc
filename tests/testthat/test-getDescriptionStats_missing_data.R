@@ -261,132 +261,139 @@ test_that("missing levels are handled correctly when using custom descriptive fu
     class = c("descMrg", class(matrix(1)))
   )
 
-  out <- mergeDesc(lapply(levels(trial$visit), function(x) {
-    getDescriptionStatsBy(
-      x = trial$outcome[trial$visit == x],
-      by = trial$arm[trial$visit == x],
-      continuous_fn = descriptive_function
-    )
-  }),
-  htmlTable_args = list(
-    rgroup = levels(trial$visit),
-    n.rgroup = rep(2, 4)
-  )
+  out <- mergeDesc(lapply(levels(trial$visit),
+                          function(x) {
+                            getDescriptionStatsBy(
+                              x = trial$outcome[trial$visit == x],
+                              by = trial$arm[trial$visit == x],
+                              continuous_fn = descriptive_function
+                            )
+                          }),
+                   htmlTable_args = list(
+                     rgroup = levels(trial$visit),
+                     n.rgroup = rep(2, 4))
   )
   expect_identical(out, expected_no_missing)
 
-  out <- mergeDesc(lapply(levels(trial_missing_first$visit), function(x) {
-    getDescriptionStatsBy(
-      x = trial_missing_first$outcome[trial_missing_first$visit == x],
-      by = trial_missing_first$arm[trial_missing_first$visit == x],
-      continuous_fn = descriptive_function
-    )
-  }),
-  htmlTable_args = list(
-    rgroup = levels(trial_missing_first$visit),
-    n.rgroup = rep(2, 4)
-  )
+  out <- mergeDesc(lapply(levels(trial_missing_first$visit),
+                          function(x) {
+                            getDescriptionStatsBy(
+                              x = trial_missing_first$outcome[trial_missing_first$visit == x],
+                              by = trial_missing_first$arm[trial_missing_first$visit == x],
+                              continuous_fn = descriptive_function
+                            )
+                          }),
+                   htmlTable_args = list(
+                     rgroup = levels(trial_missing_first$visit),
+                     n.rgroup = rep(2, 4))
   )
   expect_identical(out, expected_missing_first)
 
-  out <- mergeDesc(lapply(levels(trial_missing_second$visit), function(x) {
-    getDescriptionStatsBy(
-      x = trial_missing_second$outcome[trial_missing_second$visit == x],
-      by = trial_missing_second$arm[trial_missing_second$visit == x],
-      continuous_fn = descriptive_function
-    )
-  }),
-  htmlTable_args = list(
-    rgroup = levels(trial_missing_second$visit),
-    n.rgroup = rep(2, 4)
-  )
+  out <- mergeDesc(lapply(levels(trial_missing_second$visit),
+                          function(x) {
+                            getDescriptionStatsBy(
+                              x = trial_missing_second$outcome[trial_missing_second$visit == x],
+                              by = trial_missing_second$arm[trial_missing_second$visit == x],
+                              continuous_fn = descriptive_function
+                            )
+                          }),
+                   htmlTable_args = list(
+                     rgroup = levels(trial_missing_second$visit),
+                     n.rgroup = rep(2, 4)
+                   )
   )
   expect_identical(out, expected_missing_second)
 
-  out <- mergeDesc(lapply(levels(trial_missing_both$visit), function(x) {
-    getDescriptionStatsBy(
-      x = trial_missing_both$outcome[trial_missing_both$visit == x],
-      by = trial_missing_both$arm[trial_missing_both$visit == x],
-      continuous_fn = descriptive_function,
-      names_of_missing = c("Mean (SD)", "Median (IQR)")
-    )
-  }),
-  htmlTable_args = list(
-    rgroup = levels(trial_missing_both$visit),
-    n.rgroup = rep(2, 4)
-  )
+  out <- mergeDesc(lapply(levels(trial_missing_both$visit),
+                          function(x) {
+                            getDescriptionStatsBy(
+                              x = trial_missing_both$outcome[trial_missing_both$visit == x],
+                              by = trial_missing_both$arm[trial_missing_both$visit == x],
+                              continuous_fn = descriptive_function,
+                              names_of_missing = c("Mean (SD)", "Median (IQR)")
+                            )
+                          }),
+                   htmlTable_args = list(
+                     rgroup = levels(trial_missing_both$visit),
+                     n.rgroup = rep(2, 4)
+                   )
   )
   expect_identical(out, expected_missing_both)
 
-  out <- mergeDesc(lapply(levels(trial_2$visit), function(x) {
-    getDescriptionStatsBy(
-      x = trial_2$outcome[trial_2$visit == x],
-      by = trial_2$arm[trial_2$visit == x],
-      continuous_fn = descriptive_function
-    )
-  }),
-  htmlTable_args = list(
-    rgroup = levels(trial_2$visit),
-    n.rgroup = rep(2, 4)
-  )
+  out <- mergeDesc(lapply(levels(trial_2$visit),
+                          function(x) {
+                            getDescriptionStatsBy(
+                              x = trial_2$outcome[trial_2$visit == x],
+                              by = trial_2$arm[trial_2$visit == x],
+                              continuous_fn = descriptive_function
+                            )
+                          }),
+                   htmlTable_args = list(
+                     rgroup = levels(trial_2$visit),
+                     n.rgroup = rep(2, 4)
+                   )
   )
   expect_identical(out, expected_no_missing_2)
 
-  out <- mergeDesc(lapply(levels(trial_2_missing_first$visit), function(x) {
-    getDescriptionStatsBy(
-      x = trial_2_missing_first$outcome[trial_2_missing_first$visit == x],
-      by = trial_2_missing_first$arm[trial_2_missing_first$visit == x],
-      continuous_fn = descriptive_function
-    )
-  }),
-  htmlTable_args = list(
-    rgroup = levels(trial_2_missing_first$visit),
-    n.rgroup = rep(2, 4)
-  )
+  out <- mergeDesc(lapply(levels(trial_2_missing_first$visit),
+                          function(x) {
+                            getDescriptionStatsBy(
+                              x = trial_2_missing_first$outcome[trial_2_missing_first$visit == x],
+                              by = trial_2_missing_first$arm[trial_2_missing_first$visit == x],
+                              continuous_fn = descriptive_function
+                            )
+                          }),
+                   htmlTable_args = list(
+                     rgroup = levels(trial_2_missing_first$visit),
+                     n.rgroup = rep(2, 4)
+                   )
   )
   expect_identical(out, expected_missing_first_2)
 
-  out <- mergeDesc(lapply(levels(trial_2_missing_second$visit), function(x) {
-    getDescriptionStatsBy(
-      x = trial_2_missing_second$outcome[trial_2_missing_second$visit == x],
-      by = trial_2_missing_second$arm[trial_2_missing_second$visit == x],
-      continuous_fn = descriptive_function,
-      names_of_missing = c("Mean (SD)", "Median (IQR)")
-    )
-  }),
-  htmlTable_args = list(
-    rgroup = levels(trial_2_missing_second$visit),
-    n.rgroup = rep(2, 4)
-  )
+  out <- mergeDesc(lapply(levels(trial_2_missing_second$visit),
+                          function(x) {
+                            getDescriptionStatsBy(
+                              x = trial_2_missing_second$outcome[trial_2_missing_second$visit == x],
+                              by = trial_2_missing_second$arm[trial_2_missing_second$visit == x],
+                              continuous_fn = descriptive_function,
+                              names_of_missing = c("Mean (SD)", "Median (IQR)")
+                            )
+                          }),
+                   htmlTable_args = list(
+                     rgroup = levels(trial_2_missing_second$visit),
+                     n.rgroup = rep(2, 4)
+                   )
   )
   expect_identical(out, expected_missing_second_2)
 
-  out <- mergeDesc(lapply(levels(trial_2_missing_outer$visit), function(x) {
-    getDescriptionStatsBy(
-      x = trial_2_missing_outer$outcome[trial_2_missing_outer$visit == x],
-      by = trial_2_missing_outer$arm[trial_2_missing_outer$visit == x],
-      continuous_fn = descriptive_function,
-      names_of_missing = c("Mean (SD)", "Median (IQR)")
-    )
-  }),
-  htmlTable_args = list(
-    rgroup = levels(trial_2_missing_outer$visit),
-    n.rgroup = rep(2, 4)
-  )
+  out <- mergeDesc(lapply(levels(trial_2_missing_outer$visit),
+                          function(x) {
+                            getDescriptionStatsBy(
+                              x = trial_2_missing_outer$outcome[trial_2_missing_outer$visit == x],
+                              by = trial_2_missing_outer$arm[trial_2_missing_outer$visit == x],
+                              continuous_fn = descriptive_function,
+                              names_of_missing = c("Mean (SD)", "Median (IQR)")
+                            )
+                          }),
+                   htmlTable_args = list(
+                     rgroup = levels(trial_2_missing_outer$visit),
+                     n.rgroup = rep(2, 4)
+                   )
   )
   expect_identical(out, expected_missing_outer)
 
-  out <- mergeDesc(lapply(levels(trial_2_missing_all$visit), function(x) {
-    getDescriptionStatsBy(trial_2_missing_all$outcome[trial_2_missing_all$visit == x],
-                          trial_2_missing_all$arm[trial_2_missing_all$visit == x],
-                          continuous_fn = descriptive_function,
-                          names_of_missing = c("Mean (SD)", "Median (IQR)")
-    )
-  }),
-  htmlTable_args = list(
-    rgroup = levels(trial_2_missing_all$visit),
-    n.rgroup = rep(2, 4)
-  )
+  out <- mergeDesc(lapply(levels(trial_2_missing_all$visit),
+                          function(x) {
+                            getDescriptionStatsBy(trial_2_missing_all$outcome[trial_2_missing_all$visit == x],
+                                                  trial_2_missing_all$arm[trial_2_missing_all$visit == x],
+                                                  continuous_fn = descriptive_function,
+                                                  names_of_missing = c("Mean (SD)", "Median (IQR)")
+                            )
+                          }),
+                   htmlTable_args = list(
+                     rgroup = levels(trial_2_missing_all$visit),
+                     n.rgroup = rep(2, 4)
+                   )
   )
   expect_identical(out, expected_missing_all)
 
@@ -396,75 +403,80 @@ test_that("missing levels are handled correctly when using custom descriptive fu
   trial_2_missing_outer <- trial_2[!((trial_2$visit == "randomisation") & (trial_2$arm != "new treatment")), ]
   trial_2_missing_all <- trial_2[trial_2$visit != "week3", ]
 
-  out <- mergeDesc(lapply(levels(trial_2$visit), function(x) {
-    getDescriptionStatsBy(
-      x = trial_2$outcome[trial_2$visit == x],
-      by = trial_2$arm[trial_2$visit == x],
-      continuous_fn = descriptive_function
-    )
-  }),
-  htmlTable_args = list(
-    rgroup = levels(trial_2$visit),
-    n.rgroup = rep(2, 4)
-  )
+  out <- mergeDesc(lapply(levels(trial_2$visit),
+                          function(x) {
+                            getDescriptionStatsBy(
+                              x = trial_2$outcome[trial_2$visit == x],
+                              by = trial_2$arm[trial_2$visit == x],
+                              continuous_fn = descriptive_function
+                            )
+                          }),
+                   htmlTable_args = list(
+                     rgroup = levels(trial_2$visit),
+                     n.rgroup = rep(2, 4)
+                   )
   )
   expect_equivalent(out, expected_no_missing_2)
 
-  out <- mergeDesc(lapply(levels(trial_2_missing_first$visit), function(x) {
-    getDescriptionStatsBy(
-      x = trial_2_missing_first$outcome[trial_2_missing_first$visit == x],
-      by = trial_2_missing_first$arm[trial_2_missing_first$visit == x],
-      continuous_fn = descriptive_function
-    )
-  }),
-  htmlTable_args = list(
-    rgroup = levels(trial_2_missing_first$visit),
-    n.rgroup = rep(2, 4)
-  )
+  out <- mergeDesc(lapply(levels(trial_2_missing_first$visit),
+                          function(x) {
+                            getDescriptionStatsBy(
+                              x = trial_2_missing_first$outcome[trial_2_missing_first$visit == x],
+                              by = trial_2_missing_first$arm[trial_2_missing_first$visit == x],
+                              continuous_fn = descriptive_function
+                            )
+                          }),
+                   htmlTable_args = list(
+                     rgroup = levels(trial_2_missing_first$visit),
+                     n.rgroup = rep(2, 4)
+                   )
   )
   expect_equivalent(out, expected_missing_first_2)
 
-  out <- mergeDesc(lapply(levels(trial_2_missing_second$visit), function(x) {
-    getDescriptionStatsBy(
-      x = trial_2_missing_second$outcome[trial_2_missing_second$visit == x],
-      by = trial_2_missing_second$arm[trial_2_missing_second$visit == x],
-      continuous_fn = descriptive_function,
-      names_of_missing = c("Mean (SD)", "Median (IQR)")
-    )
-  }),
-  htmlTable_args = list(
-    rgroup = levels(trial_2_missing_second$visit),
-    n.rgroup = rep(2, 4)
-  )
+  out <- mergeDesc(lapply(levels(trial_2_missing_second$visit),
+                          function(x) {
+                            getDescriptionStatsBy(
+                              x = trial_2_missing_second$outcome[trial_2_missing_second$visit == x],
+                              by = trial_2_missing_second$arm[trial_2_missing_second$visit == x],
+                              continuous_fn = descriptive_function,
+                              names_of_missing = c("Mean (SD)", "Median (IQR)")
+                            )
+                          }),
+                   htmlTable_args = list(
+                     rgroup = levels(trial_2_missing_second$visit),
+                     n.rgroup = rep(2, 4)
+                   )
   )
   expect_equivalent(out, expected_missing_second_2)
 
-  out <- mergeDesc(lapply(levels(trial_2_missing_outer$visit), function(x) {
-    getDescriptionStatsBy(
-      x = trial_2_missing_outer$outcome[trial_2_missing_outer$visit == x],
-      by = trial_2_missing_outer$arm[trial_2_missing_outer$visit == x],
-      continuous_fn = descriptive_function,
-      names_of_missing = c("Mean (SD)", "Median (IQR)")
-    )
-  }),
-  htmlTable_args = list(
-    rgroup = levels(trial_2_missing_outer$visit),
-    n.rgroup = rep(2, 4)
-  )
+  out <- mergeDesc(lapply(levels(trial_2_missing_outer$visit),
+                          function(x) {
+                            getDescriptionStatsBy(
+                              x = trial_2_missing_outer$outcome[trial_2_missing_outer$visit == x],
+                              by = trial_2_missing_outer$arm[trial_2_missing_outer$visit == x],
+                              continuous_fn = descriptive_function,
+                              names_of_missing = c("Mean (SD)", "Median (IQR)")
+                            )
+                          }),
+                   htmlTable_args = list(
+                     rgroup = levels(trial_2_missing_outer$visit),
+                     n.rgroup = rep(2, 4)
+                   )
   )
   expect_equivalent(out, expected_missing_outer)
 
-  out <- mergeDesc(lapply(levels(trial_2_missing_all$visit), function(x) {
-    getDescriptionStatsBy(trial_2_missing_all$outcome[trial_2_missing_all$visit == x],
-                          trial_2_missing_all$arm[trial_2_missing_all$visit == x],
-                          continuous_fn = descriptive_function,
-                          names_of_missing = c("Mean (SD)", "Median (IQR)")
-    )
-  }),
-  htmlTable_args = list(
-    rgroup = levels(trial_2_missing_all$visit),
-    n.rgroup = rep(2, 4)
-  )
+  out <- mergeDesc(lapply(levels(trial_2_missing_all$visit),
+                          function(x) {
+                            getDescriptionStatsBy(trial_2_missing_all$outcome[trial_2_missing_all$visit == x],
+                                                  trial_2_missing_all$arm[trial_2_missing_all$visit == x],
+                                                  continuous_fn = descriptive_function,
+                                                  names_of_missing = c("Mean (SD)", "Median (IQR)")
+                            )
+                          }),
+                   htmlTable_args = list(
+                     rgroup = levels(trial_2_missing_all$visit),
+                     n.rgroup = rep(2, 4)
+                   )
   )
   expect_equivalent(out, expected_missing_all)
 })
@@ -511,16 +523,14 @@ test_that("Error when one category has no missing in it", {
   cont <- rnorm(length(aa))
   cont[sample(1:50, size = 5)] <- NA
   cont[aaa == 2 & is.na(cont)] <- 0
-  ret <-
-    getDescriptionStatsBy(x = cont, by = aaa, useNA = "no", add_total_col = TRUE)
+  ret <- getDescriptionStatsBy(x = cont, by = aaa, useNA = "no", add_total_col = TRUE)
   expect_equal(nrow(ret), 1)
 
   aa <- factor(sample(LETTERS[1:3], size = 50, replace = TRUE))
   aa[sample(1:50, size = 5)] <- NA
   aaa <- factor(sample(1:2, size = 50, replace = TRUE))
   aa[aaa == 2] <- "B"
-  ret <-
-    getDescriptionStatsBy(x = aa, by = aaa, useNA = "no", add_total_col = TRUE)
+  ret <- getDescriptionStatsBy(x = aa, by = aaa, useNA = "no", add_total_col = TRUE)
   expect_match(ret["A", "2"], sprintf("^%d", table(aa, aaa)["A", "2"]),
                info = "The value does not seem to match the raw table"
   )
@@ -551,8 +561,7 @@ test_that("Error when a factor variable has an empty level", {
   )
   variable[sample(1:50, size = 5)] <- NA
   by <- factor(sample(1:2, size = 50, replace = TRUE))
-  ret <-
-    getDescriptionStatsBy(x = variable, by = by, add_total_col = TRUE, useNA = "no")
+  ret <- getDescriptionStatsBy(x = variable, by = by, add_total_col = TRUE, useNA = "no")
 
   expect_match(
     ret["B", "2"],

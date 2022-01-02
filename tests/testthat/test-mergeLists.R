@@ -97,7 +97,3 @@ test_that("Tricky merge", {
   expect_equal(merged$a[1:3, ], v1$a)
   expect_equal(merged$a[4:5, ], v2$a)
 })
-
-test_that("Merge and retain names", {
-
-})

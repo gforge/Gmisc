@@ -28,7 +28,7 @@ getDescriptionStatsBy(
   default_ref,
   NEJMstyle = FALSE,
   percentage_sign = TRUE,
-  header_count,
+  header_count = NULL,
   missing_value = "-",
   names_of_missing = NULL,
   ...
