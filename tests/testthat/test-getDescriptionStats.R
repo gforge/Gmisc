@@ -379,8 +379,8 @@ test_that("Check factor function with missing", {
   #                              useNA = "no", digits = 2,
   #                              add_total_col = TRUE)
   a <- prGetStatistics(Loblolly$young_w_missing,
-    useNA = "no", show_all_values = FALSE
-  )
+                       useNA = "no",
+                       show_all_values = FALSE)
   lvl <- levels(Loblolly$young_w_missing)[1]
   target <- sum(stats[, lvl])
   names(target) <- lvl

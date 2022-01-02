@@ -1,5 +1,5 @@
 Package: Gmisc
-Version: 2.1.0
+Version: 3.0.0
 Title: Descriptive Statistics, Transition Plots, and More
 Author: Max Gordon <max@gforge.se>
 Maintainer: Max Gordon <max@gforge.se>
@@ -30,17 +30,21 @@ Imports:
     lubridate,
     magrittr,
     methods,
+    rlang,
     rmarkdown,
     stringr,
     stats,
-    yaml,
     XML,
+    yaml,
     utils
 Suggests:
+    datasets,
+    dplyr,
+    jsonlite,
     testthat,
-    datasets
+    tidyselect
 Encoding: UTF-8
 NeedsCompilation: no
 VignetteBuilder: knitr
 LinkingTo: Rcpp
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2

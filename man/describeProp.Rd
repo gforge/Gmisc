@@ -13,7 +13,7 @@ describeProp(
   number_first = TRUE,
   useNA = c("ifany", "no", "always"),
   useNA.digits = digits,
-  default_ref,
+  default_ref = NULL,
   percentage_sign = TRUE,
   language = "en",
   ...

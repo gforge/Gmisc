@@ -17,11 +17,14 @@ prGetStatistics(
   continuous_fn = describeMean,
   factor_fn = describeFactors,
   prop_fn = factor_fn,
-  percentage_sign = TRUE
+  percentage_sign = TRUE,
+  default_ref = NULL
 )
 }
 \arguments{
-\item{x}{The variable that you want the statistics for}
+\item{x}{If a data.frame it will be used as the data source for the variables in the \code{...} parameter.
+If it is a single variable it will be the core value that want the statistics for.
+In the print this is equivalent to the output of this function.}
 
 \item{html}{If HTML compatible output should be used. If \code{FALSE}
 it outputs LaTeX formatting}
@@ -57,6 +60,10 @@ default is \code{\link{describeMean}}.}
 \item{percentage_sign}{If you want to suppress the percentage sign you
 can set this variable to FALSE. You can also choose something else that
 the default \% if you so wish by setting this variable.}
+
+\item{default_ref}{The default reference, either first,
+the level name or a number within the levels. If left out
+it defaults to the first value.}
 }
 \value{
 A matrix or a vector depending on the settings

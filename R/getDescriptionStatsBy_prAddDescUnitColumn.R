@@ -1,11 +1,10 @@
 #' Add a units column to the results
 #'
 #' @param results The results that we want to add the column to
-#' @param name The name of the row
 #'
 #' @return results with added column
 #' @inheritParams getDescriptionStatsBy
-prAddDescUnitColumn <- function(results, x, use_units) {
+prAddDescUnitColumn <- function(results, x, use_units, units_column_name) {
   org <- results
   label <- attr(results, "label")
   column_names <- attr(results, "column_names")
@@ -25,7 +24,7 @@ prAddDescUnitColumn <- function(results, x, use_units) {
       )
     }
     results <- cbind(results, unitcol)
-    column_names <- c(column_names, "units")
+    column_names <- c(column_names, units_column_name)
   } else if (use_units == "name") {
     if (units(x) != "") {
       label <- sprintf("%s (%s)", label, units(x))

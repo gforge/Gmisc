@@ -7,8 +7,7 @@
 prGetDescHeader(by, html, header_count, already_table_format = FALSE)
 }
 \arguments{
-\item{by}{The variable that you want to split into different
-columns}
+\item{by}{The variable that you want to split into different columns}
 
 \item{html}{If HTML compatible output should be used. If \code{FALSE}
 it outputs LaTeX formatting}

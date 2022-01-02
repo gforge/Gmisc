@@ -68,7 +68,7 @@ Creates a \code{\link[grid:grid.grob]{grob}} box with text inside it.
 \section{The \code{plot}/\code{print}}{
 
 
-To output the \code{\link[grid:grid.grob]{grob}} objects to the plot either call \code{plot} 
+To output the \code{\link[grid:grid.grob]{grob}} objects to the plot either call \code{plot}
 on the object or \code{print} it. Note that R automatically prints any object that is outputted
 to the console. The function calls in turn the \code{\link[grid]{grid.draw}} function on the object.
 }

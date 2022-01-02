@@ -18,6 +18,7 @@ prAddTotalDescColumn <- function(results,
                                  factor_fn,
                                  prop_fn,
                                  percentage_sign,
+                                 default_ref,
                                  header_count = NULL,
                                  add_total_col) {
   org <- results
@@ -33,8 +34,8 @@ prAddTotalDescColumn <- function(results,
                                  continuous_fn = continuous_fn,
                                  factor_fn = factor_fn,
                                  prop_fn = prop_fn,
-                                 percentage_sign = percentage_sign
-  )
+                                 percentage_sign = percentage_sign,
+                                 default_ref = default_ref)
 
   if (!is.matrix(total_table)) {
     total_table <- matrix(total_table, ncol = 1, dimnames = list(names(total_table)))

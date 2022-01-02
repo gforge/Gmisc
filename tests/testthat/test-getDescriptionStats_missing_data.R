@@ -488,8 +488,7 @@ test_that("Error when one category has no missing in it", {
   aa[sample(1:50, size = 5)] <- NA
   aaa <- factor(sample(1:3, size = 50, replace = TRUE))
   aa[aaa == 2 & is.na(aa)] <- "B"
-  ret <-
-    getDescriptionStatsBy(x = aa, by = aaa, add_total_col = TRUE)
+  ret <- getDescriptionStatsBy(x = aa, by = aaa, add_total_col = TRUE)
 
   expect_match(ret["A", "2"], sprintf("^%d", table(aa, aaa)["A", "2"]),
                info = "The value does not seem to match the raw table"

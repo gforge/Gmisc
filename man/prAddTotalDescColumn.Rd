@@ -19,6 +19,7 @@ prAddTotalDescColumn(
   factor_fn,
   prop_fn,
   percentage_sign,
+  default_ref,
   header_count = NULL,
   add_total_col
 )
@@ -26,10 +27,11 @@ prAddTotalDescColumn(
 \arguments{
 \item{results}{The results that we want to add the column to}
 
-\item{x}{The variable that you want the statistics for}
+\item{x}{If a data.frame it will be used as the data source for the variables in the \code{...} parameter.
+If it is a single variable it will be the core value that want the statistics for.
+In the print this is equivalent to the output of this function.}
 
-\item{by}{The variable that you want to split into different
-columns}
+\item{by}{The variable that you want to split into different columns}
 
 \item{numbers_first}{If the number should be given or if the percentage
 should be presented first. The second is encapsulated in parentheses ().}
@@ -66,6 +68,10 @@ default is \code{\link{describeMean}}.}
 \item{percentage_sign}{If you want to suppress the percentage sign you
 can set this variable to FALSE. You can also choose something else that
 the default \% if you so wish by setting this variable.}
+
+\item{default_ref}{The default reference, either first,
+the level name or a number within the levels. If left out
+it defaults to the first value.}
 
 \item{header_count}{Set to \code{TRUE} if you want to add a header count,
 e.g. Smoking; No. 25 observations, where there is a new line after the

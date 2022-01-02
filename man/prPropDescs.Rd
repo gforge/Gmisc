@@ -23,10 +23,13 @@ prPropDescs(
 )
 }
 \arguments{
-\item{x}{The variable that you want the statistics for}
+\item{x}{If a data.frame it will be used as the data source for the variables in the \code{...} parameter.
+If it is a single variable it will be the core value that want the statistics for.
+In the print this is equivalent to the output of this function.}
 
-\item{by}{The variable that you want to split into different
-columns}
+\item{by}{The variable that you want to split into different columns}
+
+\item{name}{The name of the row}
 
 \item{default_ref}{The default reference, either first,
 the level name or a number within the levels. If left out

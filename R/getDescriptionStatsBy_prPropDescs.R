@@ -1,6 +1,7 @@
 #' Helper to [getDescriptionStatsBy()]
 #'
 #' @inheritParams getDescriptionStatsBy
+#' @param name The name of the row
 #'
 #' @return A [base::by] list
 prPropDescs <- function(x,

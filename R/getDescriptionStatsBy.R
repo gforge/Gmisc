@@ -26,9 +26,12 @@
 #' You can also use a custom function that returns a string with the attribute \code{'colname'}
 #' set that will be appended to the results instead of the p-value column.
 #'
-#' @param x The variable that you want the statistics for
-#' @param by The variable that you want to split into different
-#'  columns
+#' @param x If a data.frame it will be used as the data source for the variables in the \code{...} parameter.
+#'          If it is a single variable it will be the core value that want the statistics for.
+#'          In the print this is equivalent to the output of this function.
+#' @param ... The variables that you want you statistic for. In the print all thes parameters
+#'          are passed on as [htmlTable::htmlTable] arguments.
+#' @param by The variable that you want to split into different columns
 #' @param digits The number of decimals used
 #' @param digits.nonzero The number of decimals used for values that are close to zero
 #' @param html If HTML compatible output should be used. If \code{FALSE}
@@ -80,6 +83,7 @@
 #'  appear before the units (if specified as last). You can also set the value to
 #'  \code{"name"} and the units will be added to the name as a parenthesis,
 #'  e.g. Age (years).
+#' @param units_column_name The name of the units column. Used if use_units = TRUE
 #' @param percentage_sign If you want to suppress the percentage sign you
 #'  can set this variable to FALSE. You can also choose something else that
 #'  the default \% if you so wish by setting this variable.
@@ -90,12 +94,8 @@
 #' @param missing_value Value that is substituted for empty cells. Defaults to "-"
 #' @param names_of_missing Optional character vector containing the names of returned statistics,
 #'  in case all returned values for a given \code{by} level are missing. Defaults to NULL
-#' @param ... Currently only used for generating warnings of deprecated call
-#'  parameters.
-#' @return Returns a vector if vars wasn't specified and it's a
-#'  continuous or binary statistic. If vars was a matrix then it
-#'  appends the result to the end of that matrix. If the x variable
-#'  is a factor then it does not append and you get a warning.
+#' @return Returns \code{matrix} if a single value was provided, otherwise a \code{list}
+#'  of matrices witht the class \code{"Gmisc.getDescriptionStatsBy.multiple"}.
 #'
 #' @inheritParams prDescGetAndValidateDefaultRef
 #' @example inst/examples/getDescriptionStatsBy_example.R
@@ -107,6 +107,7 @@
 #'
 #' @export
 getDescriptionStatsBy <- function(x,
+                                  ...,
                                   by,
                                   digits = 1,
                                   digits.nonzero = NA,
@@ -126,13 +127,134 @@ getDescriptionStatsBy <- function(x,
                                   add_total_col,
                                   total_col_show_perc = TRUE,
                                   use_units = FALSE,
-                                  default_ref,
+                                  units_column_name = "Units",
+                                  default_ref = NULL,
                                   NEJMstyle = FALSE,
                                   percentage_sign = TRUE,
                                   header_count = NULL,
                                   missing_value = "-",
-                                  names_of_missing = NULL,
-                                  ...) {
+                                  names_of_missing = NULL) {
+  UseMethod("getDescriptionStatsBy")
+}
+
+#' @exportS3Method
+#' @importFrom rlang expr enquo
+#' @importFrom methods formalArgs
+getDescriptionStatsBy.data.frame <- function(x,
+                                             ...,
+                                             by,
+                                             digits = 1,
+                                             digits.nonzero = NA,
+                                             html = TRUE,
+                                             numbers_first = TRUE,
+                                             statistics = FALSE,
+                                             statistics.sig_lim = 10^-4,
+                                             statistics.two_dec_lim = 10^-2,
+                                             statistics.suppress_warnings = TRUE,
+                                             useNA = c("ifany", "no", "always"),
+                                             useNA.digits = digits,
+                                             continuous_fn = describeMean,
+                                             prop_fn = describeProp,
+                                             factor_fn = describeFactors,
+                                             show_all_values = FALSE,
+                                             hrzl_prop = FALSE,
+                                             add_total_col,
+                                             total_col_show_perc = TRUE,
+                                             use_units = FALSE,
+                                             units_column_name = "Units",
+                                             default_ref = NULL,
+                                             NEJMstyle = FALSE,
+                                             percentage_sign = TRUE,
+                                             header_count = NULL,
+                                             missing_value = "-",
+                                             names_of_missing = NULL) {
+  Call = match.call()
+  safeLoadPkg("tidyselect")
+  vars <- tidyselect::eval_select(rlang::expr(c(...)), x)
+  if (missing(by)) {
+    if (length(vars) == 2) {
+      by_var <- vars[2]
+      by <- x[[by_var]]
+      vars <- head(vars, -1)
+    } else {
+      stop("When providing a data.frame as input you must specify the by variables")
+    }
+  } else {
+    by_var <- tidyselect::eval_select(rlang::enquo(by), x)
+    by = x[[by_var]]
+  }
+
+  if (label(by) == "") {
+    label(by) <- names(by_var)
+  }
+
+  base_call <- as.list(Call)
+  base_call <- base_call[!names(base_call) %in% c("", "x")]
+  base_call <- base_call[names(base_call) %in% formalArgs(getDescriptionStatsBy)]
+  base_call$by = by
+
+  get_single_result <- function(var, name) {
+    base_call$x = x[[var]]
+    # If the user has set the name in the input parameter then it is
+    # highly likely that they want to override any label() name
+    if (colnames(x)[var] != name && name != "" && !is.null(name) || label(base_call$x) == "") {
+      label(base_call$x) <- name
+    }
+    do.call(getDescriptionStatsBy, base_call)
+  }
+
+  if (length(vars) == 1) {
+    return(get_single_result(var = vars, name = names(vars)))
+  }
+
+  multiple_results <- mapply(FUN = get_single_result,
+                             var = vars,
+                             name = names(vars),
+                             SIMPLIFY = FALSE,
+                             USE.NAMES = FALSE)
+  structure(multiple_results,
+            class = c("Gmisc.getDescriptionStatsBy.multiple", class(multiple_results)))
+}
+
+#' @exportS3Method
+getDescriptionStatsBy.default <- function(x,
+                                          ...,
+                                          by,
+                                          digits = 1,
+                                          digits.nonzero = NA,
+                                          html = TRUE,
+                                          numbers_first = TRUE,
+                                          statistics = FALSE,
+                                          statistics.sig_lim = 10^-4,
+                                          statistics.two_dec_lim = 10^-2,
+                                          statistics.suppress_warnings = TRUE,
+                                          useNA = c("ifany", "no", "always"),
+                                          useNA.digits = digits,
+                                          continuous_fn = describeMean,
+                                          prop_fn = describeProp,
+                                          factor_fn = describeFactors,
+                                          show_all_values = FALSE,
+                                          hrzl_prop = FALSE,
+                                          add_total_col,
+                                          total_col_show_perc = TRUE,
+                                          use_units = FALSE,
+                                          units_column_name = "Units",
+                                          default_ref = NULL,
+                                          NEJMstyle = FALSE,
+                                          percentage_sign = TRUE,
+                                          header_count = NULL,
+                                          missing_value = "-",
+                                          names_of_missing = NULL) {
+  vars <- list(...)
+  if (missing(by)) {
+    by = vars[[1]]
+    vars[[1]] <- NULL
+  }
+
+  if (length(vars) > 0) {
+    stop("As of version 3.0 of Gmisc the htmlTable handles unnamed parameters differently. Try to use named arguments instead of positional.")
+  }
+
   useNA <- match.arg(useNA)
   if (!is.na(digits.nonzero)) {
     if (!is.numeric(digits.nonzero) ||
@@ -339,11 +461,14 @@ getDescriptionStatsBy <- function(x,
                                       prop_fn = prop_fn,
                                       percentage_sign = percentage_sign,
                                       header_count = header_count,
-                                      add_total_col = add_total_col)
+                                      add_total_col = add_total_col,
+                                      default_ref = default_ref)
   }
 
   if (!isFALSE(use_units)) {
-    results %<>% prAddDescUnitColumn(x = x, use_units = use_units)
+    results %<>% prAddDescUnitColumn(x = x,
+                                     use_units = use_units,
+                                     units_column_name = units_column_name)
   }
 
   if (is.function(statistics)) {
@@ -363,5 +488,7 @@ getDescriptionStatsBy <- function(x,
   # not be used later on
   label(results) <- attr(results, "label")
 
-  return(results)
+  structure(results,
+            class = c("Gmisc.getDescriptionStatsBy", class(results)))
 }
+
