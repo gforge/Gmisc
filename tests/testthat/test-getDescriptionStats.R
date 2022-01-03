@@ -609,3 +609,4 @@ test_that("Factors with 0 observations should be reported when show_all_values=T
   expect_false("no observation" %in% rownames(out[[1]]))
   expect_true(all(sapply(out[2:3], function(x) "no observation" %in% rownames(x))))
 })
+

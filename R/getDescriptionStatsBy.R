@@ -62,12 +62,11 @@
 #' @param statistics.sig_lim The significance limit for < sign, i.e. p-value 0.0000312
 #'  should be < 0.0001 with the default setting.
 #' @param statistics.suppress_warnings Hide warnings from the statistics function.
-#' @param show_all_values This is by default false as for instance if there is
-#'  no missing and there is only one variable then it is most sane to only show
-#'  one option as the other one will just be a complement to the first. For instance
-#'  sex - if you know gender then automatically you know the distribution of the
-#'  other sex as it's 100 \% - other \%. To choose which one you want to show then
-#'  set the \code{default_ref} parameter.
+#' @param show_all_values Show all values in proportions. For factors with only two values
+#'  it is most sane to only show one option as the other one will just be a complement
+#'  to the first, i.e. we want to convey a proportion. For instance sex - if you know
+#'  gender then automatically you know the distribution of the other sex as it's 100 \% - other \%.
+#'  To choose which one you want to show then set the \code{default_ref} parameter.
 #' @param hrzl_prop This is default FALSE and indicates
 #'  that the proportions are to be interpreted in a vertical manner.
 #'  If we want the data to be horizontal, i.e. the total should be shown
@@ -94,10 +93,11 @@
 #' @param missing_value Value that is substituted for empty cells. Defaults to "-"
 #' @param names_of_missing Optional character vector containing the names of returned statistics,
 #'  in case all returned values for a given \code{by} level are missing. Defaults to NULL
+#' @param default_ref The default reference when dealing with proportions. When using
+#'  `dplyr` syntax (`tidyselect`) you can specify a named vector/list for each column name.
 #' @return Returns \code{matrix} if a single value was provided, otherwise a \code{list}
-#'  of matrices witht the class \code{"Gmisc.getDescriptionStatsBy.multiple"}.
+#'  of matrices with the class \code{"Gmisc_getDescriptionStatsBy"}.
 #'
-#' @inheritParams prDescGetAndValidateDefaultRef
 #' @example inst/examples/getDescriptionStatsBy_example.R
 #'
 #' @family descriptive functions
@@ -195,10 +195,17 @@ getDescriptionStatsBy.data.frame <- function(x,
 
   get_single_result <- function(var, name) {
     base_call$x = x[[var]]
+    column_name <- colnames(x)[var]
     # If the user has set the name in the input parameter then it is
     # highly likely that they want to override any label() name
-    if (colnames(x)[var] != name && name != "" && !is.null(name) || label(base_call$x) == "") {
+    if (column_name != name && name != "" && !is.null(name) || label(base_call$x) == "") {
       label(base_call$x) <- name
+    }
+
+    if (column_name %in% names(default_ref)) {
+      base_call$default_ref <- default_ref[[column_name]]
+    } else if (!is.null(names(default_ref))) {
+      base_call$default_ref <- NULL
     }
     do.call(getDescriptionStatsBy, base_call)
   }

@@ -100,12 +100,11 @@ default is \code{\link{describeMean}}.}
 
 \item{factor_fn}{The method used to describe factors, see \code{\link{describeFactors}}.}
 
-\item{show_all_values}{This is by default false as for instance if there is
-no missing and there is only one variable then it is most sane to only show
-one option as the other one will just be a complement to the first. For instance
-sex - if you know gender then automatically you know the distribution of the
-other sex as it's 100 \% - other \%. To choose which one you want to show then
-set the \code{default_ref} parameter.}
+\item{show_all_values}{Show all values in proportions. For factors with only two values
+it is most sane to only show one option as the other one will just be a complement
+to the first, i.e. we want to convey a proportion. For instance sex - if you know
+gender then automatically you know the distribution of the other sex as it's 100 \% - other \%.
+To choose which one you want to show then set the \code{default_ref} parameter.}
 
 \item{hrzl_prop}{This is default FALSE and indicates
 that the proportions are to be interpreted in a vertical manner.
@@ -128,9 +127,8 @@ e.g. Age (years).}
 
 \item{units_column_name}{The name of the units column. Used if use_units = TRUE}
 
-\item{default_ref}{The default reference, either first,
-the level name or a number within the levels. If left out
-it defaults to the first value.}
+\item{default_ref}{The default reference when dealing with proportions. When using
+`dplyr` syntax (`tidyselect`) you can specify a named vector/list for each column name.}
 
 \item{NEJMstyle}{Adds - no (\%) at the end to proportions}
 
@@ -150,7 +148,7 @@ in case all returned values for a given \code{by} level are missing. Defaults to
 }
 \value{
 Returns \code{matrix} if a single value was provided, otherwise a \code{list}
- of matrices witht the class \code{"Gmisc.getDescriptionStatsBy.multiple"}.
+ of matrices with the class \code{"Gmisc_getDescriptionStatsBy"}.
 }
 \description{
 A function that returns a description statistic that can be used
@@ -187,12 +185,24 @@ library(dplyr)
 library(htmlTable)
 
 data(mtcars)
-mtcars \%<>\% mutate(am = factor(am, levels = 0:1, labels = c("Automatic", "Manual")))
+mtcars \%<>\%
+  mutate(am = factor(am, levels = 0:1, labels = c("Automatic", "Manual")),
+         vs = factor(vs, levels = 0:1, labels = c("V-shaped", "straight")),
+         drat_prop = drat > median(drat),
+         drat_prop = factor(drat_prop,
+                            levels = c(FALSE, TRUE),
+                            labels = c("High ratio", "Low ratio")),
+         carb_prop = carb > 2,
+         carb_prop = factor(carb_prop,
+                            levels = c(FALSE, TRUE),
+                            labels = c("&le; 2", "&gt; 2")),
+         across(c(gear, carb, cyl), factor))
 
 # A simple bare-bone example
 mtcars \%>\%
   getDescriptionStatsBy(`Miles per gallon` = mpg,
                         Weight = wt,
+                        `Carborators &le; 2` = carb_prop,
                         by = am) \%>\%
   htmlTable(caption  = "Basic continuous stats from the mtcars dataset")
 invisible(readline(prompt = "Press [enter] to continue"))
@@ -204,19 +214,43 @@ mtcars \%<>\%
                     mpg = "Gas",
                     wt = "Weight",
                     gear = "Gears",
-                    disp = "Displacement") \%>\%
+                    disp = "Displacement",
+                    vs = "Engine type",
+                    drat_prop = "Rear axel ratio",
+                    carb_prop = "Carburetors") \%>\%
   set_column_units(mpg = "Miles/(US) gallon",
                    wt = "10<sup>3</sup> lbs",
-                   disp = "cu.in.") \%>\%
-  mutate(gear = factor(gear))
+                   disp = "cu.in.")
 
 mtcars \%>\%
   getDescriptionStatsBy(mpg,
                         wt,
                         `Gear&dagger;` = gear,
+                        drat_prop,
+                        carb_prop,
+                        vs,
                         by = am,
                         header_count = TRUE,
-                        use_units = TRUE)  \%>\%
+                        use_units = TRUE,
+                        show_all_values = TRUE)  \%>\%
+  addHtmlTableStyle(pos.caption = "bottom") \%>\%
+  htmlTable(caption  = "Stats from the mtcars dataset",
+            tfoot = "&dagger; Number of forward gears")
+invisible(readline(prompt = "Press [enter] to continue"))
+
+# Using the default parameter we can
+mtcars \%>\%
+  getDescriptionStatsBy(mpg,
+                        wt,
+                        `Gear&dagger;` = gear,
+                        drat_prop,
+                        carb_prop,
+                        vs,
+                        by = am,
+                        header_count = TRUE,
+                        use_units = TRUE,
+                        default_ref = c(drat_prop = "Low ratio",
+                                        carb_prop = "&gt; 2"))  \%>\%
   addHtmlTableStyle(pos.caption = "bottom") \%>\%
   htmlTable(caption  = "Stats from the mtcars dataset",
             tfoot = "&dagger; Number of forward gears")
