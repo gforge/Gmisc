@@ -12,6 +12,7 @@ Changes for 3.0.0
 * The `yamlDump` can now take a character string and assume that is a json that needs conversion
 * Added `set_column_labels` and `set_column_units` for using `dplyr` syntax for `Hmisc::label` and `Hmisc::units` operations.
 * The units column in `getDescrptionStatsBy` can now have a custom name (also changed default name to "Units")
+* Changed addBoxClr to addBoxStyle for Transition-class (minor breaking change)
 
 Changes for 2.1.0
 -----------------
