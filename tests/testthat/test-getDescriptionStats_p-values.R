@@ -230,3 +230,94 @@ test_that("p-values are displayed for both multi- and one-row summaries when rgr
   )
   expect_equivalent(out, expected)
 })
+
+test_that("p-vlues are displayed in multi-row summaries when rgroup and n.rgroup are not specified", {
+  expected <- structure(
+    c(
+      "27.1 (&plusmn;4.6)", "1 (9.1%)", "19.7 (&plusmn;1.5)",
+      "0 (0%)", "15.1 (&plusmn;2.6)", "0 (0%)", "", ""
+    ),
+    .Dim = c(2L, 4L),
+    .Dimnames = list(
+      c("Mean (SD)", "Missing"),
+      c("4", "6", "8", "P-value")
+    ),
+    rgroup = structure("cars_missing$mpg",
+                       add = structure(list(`1` = "&lt; 0.0001"),
+                                       .Names = "1"
+                       )
+    ),
+    n.rgroup = 2L,
+    class = c("descMrg", class(matrix(1)))
+  )
+
+  out <- mergeDesc(getDescriptionStatsBy(
+    x = cars_missing$mpg,
+    by = cars_missing$cyl,
+    statistics = TRUE
+  ))
+  expect_equivalent(out, expected)
+})
+
+test_that("p-values are displayed in the rgroup title for both multi- and one-row summaries when rgroup and n.rgroup are specified", {
+  expected <- structure(
+    c(
+      "27.1 (&plusmn;4.6)", "1 (9.1%)", "105.1 (&plusmn;26.9)",
+      "19.7 (&plusmn;1.5)", "0 (0%)", "183.3 (&plusmn;41.6)",
+      "15.1 (&plusmn;2.6)", "0 (0%)", "353.1 (&plusmn;67.8)", "", "", ""
+    ),
+    .Dim = 3:4,
+    .Dimnames = list(
+      c("Mean (SD)", "Missing", "cars_missing$disp"),
+      c("4", "6", "8", "P-value")
+    ),
+    rgroup = structure(c("Gas", "Displacement"),
+                       add = list("&lt; 0.0001", "&lt; 0.0001")
+    ),
+    n.rgroup = c(2, 1),
+    htmlTable_args = structure(list(), .Names = character(0)),
+    class = c("descMrg", class(matrix(1)))
+  )
+
+  out <- mergeDesc(getDescriptionStatsBy(x = cars_missing$mpg,
+                                         by = cars_missing$cyl,
+                                         statistics = TRUE),
+                   getDescriptionStatsBy(x = cars_missing$disp,
+                                         by = cars_missing$cyl,
+                                         statistics = TRUE),
+                   htmlTable_args = list(rgroup = c("Gas", "Displacement"),
+                                         n.rgroup = c(2, 1)))
+  expect_equivalent(out, expected)
+})
+
+
+test_that("p-values are displayed for both multi- and one-row summaries when rgroup and n.rgroup are not specified", {
+  expected <- structure(
+    c(
+      "27.1 (&plusmn;4.6)", "1 (9.1%)", "105.1 (&plusmn;26.9)",
+      "19.7 (&plusmn;1.5)", "0 (0%)", "183.3 (&plusmn;41.6)",
+      "15.1 (&plusmn;2.6)", "0 (0%)", "353.1 (&plusmn;67.8)",
+      "", "", "&lt; 0.0001"),
+    .Dim = 3:4,
+    .Dimnames = list(c("Mean (SD)", "Missing", "cars_missing$disp"),
+                     c("4", "6", "8", "P-value")),
+    rgroup = structure(c("cars_missing$mpg", ""),
+                       add = structure(list(`1` = "&lt; 0.0001"), .Names = "1")),
+    n.rgroup = c(2, 1),
+    class = c("descMrg", class(matrix(1)))
+  )
+
+  out <- mergeDesc(
+    getDescriptionStatsBy(
+      x = cars_missing$mpg,
+      by = cars_missing$cyl,
+      statistics = TRUE
+    ),
+    getDescriptionStatsBy(
+      x = cars_missing$disp,
+      by = cars_missing$cyl,
+      statistics = TRUE
+    )
+  )
+  expect_equivalent(out, expected)
+})

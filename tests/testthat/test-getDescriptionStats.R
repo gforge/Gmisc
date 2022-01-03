@@ -1,5 +1,6 @@
 library("testthat")
 library("stringr")
+library("dplyr")
 # I need to include this for unknown reason or the test fails in R CMD check mode
 
 data("Loblolly")
@@ -581,103 +582,30 @@ test_that("p-values are displayed in multi-row summaries when rgroup and n.rgrou
   expect_equivalent(out, expected)
 })
 
-test_that("p-vlues are displayed in multi-row summaries when rgroup and n.rgroup are not specified", {
-  expected <- structure(
-    c(
-      "27.1 (&plusmn;4.6)", "1 (9.1%)", "19.7 (&plusmn;1.5)",
-      "0 (0%)", "15.1 (&plusmn;2.6)", "0 (0%)", "", ""
-    ),
-    .Dim = c(2L, 4L),
-    .Dimnames = list(
-      c("Mean (SD)", "Missing"),
-      c("4", "6", "8", "P-value")
-    ),
-    rgroup = structure("cars_missing$mpg",
-      add = structure(list(`1` = "&lt; 0.0001"),
-        .Names = "1"
-      )
-    ),
-    n.rgroup = 2L,
-    class = c("descMrg", class(matrix(1)))
-  )
 
-  out <- mergeDesc(getDescriptionStatsBy(
-    x = cars_missing$mpg,
-    by = cars_missing$cyl,
-    statistics = TRUE
-  ))
-  expect_equivalent(out, expected)
-})
+test_that("Factors with 0 observations should be reported when show_all_values=TRUE, issue #61", {
+  set.seed(1)
+  n = 20
+  d <- data.frame(single = sample(LETTERS[1], size = n, replace = TRUE),
+                  two = sample(LETTERS[1:2], size = n, replace = TRUE),
+                  three = sample(LETTERS[1:3], size = n, replace = TRUE),
+                  by = sample(letters[1:2], size = n, replace = TRUE)) %>%
+    mutate(across(everything(), function(x) factor(x, levels = c(unique(x), "no observation"))))
 
-test_that("p-values are displayed in the rgroup title for both multi- and one-row summaries when rgroup and n.rgroup are specified", {
-  expected <- structure(
-    c(
-      "27.1 (&plusmn;4.6)", "1 (9.1%)", "105.1 (&plusmn;26.9)",
-      "19.7 (&plusmn;1.5)", "0 (0%)", "183.3 (&plusmn;41.6)",
-      "15.1 (&plusmn;2.6)", "0 (0%)", "353.1 (&plusmn;67.8)", "", "", ""
-    ),
-    .Dim = 3:4,
-    .Dimnames = list(
-      c("Mean (SD)", "Missing", "cars_missing$disp"),
-      c("4", "6", "8", "P-value")
-    ),
-    rgroup = structure(c("Gas", "Displacement"),
-      add = list("&lt; 0.0001", "&lt; 0.0001")
-    ),
-    n.rgroup = c(2, 1),
-    htmlTable_args = structure(list(), .Names = character(0)),
-    class = c("descMrg", class(matrix(1)))
-  )
+  out <- d %>%
+    getDescriptionStatsBy(single,
+                          two,
+                          three,
+                          by = by,
+                          show_all_values = TRUE)
+  expect_true(all(sapply(out, function(x) "no observation" %in% rownames(x))))
 
-  out <- mergeDesc(getDescriptionStatsBy(
-    x = cars_missing$mpg,
-    by = cars_missing$cyl,
-    statistics = TRUE
-  ),
-  getDescriptionStatsBy(
-    x = cars_missing$disp,
-    by = cars_missing$cyl,
-    statistics = TRUE
-  ),
-  htmlTable_args = list(
-    rgroup = c("Gas", "Displacement"),
-    n.rgroup = c(2, 1)
-  )
-  )
-  expect_equivalent(out, expected)
-})
-
-test_that("p-values are displayed for both multi- and one-row summaries when rgroup and n.rgroup are not specified", {
-  expected <- structure(
-    c(
-      "27.1 (&plusmn;4.6)", "1 (9.1%)", "105.1 (&plusmn;26.9)",
-      "19.7 (&plusmn;1.5)", "0 (0%)", "183.3 (&plusmn;41.6)",
-      "15.1 (&plusmn;2.6)", "0 (0%)", "353.1 (&plusmn;67.8)",
-      "", "", "&lt; 0.0001"
-    ),
-    .Dim = 3:4,
-    .Dimnames = list(
-      c("Mean (SD)", "Missing", "cars_missing$disp"),
-      c("4", "6", "8", "P-value")
-    ),
-    rgroup = structure(c("cars_missing$mpg", ""),
-      add = structure(list(`1` = "&lt; 0.0001"), .Names = "1")
-    ),
-    n.rgroup = c(2, 1),
-    class = c("descMrg", class(matrix(1)))
-  )
-
-  out <- mergeDesc(
-    getDescriptionStatsBy(
-      x = cars_missing$mpg,
-      by = cars_missing$cyl,
-      statistics = TRUE
-    ),
-    getDescriptionStatsBy(
-      x = cars_missing$disp,
-      by = cars_missing$cyl,
-      statistics = TRUE
-    )
-  )
-  expect_equivalent(out, expected)
+  out <- d %>%
+    getDescriptionStatsBy(single,
+                          two,
+                          three,
+                          by = by,
+                          show_all_values = FALSE)
+  expect_false("no observation" %in% rownames(out[[1]]))
+  expect_true(all(sapply(out[2:3], function(x) "no observation" %in% rownames(x))))
 })
