@@ -238,7 +238,7 @@ describeProp <- function(x,
                          number_first = TRUE,
                          useNA = c("ifany", "no", "always"),
                          useNA.digits = digits,
-                         default_ref,
+                         default_ref = NULL,
                          percentage_sign = TRUE,
                          language = "en",
                          ...) {
@@ -296,7 +296,8 @@ describeProp <- function(x,
     x <- factor(x)
   }
 
-  no <- sum(x == levels(x)[default_ref], na.rm = T)
+  reference_name = levels(x)[default_ref]
+  no <- sum(x == reference_name, na.rm = T)
 
   # Don't count missing since those are treated as factors if any
   percent <- 100 * no / length(x[is.na(x) == FALSE])

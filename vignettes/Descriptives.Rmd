@@ -8,61 +8,162 @@ output:
     css: custom.css
 vignette: >
   %\VignetteIndexEntry{Descriptives statistics for Table 1}
-  %\VignetteEngine{knitr::rmarkdown}
   %\usepackage[utf8]{inputenc}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
 ---
 
 The purpose of the first table in a medical paper is most often to describe your population. In an RCT the table frequently compares the baseline characteristics between the randomized groups, while an observational study will often compare exposed with unexposed. In this vignette I will show how I use the functions to quickly generate a descriptive table.
 
-We will use the mtcars dataset and compare the groups with automatic transmission to those without. First we will start by loading the dataset and labeling.
-
-```{r, message=FALSE}
-data(mtcars)
-# For labeling we use the label()
-# function from the Hmisc package
-library(Hmisc)
+```{r, include=FALSE}
+library(magrittr)
+library(dplyr)
+library(Gmisc)
 
 # Style all the table output using htmlTable's theme handler
 htmlTable::setHtmlTableTheme(css.rgroup = "")
+set.seed(123)
+```
 
-label(mtcars$mpg) <- "Gas"
-units(mtcars$mpg) <- "Miles/(US) gallon"
+We will use the mtcars dataset and compare the groups with automatic transmission to those without. The units and labels are built upon the logic in the **Hmisc** package that allow us to specify attributes on columns. *Note* that this labeling is not needed, it just makes stuff nicer.
 
-label(mtcars$wt) <- "Weight"
-units(mtcars$wt) <- "10<sup>3</sup> kg" # not sure the unit is correct
-
-mtcars$am <- factor(mtcars$am, levels = 0:1, labels = c("Automatic", "Manual"))
-label(mtcars$am) <- "Transmission"
-
-mtcars$gear <- factor(mtcars$gear)
-label(mtcars$gear) <- "Gears"
-
-# Make up some data for making it slightly more interesting
-mtcars$col <- factor(sample(c("red", "black", "silver"),
-                     size = NROW(mtcars), replace = TRUE))
-label(mtcars$col) <- "Car color"
+```{r}
+library(Gmisc)
+data("mtcars")
+mtcars <- mtcars %>% 
+  mutate(am = factor(am, levels = 0:1, labels = c("Automatic", "Manual")),
+         gear = factor(gear),
+         # Make up some data for making it slightly more interesting
+         col = factor(sample(c("red", "black", "silver"),
+                             size = NROW(mtcars), 
+                             replace = TRUE))) %>% 
+  set_column_labels(mpg = "Gas",
+                    wt = "Weight",
+                    am = "Transmission",
+                    gear = "Gears",
+                    col = "Car color") %>% 
+  set_column_units(mpg = "Miles/(US) gallon",
+                   wt = "10<sup>3</sup> lbs")
 ```
 
 The basics of `getDescriptionStatsBy`
 =====================================
 
-The function `getDescriptionStatsBy` is a simple way to do basic descriptive statistics. Mandatory inputs are the first two, *x* and *by*:
+The function `getDescriptionStatsBy` is a simple way to do basic descriptive statistics. Mandatory named column is *by*:
 
 ```{r}
-library(Gmisc)
-getDescriptionStatsBy(x = mtcars$mpg, 
-                      by = mtcars$am)
+mtcars %>% 
+  getDescriptionStatsBy(mpg, 
+                        wt,
+                        am,
+                        gear,
+                        col,
+                        by = am)
 ```
 
 If we prefer median we can simply specify the statistic used with continuous variables:
 
 ```{r}
-getDescriptionStatsBy(x = mtcars$mpg, 
-                      by = mtcars$am,
-                      continuous_fn = describeMedian)
+mtcars %>% 
+  getDescriptionStatsBy(mpg, 
+                        wt,
+                        am,
+                        gear,
+                        col,
+                        by = am,
+                        continuous_fn = describeMedian)
 ```
 
-As I always have the same *by*-variable and have several customization, I often wire a small wrapper:
+Integration with `htmlTable`
+----------------------------
+
+Key to having a good descriptive statistics is to be able to output it into a table. I usually rely on `htmlTabl` for all my table requirements as it has a nice set of
+advanced options that allow us to get publication ready tables that can simply be copy-pasted into our paper. *Note* that we here use html code &dagger; that we then explain
+in the footer. If we specify a name to the parameters like this we override the labels previously set.
+
+
+```{r}
+mtcars %>% 
+  getDescriptionStatsBy(mpg, 
+                        `Weight&dagger;` = wt,
+                        am,
+                        gear,
+                        col,
+                        by = am) %>% 
+  htmlTable(caption  = "Basic descriptive statistics from the mtcars dataset",
+            tfoot = "&dagger; The weight is in 10<sup>3</sup> kg")
+```
+
+Extra everything
+----------------
+
+There is a large set of options for `getDescriptionStatsBy`, here is an example with some of them an some extra styling.
+
+```{r}
+mtcars %>% 
+  getDescriptionStatsBy(mpg, 
+                        `Weight&dagger;` = wt,
+                        am,
+                        gear,
+                        col,
+                        by = am,
+                        digits = 0,
+                        add_total_col = TRUE,
+                        use_units = "name") %>% 
+  addHtmlTableStyle(pos.caption = "bottom") %>% 
+  htmlTable(caption  = "Basic descriptive statistics from the mtcars dataset",
+            tfoot = "&dagger; The weight is in 10<sup>3</sup> kg")
+```
+
+P-values
+========
+
+Event though p-values are discouraged in the Table 1, they are [not uncommon](https://journals.sagepub.com/doi/full/10.1177/1741826711421688). I have therefore added basic statistics consisting that defaults to Fisher's exact test for proportions and Wilcoxon rank sum test for continuous values. 
+
+```{r, warning=FALSE}
+mtcars %>% 
+  getDescriptionStatsBy(mpg, 
+                        wt,
+                        am,
+                        gear,
+                        col,
+                        by = am,
+                        continuous_fn = describeMedian,
+                        digits = 0,
+                        header_count = TRUE,
+                        statistics = TRUE) %>% 
+  htmlTable(caption  = "Basic descriptive statistics from the mtcars dataset")
+```
+
+Custom p-values
+---------------
+
+By popular demand I've expanded with the option of having custom p-values. All you need to do is to provide a function that takes two values and exports a single p-value. There are several prepared functions that you can use or use as a template for your own p-value function. They all start with `getPval..`, e.g. `getPvalKruskal`. You can either provide a single function or you can set the defaults depending on the variable type:
+
+
+```{r, warning=FALSE}
+mtcars %>% 
+  getDescriptionStatsBy(mpg, 
+                        wt,
+                        am,
+                        gear,
+                        col,
+                        by = am,
+                        continuous_fn = describeMedian,
+                        digits = 0,
+                        header_count = TRUE,
+                        statistics = list(continuous = getPvalChiSq, 
+                                          factor = getPvalChiSq, 
+                                          proportion = getPvalFisher)) %>% 
+  addHtmlTableStyle(pos.caption = "bottom") %>% 
+  htmlTable(caption  = "P-values generated from a custom set of values")
+```
+
+Using `mergeDesc`
+========================
+
+Prior to Gmisc v3.0 `mergeDesc` was the best way to quickly assemble a "Table 1":
 
 ```{r}
 getTable1Stats <- function(x, digits = 0, ...){
@@ -74,21 +175,7 @@ getTable1Stats <- function(x, digits = 0, ...){
                         ...)
   
 }
-getTable1Stats(mtcars$mpg)
-```
 
-The dot-argument (...) is useful for adding additional customization:
-
-```{r}
-getTable1Stats(mtcars$mpg, use_units = TRUE)
-```
-
-Magic with `mergeDesc`
-========================
-
-In order to quickly assemble a "Table 1" I've generated a helper function `mergeDesc` that closely integrates with the `htmlTable`:
-
-```{r}
 t1 <- list()
 t1[["Gas"]] <-
   getTable1Stats(mtcars$mpg)
@@ -108,86 +195,4 @@ mergeDesc(t1,
           htmlTable_args = list(caption  = "Basic descriptive statistics from the mtcars dataset",
                                 tfoot = "&dagger; The weight is in 10<sup>3</sup> kg"))
 ```
-
-I like generating lists but it is optional, you can achieve the same through:
-
-```{r}
-mergeDesc(getTable1Stats(mtcars$mpg),
-          `Weight&dagger;` = getTable1Stats(mtcars$wt),
-          Color = getTable1Stats(mtcars$col),
-          getTable1Stats(mtcars$gear),
-          htmlTable_args = list(caption  = "Basic descriptive statistics from the mtcars dataset",
-                                tfoot = "&dagger; The weight is in 10<sup>3</sup> kg"))
-```
-
-P-values
-========
-
-Event though p-values are discouraged in the Table 1, they are [not uncommon](https://journals.sagepub.com/doi/full/10.1177/1741826711421688). I have therefore added basic statistics consisting that defaults to Fisher's exact test for proportions and Wilcoxon rank sum test for continuous values. 
-
-```{r, warning=FALSE}
-getTable1Stats <- function(x, digits = 0, ...){
-  getDescriptionStatsBy(x = x, 
-                        by = mtcars$am,
-                        digits = digits,
-                        continuous_fn = describeMedian,
-                        header_count = TRUE,
-                        statistics = TRUE,
-                        ...)
-  
-}
-
-t1 <- list()
-t1[["Gas"]] <-
-  getTable1Stats(mtcars$mpg)
-  
-t1[["Weight&dagger;"]] <-
-  getTable1Stats(mtcars$wt)
-
-t1[["Color"]] <- 
-  getTable1Stats(mtcars$col)
-
-library(magrittr)
-mergeDesc(t1,
-          getTable1Stats(mtcars$gear)) %>%
-  htmlTable(caption  = "Basic descriptive statistics from the mtcars dataset",
-            tfoot = "&dagger; The weight is in 10<sup>3</sup> kg")
-```
-
-Custom p-values
----------------
-
-By popular demand I've expanded with the option of having custom p-values. All you need to do is to provide a function that takes two values and exports a single p-value. There are several prepared functions that you can use or use as a template for your own p-value function. They all start with `getPval..`, e.g. `getPvalKruskal`. You can either provide a single function or you can set the defaults depending on the variable type:
-
-
-```{r, warning=FALSE}
-getTable1Stats <- function(x, digits = 0, ...){
-  getDescriptionStatsBy(x = x, 
-                        by = mtcars$am,
-                        digits = digits,
-                        continuous_fn = describeMedian,
-                        header_count = TRUE,
-                        statistics = list(continuous = getPvalChiSq, 
-                                          factor = getPvalChiSq, 
-                                          proportion = getPvalFisher),
-                        ...)
-  
-}
-
-t1 <- list()
-t1[["Gas"]] <-
-  getTable1Stats(mtcars$mpg)
-  
-t1[["Weight&dagger;"]] <-
-  getTable1Stats(mtcars$wt)
-
-t1[["Color"]] <- 
-  getTable1Stats(mtcars$col)
-
-mergeDesc(t1,
-          getTable1Stats(mtcars$gear)) %>%
-  htmlTable(caption  = "P-values generated from a custom set of values",
-            tfoot = "&dagger; The weight is in 10<sup>3</sup> kg")
-```
-
 

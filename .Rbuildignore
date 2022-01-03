@@ -9,3 +9,4 @@
 ^cran-comments\.md$
 .vscode
 Gmisc/inst/extdata/Full_test_suite_files/*
+.lintr

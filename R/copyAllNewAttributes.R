@@ -28,5 +28,5 @@ copyAllNewAttributes <- function(from, to, attr2skip = c(), attr2force = c()) {
           name %in% attr2force)
       attr(to, name) <- attr(from, name)
   }
-  return (to)
+  return(to)
 }

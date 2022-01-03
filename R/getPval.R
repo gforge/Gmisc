@@ -62,8 +62,7 @@ getPvalFisher <- function(x, by) {
 
   # Large statistics tend to be very heavy and therefore
   # i need to catch errors in fisher and redo by simulation
-  tryCatch(
-    {
+  tryCatch({
       fisher.test(x, by, workspace = workspace)$p.value
     },
     error = function(err) {

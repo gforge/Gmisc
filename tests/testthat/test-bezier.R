@@ -5,22 +5,20 @@ context("Bézier functions")
 test_that("Basic funcitonality", {
   df <- data.frame(x = c(1, 2, 4, 5),
                    y = c(5, 2, 3, 1))
-  arrow <-
-    getBezierAdj4Arrw(x = df$x,
-                      y = df$y,
-                      length_out = 10,
-                      arrow_length = .1)
+  arrow <- getBezierAdj4Arrw(x = df$x,
+                             y = df$y,
+                             length_out = 10,
+                             arrow_length = .1)
   expect_equal(length(arrow$x), 10)
   expect_equal(length(arrow$y), 10)
   expect_false(all(attr(arrow, "spline_ctrl")$x == df$x),
                info = "The spline should be adjusted according to the arrow length")
   expect_false(all(attr(arrow, "spline_ctrl")$y == df$y),
                info = "The spline should be adjusted according to the arrow length")
-  arrow <-
-    getBezierAdj4Arrw(x = df$x,
-                      y = df$y,
-                      length_out = 10,
-                      arrow_length = 0)
+  arrow <- getBezierAdj4Arrw(x = df$x,
+                             y = df$y,
+                             length_out = 10,
+                             arrow_length = 0)
   expect_equal(length(arrow$x), 10)
   expect_equal(length(arrow$y), 10)
   expect_true(all(attr(arrow, "spline_ctrl")$x == df$x),
@@ -49,16 +47,15 @@ test_that("Check vertical lines",{
             .Names = c("x", "y")) -> test
 
   out <- calculateLinesAndArrow(test$x, test$y, offset = 5)
-  expect_true(all(abs(out$right$x - out$right$x[1]) <= .Machine$double.eps*10^3))
-  expect_true(all(abs(out$left$x - out$left$x[1]) <= .Machine$double.eps*10^3))
-  expect_true(10 - (out$right$x[1] - out$left$x[1]) <= .Machine$double.eps)
-
+  expect_true(all(abs(out$right$x - out$right$x[1]) <= .Machine$double.eps * 1e3))
+  expect_true(all(abs(out$left$x - out$left$x[1]) <= .Machine$double.eps * 1e3))
+  expect_equivalent(10, out$right$x[1] - out$left$x[1], tolerance = .Machine$double.eps * 1e3)
 
   out <- calculateLinesAndArrow(test$x, rev(test$y), offset = 3)
   # There is some kind of floating error that causes an offset in the
   # value 10^-14 for a few values
-  expect_true(all(abs(out$right$x - out$right$x[1]) <= .Machine$double.eps*10^3))
-  expect_true(all(abs(out$left$x - out$left$x[1]) <= .Machine$double.eps*10^3))
+  expect_true(all(abs(out$right$x - out$right$x[1]) <= .Machine$double.eps*1e3))
+  expect_true(all(abs(out$left$x - out$left$x[1]) <= .Machine$double.eps*1e3))
   expect_true(6 + (out$right$x[1] - out$left$x[1]) <= .Machine$double.eps)
 })
 
@@ -87,15 +84,15 @@ test_that("Horizontal_lines",{
   out <- calculateLinesAndArrow(test$x, test$y, offset = 3)
   # There is some kind of floating error that causes an offset in the
   # value 10^-14 for a few values
-  expect_true(all(abs(out$right$y - out$right$y[1]) <= .Machine$double.eps*10^3))
-  expect_true(all(abs(out$left$y - out$left$y[1]) <= .Machine$double.eps*10^3))
+  expect_true(all(abs(out$right$y - out$right$y[1]) <= .Machine$double.eps*1e3))
+  expect_true(all(abs(out$left$y - out$left$y[1]) <= .Machine$double.eps*1e3))
   expect_true(6 - (out$right$y[1] - out$left$y[1]) <= .Machine$double.eps)
 
   out <- calculateLinesAndArrow(rev(test$x), test$y, offset = 3)
   # There is some kind of floating error that causes an offset in the
   # value 10^-14 for a few values
-  expect_true(all(abs(out$right$y - out$right$y[1]) <= .Machine$double.eps*10^3))
-  expect_true(all(abs(out$left$y - out$left$y[1]) <= .Machine$double.eps*10^3))
+  expect_true(all(abs(out$right$y - out$right$y[1]) <= .Machine$double.eps*1e3))
+  expect_true(all(abs(out$left$y - out$left$y[1]) <= .Machine$double.eps*1e3))
   expect_true(6 + (out$right$y[1] - out$left$y[1]) <= .Machine$double.eps)
 })
 

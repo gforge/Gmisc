@@ -35,6 +35,8 @@
 #'  the spectrum then it can be of interest to focus the color change to the center leaving the tails constant
 #' @field clr_bar_labels The labels of the color bars. Defaults to the dim names for the proportions.
 #' @field txt_clr The text color within the boxes
+#' @field txt_gpar Similar to `txt_clr` but for more advanced styling with fontfamily (see [grid::gpar()]). *Note* that
+#'  col & cex are overridden.
 #' @field title The plot title if any
 #' @field title_cex The font-size multiplier for the title
 #' @field skip_shadows Skip the shadow effect on the boxes
@@ -94,7 +96,7 @@ Transition <-
         }
 
         if (!inherits(value, "unit") &&
-          value > 1 && value < 0) {
+            value > 1 && value < 0) {
           stop("The box width must be grid::unit or a double between 0 and 1")
         }
         if (inherits(value, "unit")) {
@@ -259,8 +261,8 @@ Transition <-
             clrs <- c(
               clrs,
               list(matrix("#000000",
-                nrow = nrow(transitions[[i]]),
-                ncol = ncol(transitions[[i]])
+                          nrow = nrow(transitions[[i]]),
+                          ncol = ncol(transitions[[i]])
               ))
             )
           }
@@ -277,14 +279,14 @@ Transition <-
           }
           value <- list(value)
         } else if (!is.list(value) &&
-          length(value) == 1) {
+                   length(value) == 1) {
           clrs <- list()
           for (i in 1:length(transitions)) {
             clrs <- c(
               clrs,
               list(matrix(value,
-                nrow = nrow(transitions[[i]]),
-                ncol = ncol(transitions[[i]])
+                          nrow = nrow(transitions[[i]]),
+                          ncol = ncol(transitions[[i]])
               ))
             )
           }
@@ -327,8 +329,8 @@ Transition <-
         }
 
         if (length(value) != 1 ||
-          value < 1 ||
-          round(value) != value) {
+            value < 1 ||
+            round(value) != value) {
           stop("Invalid arrow resolution, needs to be integer between 1 -> Inf")
         }
 
@@ -344,7 +346,7 @@ Transition <-
         }
 
         if (!inherits(value, "unit") &&
-          value >= 1 && value < 0) {
+            value >= 1 && value < 0) {
           stop("The box width must be grid::unit or a double at least 0 and below 1")
         }
         if (inherits(value, "unit")) {
@@ -367,9 +369,9 @@ Transition <-
         }
 
         value <- prTcValidateAndPrepClr(value,
-          no_cols = .self$noCols(),
-          no_rows = .self$noRows(),
-          is3D = .self$is3D()
+                                        no_cols = .self$noCols(),
+                                        no_rows = .self$noRows(),
+                                        is3D = .self$is3D()
         )
 
         data$fill_clr <<- value
@@ -380,19 +382,33 @@ Transition <-
         }
 
         value <- prTcValidateAndPrepClr(value,
-          no_cols = .self$noCols(),
-          no_rows = .self$noRows(),
-          is3D = .self$is3D()
+                                        no_cols = .self$noCols(),
+                                        no_rows = .self$noRows(),
+                                        is3D = .self$is3D()
         )
 
         data$txt_clr <<- value
+      },
+      txt_gpar = function(value, row = NULL, col = NULL) {
+        if (missing(value)) {
+          return(data$txt_gpar)
+        }
+
+        if (is.null(data$txt_gpar))
+        value <- prTcValidateAndPrepClr(value,
+                                        no_cols = .self$noCols(),
+                                        no_rows = .self$noRows(),
+                                        is3D = .self$is3D()
+        )
+
+        data$txt_gpar <<- value
       },
       clr_bar = function(value = c("none", "bottom", "top")) {
         if (missing(value)) {
           # Only show bar if there is actually something to show
           if (.self$is3D()) {
             if (arrow_type == "gradient" &&
-              length(clr_bar_clrs) == 2) {
+                length(clr_bar_clrs) == 2) {
               if (!is.null(data$clr_bar)) {
                 return(data$clr_bar)
               }
@@ -457,7 +473,7 @@ Transition <-
         }
 
         if (length(value) > 2 &&
-          !is.numeric(value)) {
+            !is.numeric(value)) {
           stop("The color subspace needs to be a numeric vector of length between 1 and 2")
         }
         if (is.list(value)) {
@@ -501,7 +517,7 @@ Transition <-
         }
 
         if (is.null(value) ||
-          nchar(value) == 0) {
+            nchar(value) == 0) {
           data$title <<- NULL
         } else {
           data$title <<- value
@@ -598,7 +614,7 @@ Transition <-
       }
     ),
     methods = list(
-      initialize = function(transitions, label, txt, fill_clr, txt_clr, id, ...) {
+      initialize = function(transitions, label, txt, fill_clr, txt_clr, txt_gpar, id, ...) {
         "Set up a Transition object. The \\code{transitions} should be a 2D or 3D matrix
         as defined in the \\code{$addTransitions} section and not as later internally stored."
         if (missing(transitions)) {
@@ -606,7 +622,7 @@ Transition <-
         }
 
         if (is.character(transitions) &&
-          all(transitions == "copy")) {
+            all(transitions == "copy")) {
           return(callSuper(...))
         }
 
@@ -630,7 +646,7 @@ Transition <-
           stop("The id has to be a string, you provided: ", id)
         }
 
-        .self$addTransitions(transitions, label, txt = txt, fill_clr = fill_clr, txt_clr = txt_clr)
+        .self$addTransitions(transitions, label, txt = txt, fill_clr = fill_clr, txt_clr = txt_clr, txt_gpar = txt_gpar)
         callSuper(...)
       },
       copy = function(shallow = FALSE) {
@@ -652,13 +668,13 @@ Transition <-
         }
         value
       },
-      addTransitions = function(mtrx, label, txt, fill_clr, txt_clr) {
+      addTransitions = function(mtrx, label, txt, fill_clr, txt_clr, txt_gpar) {
         "Add a transition matrix. The input has to be a numerical matrix between 2 and 3 dimensions.
         If you don't provide the txt field the box' text field will be deduced from the transition matrix'
-        dimnames. The fill_clr and txt_clr are passed on to the \\code{addClr} function."
+        dimnames. The fill_clr and txt_clr are passed on to the \\code{addBoxStyle} function."
 
         if (is.null(dimnames(mtrx)) ||
-          any(sapply(dimnames(mtrx), is.null))) {
+            any(sapply(dimnames(mtrx), is.null))) {
           stop(
             "Your transition matrix must have dimension names.",
             " If you use table() for generating your transition matrix",
@@ -674,7 +690,7 @@ Transition <-
           #             return()
           #           }
           if (.self$noRows("last") !=
-            nrow(mtrx)) {
+              nrow(mtrx)) {
             stop(
               "The number of elements within the new matrix must be equal to the previous matrix.",
               " You have provided '", nrow(mtrx), "' elements",
@@ -803,7 +819,7 @@ Transition <-
           # text for both columns and its assumed to be the
           # same
           if (length(txt) == 1 &&
-            .self$noCols == 2) {
+              .self$noCols == 2) {
             txt <- rep(txt, 2)
           }
         }
@@ -819,9 +835,10 @@ Transition <-
         }
 
         # Now add the colors
-        .self$addClr(
+        .self$addBoxStyle(
           fill = fill_clr,
-          txt = txt_clr
+          txt = txt_clr,
+          gpar = txt_gpar
         )
 
         invisible(mtrx)
@@ -835,91 +852,75 @@ Transition <-
         }
 
         if (no >= .self$noCols() ||
-          no < 1) {
+            no < 1) {
           stop("You can only select transition sets ranging from 1 to ", .self$noCols() - 1)
         }
 
         set <- transitions[[no]]
         if (reduce_dim &&
-          length(dim(set)) == 3) {
+            length(dim(set)) == 3) {
           set <- set[, , 1, drop = FALSE] + set[, , 2, drop = FALSE]
           set <- set[, , 1]
         }
         return(set)
       },
-      addClr = function(fill, txt) {
+      addBoxStyle = function(fill, txt, gpar) {
         "Adds colors or extends existing one so that they match the transition matrix.
         The fill corresponds to the fill_clr and txt corresponds to the txt_clr. If
         the colors are missing and the transitions consist of only two columns the default
         colors will be used. If the matrix is being extended and these values are missing the
         values from the previous last column will be used for the default columns."
 
-        if (missing(fill) &&
-          .self$noCols() == 2) {
-          # This is the color initialization
-          if (.self$is3D()) {
-            fill <-
-              list(
-                cbind(
-                  rep("#fdc086", .self$noRows(1)),
-                  rep("#386cb0", .self$noRows(1))
-                ),
-                cbind(
-                  rep("#fdc086", .self$noRows(2)),
-                  rep("#386cb0", .self$noRows(2))
-                )
-              )
-          } else {
-            fill <-
-              list(
-                rep("darkgreen", .self$noRows(1)),
-                rep("darkgreen", .self$noRows(2))
-              )
+        addStyle <- function(style,
+                             existing_style,
+                             generator_2d,
+                             generator_3d = generator_2d,
+                             is3D = .self$is3D()) {
+          # Resolve styles if there already exists one
+          if (!is.null(existing_style)) {
+            return(prTcMatchClr(add = style,
+                                org = existing_style,
+                                no_cols = .self$noCols(),
+                                no_rows = .self$noRows(),
+                                is3D = is3D))
           }
-        }
 
-        if (is.null(fill_clr)) {
-          fill_clr <<- fill
-        } else {
-          fill_clr <<- prTcMatchClr(fill, fill_clr,
-            no_cols = .self$noCols(),
-            no_rows = .self$noRows(),
-            is3D = .self$is3D()
-          )
-        }
-
-        if (missing(txt) &&
-          .self$noCols() == 2) {
-          if (.self$is3D()) {
-            txt <-
-              list(
-                cbind(
-                  rep("#000000", .self$noRows(1)),
-                  rep("#ffffff", .self$noRows(1))
-                ),
-                cbind(
-                  rep("#000000", .self$noRows(2)),
-                  rep("#ffffff", .self$noRows(2))
-                )
-              )
+          if (is3D) {
+            style_generator <- generator_3d
           } else {
-            txt <-
-              list(
-                rep("#ffffff", .self$noRows(1)),
-                rep("#ffffff", .self$noRows(2))
-              )
+            style_generator <-  generator_2d
           }
+
+          if (missing(style) && .self$noCols() == 2) {
+            # This is the color initialization
+            style <- lapply(1:.self$noCols(), style_generator)
+          } else if (.self$noCols() == 2) {
+            is_single_element <- function(x) inherits(x, "gpar") || length(x) == 1
+            if (is_single_element(style)) {
+               style <- lapply(1:.self$noCols(), style_generator, default = style)
+            } else if (length(style) == 2 && all(sapply(style, is_single_element))) {
+               style <- lapply(1:.self$noCols(), function(i) style_generator(i, style[[i]]))
+            }
+          }
+          style
         }
 
-        if (is.null(txt_clr)) {
-          txt_clr <<- txt
-        } else {
-          txt_clr <<- prTcMatchClr(txt, txt_clr,
-            no_cols = .self$noCols(),
-            no_rows = .self$noRows(),
-            is3D = .self$is3D()
-          )
-        }
+        fill_clr <<- addStyle(style = fill,
+                              existing_style = fill_clr,
+                              generator_2d = function(col, default = "darkgreen") cbind(rep(default, .self$noRows(col))),
+                              generator_3d = function(col, default = c("#fdc086", "#386cb0")) cbind(rep(default[[1]], .self$noRows(col)),
+                                                                                                    rep(default[[2]], .self$noRows(col))))
+
+        txt_clr <<- addStyle(style = txt,
+                             existing_style = txt_clr,
+                             generator_2d = function(col, default = "#ffffff") rep(default, .self$noRows(col)),
+                             generator_3d = function(col, default = c("#000000", "#ffffff")) cbind(rep(default[[1]], .self$noRows(col)),
+                                                                                                   rep(default[[2]], .self$noRows(col))))
+
+        txt_gpar <<- addStyle(style = gpar,
+                              existing_style = txt_gpar,
+                              generator_2d = function(col, default = list()) rep(list(default), .self$noRows(col)),
+                              is3D = FALSE)
       },
       getDim = function() {
         "Gets the current dimensions of the transitions"
@@ -957,7 +958,7 @@ Transition <-
         }
 
         if (no < 0 ||
-          no > length(transitions) + 1) {
+            no > length(transitions) + 1) {
           stop("Invalid column specified")
         }
 
@@ -987,15 +988,15 @@ Transition <-
         raw_max_lwd <- max_lwd
         if (is.unit(raw_max_lwd)) {
           raw_max_lwd <- convertHeight(raw_max_lwd,
-            unitTo = internal.unit,
-            valueOnly = TRUE
+                                       unitTo = internal.unit,
+                                       valueOnly = TRUE
           )
         }
         raw_min_lwd <- min_lwd
         if (is.unit(raw_min_lwd)) {
           raw_min_lwd <- convertHeight(raw_min_lwd,
-            unitTo = internal.unit,
-            valueOnly = TRUE
+                                       unitTo = internal.unit,
+                                       valueOnly = TRUE
           )
         }
         arrows <- list()
@@ -1098,8 +1099,8 @@ Transition <-
          between the boxes"
         vertical_sizes <- .self$boxSizes(col)
         (1 - convertY(vertical_space,
-          unitTo = "npc",
-          valueOnly = TRUE
+                      unitTo = "npc",
+                      valueOnly = TRUE
         )) *
           vertical_sizes / sum(vertical_sizes)
       },
@@ -1121,8 +1122,8 @@ Transition <-
         x_offset <- (raw_width + space_between) * (col - 1)
         proportions <- .self$getYProps(col)
         raw_v_space <- convertY(vertical_space,
-          unitTo = "npc",
-          valueOnly = TRUE
+                                unitTo = "npc",
+                                valueOnly = TRUE
         )
         y_offset <- 1
         bx <- list()
@@ -1183,68 +1184,9 @@ Transition <-
 
         raw_width <- convertWidth(box_width, unitTo = "npc", valueOnly = TRUE)
         space_between <- (1 - raw_width * .self$noCols()) / (.self$noCols() - 1)
-
-        if (!is.null(box_label)) {
-          raw_height <- 0
-          for (i in 1:noCols()) {
-            raw_height <-
-              unit(1, "strheight", box_label[i]) %>%
-              convertHeight(unitTo = "npc", valueOnly = TRUE) %>%
-              max(raw_height)
-          }
-
-          raw_mm <- convertHeight(unit(raw_height, "npc"), unitTo = "mm", valueOnly = TRUE)
-
-          widths <- c()
-          for (i in 1:.self$noCols()) {
-            widths %<>% c(raw_width)
-            if (i != .self$noCols()) {
-              widths %<>% c(space_between)
-            }
-          }
-
-          box_label_heights <- c(raw_height * box_label_cex * 2.5, 1 - raw_height * 2.5 * box_label_cex)
-          label_pos <- 1
-          graph_pos <- 2
-          if (box_label_pos == "bottom") {
-            box_label_heights <- rev(box_label_heights)
-            label_pos <- 2
-            graph_pos <- 1
-          }
-
-          labels <- list()
-          for (i in 1:noCols()) {
-            labels[[i]] <- textGrob(box_label[i], gp = gpar(cex = box_label_cex))
-          }
-
-          pushViewport(viewport(
-            layout = grid.layout(
-              nrow = 2, ncol = length(widths),
-              heights = unit(box_label_heights, "npc"),
-              widths = unit(widths, "npc")
-            ),
-            name = .self$getViewportName("box_label_grid")
-          ))
-          no_upview_ports <- no_upview_ports + 1
-
-          for (i in 1:.self$noCols()) {
-            col_no <- i + (i - 1)
-            pushViewport(viewport(
-              layout.pos.row = label_pos,
-              layout.pos.col = col_no,
-              name = .self$getViewportName(paste0("box_label_grid_", label_pos, ":", col_no))
-            ))
-            grid.draw(labels[[i]])
-            upViewport()
-          }
-
-          pushViewport(viewport(
-            layout.pos.row = graph_pos,
-            layout.pos.col = 1:length(widths),
-            name = .self$getViewportName(paste0("box_graph_section_", graph_pos, ":1-", col_no))
-          ))
-          no_upview_ports <- no_upview_ports + 1
-        }
+        .self$render_box_label(raw_width = raw_width,
+                               space_between = space_between,
+                               no_upview_ports = no_upview_ports)
 
         if (clr_bar != "none") {
           bar_height <- unit(1, "cm")
@@ -1316,22 +1258,22 @@ Transition <-
 
             lab_margin <- .05
             left <- textGrob(clr_bar_labels[1],
-              x = 0 + lab_margin,
-              just = "left",
-              y = .5,
-              gp = gpar(
-                cex = lab_cex_adjusted,
-                col = clr_bar_txt_clr[1]
-              )
+                             x = 0 + lab_margin,
+                             just = "left",
+                             y = .5,
+                             gp = gpar(
+                               cex = lab_cex_adjusted,
+                               col = clr_bar_txt_clr[1]
+                             )
             )
             right <- textGrob(clr_bar_labels[2],
-              x = 1 - lab_margin,
-              just = "right",
-              y = .5,
-              gp = gpar(
-                cex = lab_cex_adjusted,
-                col = clr_bar_txt_clr[2]
-              )
+                              x = 1 - lab_margin,
+                              just = "right",
+                              y = .5,
+                              gp = gpar(
+                                cex = lab_cex_adjusted,
+                                col = clr_bar_txt_clr[2]
+                              )
             )
             grid.draw(left)
             grid.draw(right)
@@ -1346,6 +1288,72 @@ Transition <-
           no_upview_ports <- no_upview_ports + 2
         }
 
+        .self$render_boxes(raw_width = raw_width, no_upview_ports = no_upview_ports)
+      },
+      render_box_label = function(raw_width, space_between, no_upview_ports) {
+        if (!is.null(box_label)) {
+          raw_height <- 0
+          for (i in 1:noCols()) {
+            raw_height <-
+              unit(1, "strheight", box_label[i]) %>%
+              convertHeight(unitTo = "npc", valueOnly = TRUE) %>%
+              max(raw_height)
+          }
+
+          raw_mm <- convertHeight(unit(raw_height, "npc"), unitTo = "mm", valueOnly = TRUE)
+
+          widths <- c()
+          for (i in 1:.self$noCols()) {
+            widths %<>% c(raw_width)
+            if (i != .self$noCols()) {
+              widths %<>% c(space_between)
+            }
+          }
+
+          box_label_heights <- c(raw_height * box_label_cex * 2.5, 1 - raw_height * 2.5 * box_label_cex)
+          label_pos <- 1
+          graph_pos <- 2
+          if (box_label_pos == "bottom") {
+            box_label_heights <- rev(box_label_heights)
+            label_pos <- 2
+            graph_pos <- 1
+          }
+
+          labels <- list()
+          for (i in 1:noCols()) {
+            labels[[i]] <- textGrob(box_label[i], gp = gpar(cex = box_label_cex))
+          }
+
+          pushViewport(viewport(
+            layout = grid.layout(
+              nrow = 2, ncol = length(widths),
+              heights = unit(box_label_heights, "npc"),
+              widths = unit(widths, "npc")
+            ),
+            name = .self$getViewportName("box_label_grid")
+          ))
+          no_upview_ports <- no_upview_ports + 1
+
+          for (i in 1:.self$noCols()) {
+            col_no <- i + (i - 1)
+            pushViewport(viewport(
+              layout.pos.row = label_pos,
+              layout.pos.col = col_no,
+              name = .self$getViewportName(paste0("box_label_grid_", label_pos, ":", col_no))
+            ))
+            grid.draw(labels[[i]])
+            upViewport()
+          }
+
+          pushViewport(viewport(
+            layout.pos.row = graph_pos,
+            layout.pos.col = 1:length(widths),
+            name = .self$getViewportName(paste0("box_graph_section_", graph_pos, ":1-", col_no))
+          ))
+          no_upview_ports <- no_upview_ports + 1
+        }
+      },
+      render_boxes = function(raw_width, no_upview_ports) {
         shift <- unit(raw_width * .02, "snpc")
         pushViewport(viewport(
           x = unit(0.5, "npc") + shift,
@@ -1368,7 +1376,6 @@ Transition <-
         for (col in 1:.self$noCols()) {
           proportions <- .self$getYProps(col)
 
-          txt <- box_txt[[col]]
           bx_pos <- .self$boxPositions(col)
 
           box_args <- list(
@@ -1377,7 +1384,8 @@ Transition <-
             fill = rep(grey(level = .3), times = .self$noRows(col)),
             txt = rep("", times = .self$noRows(col)),
             txt_clr = rep(grey(level = .3), times = .self$noRows(col)),
-            cex = box_cex
+            cex = box_cex,
+            txt_gpar = txt_gpar[[col]]
           )
 
           if (!.self$skip_shadows) {
@@ -1397,21 +1405,21 @@ Transition <-
             trnstn_set <- .self$getTransitionSet(col)
 
             prTcPlotArrows(trnstn_set,
-              widths = .self$arrowWidths(col),
-              type = arrow_type,
-              clr = arrow_clr[[col]],
-              rez = arrow_rez,
-              origin_boxes = bx_pos,
-              target_boxes = .self$boxPositions(col + 1),
-              left_box_clrs = box_args[["fill"]],
-              max_flow = max_flow,
-              min_width = min_width,
-              max_width = max_width,
-              clr_bar_subspace = clr_bar_subspace
+                           widths = .self$arrowWidths(col),
+                           type = arrow_type,
+                           clr = arrow_clr[[col]],
+                           rez = arrow_rez,
+                           origin_boxes = bx_pos,
+                           target_boxes = .self$boxPositions(col + 1),
+                           left_box_clrs = box_args[["fill"]],
+                           max_flow = max_flow,
+                           min_width = min_width,
+                           max_width = max_width,
+                           clr_bar_subspace = clr_bar_subspace
             )
           }
 
-          fastDoCall(prTcPlotBoxColumn, box_args)
+          do.call(prTcPlotBoxColumn, box_args)
           upViewport()
         }
 

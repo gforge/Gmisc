@@ -28,8 +28,8 @@ mtrx <- with(
 )
 
 # Initialize the transition plot
-transitions <-
-  getRefClass("Transition")$new(mtrx, label = c("Before", "After"))
+transitions <- getRefClass("Transition")$new(mtrx,
+                                             label = c("Before", "After"))
 
 # Render the plot
 transitions$render()

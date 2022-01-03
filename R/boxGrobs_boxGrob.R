@@ -12,9 +12,9 @@
 #'  See the \code{just} option for the \code{\link[grid]{viewport}}
 #' @param txt_gp The \code{\link[grid]{gpar}} style to apply to the text. Set \code{boxGrobTxt} option
 #'  if you want to customize all the boxes at once.
-#' @param box_gp The \code{\link[grid]{gpar}} style to apply to the box function of `boxFN` below.
-#'  @param boxFN Function to create box for the text. Parameters of `x=0.5`, `y=0.5` and `box_gp` will
-#'  be passed to this function.
+#' @param box_gp The \code{\link[grid]{gpar}} style to apply to the box function of `box_fn` below.
+#' @param box_fn Function to create box for the text. Parameters of `x=0.5`, `y=0.5` and `box_gp` will
+#'  be passed to this function and return a \code{grob} object.
 #' @param name a character identifier for the \code{grob}. Used to find the \code{grob} on the display
 #'  list and/or as a child of another grob.
 #'
@@ -38,8 +38,8 @@ boxGrob <- function(label,
                     bjust = "center",
                     txt_gp = getOption("boxGrobTxt", default = gpar(color = "black",
                                                                     cex = 1)),
-                    box_gp = getOption("boxGrob", gpar(fill = "white")),
-                    boxFN  = roundrectGrob,
+                    box_gp = getOption("boxGrob", default = gpar(fill = "white")) ,
+                    box_fn  = roundrectGrob,
                     name = NULL) {
   assert(
     checkString(label),
@@ -54,12 +54,12 @@ boxGrob <- function(label,
   assert_just(bjust)
   assert_class(txt_gp, "gpar")
   assert_class(box_gp, "gpar")
-  
+
 
   x <- prAsUnit(x)
   y <- prAsUnit(y)
 
-  txt_padding <- unit(4*txt_gp$cex, "mm")
+  txt_padding <- unit(4 * ifelse(is.null(txt_gp$cex), 1, txt_gp$cex), "mm")
   txt <- textGrob(
     label = label,
     x = prGetX4Txt(just, txt_padding), y = .5,
@@ -87,8 +87,8 @@ boxGrob <- function(label,
     just = bjust
   )
 
-  rect <- do.call(boxFN, list(x = .5, y = .5, gp = box_gp))
-  
+  rect <- do.call(box_fn, list(x = .5, y = .5, gp = box_gp))
+
   gl <- grobTree(
     gList(
       rect,

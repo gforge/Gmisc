@@ -17,11 +17,14 @@ prGetStatistics(
   continuous_fn = describeMean,
   factor_fn = describeFactors,
   prop_fn = factor_fn,
-  percentage_sign = TRUE
+  percentage_sign = TRUE,
+  default_ref = NULL
 )
 }
 \arguments{
-\item{x}{The variable that you want the statistics for}
+\item{x}{If a data.frame it will be used as the data source for the variables in the \code{...} parameter.
+If it is a single variable it will be the core value that want the statistics for.
+In the print this is equivalent to the output of this function.}
 
 \item{html}{If HTML compatible output should be used. If \code{FALSE}
 it outputs LaTeX formatting}
@@ -40,12 +43,11 @@ row below all other. See \code{\link[base]{table}} for \code{useNA}-options.
 \item{useNA.digits}{The number of digits to use for the
 missing percentage, defaults to the overall \code{digits}.}
 
-\item{show_all_values}{This is by default false as for instance if there is
-no missing and there is only one variable then it is most sane to only show
-one option as the other one will just be a complement to the first. For instance
-sex - if you know gender then automatically you know the distribution of the
-other sex as it's 100 \% - other \%. To choose which one you want to show then
-set the \code{default_ref} parameter.}
+\item{show_all_values}{Show all values in proportions. For factors with only two values
+it is most sane to only show one option as the other one will just be a complement
+to the first, i.e. we want to convey a proportion. For instance sex - if you know
+gender then automatically you know the distribution of the other sex as it's 100 \% - other \%.
+To choose which one you want to show then set the \code{default_ref} parameter.}
 
 \item{continuous_fn}{The method to describe continuous variables. The
 default is \code{\link{describeMean}}.}
@@ -57,6 +59,9 @@ default is \code{\link{describeMean}}.}
 \item{percentage_sign}{If you want to suppress the percentage sign you
 can set this variable to FALSE. You can also choose something else that
 the default \% if you so wish by setting this variable.}
+
+\item{default_ref}{The default reference when dealing with proportions. When using
+`dplyr` syntax (`tidyselect`) you can specify a named vector/list for each column name.}
 }
 \value{
 A matrix or a vector depending on the settings

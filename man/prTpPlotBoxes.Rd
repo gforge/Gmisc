@@ -12,6 +12,7 @@ prTpPlotBoxes(
   tot_spacing,
   txt,
   cex,
+  txt_gpar = NULL,
   prop_start_sizes,
   prop_end_sizes,
   box_prop,
@@ -59,6 +60,8 @@ empty. It is then split evenly between the boxes.}
 \item{txt}{The text}
 
 \item{cex}{The cex \code{\link{gpar}} of the text}
+
+\item{txt_gpar}{The [grid::gpar()] object that is overridden with col & cex by other parameters}
 
 \item{prop_start_sizes}{The proportion of the different boxes
 to the left}

@@ -55,9 +55,10 @@ getSvdMostInfluential <- function(mtrx,
     stop("The similarity_threshold mus be between 0-1")
 
   svd_out <- svd(scale(mtrx))
-  perc_explained <- svd_out$d^2/sum(svd_out$d^2)
+  perc_explained <- svd_out$d^2/sum(svd_out$d^2) * 100
   # Select the columns that we want to look at
-  cols_expl <- which(cumsum(perc_explained) <= quantile)
+  cols_expl <- which(cumsum(perc_explained) <= quantile * 100)
+  stopifnot(length(cols_expl) > 0)
 
   # Select the variables of interest
   getMostInfluentialVars <- function() {
@@ -75,75 +76,100 @@ getSvdMostInfluential <- function(mtrx,
   }
   vars <- getMostInfluentialVars()
 
-  plotSvdSelection <- function() {
-    if (plot_threshold < 0 || plot_threshold > 1)
-      stop("The plot_threshold must be between 0-1")
+  plot_data <- prData2Plot(mtrx = mtrx,
+                           vars = vars,
+                           varnames = varnames,
+                           plot_threshold = plot_threshold,
+                           similarity_threshold = similarity_threshold,
+                           perc_explained = perc_explained,
+                           cols_expl = cols_expl)
 
-    if (plot_threshold > similarity_threshold)
-      stop(paste0("You can't plot less that you've chosen - it makes no sense",
-              " - the plot (", plot_threshold, ")",
-              " >",
-              " similarity (", similarity_threshold, ")"))
+  if (plot_selection) prPlotSvdSelection(plot_data)
 
-    # Show all the bars that are at least at the threshold
-    # level and group the rest into a "other category"
-    bar_count <- length(perc_explained[perc_explained >= plot_threshold]) + 1
-    if (bar_count > length(perc_explained)) {
-      bar_count <- length(perc_explained)
-      plot_percent <- perc_explained
-    }else{
-      plot_percent <- rep(NA, times = bar_count)
-      plot_percent <- perc_explained[perc_explained >= plot_threshold]
-      plot_percent[bar_count] <- sum(perc_explained[perc_explained < plot_threshold])
-    }
+  invisible(structure(list(most_influential = unique(unlist(vars[cols_expl])),
+                           svd = svd_out,
+                           plot_data = plot_data),
+                      class = "Gmisc_svd_analysis"))
+}
 
-    # Create transition colors
-    selected_colors <- colorRampPalette(c("darkgreen", "#FFFFFF"))(bar_count + 2)[cols_expl]
-    nonselected_colors <- colorRampPalette(c("darkgrey", "#FFFFFF"))(bar_count + 2)[(max(cols_expl) + 1):bar_count]
+prGetMaxNo2Print <- function() getOption("Gmis_svd_max_no_to_print", 4)
+prData2Plot <- function(mtrx,
+                        vars,
+                        varnames,
+                        plot_threshold,
+                        similarity_threshold,
+                        perc_explained,
+                        cols_expl) {
+  if (plot_threshold < 0 || plot_threshold > 1)
+    stop("The plot_threshold must be between 0-1")
 
-    max_no_print <- 4
-    names <- unlist(lapply(vars[1:bar_count], FUN = function(x) {
-              if (is.null(varnames)) {
-                varnames <- colnames(mtrx)
-              }
-              if (length(x) > max_no_print)
-                ret <- paste(c(varnames[1:(max_no_print - 1)],
-                        sprintf("+ %d other", length(x) + 1 - max_no_print)), collapse = "\n")
-              else
-                ret <- paste(varnames[x], collapse = "\n")
+  if (plot_threshold > similarity_threshold)
+    stop(paste0("You can't plot less that you've chosen - it makes no sense",
+                " - the plot (", plot_threshold, ")",
+                " >",
+                " similarity (", similarity_threshold, ")"))
 
-              return(ret)
-            }))
-    rotation <- 45 + (max(unlist(lapply(vars[1:bar_count],
-                      function(x) {
-                        min(length(x), max_no_print)
-                      }))) - 1)*(45/max_no_print)
-
-    if (bar_count < length(perc_explained)) {
-      names[bar_count] <- "Other"
-      nonselected_colors[length(nonselected_colors)] <- grey(.5)
-    }
-
-    las <- 2
-    m <- par(mar = c(8.1, 4.1, 4.1, 2.1))
-    on.exit(par(mar = m))
-
-    p1 <- barchart(plot_percent * 100 ~ 1:bar_count,
-        horiz = FALSE,
-        ylab = "Percentage explained (%D)",
-        main = "SVD - the maximum contributors defined by V column",
-        xlab = "Pattern contributing variables",
-        col = c(selected_colors, nonselected_colors),
-        key = list(text = list(c("Selected", "Not selected")),
-            rectangles = list(col = c("darkgreen", "#777777"))),
-        scales = list(x = list(rot = rotation, labels = names)))
-    print(p1)
+  # Show all the bars that are at least at the threshold
+  # level and group the rest into a "other category"
+  percentage_threshold <- plot_threshold * 100
+  bar_count <- length(perc_explained[perc_explained >= percentage_threshold]) + 1
+  if (bar_count > length(perc_explained)) {
+    bar_count <- length(perc_explained)
+    plot_percent <- perc_explained
+  }else{
+    plot_percent <- perc_explained[perc_explained >= percentage_threshold][1:bar_count]
+    plot_percent[bar_count] <- sum(perc_explained[perc_explained < percentage_threshold])
   }
 
-  if (plot_selection)
-    plotSvdSelection()
+  # Create transition colors
+  selected_colors <- colorRampPalette(c("darkgreen", "#FFFFFF"))(bar_count + 2)[cols_expl]
+  nonselected_colors <- colorRampPalette(c("darkgrey", "#FFFFFF"))(bar_count + 2)[(max(cols_expl) + 1):bar_count]
 
-  ret <- list(most_influential = unique(unlist(vars[cols_expl])),
-      svd = svd_out)
-  return(ret)
+  names <- unlist(lapply(vars[1:bar_count], FUN = function(x) {
+    if (is.null(varnames)) {
+      varnames <- colnames(mtrx)
+    }
+    if (length(x) > prGetMaxNo2Print())
+      ret <- paste(c(varnames[1:(prGetMaxNo2Print() - 1)],
+                     sprintf("+ %d other", length(x) + 1 - prGetMaxNo2Print())), collapse = "\n")
+    else
+      ret <- paste(varnames[x], collapse = "\n")
+
+    return(ret)
+  }))
+
+  if (bar_count < length(perc_explained)) {
+    names[bar_count] <- "Other"
+    nonselected_colors[length(nonselected_colors)] <- grey(.5)
+  }
+
+  list(main = data.frame(names = names, percent = plot_percent, colors = c(selected_colors, nonselected_colors)),
+       vars = vars)
 }
+
+
+prPlotSvdSelection <- function(data) {
+  plot_data <- data$main
+
+  max_vars <- lapply(data$vars[1:nrow(plot_data)], length) %>%
+    lapply(min, prGetMaxNo2Print()) %>%
+    unlist() %>%
+    max()
+  rotation <- 45 + (max_vars - 1) * (45 / prGetMaxNo2Print())
+
+  m <- par(mar = c(8.1, 4.1, 4.1, 2.1))
+  on.exit(par(mar = m))
+
+  p1 <- barchart(percent ~ 1:nrow(plot_data),
+                 data = plot_data,
+                 horiz = FALSE,
+                 ylab = "Percentage explained (%D)",
+                 main = "SVD - the maximum contributors defined by V column",
+                 xlab = "Pattern contributing variables",
+                 col = plot_data$colors,
+                 key = list(text = list(c("Selected", "Not selected")),
+                            rectangles = list(col = c("darkgreen", "#777777"))),
+                 scales = list(x = list(rot = rotation, labels = plot_data$names)))
+  print(p1)
+}
+

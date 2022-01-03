@@ -4,7 +4,15 @@
 \alias{prTcPlotBoxColumn}
 \title{Plots a column of boxes}
 \usage{
-prTcPlotBoxColumn(box_positions, proportions, fill, txt, txt_clr, cex)
+prTcPlotBoxColumn(
+  box_positions,
+  proportions,
+  fill,
+  txt,
+  txt_clr,
+  txt_gpar,
+  cex
+)
 }
 \arguments{
 \item{box_positions}{The box positions}
@@ -16,6 +24,8 @@ prTcPlotBoxColumn(box_positions, proportions, fill, txt, txt_clr, cex)
 \item{txt}{The texts of length equal to the proportions}
 
 \item{txt_clr}{The text colors of length equal to the proportions}
+
+\item{txt_gpar}{A list of gpar object for the text box}
 
 \item{cex}{The fontsize multiplier}
 }

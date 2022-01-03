@@ -4,7 +4,14 @@
 \alias{prTpGetBoxSizedTextGrob}
 \title{Gets the text size for the box}
 \usage{
-prTpGetBoxSizedTextGrob(txt, txt_clr, txt_cex, force_cex = FALSE, ...)
+prTpGetBoxSizedTextGrob(
+  txt,
+  txt_clr,
+  txt_cex,
+  txt_gpar = NULL,
+  force_cex = FALSE,
+  ...
+)
 }
 \arguments{
 \item{txt}{The text}
@@ -12,6 +19,8 @@ prTpGetBoxSizedTextGrob(txt, txt_clr, txt_cex, force_cex = FALSE, ...)
 \item{txt_clr}{The color of the text}
 
 \item{txt_cex}{The font size}
+
+\item{txt_gpar}{The [grid::gpar()] object that is overridden with col & cex by other parameters}
 
 \item{force_cex}{If font size should be forced}
 
