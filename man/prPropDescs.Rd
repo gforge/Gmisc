@@ -31,9 +31,8 @@ In the print this is equivalent to the output of this function.}
 
 \item{name}{The name of the row}
 
-\item{default_ref}{The default reference, either first,
-the level name or a number within the levels. If left out
-it defaults to the first value.}
+\item{default_ref}{The default reference when dealing with proportions. When using
+`dplyr` syntax (`tidyselect`) you can specify a named vector/list for each column name.}
 
 \item{prop_fn}{The method used to describe proportions, see \code{\link{describeProp}}.}
 

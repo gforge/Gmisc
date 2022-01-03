@@ -39,12 +39,11 @@ should be presented first. The second is encapsulated in parentheses ().}
 \item{total_col_show_perc}{This is by default true but if
 requested the percentages are suppressed as this sometimes may be confusing.}
 
-\item{show_all_values}{This is by default false as for instance if there is
-no missing and there is only one variable then it is most sane to only show
-one option as the other one will just be a complement to the first. For instance
-sex - if you know gender then automatically you know the distribution of the
-other sex as it's 100 \% - other \%. To choose which one you want to show then
-set the \code{default_ref} parameter.}
+\item{show_all_values}{Show all values in proportions. For factors with only two values
+it is most sane to only show one option as the other one will just be a complement
+to the first, i.e. we want to convey a proportion. For instance sex - if you know
+gender then automatically you know the distribution of the other sex as it's 100 \% - other \%.
+To choose which one you want to show then set the \code{default_ref} parameter.}
 
 \item{useNA}{This indicates if missing should be added as a separate
 row below all other. See \code{\link[base]{table}} for \code{useNA}-options.
@@ -69,9 +68,8 @@ default is \code{\link{describeMean}}.}
 can set this variable to FALSE. You can also choose something else that
 the default \% if you so wish by setting this variable.}
 
-\item{default_ref}{The default reference, either first,
-the level name or a number within the levels. If left out
-it defaults to the first value.}
+\item{default_ref}{The default reference when dealing with proportions. When using
+`dplyr` syntax (`tidyselect`) you can specify a named vector/list for each column name.}
 
 \item{header_count}{Set to \code{TRUE} if you want to add a header count,
 e.g. Smoking; No. 25 observations, where there is a new line after the

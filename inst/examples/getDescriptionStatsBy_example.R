@@ -3,12 +3,24 @@ library(dplyr)
 library(htmlTable)
 
 data(mtcars)
-mtcars %<>% mutate(am = factor(am, levels = 0:1, labels = c("Automatic", "Manual")))
+mtcars %<>%
+  mutate(am = factor(am, levels = 0:1, labels = c("Automatic", "Manual")),
+         vs = factor(vs, levels = 0:1, labels = c("V-shaped", "straight")),
+         drat_prop = drat > median(drat),
+         drat_prop = factor(drat_prop,
+                            levels = c(FALSE, TRUE),
+                            labels = c("High ratio", "Low ratio")),
+         carb_prop = carb > 2,
+         carb_prop = factor(carb_prop,
+                            levels = c(FALSE, TRUE),
+                            labels = c("&le; 2", "&gt; 2")),
+         across(c(gear, carb, cyl), factor))
 
 # A simple bare-bone example
 mtcars %>%
   getDescriptionStatsBy(`Miles per gallon` = mpg,
                         Weight = wt,
+                        `Carborators &le; 2` = carb_prop,
                         by = am) %>%
   htmlTable(caption  = "Basic continuous stats from the mtcars dataset")
 invisible(readline(prompt = "Press [enter] to continue"))
@@ -20,19 +32,43 @@ mtcars %<>%
                     mpg = "Gas",
                     wt = "Weight",
                     gear = "Gears",
-                    disp = "Displacement") %>%
+                    disp = "Displacement",
+                    vs = "Engine type",
+                    drat_prop = "Rear axel ratio",
+                    carb_prop = "Carburetors") %>%
   set_column_units(mpg = "Miles/(US) gallon",
                    wt = "10<sup>3</sup> lbs",
-                   disp = "cu.in.") %>%
-  mutate(gear = factor(gear))
+                   disp = "cu.in.")
 
 mtcars %>%
   getDescriptionStatsBy(mpg,
                         wt,
                         `Gear&dagger;` = gear,
+                        drat_prop,
+                        carb_prop,
+                        vs,
                         by = am,
                         header_count = TRUE,
-                        use_units = TRUE)  %>%
+                        use_units = TRUE,
+                        show_all_values = TRUE)  %>%
+  addHtmlTableStyle(pos.caption = "bottom") %>%
+  htmlTable(caption  = "Stats from the mtcars dataset",
+            tfoot = "&dagger; Number of forward gears")
+invisible(readline(prompt = "Press [enter] to continue"))
+
+# Using the default parameter we can
+mtcars %>%
+  getDescriptionStatsBy(mpg,
+                        wt,
+                        `Gear&dagger;` = gear,
+                        drat_prop,
+                        carb_prop,
+                        vs,
+                        by = am,
+                        header_count = TRUE,
+                        use_units = TRUE,
+                        default_ref = c(drat_prop = "Low ratio",
+                                        carb_prop = "&gt; 2"))  %>%
   addHtmlTableStyle(pos.caption = "bottom") %>%
   htmlTable(caption  = "Stats from the mtcars dataset",
             tfoot = "&dagger; Number of forward gears")

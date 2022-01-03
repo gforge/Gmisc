@@ -7,7 +7,9 @@
 #' @param fill The fill colors of length equal to the proportions
 #' @param txt The texts of length equal to the proportions
 #' @param txt_clr The text colors of length equal to the proportions
+#' @param txt_gpar A list of gpar object for the text box
 #' @param cex The fontsize multiplier
+#'
 #' @return \code{void}
 #' @keywords internal
 prTcPlotBoxColumn <- function(box_positions,
@@ -15,6 +17,7 @@ prTcPlotBoxColumn <- function(box_positions,
                               fill,
                               txt,
                               txt_clr,
+                              txt_gpar,
                               cex) {
   for (i in 1:length(box_positions)) {
     if (box_positions[[i]]$height == 0) {
@@ -25,6 +28,7 @@ prTcPlotBoxColumn <- function(box_positions,
       bx = box_positions[[i]],
       bx_txt = txt[i],
       cex = cex,
+      txt_gpar = txt_gpar[[i]],
       line_col = "black",
       lwd = 1
     )
@@ -37,7 +41,7 @@ prTcPlotBoxColumn <- function(box_positions,
       args[["txt_clr"]] <- txt_clr[i]
     }
 
-    fastDoCall(prTpPlotBox, args)
+    do.call(prTpPlotBox, args)
   }
 }
 
@@ -211,7 +215,7 @@ prTcPlotArrows <- function(trnstn_set,
 #' @keywords internal
 prTcValidateAndPrepClr <- function(value, no_cols, no_rows, is3D) {
   if (!is.list(value)) {
-    stop("Invalid color value. Expecting a list with a vector/matrix matching the no rows in each column")
+    stop("Invalid value. Expecting a list with a vector/matrix matching the no rows in each column")
   }
 
   if (length(value) != no_cols) {
@@ -222,8 +226,8 @@ prTcValidateAndPrepClr <- function(value, no_cols, no_rows, is3D) {
     if (NROW(value[[i]]) != no_rows[i]) {
       if (NROW(value[[i]]) == 1) {
         if (is.matrix(value[[i]]) &&
-          NCOL(value[[i]]) <= 2 &&
-          is3D) {
+            NCOL(value[[i]]) <= 2 &&
+            is3D) {
           value[[i]] <-
             matrix(value[[i]], nrow = no_rows[i], ncol = 2, byrow = TRUE)
         } else if (length(value[[i]]) == 1) {
@@ -259,13 +263,14 @@ prTcValidateAndPrepClr <- function(value, no_cols, no_rows, is3D) {
 #' @keywords internal
 prTcMatchClr <- function(add, org, no_cols, no_rows, is3D) {
   if (no_cols == 2) {
-    if (missing(add) &&
-      length(org) == 2) {
+    if (missing(add) && length(org) == 2) {
       return(org)
     }
 
     if (is.list(add)) {
-      if (length(add) == 1) {
+      if (inherits(add, "gpar")) {
+        add <- rep(list(add), 2)
+      } else if (length(add) == 1) {
         add <- rep(add, 2)
       } else if (length(add) != 2) {
         stop(
@@ -314,12 +319,12 @@ prTcMatchClr <- function(add, org, no_cols, no_rows, is3D) {
             add <-
               list(
                 cbind(matrix(add[1, ],
-                  nrow = no_rows[1],
-                  ncol = 2
+                             nrow = no_rows[1],
+                             ncol = 2
                 )),
                 cbind(matrix(add[1, ],
-                  nrow = no_rows[1],
-                  ncol = 2
+                             nrow = no_rows[1],
+                             ncol = 2
                 ))
               )
           } else {
@@ -334,30 +339,20 @@ prTcMatchClr <- function(add, org, no_cols, no_rows, is3D) {
         }
       }
     } else if (is.vector(add)) {
-      if (length(add) == 2 &&
-        is3D) {
-        add <-
-          list(
-            cbind(
-              rep(add[1], no_rows[1]),
-              rep(add[2], no_rows[1])
-            ),
-            cbind(
-              rep(add[1], no_rows[2]),
-              rep(add[2], no_rows[2])
-            )
-          )
+      if (length(add) == 2 && is3D) {
+        add <- lapply(1:2, function(col) cbind(rep(add[1], no_rows[col]),
+                                               rep(add[2], no_rows[col])))
       } else if (length(add) == 1) {
         if (is3D) {
           add <-
             list(
               matrix(add,
-                nrow = no_rows[1],
-                ncol = 2
+                     nrow = no_rows[1],
+                     ncol = 2
               ),
               matrix(add,
-                nrow = no_rows[2],
-                ncol = 2
+                     nrow = no_rows[2],
+                     ncol = 2
               )
             )
         } else {
@@ -392,8 +387,8 @@ prTcMatchClr <- function(add, org, no_cols, no_rows, is3D) {
     # all colors
     if (is.matrix(add)) {
       if (ncol(add) != no_cols ||
-        any(nrow(add) != unique(no_rows)) ||
-        ((length(dim(add)) == 3) == is3D)) {
+          any(nrow(add) != unique(no_rows)) ||
+          ((length(dim(add)) == 3) == is3D)) {
         stop("Can't add the color matrix as suggested since the dimensions don't match")
       }
 
@@ -406,8 +401,10 @@ prTcMatchClr <- function(add, org, no_cols, no_rows, is3D) {
         }
       }
       return(clrs)
+    } else if (inherits(add, "gpar")) {
+      stop("Adding gpar after-a-fact is not supported")
     } else if (is.list(add) &&
-      length(add) != length(no_cols)) {
+               length(add) != length(no_cols)) {
       stop("The list is not of the same length as the number of columns")
     }
 
@@ -429,53 +426,41 @@ prTcMatchClr <- function(add, org, no_cols, no_rows, is3D) {
     }
     add <- list(add)
   } else {
-    if (is.list(add)) {
+    if (inherits(add, "gpar")) {
+      add <- list(rep(list(add), tail(no_rows, 1)))
+    } else if (is.list(add)) {
       if (length(add) != 1) {
-        stop(
-          "Invalid color list - expecting a list with 1 column",
-          " got one with ", length(add), " columns"
-        )
+        stop("Invalid color list - expecting a list with 1 column",
+             " got one with ", length(add), " columns")
       }
     } else if (is.matrix(add)) {
-      if (ncol(add) == 2 &&
-        is3D) {
+      if (ncol(add) == 2 && is3D) {
         add <- list(add)
-      } else if (ncol(add) == 1 &&
-        !is3D) {
-        add <-
-          list(add[, 1])
+      } else if (ncol(add) == 1 && !is3D) {
+        add <- list(add[, 1])
       } else if (length(add) == 1) {
         if (is3D) {
-          add <-
-            list(cbind(matrix(add[1, ],
-              nrow = tail(no_rows, 1),
-              ncol = 2
-            )))
+          add <- list(cbind(matrix(add[1, ],
+                                   nrow = tail(no_rows, 1),
+                                   ncol = 2
+          )))
         } else {
-          add <-
-            list(rep(add[1, ], tail(no_rows, 1)))
+          add <- list(rep(add[1, ], tail(no_rows, 1)))
         }
       } else {
         stop("Invalid matrix color argument")
       }
     } else if (is.vector(add)) {
-      if (length(add) == 2 &&
-        is3D) {
-        add <-
-          list(cbind(
-            rep(add[1], tail(no_rows, 1)),
-            rep(add[2], tail(no_rows, 1))
-          ))
+      if (length(add) == 2 && is3D) {
+        add <- list(cbind(rep(add[1], tail(no_rows, 1)),
+                          rep(add[2], tail(no_rows, 1))))
       } else if (length(add) == 1) {
         if (is3D) {
-          add <-
-            list(matrix(add,
-              nrow = tail(no_rows, 1),
-              ncol = 2
-            ))
+          add <- list(matrix(add,
+                             nrow = tail(no_rows, 1),
+                             ncol = 2))
         } else {
-          add <-
-            list(rep(add, tail(no_rows, 1)))
+          add <- list(rep(add, tail(no_rows, 1)))
         }
       } else {
         add <- list(add)
@@ -484,5 +469,6 @@ prTcMatchClr <- function(add, org, no_cols, no_rows, is3D) {
       stop("Invalid color argument")
     }
   }
-  return(c(org, add))
+
+  c(org, add)
 }

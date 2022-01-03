@@ -34,8 +34,10 @@ prTpGetBoxPropClr <- function(clr, no_boxes, lengthOneOK = FALSE) {
 #' @param prop Provide a proportion if the box should be split (0-1)
 #' @return \code{void}
 #'
+#' @inheritParams prTpGetBoxSizedTextGrob
 #' @keywords internal
 prTpPlotBox <- function(bx, bx_txt, fill, txt_clr,
+                        txt_gpar = NULL,
                         cex, line_col, lwd,
                         prop = NA) {
   pushViewport(viewport(
@@ -53,7 +55,8 @@ prTpPlotBox <- function(bx, bx_txt, fill, txt_clr,
       bx_grob <- prTpGetBoxSizedTextGrob(
         txt = bx_txt,
         txt_clr = txt_clr,
-        txt_cex = cex
+        txt_cex = cex,
+        txt_gpar = txt_gpar
       )
       if (!is.null(bx_grob)) {
         grid.draw(bx_grob)
@@ -77,7 +80,8 @@ prTpPlotBox <- function(bx, bx_txt, fill, txt_clr,
       bx_grob <- prTpGetBoxSizedTextGrob(
         txt = bx_txt,
         txt_clr = txt_clr[1],
-        txt_cex = cex
+        txt_cex = cex,
+        txt_gpar = txt_gpar
       )
       if (!is.null(bx_grob)) {
         grid.draw(bx_grob)
@@ -94,6 +98,7 @@ prTpPlotBox <- function(bx, bx_txt, fill, txt_clr,
           txt = bx_txt,
           txt_clr = txt_clr[2],
           txt_cex = prev_cex,
+          txt_gpar = txt_gpar,
           force_cex = TRUE,
           y = 0.5 / (1 - prop)
         )
@@ -113,19 +118,26 @@ prTpPlotBox <- function(bx, bx_txt, fill, txt_clr,
 #' @param txt The text
 #' @param txt_clr The color of the text
 #' @param txt_cex The font size
+#' @param txt_gpar The [grid::gpar()] object that is overridden with col & cex by other parameters
 #' @param force_cex If font size should be forced
 #' @param ... Other options
 #'
+#' @importFrom grid gpar
 #' @keywords internal
 prTpGetBoxSizedTextGrob <- function(txt,
                                     txt_clr,
                                     txt_cex,
+                                    txt_gpar = NULL,
                                     force_cex = FALSE,
                                     ...) {
-  bx_grob <- textGrob(txt,
-    gp = gpar(col = txt_clr, cex = txt_cex),
-    ...
-  )
+  if (is.null(txt_gpar)) {
+    txt_gpar <- list()
+  } else {
+    stopifnot(is.list(txt_gpar))
+  }
+  txt_gpar$col <- txt_clr
+  txt_gpar$cex <- txt_cex
+  bx_grob <- textGrob(txt, gp = do.call(gpar, txt_gpar), ...)
   attr(bx_grob, "adjusted_cex") <- txt_cex
   if (force_cex) {
     return(bx_grob)
@@ -141,8 +153,9 @@ prTpGetBoxSizedTextGrob <- function(txt,
     if (new_cex < txt_cex * .25) {
       return(NULL)
     } else {
+      txt_gpar$cex <- new_cex
       bx_grob <- textGrob(txt,
-        gp = gpar(col = txt_clr, cex = new_cex),
+        gp = do.call(gpar, txt_gpar),
         ...
       )
     }
@@ -373,6 +386,7 @@ prTpPlotArrows <- function(type,
 #' @return \code{void}
 #'
 #' @inheritParams transitionPlot
+#' @inheritParams prTpPlotBox
 #' @keywords internal
 prTpPlotBoxes <- function(overlap_order,
                           transition_flow,
@@ -381,6 +395,7 @@ prTpPlotBoxes <- function(overlap_order,
                           tot_spacing,
                           txt,
                           cex,
+                          txt_gpar = NULL,
                           prop_start_sizes, prop_end_sizes,
                           box_prop,
                           lwd_prop_total = lwd_prop_total,
@@ -464,7 +479,6 @@ prTpPlotBoxes <- function(overlap_order,
         )
       }
 
-
       prTpPlotBox(
         bx = bx_left,
         bx_txt = txt[i, 1],
@@ -473,7 +487,8 @@ prTpPlotBoxes <- function(overlap_order,
         cex = cex,
         line_col = line_col,
         lwd = lwd,
-        prop = prop
+        prop = prop,
+        txt_gpar = txt_gpar
       )
     }
 
@@ -505,7 +520,8 @@ prTpPlotBoxes <- function(overlap_order,
         cex = cex,
         line_col = line_col,
         lwd = lwd,
-        prop = prop
+        prop = prop,
+        txt_gpar = txt_gpar
       )
     }
   }

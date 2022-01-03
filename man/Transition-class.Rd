@@ -64,6 +64,9 @@ the spectrum then it can be of interest to focus the color change to the center 
 
 \item{\code{txt_clr}}{The text color within the boxes}
 
+\item{\code{txt_gpar}}{Similar to `txt_clr` but for more advanced styling with fontfamily (see [grid::gpar()]). *Note* that
+col & cex are overridden.}
+
 \item{\code{title}}{The plot title if any}
 
 \item{\code{title_cex}}{The font-size multiplier for the title}
@@ -88,15 +91,15 @@ to \code{"all"}.}
 \section{Methods}{
 
 \describe{
-\item{\code{addClr(fill, txt)}}{Adds colors or extends existing one so that they match the transition matrix.
+\item{\code{addBoxStyle(fill, txt, gpar)}}{Adds colors or extends existing one so that they match the transition matrix.
 The fill corresponds to the fill_clr and txt corresponds to the txt_clr. If
 the colors are missing and the transitions consist of only two columns the default
 colors will be used. If the matrix is being extended and these values are missing the
 values from the previous last column will be used for the default columns.}
 
-\item{\code{addTransitions(mtrx, label, txt, fill_clr, txt_clr)}}{Add a transition matrix. The input has to be a numerical matrix between 2 and 3 dimensions.
+\item{\code{addTransitions(mtrx, label, txt, fill_clr, txt_clr, txt_gpar)}}{Add a transition matrix. The input has to be a numerical matrix between 2 and 3 dimensions.
 If you don't provide the txt field the box' text field will be deduced from the transition matrix'
-dimnames. The fill_clr and txt_clr are passed on to the \code{addClr} function.}
+dimnames. The fill_clr and txt_clr are passed on to the \code{addBoxStyle} function.}
 
 \item{\code{arrowWidths(set_no, add_width)}}{Retrieves the details regarding arrow sizes for each arrow within the transition
 group}
@@ -126,7 +129,7 @@ has a 3rd proportions dimension}
 \item{\code{getYProps(col)}}{Gets the proportions after removing the \code{vertical_space}
 between the boxes}
 
-\item{\code{initialize(transitions, label, txt, fill_clr, txt_clr, id, ...)}}{Set up a Transition object. The \code{transitions} should be a 2D or 3D matrix
+\item{\code{initialize(transitions, label, txt, fill_clr, txt_clr, txt_gpar, id, ...)}}{Set up a Transition object. The \code{transitions} should be a 2D or 3D matrix
 as defined in the \code{$addTransitions} section and not as later internally stored.}
 
 \item{\code{noCols()}}{Gets the number of columns, i.e. the number of transitions}
@@ -178,8 +181,8 @@ mtrx <- with(
 )
 
 # Initialize the transition plot
-transitions <-
-  getRefClass("Transition")$new(mtrx, label = c("Before", "After"))
+transitions <- getRefClass("Transition")$new(mtrx,
+                                             label = c("Before", "After"))
 
 # Render the plot
 transitions$render()

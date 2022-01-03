@@ -4,7 +4,17 @@
 \alias{prTpPlotBox}
 \title{Plots the box for the transition plot}
 \usage{
-prTpPlotBox(bx, bx_txt, fill, txt_clr, cex, line_col, lwd, prop = NA)
+prTpPlotBox(
+  bx,
+  bx_txt,
+  fill,
+  txt_clr,
+  txt_gpar = NULL,
+  cex,
+  line_col,
+  lwd,
+  prop = NA
+)
 }
 \arguments{
 \item{bx}{A list with the x, y, height and width parameters}
@@ -14,6 +24,8 @@ prTpPlotBox(bx, bx_txt, fill, txt_clr, cex, line_col, lwd, prop = NA)
 \item{fill}{The fill color}
 
 \item{txt_clr}{The text color}
+
+\item{txt_gpar}{The [grid::gpar()] object that is overridden with col & cex by other parameters}
 
 \item{cex}{The font size}
 
