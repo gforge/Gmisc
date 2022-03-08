@@ -394,7 +394,7 @@ getDescriptionStatsBy.default <- function(x,
     prop_fn <- describeFactors
   }
 
-  if (is.numeric(x)) {
+  if (is.numeric(x) || is(x, "difftime")) {
     t <- prNumericDescs(x = x,
                         by = by,
                         hrzl_prop = hrzl_prop,
