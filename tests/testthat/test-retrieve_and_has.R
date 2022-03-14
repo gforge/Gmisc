@@ -17,6 +17,20 @@ test_that("Basic retrieve", {
   expect_equal(retrieve(var, "1.c"), 1)
 })
 
+test_that("Default values for retrieve", { 
+  var <- "a"
+  expect_equal(retrieve(var, "2"), NA)
+  expect_equal(retrieve(var, "2", default = "missing"), "missing")
+  
+  var <- list(b = 1:10)
+  expect_equal(retrieve(var, "a"), NA)
+  expect_equal(retrieve(var, "a", default = "missing"), "missing")
+  
+  var <- list(a = NULL, b = 1:10)
+  expect_equal(retrieve(var, "a"), NULL)
+  expect_equal(retrieve(var, "a", default = "missing"), NULL)
+})
+
 test_that("Retrieve with special character", { 
   var <- list(b = list(c = 1, `a.d` = list(1,2,3,list(e = 22))))
   expect_equal(retrieve(var, "b.a\\.d.4.e"), 22)
