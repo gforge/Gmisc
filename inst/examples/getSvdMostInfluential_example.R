@@ -1,5 +1,5 @@
 org_par <- par(ask = TRUE)
-set.seed(12345)
+set.seed(1345)
 # Simulate data with a pattern
 dataMatrix <- matrix(rnorm(15 * 160), ncol = 15)
 colnames(dataMatrix) <-

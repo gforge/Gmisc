@@ -104,6 +104,7 @@
 #'
 #' @importFrom Hmisc label label<- units capitalize
 #' @importFrom stats na.omit
+#' @importFrom methods is
 #'
 #' @export
 getDescriptionStatsBy <- function(x,
