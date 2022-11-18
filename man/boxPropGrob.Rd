@@ -20,8 +20,8 @@ boxPropGrob(
   txt_right_gp = getOption("boxPropGrobRightTxt", default = gpar(col = "black")),
   box_left_gp = getOption("boxPropGrobLeft", default = gpar(fill = "#E6E8EF")),
   box_right_gp = getOption("boxPropGrobRight", default = gpar(fill = "#FFFDF6")),
-  box_highlight_gp = getOption("boxPropGrobHighlight", default = gpar(fill =
-    "#ffffff55", col = NA)),
+  box_highlight_gp = getOption("boxPropGrobHighlight", default = gpar(fill = "#ffffff55",
+    col = NA)),
   name = NULL
 )
 }

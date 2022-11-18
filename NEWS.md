@@ -1,5 +1,10 @@
 NEWS for the Gmisc package
 
+Changes for 3.0.2
+-----------------
+* Fixed pathJoin for vector inputs
+
+
 Changes for 3.0.1
 -----------------
 * Added difftime as numeric to `getDescriptionStatsBy`

@@ -7,7 +7,9 @@
 pathJoin(...)
 }
 \arguments{
-\item{...}{A set of strings to join}
+\item{...}{A set of strings to join. Each may be a single string or a vector.
+If you provide vectors they can either be all of the same length
+or where there are two lengths where one is equal to 1.}
 }
 \value{
 \code{string} A string with the merged path
@@ -20,4 +22,9 @@ in each section.
 \examples{
 pathJoin("my_base_path/helpers", "superfunction.R")
 # 'my_base_path/helpers/superfunction.R'
+
+base_dir <- "/home/tester/images"
+out <- data.frame(filename = c("file1.png", "file2.png", "file3.png")) |>
+  dplyr::mutate(full_path = pathJoin(base_dir, filename))
+
 }
