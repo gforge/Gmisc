@@ -2,14 +2,13 @@ org_par <- par(ask = TRUE)
 set.seed(1345)
 # Simulate data with a pattern
 dataMatrix <- matrix(rnorm(15 * 160), ncol = 15)
-colnames(dataMatrix) <-
-  c(
+colnames(dataMatrix) <- c(
     paste("Pos.3:", 1:3, sep = " #"),
     paste("Neg.Decr:", 4:6, sep = " #"),
     paste("No pattern:", 7:8, sep = " #"),
     paste("Pos.Incr:", 9:11, sep = " #"),
-    paste("No pattern:", 12:15, sep = " #")
-  )
+    paste("No pattern:", 12:15, sep = " #"))
+
 for (i in 1:nrow(dataMatrix)) {
   # flip a coin
   coinFlip1 <- rbinom(1, size = 1, prob = 0.5)
@@ -47,43 +46,43 @@ key <- simpleKey(
 key$rectangles$col <- b_clr
 
 b1 <- barchart(as.table(svd_out$v[, 1]),
-  main = "First column",
-  horizontal = FALSE, col = ifelse(svd_out$v[, 1] > 0,
-    b_clr[1], b_clr[2]
-  ),
-  ylab = "Impact value",
-  scales = list(x = list(rot = 55, labels = colnames(dataMatrix), cex = 1.1)),
-  key = key
+               main = "First column",
+               horizontal = FALSE, col = ifelse(svd_out$v[, 1] > 0,
+                                                b_clr[1], b_clr[2]
+               ),
+               ylab = "Impact value",
+               scales = list(x = list(rot = 55, labels = colnames(dataMatrix), cex = 1.1)),
+               key = key
 )
 
 b2 <- barchart(as.table(svd_out$v[, 2]),
-  main = "Second column",
-  horizontal = FALSE, col = ifelse(svd_out$v[, 2] > 0,
-    b_clr[1], b_clr[2]
-  ),
-  ylab = "Impact value",
-  scales = list(x = list(rot = 55, labels = colnames(dataMatrix), cex = 1.1)),
-  key = key
+               main = "Second column",
+               horizontal = FALSE, col = ifelse(svd_out$v[, 2] > 0,
+                                                b_clr[1], b_clr[2]
+               ),
+               ylab = "Impact value",
+               scales = list(x = list(rot = 55, labels = colnames(dataMatrix), cex = 1.1)),
+               key = key
 )
 
 b3 <- barchart(as.table(svd_out$v[, 3]),
-  main = "Third column",
-  horizontal = FALSE, col = ifelse(svd_out$v[, 3] > 0,
-    b_clr[1], b_clr[2]
-  ),
-  ylab = "Impact value",
-  scales = list(x = list(rot = 55, labels = colnames(dataMatrix), cex = 1.1)),
-  key = key
+               main = "Third column",
+               horizontal = FALSE, col = ifelse(svd_out$v[, 3] > 0,
+                                                b_clr[1], b_clr[2]
+               ),
+               ylab = "Impact value",
+               scales = list(x = list(rot = 55, labels = colnames(dataMatrix), cex = 1.1)),
+               key = key
 )
 
 b4 <- barchart(as.table(svd_out$v[, 4]),
-  main = "Fourth column",
-  horizontal = FALSE, col = ifelse(svd_out$v[, 4] > 0,
-    b_clr[1], b_clr[2]
-  ),
-  ylab = "Impact value",
-  scales = list(x = list(rot = 55, labels = colnames(dataMatrix), cex = 1.1)),
-  key = key
+               main = "Fourth column",
+               horizontal = FALSE, col = ifelse(svd_out$v[, 4] > 0,
+                                                b_clr[1], b_clr[2]
+               ),
+               ylab = "Impact value",
+               scales = list(x = list(rot = 55, labels = colnames(dataMatrix), cex = 1.1)),
+               key = key
 )
 
 # Note that the fourth has the no pattern columns as the

@@ -119,7 +119,7 @@ mtcars %>%
 P-values
 ========
 
-Event though p-values are discouraged in the Table 1, they are [not uncommon](https://journals.sagepub.com/doi/full/10.1177/1741826711421688). I have therefore added basic statistics consisting that defaults to Fisher's exact test for proportions and Wilcoxon rank sum test for continuous values. 
+Event though p-values are discouraged in the Table 1, they are [not uncommon](https://doi.org/10.1177/1741826711421688). I have therefore added basic statistics consisting that defaults to Fisher's exact test for proportions and Wilcoxon rank sum test for continuous values. 
 
 ```{r, warning=FALSE}
 mtcars %>% 
