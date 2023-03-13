@@ -3,28 +3,29 @@
 #' Calls the \code{\link[htmlTable]{htmlTable}}/\code{\link[Hmisc]{latex}} after extracting the
 #' \code{rgroup}/\code{n.rgroup} arguments.
 #'
-#' @param x The \code{\link{mergeDesc}} object
+#' @param object The \code{\link{mergeDesc}} object
 #' @param ... Passed onto \code{\link[htmlTable]{htmlTable}}/\code{\link[Hmisc]{latex}}
 #'
 #' @rdname htmlTable_latex
 #' @importFrom Hmisc latex
 #' @keywords internal
 #' @export
-latex.descMrg <- function(x, ...) {
+latex.descMrg <- function(object, ...) {
   dots <- list(...)
   if (!"rgroup" %in% names(dots)) {
     return(NextMethod(
-      generic = NULL, object = x,
+      generic = NULL, object = object,
       rgroup = attr(x, "rgroup"),
       n.rgroup = attr(x, "n.rgroup"),
       ...
     ))
   }
 
-  return(NextMethod(
-    generic = NULL, object = x,
+  NextMethod(
+    generic = NULL, 
+    object = object,
     ...
-  ))
+  )
 }
 
 

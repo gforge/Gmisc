@@ -7,7 +7,7 @@
 \alias{knit_print.descMrg}
 \title{A wrapper around the \code{\link[htmlTable]{htmlTable}}/\code{\link[Hmisc]{latex}} function}
 \usage{
-\method{latex}{descMrg}(x, ...)
+\method{latex}{descMrg}(object, ...)
 
 \method{htmlTable}{descMrg}(x, ...)
 
@@ -16,7 +16,7 @@
 \method{knit_print}{descMrg}(x, ...)
 }
 \arguments{
-\item{x}{The \code{\link{mergeDesc}} object}
+\item{object}{The \code{\link{mergeDesc}} object}
 
 \item{...}{Passed onto \code{\link[htmlTable]{htmlTable}}/\code{\link[Hmisc]{latex}}}
 }
