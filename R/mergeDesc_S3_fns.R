@@ -15,8 +15,8 @@ latex.descMrg <- function(object, ...) {
   if (!"rgroup" %in% names(dots)) {
     return(NextMethod(
       generic = NULL, object = object,
-      rgroup = attr(x, "rgroup"),
-      n.rgroup = attr(x, "n.rgroup"),
+      rgroup = attr(object, "rgroup"),
+      n.rgroup = attr(object, "n.rgroup"),
       ...
     ))
   }
