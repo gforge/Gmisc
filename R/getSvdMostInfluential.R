@@ -130,7 +130,7 @@ prData2Plot <- function(mtrx,
       varnames <- colnames(mtrx)
     }
     if (length(x) > prGetMaxNo2Print())
-      ret <- paste(c(varnames[1:(prGetMaxNo2Print() - 1)],
+      ret <- paste(c(varnames[x[1:(prGetMaxNo2Print() - 1)]],
                      sprintf("+ %d other", length(x) + 1 - prGetMaxNo2Print())), collapse = "\n")
     else
       ret <- paste(varnames[x], collapse = "\n")
