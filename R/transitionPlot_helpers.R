@@ -531,7 +531,6 @@ prTpPlotBoxes <- function(overlap_order,
 #'
 #' @param no The box number
 #' @param side The right or left side
-#' @param no_boxes The number of boxes
 #' @param transitions The flows to or from
 #' @param prop_start_sizes The size of the start boxes
 #' @param prop_end_sizes The size of the end boxes
@@ -653,7 +652,7 @@ prTpGetBoxPositions <- function(no, side,
 #'  at the low/high proportions of the spectrum then it
 #'  can be of interest to focus the color change to the center
 #'  leaving the tails constant
-#' @param The color resolution to use
+#' @param no The color resolution to use
 #' @return \code{character} The function can return both single colors
 #'  or multiple colors as character vector (see \code{\link[grDevices]{rgb}})
 #'

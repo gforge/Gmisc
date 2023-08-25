@@ -30,8 +30,6 @@ empty. It is then split evenly between the boxes.}
 
 \item{box_width}{The width of the box. By default the box is one fourth of
 the plot width.}
-
-\item{no_boxes}{The number of boxes}
 }
 \value{
 \code{list(top, left, bottom, right, width, height)}
