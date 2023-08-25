@@ -1,5 +1,9 @@
 NEWS for the Gmisc package
 
+Changes for 3.0.3
+-----------------
+* Fixed bug in getSvdMostInfluential with bad names appearing in graph due to bad reference, thanks Felipe (see issue #66)
+
 Changes for 3.0.1
 -----------------
 * Fixed `pathJoin` for vector inputs
