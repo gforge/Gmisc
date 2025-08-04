@@ -2,20 +2,16 @@ Package: Gmisc
 Version: 3.0.4
 Title: Descriptive Statistics, Transition Plots, and More
 Authors@R: c(
-    person(given  = "Max",
-           family = "Gordon",
-           email  = "max@gforge.se",
-           role   = c("aut", "cre"))
-)
-Description: Gmisc provides utilities for common medical-statistics graphics and tables,
-including automatic creation of publication-ready “Table 1” summaries;
-transition (Sankey) plots; flow-chart helpers that extend the grid package;
-Bézier lines and arrows; and a singular-value-decomposition–based variable
-selection method.
+    person(given = "Max", family = "Gordon",
+           email = "max@gforge.se", role = c("aut", "cre")))
+Description: Gmisc provides utilities for common medical-statistics graphics
+    and tables, including automatic creation of publication-ready "Table 1"
+    summaries; transition (Sankey) plots; flow-chart helpers that extend the
+    grid package; Bézier lines and arrows; and a singular-value-decomposition-
+    based variable-selection method.
 License: GPL (>= 3)
 URL: https://gforge.se
 BugReports: https://github.com/gforge/Gmisc/issues
-Biarch: yes
 Depends:
     R (>= 4.1.0),
     Rcpp (>= 0.11.4),
@@ -48,7 +44,7 @@ Suggests:
     testthat,
     tidyselect
 Encoding: UTF-8
-NeedsCompilation: no
-VignetteBuilder: knitr
+NeedsCompilation: yes
 LinkingTo: Rcpp
+VignetteBuilder: knitr
 RoxygenNote: 7.3.2

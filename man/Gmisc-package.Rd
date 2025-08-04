@@ -58,3 +58,7 @@ Useful links:
 }
 
 }
+\author{
+\strong{Maintainer}: Max Gordon \email{max@gforge.se}
+
+}
