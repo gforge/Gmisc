@@ -1,16 +1,22 @@
 #include <Rcpp.h>
 #include <Gmisc.h>
+#include <cmath>
+#include <limits>
 using namespace Rcpp;
 
+constexpr double kPi = 3.14159265358979323846;
+enum class Intersection : uint8_t { none = 0, left = 1, right = 2, both = 3 };
+constexpr double eps = std::numeric_limits<double>::epsilon();
 
-Point generatePoint(double offs,
-                    double offs_delta,
-                    double perpendicular_angle,
-                    double x,
-                    double y,
-                    Point last,
-                    Point delta,
-                    int i){
+Point generatePoint(const double offs,
+                    const double offs_delta,
+                    const double perpendicular_angle,
+                    const double x,
+                    const double y,
+                    const Point& last,
+                    const Point& delta,
+                    const R_xlen_t i)
+{
   double cos_val = cos(perpendicular_angle);
   double sin_val = sin(perpendicular_angle);
 
@@ -22,15 +28,14 @@ Point generatePoint(double offs,
   // Strange things happen around 0
   Point offset_delta = { (p.x - offs_delta * cos_val - last.x),
                          (p.y - offs_delta * sin_val - last.y) };
-  if (fabs(offset_delta.x) < FLT_EPSILON)
-    offset_delta.x = 0;
-  if (fabs(offset_delta.y) < FLT_EPSILON)
-    offset_delta.y = 0;
-  
+  if (std::fabs(offset_delta.x) < eps) offset_delta.x = 0;
+  if (std::fabs(offset_delta.y) < eps) offset_delta.y = 0;
+
   // Notify that element goes in wrong direction
   if (i > 1 &&
-      (delta.x * offset_delta.x < -fabs(offs_delta) ||
-      delta.y * offset_delta.y < -fabs(offs_delta))){
+      (delta.x * offset_delta.x < -std::fabs(offs_delta) ||
+      delta.y * offset_delta.y < -std::fabs(offs_delta)))
+  {
     p.problematic = true;
     /* Nightmare to debug ....
     Rcout << "i = " << i << " offset delta = " << offs_delta
@@ -79,16 +84,21 @@ Rcpp::List calculateLinesAndArrow(NumericVector x,
                                   double end_x = -1,
                                   double end_y = -1,
                                   double arrow_offset = -1,
-                                  int rm_intersect = 3){
+                                  int rm_intersect = 3)
+{
+  Intersection rm_flag = static_cast<Intersection>(rm_intersect);
 
   if (x.size() != y.size())
     throw std::length_error("The two vectors must have the same length");
+
+  if (offset.size() == 0)
+    Rcpp::stop("offset must have length > 0");
 
   if ((end_y < 0 || end_x < 0 || arrow_offset <= 0) &&
       (end_y >= 0 || end_x >= 0 || arrow_offset > 0))
     throw std::logic_error("Some of your arrow variables have invalid values");
 
-  int vlen = x.size();
+  R_xlen_t vlen = x.size();
   if (arrow_offset > 0)
     vlen += 2;
 
@@ -98,8 +108,10 @@ Rcpp::List calculateLinesAndArrow(NumericVector x,
   double angle, offs, offs_delta;
   angle = 0; // Only to avoid compiler warning
   Point delta = {0, 0, false}, last_right = {0, 0, false}, last_left = {0, 0, false};
-  for(int i=0; i < x.size(); i++){
-    offs = offset[i % offset.size()];
+  const R_xlen_t n = x.size();
+  for (R_xlen_t i = 0; i < n; ++i) {
+    const auto idx = static_cast<std::size_t>(i % offset.size());
+    offs = offset[idx];
     if (i == 0){
       offs_delta = 0;
     }else{
@@ -108,7 +120,7 @@ Rcpp::List calculateLinesAndArrow(NumericVector x,
 
     // If last element then use the arrow end
     // or the previous element instead of the y[i + 1]
-    if (i + 1 == x.size()){
+    if (i + 1 == n){
       if (arrow_offset > 1){
         delta.y = (end_y - y[i]);
         delta.x = (end_x - x[i]);
@@ -119,38 +131,38 @@ Rcpp::List calculateLinesAndArrow(NumericVector x,
     }else{
       // If the same point appears twice it should skip to the
       // next point
-      int ii = i;
+      R_xlen_t ii = i;
       do{
         delta.y = (y[ii+1] - y[ii]);
         delta.x = (x[ii+1] - x[ii]);
         ii++;
-      }while(ii < x.size() &&
-           fabs(delta.x) < FLT_EPSILON &&
-           fabs(delta.y) < FLT_EPSILON);
+      } while (ii + 1 < x.size() &&
+        std::fabs(delta.x) < eps &&
+        std::fabs(delta.y) < eps);
     }
 
     // Strange things happen around 0
-    if (fabs(delta.x) < FLT_EPSILON)
+    if (std::fabs(delta.x) < eps)
       delta.x = 0;
-    if (fabs(delta.y) < FLT_EPSILON)
+    if (std::fabs(delta.y) < eps)
       delta.y = 0;
 
     angle = atan2(delta.y, delta.x);
 
     Point p = generatePoint(offs,
-                      offs_delta,
-                      angle -  M_PI/2,
-                      x[i],
-                      y[i],
-                      last_right,
-                      delta,
-                      i);
+                            offs_delta,
+                            angle -  kPi/2,
+                            x[i],
+                            y[i],
+                            last_right,
+                            delta,
+                            i);
     right.addPoint(p);
     last_right = p;
 
     p = generatePoint(offs,
                       offs_delta,
-                      angle +  M_PI/2,
+                      angle +  kPi/2,
                       x[i],
                       y[i],
                       last_left,
@@ -164,38 +176,34 @@ Rcpp::List calculateLinesAndArrow(NumericVector x,
   // Add the arrow if requested
   if (arrow_offset > 0){
     // Same angle as last angle
-    left.addPoint(arrow_offset * cos(angle +  M_PI/2) + x[x.size() - 1],
-                  arrow_offset * sin(angle +  M_PI/2) + y[x.size() - 1],
+    left.addPoint(arrow_offset * cos(angle +  kPi/2) + x[x.size() - 1],
+                  arrow_offset * sin(angle +  kPi/2) + y[x.size() - 1],
                   false);
     left.addPoint(end_x,
                   end_y,
                   false);
 
-    right.addPoint(arrow_offset * cos(angle -  M_PI/2) + x[x.size() - 1],
-                   arrow_offset * sin(angle -  M_PI/2) + y[x.size() - 1],
+    right.addPoint(arrow_offset * cos(angle -  kPi/2) + x[x.size() - 1],
+                   arrow_offset * sin(angle -  kPi/2) + y[x.size() - 1],
                    false);
     right.addPoint(end_x,
                    end_y,
                    false);
   }
 
-  if (rm_intersect !=0){
-    if (rm_intersect == 1 ||
-        rm_intersect == 3)
-      left.removeIntersections();
-    if (rm_intersect == 2 ||
-        rm_intersect == 3)
-      right.removeIntersections();
-  }
+  if (rm_flag == Intersection::left || rm_flag == Intersection::both)
+    left.removeIntersections();
+  if (rm_flag == Intersection::right || rm_flag == Intersection::both)
+    right.removeIntersections();
 
   Rcpp::List right_list;
   Rcpp::List left_list;
-  left_list["x"] = as<NumericVector>(wrap(left.getX()));
-  left_list["y"] = as<NumericVector>(wrap(left.getY()));
-  left_list["prblm"] = as<NumericVector>(wrap(left.getProblematic()));
+  left_list["x"] = wrap(left.getX());
+  left_list["y"] = wrap(left.getY());
+  left_list["prblm"] = wrap(left.getProblematic());
 
-  right_list["x"] = as<NumericVector>(wrap(right.getX()));
-  right_list["y"] = as<NumericVector>(wrap(right.getY()));
+  right_list["x"] = wrap(right.getX());
+  right_list["y"] = wrap(right.getY());
 
   Rcpp::List lines;
   lines["right"] = right_list;
