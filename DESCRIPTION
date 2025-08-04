@@ -1,13 +1,17 @@
 Package: Gmisc
 Version: 3.0.4
 Title: Descriptive Statistics, Transition Plots, and More
-Author: Max Gordon <max@gforge.se>
-Maintainer: Max Gordon <max@gforge.se>
-Description: Tools for making the descriptive "Table 1" used in medical
-    articles, a transition plot for showing changes between categories
-    (also known as a Sankey diagram), flow charts by extending the grid package,
-    a method for variable selection based on the SVD, Bézier lines with arrows
-    complementing the ones in the 'grid' package, and more.
+Authors@R: c(
+    person(given  = "Max",
+           family = "Gordon",
+           email  = "max@gforge.se",
+           role   = c("aut", "cre"))
+)
+Description: Gmisc provides utilities for common medical-statistics graphics and tables,
+including automatic creation of publication-ready “Table 1” summaries;
+transition (Sankey) plots; flow-chart helpers that extend the grid package;
+Bézier lines and arrows; and a singular-value-decomposition–based variable
+selection method.
 License: GPL (>= 3)
 URL: https://gforge.se
 BugReports: https://github.com/gforge/Gmisc/issues
