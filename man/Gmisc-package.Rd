@@ -2,6 +2,7 @@
 % Please edit documentation in R/Gmisc.R
 \docType{package}
 \name{Gmisc-package}
+\alias{Gmisc}
 \alias{Gmisc-package}
 \title{Collection of functions for plotting relations, generating tables, and more.}
 \description{
@@ -49,3 +50,11 @@ The \code{\link{mergeLists}} tries to merge lists that do not have identical
 elements.
 }
 
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://gforge.se}
+  \item Report bugs at \url{https://github.com/gforge/Gmisc/issues}
+}
+
+}

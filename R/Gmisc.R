@@ -39,5 +39,4 @@
 #' elements.
 #'
 #' @name Gmisc-package
-#' @docType package
-NULL
+"_PACKAGE"

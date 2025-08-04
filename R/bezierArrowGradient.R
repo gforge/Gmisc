@@ -64,6 +64,14 @@ bezierArrowGradient <- function(x = c(0.2, .7, .3, .9),
     )
   }
 
+  if (!length(rm_intersect) == 1L ||
+      !is.numeric(rm_intersect)    ||
+      rm_intersect %% 1 != 0       ||
+      rm_intersect < 0L           ||
+      rm_intersect > 3L) {
+    stop("`rm_intersect` must be 0, 1, 2, or 3 (see ?calculateLinesAndArrow).")
+  }
+
   # Get initial values
   grdt_type <- match.arg(grdt_type)
 

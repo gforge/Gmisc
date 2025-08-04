@@ -1,5 +1,10 @@
 NEWS for the Gmisc package
 
+Changes for 3.0.4
+-----------------
+* Update for new CRAN policy
+* Improved cpp code for bezier arrows
+
 Changes for 3.0.3
 -----------------
 * Fixed bug in getSvdMostInfluential with bad names appearing in graph due to bad reference, thanks Felipe (see issue #66)

@@ -26,7 +26,7 @@
 #'  suited for the given output format.
 #' @param language The ISO-639-1 two-letter code for the language of
 #'  interest. Currently only english is distinguished from the ISO
-#'  format using a ',' as the separator in the \code{\link{txtInt}}
+#'  format using a ',' as the separator in the \code{\link[htmlTable]{txtInt}}
 #'  function.
 #' @param ... Passed on to \code{\link{describeFactors}}
 #' @return \code{string} Returns a string formatted for either LaTeX or HTML
@@ -345,7 +345,7 @@ describeProp <- function(x,
 #' A function that returns a description of proportions in a
 #' factor that contains the number of times a level occurs and the percentage
 #'
-#' @param ... Passed on to \code{\link{txtInt}}
+#' @param ... Passed on to \code{\link[htmlTable]{txtInt}}
 #' @param horizontal_proportions Is only active if useNA since this is
 #'  the only case of a proportion among continuous variables. This is default NULL and indicates
 #'  that the proportions are to be interpreted in a vertical manner.

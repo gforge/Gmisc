@@ -30,8 +30,8 @@ test_that("Using default_ref in with tidyselect", {
   d <- data.frame(a = sample(LETTERS[1:2], size = n, replace = TRUE),
                   b = sample(LETTERS[1:2], size = n, replace = TRUE),
                   by = sample(letters[1:2], size = n, replace = TRUE)) %>%
-    mutate(across(!by, factor, levels = LETTERS[1:2]),
-           across(by, factor, levels = letters[1:2]))
+    mutate(across(!by, \(x) factor(x, levels = LETTERS[1:2])),
+           across(by, \(x) factor(x, levels = letters[1:2])))
 
 
   out_standard <- d %>%

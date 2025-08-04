@@ -49,7 +49,7 @@ suited for the given output format.}
 
 \item{language}{The ISO-639-1 two-letter code for the language of
 interest. Currently only english is distinguished from the ISO
-format using a ',' as the separator in the \code{\link{txtInt}}
+format using a ',' as the separator in the \code{\link[htmlTable]{txtInt}}
 function.}
 
 \item{...}{Passed on to \code{\link{describeFactors}}}

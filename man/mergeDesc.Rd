@@ -37,7 +37,7 @@ is the same as above but with an additional \code{\link[base:colnames]{rownames}
 two turn out empty. All this behavior is exemplified in the example.
 
 The \code{rgroup} value can be overridden by simply specifying a custom \code{rgroup} when
-calling the \code{\link{htmlTable}} function.
+calling the \code{\link[htmlTable]{htmlTable}} function.
 }
 
 \section{The \code{colnames} of the matrix}{

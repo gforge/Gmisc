@@ -7,8 +7,10 @@ output:
     toc: true
 vignette: >
   %\VignetteIndexEntry{Introduction to the Transition-class}
-  %\VignetteEngine{knitr::rmarkdown}
   %\usepackage[utf8]{inputenc}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
 ---
 
 Introduction

@@ -21,7 +21,7 @@ options(org_opts)
 }
 \seealso{
 Other figure caption functions: 
-\code{\link{figCapNoLast}()},
-\code{\link{figCapNo}()}
+\code{\link{figCapNo}()},
+\code{\link{figCapNoLast}()}
 }
 \concept{figure caption functions}

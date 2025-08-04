@@ -1,5 +1,5 @@
 Package: Gmisc
-Version: 3.0.3
+Version: 3.0.4
 Title: Descriptive Statistics, Transition Plots, and More
 Author: Max Gordon <max@gforge.se>
 Maintainer: Max Gordon <max@gforge.se>
@@ -47,4 +47,4 @@ Encoding: UTF-8
 NeedsCompilation: no
 VignetteBuilder: knitr
 LinkingTo: Rcpp
-RoxygenNote: 7.2.2
+RoxygenNote: 7.3.2
