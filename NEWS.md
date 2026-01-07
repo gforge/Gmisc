@@ -1,5 +1,9 @@
 NEWS for the Gmisc package
 
+Changes for 3.1.0
+-----------------
+* Added a .margin and a more flexble .to/.from management for the box spreading
+
 Changes for 3.0.3
 -----------------
 * Fixed bug in getSvdMostInfluential with bad names appearing in graph due to bad reference, thanks Felipe (see issue #66)
