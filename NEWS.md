@@ -3,6 +3,7 @@ NEWS for the Gmisc package
 Changes for 3.1.0
 -----------------
 * Added a .margin and a more flexble .to/.from management for the box spreading
+* Improved connecting boxes
 
 Changes for 3.0.3
 -----------------

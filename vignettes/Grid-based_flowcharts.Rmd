@@ -15,6 +15,11 @@ editor_options:
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+library(Gmisc, quietly = TRUE)
+library(glue)
+library(htmlTable)
+library(grid)
 ```
 
 # Flowchart
@@ -22,11 +27,6 @@ knitr::opts_chunk$set(echo = TRUE)
 A flowchart is a type of diagram that represents a workflow or process. In research we often want to explain how we recruited our patients, how many that were available from the start, how many that were excluded and how many were left at the final analysis. The **Gmisc** package provides a convenient set of functions for doing this using the R's built-in `grid` package with some bells and whistles. Below is a simple example that illustrates what we're aiming for.
 
 ```{r, fig.height = 7, fig.width = 6}
-library(Gmisc, quietly = TRUE)
-library(glue)
-library(htmlTable)
-library(grid)
-
 org_cohort <- boxGrob(glue("Stockholm population",
                            "n = {pop}",
                            pop = txtInt(1632798),
@@ -288,7 +288,32 @@ odd
 odd2
 ```
 
+`connectGrob()` also supports connecting one box to many boxes, or many boxes to one box.
+For merging many boxes into one, `type = "fan_in_top"` distributes the attachment points evenly along the top edge of the destination box, with an optional margin.
+
+```{r connect_multi, fig.width = 9, fig.height = 4}
+grid.newpage()
+
+# Three upstream boxes + one side box
+a1 <- boxGrob("A1", x = .15, y = .85, box_gp = gpar(fill = "#E6F2FF"))
+a2 <- boxGrob("A2", x = .45, y = .85, box_gp = gpar(fill = "#E6F2FF"))
+a3 <- boxGrob("A3", x = .75, y = .85, box_gp = gpar(fill = "#E6F2FF"))
+b_side <- boxGrob("B",  x = .82, y = .50, box_gp = gpar(fill = "#FFF3BF"))
+
+# Target box
+b <- boxGrob("B", x = .50, y = .18, box_gp = gpar(fill = "#D3F9D8"))
+
+# Draw boxes
+a1; a2; a3; b_side; b
+
+# Many -> one: merge on top with evenly distributed attachment points + margin
+connectGrob(list(a1, a2, a3, b_side), b,
+            type = "fan_in_top",
+            margin = 4)
+```
+
 # Alignment
+
 
 We frequently want to align boxes in either a horizontal or a vertical row. For this there are two functions, `alignHorizontal()` and `alignVertical()`.
 

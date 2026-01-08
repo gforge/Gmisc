@@ -1,4 +1,4 @@
-prConnectMany <- function(
+prConnectOneToMany <- function(
     start,
     ends,
     type,

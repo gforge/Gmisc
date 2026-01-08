@@ -1,62 +1,102 @@
-#' Connect boxes with an arrow
+#' Connect boxes with arrows
 #'
-#' Creates one or more grobs that link boxes together. By default a single grob is
-#' returned when connecting one start box to one end box. If \code{end} is a list
-#' of boxes, a list of grobs is returned (one per end box).
+#' Creates connectors between boxes.
 #'
-#' The connector geometry is stored in \code{attr(x, "line")} where \code{x} is the
-#' returned grob (or each grob in the returned list). This can be used to draw
-#' custom connectors by reading \code{attr(x, "line")$x} and \code{attr(x, "line")$y}
-#' and creating your own \code{\link[grid:grid.lines]{linesGrob}}.
+#' The function supports:
 #'
-#' For \code{type = "N"} and a multi-end connection, the split/bend height is shared
-#' across all branches so that the horizontal segment occurs at the same y-position.
+#' - **One-to-one**: a single start box connected to a single end box.
+#' - **One-to-many**: a single start box connected to multiple end boxes.
+#' - **Many-to-one**: multiple start boxes connected to a single end box.
 #'
-#' @param start The start box.
-#' @param end The end box, or a \code{list} of boxes for a one-to-many connection.
-#' @param type How the boxes are connected:
-#' \describe{
-#'   \item{\code{"vertical"}}{Straight vertical connector between boxes.}
-#'   \item{\code{"horizontal"}}{Straight horizontal connector between boxes.}
-#'   \item{\code{"L"}}{Vertical then horizontal connector (right/left chosen automatically).}
-#'   \item{\code{"-"}}{Straight horizontal connector at the end box y-position.}
-#'   \item{\code{"Z"}}{Horizontal connector with two 90-degree turns (Z-shaped).}
-#'   \item{\code{"N"}}{Vertical connector with one horizontal segment (N-shaped).}
-#' }
-#' @param subelmnt For split boxes (e.g. \code{boxPropGrob}), specifies whether to
-#'   use the left or right sub-element x-coordinate when anchoring the connector.
-#' @param lty_gp The \code{\link[grid]{gpar}} for the line. Set the global option
-#'   \code{connectGrob} to customize all connectors.
-#' @param arrow_obj The arrow specification according to \code{\link[grid]{arrow}}.
-#'   Set the global option \code{connectGrobArrow} to customize all connectors.
-#' @param split_pad For multi-end connections with \code{type = "N"}, the padding
-#'   around the shared split/bend height. Numeric values are interpreted as millimeters.
+#' Many-to-many connections are **not supported**.
+#'
+#' If either `start` or `end` is a list, a list of connector grobs is returned
+#' (one per connection). Otherwise a single connector grob is returned.
+#'
+#' Each connector stores its computed geometry in `attr(x, "line")`
+#' (or for each element when a list is returned). This can be reused to construct
+#' custom connectors using the calculated coordinates.
+#'
+#' ## Connector types
+#'
+#' `type` controls the connector shape:
+#'
+#' - `"vertical"`: straight vertical connector
+#' - `"horizontal"`: straight horizontal connector
+#' - `"L"`: vertical then horizontal (direction chosen automatically)
+#' - `"-"`: straight horizontal connector at the end box y-position
+#' - `"Z"`: horizontal connector with two 90-degree turns
+#' - `"N"`: vertical connector with one horizontal segment  
+#'   When connecting to or from multiple boxes, all connectors share the same bend height.
+#' - `"fan_in_top"`: many-to-one connector merging onto the *top edge* of the end box  
+#'   Attachment points are evenly distributed along the edge (with optional `margin`),
+#'   and all connectors share a common bend height.
+#'
+#' For `type = "N"` and `type = "fan_in_top"` with multi-box connections, a shared
+#' bend position is computed so that the horizontal segment aligns visually across
+#' all connectors.
+#'
+#' ## Split boxes
+#'
+#' When connecting to or from a `boxPropGrob`, `subelmnt` controls whether the left
+#' or right sub-box x-coordinate is used as the anchor point.
+#'
+#' @param start A `boxGrob`/`boxPropGrob`, or a list of boxes (many-to-one).
+#' @param end A `boxGrob`/`boxPropGrob`, or a list of boxes (one-to-many).
+#' @param type Connector type, see Details.
+#' @param subelmnt For split boxes, which sub-element to anchor to: `"left"` or `"right"`.
+#' @param lty_gp A [grid::gpar()] controlling line appearance. Can also be set globally via
+#'   `options(connectGrob = ...)`.
+#' @param arrow_obj Arrow specification created with [grid::arrow()]. Can also be set globally via
+#'   `options(connectGrobArrow = ...)`.
+#' @param split_pad Padding around the shared bend point for multi-box connections.
+#'   Numeric values are interpreted as millimeters.
+#' @param margin For `type = "fan_in_top"`, the margin applied at the left and right ends of the
+#'   end box top edge before distributing attachment points. Numeric values are interpreted
+#'   as millimeters.
 #'
 #' @return
-#' If \code{end} is a single box, a \code{\link[grid]{grob}} with class
-#' \code{"connect_boxes"}.
+#' - One-to-one: a [grid::grob()] with class `"connect_boxes"`.
+#' - One-to-many or many-to-one: a list of grobs with class `"connect_boxes_list"`.
 #'
-#' If \code{end} is a list of boxes, a \code{list} of grobs (one per end box) with
-#' class \code{"connect_boxes_list"}.
-#'
-#' @export
-#' @importFrom checkmate assert_class
 #' @family flowchart components
+#' @export
 #' @rdname connect
 #' @example inst/examples/connectGrob_example.R
+#' @md
 connectGrob <- function(
     start,
     end,
-    type = c("vertical", "horizontal", "L", "-", "Z", "N"),
+    type = c("vertical", "horizontal", "L", "-", "Z", "N", "fan_in_top"),
     subelmnt = c("right", "left"),
     lty_gp = getOption("connectGrob", default = gpar(fill = "black")),
     arrow_obj = getOption("connectGrobArrow", default = arrow(ends = "last", type = "closed")),
-    split_pad = unit(2, "mm")
+    split_pad = unit(2, "mm"),
+    margin = NULL
 ) {
   type <- match.arg(type)
   
+  if (prIsBoxList(start) && prIsBoxList(end)) {
+    stop("Both 'start' and 'end' cannot be lists (not implemented).", call. = FALSE)
+  }
+  
+  if (prIsBoxList(start)) {
+    if (type == "fan_in_top") {
+      return(prConnectManyToOneFanTop(
+        starts = start,
+        end = end,
+        subelmnt = subelmnt,
+        lty_gp = lty_gp,
+        arrow_obj = arrow_obj,
+        margin = margin,
+        split_pad = split_pad
+      ))
+    }
+    return(prConnectManyToOne(start, end, type, subelmnt, lty_gp, arrow_obj, split_pad = split_pad))
+  }
+  
   if (prIsBoxList(end)) {
-    return(prConnectMany(start, end, type, subelmnt, lty_gp, arrow_obj, split_pad = split_pad))
+    return(prConnectOneToMany(start, end, type, subelmnt, lty_gp, arrow_obj, split_pad = split_pad))
   }
   
   prConnect1(start, end, type, subelmnt, lty_gp, arrow_obj)

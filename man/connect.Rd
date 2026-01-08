@@ -6,17 +6,18 @@
 \alias{plot.connect_boxes}
 \alias{print.connect_boxes_list}
 \alias{plot.connect_boxes_list}
-\title{Connect boxes with an arrow}
+\title{Connect boxes with arrows}
 \usage{
 connectGrob(
   start,
   end,
-  type = c("vertical", "horizontal", "L", "-", "Z", "N"),
+  type = c("vertical", "horizontal", "L", "-", "Z", "N", "fan_in_top"),
   subelmnt = c("right", "left"),
   lty_gp = getOption("connectGrob", default = gpar(fill = "black")),
   arrow_obj = getOption("connectGrobArrow", default = arrow(ends = "last", type =
     "closed")),
-  split_pad = unit(2, "mm")
+  split_pad = unit(2, "mm"),
+  margin = NULL
 )
 
 \method{print}{connect_boxes}(x, ...)
@@ -28,56 +29,82 @@ connectGrob(
 \method{plot}{connect_boxes_list}(x, ...)
 }
 \arguments{
-\item{start}{The start box.}
+\item{start}{A \code{boxGrob}/\code{boxPropGrob}, or a list of boxes (many-to-one).}
 
-\item{end}{The end box, or a \code{list} of boxes for a one-to-many connection.}
+\item{end}{A \code{boxGrob}/\code{boxPropGrob}, or a list of boxes (one-to-many).}
 
-\item{type}{How the boxes are connected:
-\describe{
-  \item{\code{"vertical"}}{Straight vertical connector between boxes.}
-  \item{\code{"horizontal"}}{Straight horizontal connector between boxes.}
-  \item{\code{"L"}}{Vertical then horizontal connector (right/left chosen automatically).}
-  \item{\code{"-"}}{Straight horizontal connector at the end box y-position.}
-  \item{\code{"Z"}}{Horizontal connector with two 90-degree turns (Z-shaped).}
-  \item{\code{"N"}}{Vertical connector with one horizontal segment (N-shaped).}
-}}
+\item{type}{Connector type, see Details.}
 
-\item{subelmnt}{For split boxes (e.g. \code{boxPropGrob}), specifies whether to
-use the left or right sub-element x-coordinate when anchoring the connector.}
+\item{subelmnt}{For split boxes, which sub-element to anchor to: \code{"left"} or \code{"right"}.}
 
-\item{lty_gp}{The \code{\link[grid]{gpar}} for the line. Set the global option
-\code{connectGrob} to customize all connectors.}
+\item{lty_gp}{A \code{\link[grid:gpar]{grid::gpar()}} controlling line appearance. Can also be set globally via
+\code{options(connectGrob = ...)}.}
 
-\item{arrow_obj}{The arrow specification according to \code{\link[grid]{arrow}}.
-Set the global option \code{connectGrobArrow} to customize all connectors.}
+\item{arrow_obj}{Arrow specification created with \code{\link[grid:arrow]{grid::arrow()}}. Can also be set globally via
+\code{options(connectGrobArrow = ...)}.}
 
-\item{split_pad}{For multi-end connections with \code{type = "N"}, the padding
-around the shared split/bend height. Numeric values are interpreted as millimeters.}
+\item{split_pad}{Padding around the shared bend point for multi-box connections.
+Numeric values are interpreted as millimeters.}
+
+\item{margin}{For \code{type = "fan_in_top"}, the margin applied at the left and right ends of the
+end box top edge before distributing attachment points. Numeric values are interpreted
+as millimeters.}
 
 \item{x}{The grob to print/plot}
 
 \item{...}{Passed to \code{\link[grid]{grid.draw}}}
 }
 \value{
-If \code{end} is a single box, a \code{\link[grid]{grob}} with class
-\code{"connect_boxes"}.
-
-If \code{end} is a list of boxes, a \code{list} of grobs (one per end box) with
-class \code{"connect_boxes_list"}.
+\itemize{
+\item One-to-one: a \code{\link[grid:grid.grob]{grid::grob()}} with class \code{"connect_boxes"}.
+\item One-to-many or many-to-one: a list of grobs with class \code{"connect_boxes_list"}.
+}
 }
 \description{
-Creates one or more grobs that link boxes together. By default a single grob is
-returned when connecting one start box to one end box. If \code{end} is a list
-of boxes, a list of grobs is returned (one per end box).
+Creates connectors between boxes.
 }
 \details{
-The connector geometry is stored in \code{attr(x, "line")} where \code{x} is the
-returned grob (or each grob in the returned list). This can be used to draw
-custom connectors by reading \code{attr(x, "line")$x} and \code{attr(x, "line")$y}
-and creating your own \code{\link[grid:grid.lines]{linesGrob}}.
+The function supports:
+\itemize{
+\item \strong{One-to-one}: a single start box connected to a single end box.
+\item \strong{One-to-many}: a single start box connected to multiple end boxes.
+\item \strong{Many-to-one}: multiple start boxes connected to a single end box.
+}
 
-For \code{type = "N"} and a multi-end connection, the split/bend height is shared
-across all branches so that the horizontal segment occurs at the same y-position.
+Many-to-many connections are \strong{not supported}.
+
+If either \code{start} or \code{end} is a list, a list of connector grobs is returned
+(one per connection). Otherwise a single connector grob is returned.
+
+Each connector stores its computed geometry in \code{attr(x, "line")}
+(or for each element when a list is returned). This can be reused to construct
+custom connectors using the calculated coordinates.
+\subsection{Connector types}{
+
+\code{type} controls the connector shape:
+\itemize{
+\item \code{"vertical"}: straight vertical connector
+\item \code{"horizontal"}: straight horizontal connector
+\item \code{"L"}: vertical then horizontal (direction chosen automatically)
+\item \code{"-"}: straight horizontal connector at the end box y-position
+\item \code{"Z"}: horizontal connector with two 90-degree turns
+\item \code{"N"}: vertical connector with one horizontal segment
+When connecting to or from multiple boxes, all connectors share the same bend height.
+\item \code{"fan_in_top"}: many-to-one connector merging onto the \emph{top edge} of the end box
+Attachment points are evenly distributed along the edge (with optional \code{margin}),
+and all connectors share a common bend height.
+}
+
+For \code{type = "N"} and \code{type = "fan_in_top"} with multi-box connections, a shared
+bend position is computed so that the horizontal segment aligns visually across
+all connectors.
+}
+
+\subsection{Split boxes}{
+
+When connecting to or from a \code{boxPropGrob}, \code{subelmnt} controls whether the left
+or right sub-box x-coordinate is used as the anchor point.
+}
 }
 \examples{
 library(grid)
