@@ -26,15 +26,24 @@
 #' - `"L"`: vertical then horizontal (direction chosen automatically)
 #' - `"-"`: straight horizontal connector at the end box y-position
 #' - `"Z"`: horizontal connector with two 90-degree turns
-#' - `"N"`: vertical connector with one horizontal segment  
+#' - `"N"`: vertical connector with one horizontal segment
 #'   When connecting to or from multiple boxes, all connectors share the same bend height.
-#' - `"fan_in_top"`: many-to-one connector merging onto the *top edge* of the end box  
+#' - `"fan_in_top"`: many-to-one connector merging onto the *top edge* of the end box
 #'   Attachment points are evenly distributed along the edge (with optional `margin`),
 #'   and all connectors share a common bend height.
 #'
 #' For `type = "N"` and `type = "fan_in_top"` with multi-box connections, a shared
 #' bend position is computed so that the horizontal segment aligns visually across
 #' all connectors.
+#'
+#' ## Labels
+#'
+#' For one-to-one connectors you can add a text label (for example `"yes"` / `"no"`).
+#' The label is placed near the midpoint of the connector.
+
+#' The label is drawn with a white background for readability.
+#' Use `label_pad` to control padding around the text and `label_offset` to move
+#' the label away from the connector.
 #'
 #' ## Split boxes
 #'
@@ -54,6 +63,15 @@
 #' @param margin For `type = "fan_in_top"`, the margin applied at the left and right ends of the
 #'   end box top edge before distributing attachment points. Numeric values are interpreted
 #'   as millimeters.
+#' @param label Optional text label for one-to-one connectors (e.g. `"yes"` / `"no"`).
+#'   Only supported when both `start` and `end` are single boxes.
+#' @param label_gp A [grid::gpar()] controlling label appearance.
+#' @param label_pos Where to place the label along the connector: `"mid"`, `"near_start"`, or `"near_end"`.
+#' @param label_offset Offset for the label away from the connector line.
+#' @param label_pad Padding inside the label background. Numeric values are interpreted
+#'   as millimeters.
+#' @param label_bg_gp A [grid::gpar()] controlling label background appearance.
+#'   Defaults to a white background with no border.
 #'
 #' @return
 #' - One-to-one: a [grid::grob()] with class `"connect_boxes"`.
@@ -72,12 +90,24 @@ connectGrob <- function(
     lty_gp = getOption("connectGrob", default = gpar(fill = "black")),
     arrow_obj = getOption("connectGrobArrow", default = arrow(ends = "last", type = "closed")),
     split_pad = unit(2, "mm"),
-    margin = NULL
+    margin = NULL,
+    label = NULL,
+    label_gp = grid::gpar(cex = 0.9),
+    label_bg_gp = grid::gpar(fill = "white", col = NA),
+    label_pad = unit(1.5, "mm"),
+    label_pos = c("mid", "near_start", "near_end"),
+    label_offset = unit(2, "mm")
 ) {
   type <- match.arg(type)
+  label_pos <- match.arg(label_pos)
   
   if (prIsBoxList(start) && prIsBoxList(end)) {
     stop("Both 'start' and 'end' cannot be lists (not implemented).", call. = FALSE)
+  }
+  
+  # Labels currently supported only for one-to-one
+  if (!is.null(label) && (prIsBoxList(start) || prIsBoxList(end))) {
+    stop("'label' is only supported for one-to-one connections.", call. = FALSE)
   }
   
   if (prIsBoxList(start)) {
@@ -99,8 +129,22 @@ connectGrob <- function(
     return(prConnectOneToMany(start, end, type, subelmnt, lty_gp, arrow_obj, split_pad = split_pad))
   }
   
-  prConnect1(start, end, type, subelmnt, lty_gp, arrow_obj)
+  prConnect1(
+    start = start,
+    end = end,
+    type = type,
+    subelmnt = subelmnt,
+    lty_gp = lty_gp,
+    arrow_obj = arrow_obj,
+    label = label,
+    label_gp = label_gp,
+    label_bg_gp = label_bg_gp,
+    label_pad = label_pad,
+    label_pos = label_pos,
+    label_offset = label_offset
+  )
 }
+
 
 
 #' The print/plot calls the \code{\link[grid]{grid.draw}} function on the object

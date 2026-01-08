@@ -17,7 +17,13 @@ connectGrob(
   arrow_obj = getOption("connectGrobArrow", default = arrow(ends = "last", type =
     "closed")),
   split_pad = unit(2, "mm"),
-  margin = NULL
+  margin = NULL,
+  label = NULL,
+  label_gp = grid::gpar(cex = 0.9),
+  label_bg_gp = grid::gpar(fill = "white", col = NA),
+  label_pad = unit(1.5, "mm"),
+  label_pos = c("mid", "near_start", "near_end"),
+  label_offset = unit(2, "mm")
 )
 
 \method{print}{connect_boxes}(x, ...)
@@ -49,6 +55,21 @@ Numeric values are interpreted as millimeters.}
 \item{margin}{For \code{type = "fan_in_top"}, the margin applied at the left and right ends of the
 end box top edge before distributing attachment points. Numeric values are interpreted
 as millimeters.}
+
+\item{label}{Optional text label for one-to-one connectors (e.g. \code{"yes"} / \code{"no"}).
+Only supported when both \code{start} and \code{end} are single boxes.}
+
+\item{label_gp}{A \code{\link[grid:gpar]{grid::gpar()}} controlling label appearance.}
+
+\item{label_bg_gp}{A \code{\link[grid:gpar]{grid::gpar()}} controlling label background appearance.
+Defaults to a white background with no border.}
+
+\item{label_pad}{Padding inside the label background. Numeric values are interpreted
+as millimeters.}
+
+\item{label_pos}{Where to place the label along the connector: \code{"mid"}, \code{"near_start"}, or \code{"near_end"}.}
+
+\item{label_offset}{Offset for the label away from the connector line.}
 
 \item{x}{The grob to print/plot}
 
@@ -98,6 +119,15 @@ and all connectors share a common bend height.
 For \code{type = "N"} and \code{type = "fan_in_top"} with multi-box connections, a shared
 bend position is computed so that the horizontal segment aligns visually across
 all connectors.
+}
+
+\subsection{Labels}{
+
+For one-to-one connectors you can add a text label (for example \code{"yes"} / \code{"no"}).
+The label is placed near the midpoint of the connector.
+The label is drawn with a white background for readability.
+Use \code{label_pad} to control padding around the text and \code{label_offset} to move
+the label away from the connector.
 }
 
 \subsection{Split boxes}{

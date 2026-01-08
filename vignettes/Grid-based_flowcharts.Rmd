@@ -78,7 +78,7 @@ for (i in 1:(length(vert) - 1)) {
 }
 connectGrob(vert$included, grps, type = "N")
 
-connectGrob(vert$eligible, excluded, type = "L")
+connectGrob(vert$eligible, excluded, type = "L", label = "Excluded")
 
 # Print boxes
 vert

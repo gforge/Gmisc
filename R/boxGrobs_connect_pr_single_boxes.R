@@ -1,15 +1,107 @@
+prLineMidpoint <- function(line) {
+  stopifnot(is.list(line), inherits(line$x, "unit"), inherits(line$y, "unit"))
+  stopifnot(length(line$x) == length(line$y), length(line$x) >= 2)
+  
+  x <- convertWidth(line$x,  "mm", valueOnly = TRUE)
+  y <- convertHeight(line$y, "mm", valueOnly = TRUE)
+  
+  dx <- diff(x)
+  dy <- diff(y)
+  seg <- sqrt(dx^2 + dy^2)
+  total <- sum(seg)
+  
+  if (!is.finite(total) || total <= 0) {
+    # Fallback: first point
+    return(list(x = unit(x[1], "mm"), y = unit(y[1], "mm")))
+  }
+  
+  half <- total / 2
+  cs <- c(0, cumsum(seg))
+  i <- max(which(cs <= half))
+  
+  if (i >= length(seg)) {
+    return(list(x = unit(x[length(x)], "mm"), y = unit(y[length(y)], "mm")))
+  }
+  
+  t <- (half - cs[i]) / seg[i]
+  xm <- x[i] + t * (x[i + 1] - x[i])
+  ym <- y[i] + t * (y[i + 1] - y[i])
+  
+  list(x = unit(xm, "mm"), y = unit(ym, "mm"))
+}
+
+prLineLabelPos <- function(line, prefer = c("auto", "horizontal", "longest")) {
+  prefer <- match.arg(prefer)
+  stopifnot(is.list(line), inherits(line$x, "unit"), inherits(line$y, "unit"))
+  
+  xs <- convertX(line$x, unitTo = "npc", valueOnly = TRUE)
+  ys <- convertY(line$y, unitTo = "npc", valueOnly = TRUE)
+  
+  if (length(xs) != length(ys) || length(xs) < 2) {
+    stop("Invalid line geometry for label placement", call. = FALSE)
+  }
+  
+  # segment i is between i and i+1
+  dx <- abs(diff(xs))
+  dy <- abs(diff(ys))
+  
+  is_h <- dy < 1e-12
+  is_v <- dx < 1e-12
+  
+  pick <- function() {
+    if (prefer %in% c("auto", "horizontal") && any(is_h)) {
+      # if there are multiple horizontals: pick the longest (in npc)
+      return(which.max(dx * is_h))
+    }
+    if (prefer %in% c("auto", "longest")) {
+      return(which.max(dx + dy))
+    }
+    # fallback: first segment
+    1L
+  }
+  
+  i <- pick()
+  x_mid <- (xs[i] + xs[i + 1]) / 2
+  y_mid <- (ys[i] + ys[i + 1]) / 2
+  
+  list(x = unit(x_mid, "npc"), y = unit(y_mid, "npc"))
+}
+
+prLabelWithBackground <- function(label, x, y,
+                                  label_gp = gpar(cex = 1),
+                                  pad = unit(1.5, "mm"),
+                                  bg_gp = gpar(fill = "white", col = NA)) {
+  tg <- textGrob(label, x = x, y = y, just = "center", gp = label_gp)
+  
+  w <- grobWidth(tg) + 2 * pad
+  h <- grobHeight(tg) + 2 * pad
+  
+  bg <- rectGrob(x = x, y = y, width = w, height = h, just = "center", gp = bg_gp)
+  
+  grobTree(bg, tg)
+}
+
+
 prConnect1 <- function(
     start,
     end,
     type,
     subelmnt,
     lty_gp,
-    arrow_obj
+    arrow_obj,
+    label = NULL,
+    label_gp = grid::gpar(cex = 0.9),
+    label_pos = c("mid", "near_start", "near_end"),
+    label_offset = unit(2, "mm"),
+    label_pad = unit(1.5, "mm")
 ) {
   assert_class(start, "box")
   assert_class(end, "box")
   assert_class(lty_gp, "gpar")
   assert_class(arrow_obj, "arrow")
+  if (!is.null(label)) assert_class(label_gp, "gpar")
+  
+  label_pos <- match.arg(label_pos)
   
   start <- coords(start)
   end <- coords(end)
@@ -28,7 +120,6 @@ prConnect1 <- function(
     elmnt[[side]]
   }
   
-  # FIX: x comparisons must use convertWidth, y comparisons use convertHeight
   x_mm <- function(u) convertWidth(u, unitTo = "mm", valueOnly = TRUE)
   y_mm <- function(u) convertHeight(u, unitTo = "mm", valueOnly = TRUE)
   
@@ -95,6 +186,28 @@ prConnect1 <- function(
     }
   }
   
-  lg <- linesGrob(x = line$x, y = line$y, gp = lty_gp, arrow = arrow_obj)
+  lg <- grid::linesGrob(x = line$x, y = line$y, gp = lty_gp, arrow = arrow_obj)
+
+  
+  if (!is.null(label) && nzchar(label)) {
+    mid <- prLineLabelPos(line, prefer = "auto")
+    lbl <- prLabelWithBackground(
+      label = label,
+      x = mid$x,
+      y = mid$y,
+      label_gp = label_gp,
+      pad = label_pad,
+      bg_gp = gpar(fill = "white", col = NA)
+    )
+    
+    gt <- grobTree(lg, lbl)
+    
+    return(structure(
+      gt,
+      line = line,
+      class = c("connect_boxes", class(gt))
+    ))
+  }
+  
   structure(lg, line = line, class = c("connect_boxes", class(lg)))
 }
