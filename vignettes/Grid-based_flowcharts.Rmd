@@ -76,8 +76,7 @@ for (i in 1:(length(vert) - 1)) {
   connectGrob(vert[[i]], vert[[i + 1]], type = "vert") |>
     print()
 }
-connectGrob(vert$included, grps[[1]], type = "N")
-connectGrob(vert$included, grps[[2]], type = "N")
+connectGrob(vert$included, grps, type = "N")
 
 connectGrob(vert$eligible, excluded, type = "L")
 

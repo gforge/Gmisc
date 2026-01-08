@@ -4,6 +4,8 @@
 \alias{connectGrob}
 \alias{print.connect_boxes}
 \alias{plot.connect_boxes}
+\alias{print.connect_boxes_list}
+\alias{plot.connect_boxes_list}
 \title{Connect boxes with an arrow}
 \usage{
 connectGrob(
@@ -13,51 +15,69 @@ connectGrob(
   subelmnt = c("right", "left"),
   lty_gp = getOption("connectGrob", default = gpar(fill = "black")),
   arrow_obj = getOption("connectGrobArrow", default = arrow(ends = "last", type =
-    "closed"))
+    "closed")),
+  split_pad = unit(2, "mm")
 )
 
 \method{print}{connect_boxes}(x, ...)
 
 \method{plot}{connect_boxes}(x, ...)
+
+\method{print}{connect_boxes_list}(x, ...)
+
+\method{plot}{connect_boxes_list}(x, ...)
 }
 \arguments{
-\item{start}{The start box}
+\item{start}{The start box.}
 
-\item{end}{The end box}
+\item{end}{The end box, or a \code{list} of boxes for a one-to-many connection.}
 
-\item{type}{How the boxes are stacked. The \code{L} alternative generates a
-straight line up/down and then turns to righT/left for connecting with the end.
-The \code{-} generates a straight horizontal arrow. The \code{Z} creates a
-horizontal line that looks like a \code{Z} with 90 degree turns. The option
-\code{N} allows for vertical lines.}
+\item{type}{How the boxes are connected:
+\describe{
+  \item{\code{"vertical"}}{Straight vertical connector between boxes.}
+  \item{\code{"horizontal"}}{Straight horizontal connector between boxes.}
+  \item{\code{"L"}}{Vertical then horizontal connector (right/left chosen automatically).}
+  \item{\code{"-"}}{Straight horizontal connector at the end box y-position.}
+  \item{\code{"Z"}}{Horizontal connector with two 90-degree turns (Z-shaped).}
+  \item{\code{"N"}}{Vertical connector with one horizontal segment (N-shaped).}
+}}
 
-\item{subelmnt}{If we have a split box we can specify the right/left x as the
-connector point.}
+\item{subelmnt}{For split boxes (e.g. \code{boxPropGrob}), specifies whether to
+use the left or right sub-element x-coordinate when anchoring the connector.}
 
-\item{lty_gp}{The \code{\link[grid]{gpar}} for the line. Set
-\code{connectGrob} option if you want to customize all the arrows at once.}
+\item{lty_gp}{The \code{\link[grid]{gpar}} for the line. Set the global option
+\code{connectGrob} to customize all connectors.}
 
-\item{arrow_obj}{The arrow spec according to \code{\link[grid]{arrow}}. Set
-\code{connectGrobArrow} option if you want to customize all the arrows at once.}
+\item{arrow_obj}{The arrow specification according to \code{\link[grid]{arrow}}.
+Set the global option \code{connectGrobArrow} to customize all connectors.}
+
+\item{split_pad}{For multi-end connections with \code{type = "N"}, the padding
+around the shared split/bend height. Numeric values are interpreted as millimeters.}
 
 \item{x}{The grob to print/plot}
 
 \item{...}{Passed to \code{\link[grid]{grid.draw}}}
 }
 \value{
-grob with an arrow
+If \code{end} is a single box, a \code{\link[grid]{grob}} with class
+\code{"connect_boxes"}.
+
+If \code{end} is a list of boxes, a \code{list} of grobs (one per end box) with
+class \code{"connect_boxes_list"}.
 }
 \description{
-The function creates a grob that links two boxes together. It looks for
-which side it should attach the arrow, e.g. if the start is on top of
-the bottom it should attach to the bottom edge of ther start box and then
-to the top at the end.
+Creates one or more grobs that link boxes together. By default a single grob is
+returned when connecting one start box to one end box. If \code{end} is a list
+of boxes, a list of grobs is returned (one per end box).
 }
 \details{
-The exact positions of the line is stored at the \code{attr(..., "line")}.
-If you want to draw your own custom line all you need to do is check which
-\code{attr(my_line, "line")$x} and \code{attr(my_line, "line")$y} you want
-to attach to and then create your own custom \code{\link[grid:grid.lines]{linesGrob}}.
+The connector geometry is stored in \code{attr(x, "line")} where \code{x} is the
+returned grob (or each grob in the returned list). This can be used to draw
+custom connectors by reading \code{attr(x, "line")$x} and \code{attr(x, "line")$y}
+and creating your own \code{\link[grid:grid.lines]{linesGrob}}.
+
+For \code{type = "N"} and a multi-end connection, the split/bend height is shared
+across all branches so that the horizontal segment occurs at the same y-position.
 }
 \examples{
 library(grid)
