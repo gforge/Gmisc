@@ -1,5 +1,11 @@
 NEWS for the Gmisc package
 
+## Changes for 3.2.0
+
+- Added support for lists of boxes in `prConvert2Coords`, allowing for merged bounding box calculations in `npc` units.
+- Extended `moveBox` to support moving lists of boxes (groups) as a single unit, with improved name preservation.
+- Added `.subelement` parameter to `spreadVertical`, `spreadHorizontal`, `alignVertical`, and `alignHorizontal` for targeting specific elements within a list of boxes.
+
 ## Changes for 3.1.0
 
 - Added a .margin and a more flexble .to/.from management for the box spreading

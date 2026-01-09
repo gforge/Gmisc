@@ -37,6 +37,7 @@ distance <- function(box1,
     assert(
       checkClass(v, "box"),
       checkClass(v, "coords"),
+      checkList(v),
       checkNumeric(v),
       checkTRUE(is.unit(v))
     )

@@ -19,6 +19,10 @@
 #'   span comes from `.from` / `.to` or the viewport.
 #' @param .type If `between`, the space *between* boxes is identical. If `center`,
 #'   the centers of the boxes are equally distributed across the span.
+#' @param .subelement If a `list` of boxes is provided, this parameter can be used
+#'   to target a specific element (by name or index) for the spreading operation.
+#'   The function will then return the original list with the targeted element
+#'   replaced by its spread version.
 #'
 #' @return A `list` with the boxes that have been spread.
 #'
@@ -31,7 +35,7 @@
 #' @rdname spread
 #' @export
 spreadVertical <- function(..., .from = NULL, .to = NULL, .margin = unit(0, "npc"),
-                           .type = c('between', 'center')) {
+                           .type = c('between', 'center'), .subelement = NULL) {
   type <- match.arg(.type)
   
   .margin <- prAsNpc(.margin)
@@ -43,8 +47,22 @@ spreadVertical <- function(..., .from = NULL, .to = NULL, .margin = unit(0, "npc
   if (length(boxes2spread) == 1 && is.list(boxes2spread) && !inherits(boxes2spread, "box")) {
     boxes2spread <- boxes2spread[[1]]
   }
+
+  if (!is.null(.subelement)) {
+    boxes2spread[[.subelement]] <- spreadVertical(boxes2spread[[.subelement]],
+                                                   .from = .from,
+                                                   .to = .to,
+                                                   .margin = .margin,
+                                                   .type = type)
+    return(structure(boxes2spread, class = c("Gmisc_list_of_boxes", class(boxes2spread))))
+  }
+
   assert_list(boxes2spread, min.len = 1)
-  for (box in boxes2spread) assert_class(box, "box")
+  for (box in boxes2spread) {
+    if (!inherits(box, "box") && !is.list(box)) {
+      stop("Element must be a box or a list of boxes")
+    }
+  }
   
   span_info <- prGetSpanSpace(
     boxes2spread = boxes2spread,
@@ -74,7 +92,7 @@ spreadVertical <- function(..., .from = NULL, .to = NULL, .margin = unit(0, "npc
 #' @rdname spread
 #' @export
 spreadHorizontal <- function(..., .from = NULL, .to = NULL, .margin = unit(0, "npc"),
-                             .type = c('between', 'center')) {
+                             .type = c('between', 'center'), .subelement = NULL) {
   type <- match.arg(.type)
   
   .margin <- prAsNpc(.margin)
@@ -86,8 +104,22 @@ spreadHorizontal <- function(..., .from = NULL, .to = NULL, .margin = unit(0, "n
   if (length(boxes2spread) == 1 && is.list(boxes2spread) && !inherits(boxes2spread, "box")) {
     boxes2spread <- boxes2spread[[1]]
   }
+
+  if (!is.null(.subelement)) {
+    boxes2spread[[.subelement]] <- spreadHorizontal(boxes2spread[[.subelement]],
+                                                     .from = .from,
+                                                     .to = .to,
+                                                     .margin = .margin,
+                                                     .type = type)
+    return(structure(boxes2spread, class = c("Gmisc_list_of_boxes", class(boxes2spread))))
+  }
+
   assert_list(boxes2spread, min.len = 1)
-  for (box in boxes2spread) assert_class(box, "box")
+  for (box in boxes2spread) {
+    if (!inherits(box, "box") && !is.list(box)) {
+      stop("Element must be a box or a list of boxes")
+    }
+  }
   
   span_info <- prGetSpanSpace(
     boxes2spread = boxes2spread,
@@ -128,8 +160,12 @@ prGetSpanSpace <- function(
   
   # ---- input checks / normalization ----
   stopifnot(is.list(boxes2spread), length(boxes2spread) >= 1)
-  for (b in boxes2spread) assert_class(b, "box")
-  
+  for (b in boxes2spread) {
+    if (!inherits(b, "box") && !is.list(b)) {
+      stop("Element must be a box or a list of boxes")
+    }
+  }
+
   if (missing(type) || is.null(type)) stop("`type` must be provided.", call. = FALSE)
   if (!type %in% c("between", "center")) stop("`type` must be 'between' or 'center'.", call. = FALSE)
   
@@ -167,30 +203,30 @@ prGetSpanSpace <- function(
     end_pos <- attr(dist, "to")
     
     # Anchor at .from: either a box or a coordinate/unit
-    if (inherits(.from, "box")) {
+    if (inherits(.from, "box") || is.list(.from)) {
       first <- .from
       include_first <- FALSE
-      if (type == "center") start_pos <- start_pos - dist_sign * coords(first)[[type_half_size_key]]
+      if (type == "center") start_pos <- start_pos - dist_sign * prConvert2Coords(first)[[type_half_size_key]]
     } else {
       first <- boxes2spread[[1]]
       boxes2spread <- if (length(boxes2spread) == 1) list() else boxes2spread[-1]
-      start_pos <- start_pos + dist_sign * coords(first)[[type_size_key]]
-      dist <- dist - coords(first)[[type_size_key]]
+      start_pos <- start_pos + dist_sign * prConvert2Coords(first)[[type_size_key]]
+      dist <- dist - prConvert2Coords(first)[[type_size_key]]
     }
     
     # Anchor at .to: either a box or a coordinate/unit
-    if (inherits(.to, "box")) {
+    if (inherits(.to, "box") || is.list(.to)) {
       last <- .to
       include_last <- FALSE
-      if (type == "center") end_pos <- end_pos + dist_sign * coords(last)[[type_half_size_key]]
+      if (type == "center") end_pos <- end_pos + dist_sign * prConvert2Coords(last)[[type_half_size_key]]
     } else {
       if (length(boxes2spread) == 0) {
         stop("No boxes left to place between `.from` and `.to`.", call. = FALSE)
       }
       last <- tail(boxes2spread, 1)[[1]]
       boxes2spread <- if (length(boxes2spread) == 1) list() else boxes2spread[-length(boxes2spread)]
-      end_pos <- end_pos - dist_sign * coords(last)[[type_size_key]]
-      dist <- dist - coords(last)[[type_size_key]]
+      end_pos <- end_pos - dist_sign * prConvert2Coords(last)[[type_size_key]]
+      dist <- dist - prConvert2Coords(last)[[type_size_key]]
     }
     
     boxes_in_between <- boxes2spread
@@ -203,11 +239,11 @@ prGetSpanSpace <- function(
     last <- tail(boxes2spread, 1)[[1]]
     
     if (orientation == "vertical") {
-      start_pos <- unit(1, "npc") - margin_npc - coords(first)[[type_size_key]]
-      end_pos   <- unit(0, "npc") + margin_npc + coords(last)[[type_size_key]]
+      start_pos <- unit(1, "npc") - margin_npc - prConvert2Coords(first)[[type_size_key]]
+      end_pos   <- unit(0, "npc") + margin_npc + prConvert2Coords(last)[[type_size_key]]
     } else {
-      start_pos <- unit(0, "npc") + margin_npc + coords(first)[[type_size_key]]
-      end_pos   <- unit(1, "npc") - margin_npc - coords(last)[[type_size_key]]
+      start_pos <- unit(0, "npc") + margin_npc + prConvert2Coords(first)[[type_size_key]]
+      end_pos   <- unit(1, "npc") - margin_npc + prConvert2Coords(last)[[type_size_key]]
     }
     
     dist <- distance(box1 = start_pos, box2 = end_pos, type = orientation)
@@ -232,7 +268,7 @@ prGetSpanSpace <- function(
   # ---- compute available space in npc ----
   extra_space <- unit(0, "npc")
   if (type == "center") {
-    extra_space <- to_npc(coords(first)[[type_half_size_key]] + coords(last)[[type_half_size_key]])
+    extra_space <- to_npc(prConvert2Coords(first)[[type_half_size_key]] + prConvert2Coords(last)[[type_half_size_key]])
   }
   
   span_npc <- to_npc(dist) + extra_space
@@ -249,7 +285,7 @@ prGetSpanSpace <- function(
   
   if (type == "between" && length(boxes_in_between) > 0) {
     for (b in boxes_in_between) {
-      available_space <- available_space - to_npc(coords(b)[[type_size_key]])
+      available_space <- available_space - to_npc(prConvert2Coords(b)[[type_size_key]])
     }
     if (convertWidth(available_space, "npc", valueOnly = TRUE) < 0) {
       stop(
@@ -288,14 +324,14 @@ prGetNewDistances <- function(span_info, type, convert_to_axis_fn,
   offset <- to_npc(span_info$start_pos)
   
   if (!is.null(span_info$first)) {
-    new_coordinate <- to_npc(span_info$start_pos) - span_info$sign * to_npc(coords(span_info$first)[[type_half_size_key]])
+    new_coordinate <- to_npc(span_info$start_pos) - span_info$sign * to_npc(prConvert2Coords(span_info$first)[[type_half_size_key]])
     offset <- if (type == "center") new_coordinate else to_npc(span_info$start_pos)
   }
   
   for (b in span_info$boxes_in_between) {
     if (type == "between") {
-      new_position <- offset + span_info$sign * (space_distance + to_npc(coords(b)[[type_half_size_key]]))
-      offset <- offset + span_info$sign * (space_distance + to_npc(coords(b)[[type_size_key]]))
+      new_position <- offset + span_info$sign * (space_distance + to_npc(prConvert2Coords(b)[[type_half_size_key]]))
+      offset <- offset + span_info$sign * (space_distance + to_npc(prConvert2Coords(b)[[type_size_key]]))
     } else {
       new_position <- offset + span_info$sign * space_distance
       offset <- offset + span_info$sign * space_distance
@@ -304,7 +340,7 @@ prGetNewDistances <- function(span_info, type, convert_to_axis_fn,
   }
   
   if (!is.null(span_info$last)) {
-    last_position <- to_npc(span_info$end_pos) + span_info$sign * to_npc(coords(span_info$last)[[type_half_size_key]])
+    last_position <- to_npc(span_info$end_pos) + span_info$sign * to_npc(prConvert2Coords(span_info$last)[[type_half_size_key]])
     new_coordinate <- unit.c(new_coordinate, last_position)
   }
   
