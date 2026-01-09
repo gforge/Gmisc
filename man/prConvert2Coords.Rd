@@ -28,5 +28,5 @@ are merged heuristically (e.g., \verb{left*} -> min, \verb{right*} -> max, else 
 \examples{
 box1 <- boxGrob("A", x = .2, y = .8)
 box2 <- boxGrob("B", x = .6, y = .4)
-prConvert2Coords(list(box1, box2))
+Gmisc:::prConvert2Coords(list(box1, box2))
 }

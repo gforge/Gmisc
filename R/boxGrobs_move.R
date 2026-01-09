@@ -27,6 +27,8 @@ moveBox <- function(element,
                     just = NULL) {
   space <- match.arg(space)
 
+  to_unit <- function(u) if (is.unit(u) || is.null(u)) u else unit(u, "npc")
+
   if (is.list(element) && !inherits(element, "box")) {
     if (is.null(x) && is.null(y)) {
       stop('You have to specify at least x or y move parameters')
@@ -35,16 +37,15 @@ moveBox <- function(element,
     if (space == "absolute") {
       # For absolute, we need to know where the group is currently to calculate relative shift
       grp_coords <- prConvert2Coords(element)
-      
-      toUnit <- function(u) if (is.unit(u) || is.null(u)) u else unit(u, "npc")
-      target_x <- toUnit(x)
-      target_y <- toUnit(y)
-      
+
+      target_x <- to_unit(x)
+      target_y <- to_unit(y)
+
       if (!is.null(just)) {
         if (!is.null(x)) target_x <- prAdjustXPos(just, target_x, grp_coords$width)
         if (!is.null(y)) target_y <- prAdjustYPos(just, target_y, grp_coords$height)
       }
-      
+
       # Use convertX/Y to ensure we can do subtraction if units differ, although usually it's npc or mm
       shift_x <- if (!is.null(target_x)) target_x - grp_coords$x else unit(0, "npc")
       shift_y <- if (!is.null(target_y)) target_y - grp_coords$y else unit(0, "npc")
@@ -104,16 +105,10 @@ moveBox <- function(element,
     }
   }
 
-  toUnit <- function(x) {
-    if (is.unit(x) || is.null(x)) {
-      return(x)
-    }
+  # use internal helper `to_unit()` defined above to convert numeric/nil to npc units
 
-    unit(x, units = "npc")
-  }
-
-  x <- toUnit(x)
-  y <- toUnit(y)
+  x <- to_unit(x)
+  y <- to_unit(y)
 
   if (space == "relative") {
     if (!is.null(x)) {
