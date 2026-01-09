@@ -8,6 +8,7 @@ output:
 vignette: >
   %\VignetteIndexEntry{Introduction to the Transition-class}
   %\usepackage[utf8]{inputenc}
+  %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
   chunk_output_type: console

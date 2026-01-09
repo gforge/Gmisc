@@ -7,6 +7,7 @@ output:
     toc: true
 vignette: >
   %\VignetteIndexEntry{Building a flowchart}
+  %\VignetteEncoding{UTF-8}
   %\usepackage[utf8]{inputenc}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options:
@@ -26,7 +27,7 @@ library(grid)
 
 A flowchart is a type of diagram that represents a workflow or process. In research we often want to explain how we recruited our patients, how many that were available from the start, how many that were excluded and how many were left at the final analysis. The **Gmisc** package provides a convenient set of functions for doing this using the R's built-in `grid` package with some bells and whistles. Below is a simple example that illustrates what we're aiming for.
 
-```{r, fig.height = 7, fig.width = 6}
+```{r, fig.height = 7, fig.width = 8}
 org_cohort <- boxGrob(glue("Stockholm population",
                            "n = {pop}",
                            pop = txtInt(1632798),
@@ -62,7 +63,7 @@ grid.newpage()
 vert <- spreadVertical(org_cohort,
                eligible = eligible,
                included = included,
-               grps = list(grp_a, grp_b)) |> 
+               grps = list(grp_a, grp_b)) |>
   spreadHorizontal(.subelement = "grps")
 
 excluded <- moveBox(excluded,
@@ -72,7 +73,7 @@ excluded <- moveBox(excluded,
 for (i in 1:(length(vert) - 1)) {
   from <- vert[[i]]
   to <- vert[[i + 1]]
-  connectGrob(vert[[i]], vert[[i + 1]], type = ifelse(is.grob(to), "vert", "N")) |> 
+  connectGrob(vert[[i]], vert[[i + 1]], type = ifelse(is.grob(to), "vert", "N")) |>
     print()
 }
 
@@ -486,8 +487,8 @@ spreadHorizontal(row5, .from = span$from, .to = span$to)
 row6_y <- unit(.10, "npc")
 
 bottom_from <- moveBox(from, x = coords(to)$right, y = 0, just = c(1, 0))
-bottom_to <- moveBox(to, x = coords(from)$left, y = 0, just = c(0, 0)) 
-bottom_from 
+bottom_to <- moveBox(to, x = coords(from)$left, y = 0, just = c(0, 0))
+bottom_from
 bottom_to
 
 row6 <- alignVertical(reference = bottom_from, b1, b2, b3, b4, .position = "bottom")
@@ -520,9 +521,9 @@ b4 <- boxGrob("B4",
 
 
 txtOut <- function(txt, refBx) {
-  grid.text(txt, 
-            x = coords(refBx)$left - unit(2, "mm"), 
-            y = .5, 
+  grid.text(txt,
+            x = coords(refBx)$left - unit(2, "mm"),
+            y = .5,
             just = c("center", "bottom"),
             rot = 90)
   grid.lines(x = coords(refBx)$left - unit(1, "mm"),
@@ -531,22 +532,22 @@ txtOut <- function(txt, refBx) {
 
 grid.newpage()
 txtOut("Basic", b1)
-alignHorizontal(reference = b1, 
+alignHorizontal(reference = b1,
                 b1, b2, b3, b4,
-                .position = "left") |> 
+                .position = "left") |>
   spreadVertical()
 
 txtOut("From-to", b2)
-alignHorizontal(reference = b2, 
+alignHorizontal(reference = b2,
                 b1, b2, b3, b4,
-                .position = "left") |> 
+                .position = "left") |>
   spreadVertical(.from = .2,
                  .to = .7)
 
 txtOut("From-to with center and reverse the box order", b3)
-alignHorizontal(reference = b3, 
+alignHorizontal(reference = b3,
                 b1, b2, b3, b4,
-                .position = "left") |> 
+                .position = "left") |>
   spreadVertical(.from = .7,
                  .to = .2,
                  .type = "center")
@@ -574,7 +575,7 @@ alignVertical(
   .position = "top",
   boxGrob(expression(bold("Bold text"))),
   boxGrob(expression(italic("Italics text"))),
-  boxGrob(expression(paste("Mixed: ", italic("Italics"), " and ", bold("bold"))))) |> 
+  boxGrob(expression(paste("Mixed: ", italic("Italics"), " and ", bold("bold"))))) |>
   spreadHorizontal()
 
 # Math
@@ -582,7 +583,7 @@ alignVertical(
   reference = .5,
   boxGrob(expression(paste("y = ", beta[0], " + ", beta[1], X[1], " + ", beta[2], X[2]^2))),
   boxGrob(expression(sum(n, i == 1, x) %subset% " \u211D")),
-  boxGrob(expression(beta ~~ gamma ~~ Gamma))) |> 
+  boxGrob(expression(beta ~~ gamma ~~ Gamma))) |>
   spreadHorizontal()
 
 ##########
@@ -593,7 +594,7 @@ alignVertical(
   reference = 0,
   .position = "bottom",
   bquote(alpha == theta[1] * .(a) + ldots) |> boxGrob(),
-  paste("argument", sQuote("x"), "\nmust be non-zero") |> boxGrob()) |> 
+  paste("argument", sQuote("x"), "\nmust be non-zero") |> boxGrob()) |>
   spreadHorizontal(.from = .2, .to = .8)
 ```
 

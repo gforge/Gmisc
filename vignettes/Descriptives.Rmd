@@ -9,6 +9,7 @@ output:
 vignette: >
   %\VignetteIndexEntry{Descriptives statistics for Table 1}
   %\usepackage[utf8]{inputenc}
+  %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
   chunk_output_type: console
