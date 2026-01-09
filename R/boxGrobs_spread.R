@@ -39,7 +39,7 @@ spreadVertical <- function(..., .from = NULL, .to = NULL, .margin = unit(0, "npc
   type <- match.arg(.type)
   
   .margin <- prAsNpc(.margin)
-  ft <- prNormalizeFromTo(.from, .to)
+  ft <- prNormalizeFromTo(.from, .to, axis = "y")
   .from <- ft$from
   .to   <- ft$to
 
@@ -96,7 +96,7 @@ spreadHorizontal <- function(..., .from = NULL, .to = NULL, .margin = unit(0, "n
   type <- match.arg(.type)
   
   .margin <- prAsNpc(.margin)
-  ft <- prNormalizeFromTo(.from, .to)
+  ft <- prNormalizeFromTo(.from, .to, axis = "x")
   .from <- ft$from
   .to   <- ft$to
   

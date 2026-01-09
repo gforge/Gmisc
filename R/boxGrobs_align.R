@@ -72,7 +72,7 @@ alignVertical <- function(reference, ..., .position = c('center', 'top', 'bottom
 #' @export
 alignHorizontal <- function(reference, ..., .position = c('center', 'left', 'right'), .sub_position = c('none', 'left', 'right'), .subelement = NULL) {
   position = match.arg(.position)
-  sub_position = match.arg(sub_position)
+  sub_position = match.arg(.sub_position)
   
   boxes2align <- list(...)
   if (length(boxes2align) == 1 && is.list(boxes2align) && !inherits(boxes2align, "box")) {

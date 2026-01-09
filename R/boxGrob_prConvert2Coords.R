@@ -25,7 +25,7 @@ prConvert2Coords <- function(obj) {
   }
 
   # If a list is provided, recursively convert each element and merge edges
-  if (is.list(obj)) {
+  if (inherits(obj, "list") & !is.grob(obj) & !is.unit(obj)) {
     if (length(obj) == 0) stop("Expected a non-empty list of boxes/coords/units")
 
     coords_list <- lapply(obj, prConvert2Coords)
@@ -115,7 +115,7 @@ prConvert2Coords <- function(obj) {
       out[[nm]] <- unit(v, "npc")
     }
 
-    structure(out, class = c("box_coords", "list"))
+    return(structure(out, class = c("box_coords", "list")))
   }
 
   if (inherits(obj, "box")) {

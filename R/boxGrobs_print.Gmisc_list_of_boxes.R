@@ -8,6 +8,14 @@
 #' @export
 print.Gmisc_list_of_boxes <- function(x, ...) {
   for (box in x) {
-    grid.draw(box)
+    if (is.grob(box)) {
+      grid.draw(box)
+    } else if (inherits(box, "Gmisc_list_of_boxes")) {
+      for (i in 1:length(box)) {
+        print(box[[i]])
+      }
+    } else {
+      stop("Element is not a grob or a Gmisc_list_of_boxes", class(box))
+    }
   }
 }

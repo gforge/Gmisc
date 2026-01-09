@@ -6,13 +6,19 @@
 \alias{alignHorizontal}
 \title{Align boxes}
 \usage{
-alignVertical(reference, ..., .position = c("center", "top", "bottom"))
+alignVertical(
+  reference,
+  ...,
+  .position = c("center", "top", "bottom"),
+  .subelement = NULL
+)
 
 alignHorizontal(
   reference,
   ...,
   .position = c("center", "left", "right"),
-  .sub_position = c("none", "left", "right")
+  .sub_position = c("none", "left", "right"),
+  .subelement = NULL
 )
 }
 \arguments{
@@ -23,6 +29,11 @@ numerical value that can be converted into a \code{\link[grid:unit]{unit}} of \c
 
 \item{.position}{How to align the boxes, differs slightly for vertical and horizontal alignment
 see the accepted arguments}
+
+\item{.subelement}{If a \code{list} of boxes is provided, this parameter can be used
+to target a specific element (by name or index) for the alignment operation.
+The function will then return the original list with the targeted element
+replaced by its aligned version.}
 
 \item{.sub_position}{When the box is a \code{\link{boxPropGrob}} it not only has the general \code{.positions} but
 also \code{left} and \code{right} which can be viewed as separate boxes that have simply been merged.}

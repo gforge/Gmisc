@@ -20,7 +20,7 @@
 #'  calculations, for \code{euclidean} distance this is \code{NA}.
 #'
 #' @family flowchart components
-#' @importFrom checkmate assert_class assert checkNumeric checkClass checkTRUE
+#' @importFrom checkmate assert_class assert checkNumeric checkClass checkTRUE checkList
 #' @importFrom grid is.unit
 #' @export
 #' @examples
@@ -37,7 +37,7 @@ distance <- function(box1,
     assert(
       checkClass(v, "box"),
       checkClass(v, "coords"),
-      checkList(v),
+      checkList(v, min.len = 1),
       checkNumeric(v),
       checkTRUE(is.unit(v))
     )

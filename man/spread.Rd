@@ -11,7 +11,8 @@ spreadVertical(
   .from = NULL,
   .to = NULL,
   .margin = unit(0, "npc"),
-  .type = c("between", "center")
+  .type = c("between", "center"),
+  .subelement = NULL
 )
 
 spreadHorizontal(
@@ -19,7 +20,8 @@ spreadHorizontal(
   .from = NULL,
   .to = NULL,
   .margin = unit(0, "npc"),
-  .type = c("between", "center")
+  .type = c("between", "center"),
+  .subelement = NULL
 )
 }
 \arguments{
@@ -39,6 +41,11 @@ span comes from \code{.from} / \code{.to} or the viewport.}
 
 \item{.type}{If \code{between}, the space \emph{between} boxes is identical. If \code{center},
 the centers of the boxes are equally distributed across the span.}
+
+\item{.subelement}{If a \code{list} of boxes is provided, this parameter can be used
+to target a specific element (by name or index) for the spreading operation.
+The function will then return the original list with the targeted element
+replaced by its spread version.}
 }
 \value{
 A \code{list} with the boxes that have been spread.

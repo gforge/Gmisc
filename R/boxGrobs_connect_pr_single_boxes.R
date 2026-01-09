@@ -91,6 +91,7 @@ prConnect1 <- function(
     arrow_obj,
     label = NULL,
     label_gp = grid::gpar(cex = 0.9),
+    label_bg_gp = grid::gpar(fill = "white", col = NA),
     label_pos = c("mid", "near_start", "near_end"),
     label_offset = unit(2, "mm"),
     label_pad = unit(1.5, "mm")
@@ -197,7 +198,7 @@ prConnect1 <- function(
       y = mid$y,
       label_gp = label_gp,
       pad = label_pad,
-      bg_gp = gpar(fill = "white", col = NA)
+      bg_gp = label_bg_gp
     )
     
     gt <- grobTree(lg, lbl)

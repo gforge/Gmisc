@@ -107,7 +107,7 @@ prConnectManyToOneFanTop <- function(
   if (is.numeric(margin)) margin <- unit(margin, "mm")
   if (is.numeric(split_pad)) split_pad <- unit(split_pad, "mm")
   
-  prCend_y <- prCalculateBendY(starts, end, margin, split_pad)
+  bend_y <- prCalculateBendY(starts, end, margin = margin, split_pad = split_pad)
   xs_end <- pcCalculateXPositions(starts, end, margin)
   prGenerateLines(starts, end, bend_y, xs_end, lty_gp, arrow_obj, subelmnt)
 }

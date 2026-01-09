@@ -49,9 +49,9 @@ moveBox <- function(element,
       shift_x <- if (!is.null(target_x)) target_x - grp_coords$x else unit(0, "npc")
       shift_y <- if (!is.null(target_y)) target_y - grp_coords$y else unit(0, "npc")
 
-      ret <- sapply(element, \(el) moveBox(el, x = shift_x, y = shift_y, space = "relative"), SIMPLIFY = FALSE)
+      ret <- sapply(element, \(el) moveBox(el, x = shift_x, y = shift_y, space = "relative"), simplify = FALSE)
     } else {
-      ret <- sapply(element, \(el) moveBox(el, x = x, y = y, space = "relative"), SIMPLIFY = FALSE)
+      ret <- sapply(element, \(el) moveBox(el, x = x, y = y, space = "relative"), simplify = FALSE)
     }
     return(structure(ret, class = c("Gmisc_list_of_boxes", class(ret))))
   }
