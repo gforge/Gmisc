@@ -15,6 +15,11 @@ editor_options:
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+library(Gmisc, quietly = TRUE)
+library(glue)
+library(htmlTable)
+library(grid)
 ```
 
 # Flowchart
@@ -22,12 +27,6 @@ knitr::opts_chunk$set(echo = TRUE)
 A flowchart is a type of diagram that represents a workflow or process. In research we often want to explain how we recruited our patients, how many that were available from the start, how many that were excluded and how many were left at the final analysis. The **Gmisc** package provides a convenient set of functions for doing this using the R's built-in `grid` package with some bells and whistles. Below is a simple example that illustrates what we're aiming for.
 
 ```{r, fig.height = 7, fig.width = 6}
-library(Gmisc, quietly = TRUE)
-library(glue)
-library(htmlTable)
-library(grid)
-library(magrittr)
-
 org_cohort <- boxGrob(glue("Stockholm population",
                            "n = {pop}",
                            pop = txtInt(1632798),
@@ -65,7 +64,7 @@ vert <- spreadVertical(org_cohort,
                        included = included,
                        grps = grp_a)
 grps <- alignVertical(reference = vert$grps,
-                      grp_a, grp_b) %>%
+                      grp_a, grp_b) |>
   spreadHorizontal()
 vert$grps <- NULL
 
@@ -74,13 +73,12 @@ excluded <- moveBox(excluded,
                     y = coords(vert$included)$top + distance(vert$eligible, vert$included, half = TRUE, center = FALSE))
 
 for (i in 1:(length(vert) - 1)) {
-  connectGrob(vert[[i]], vert[[i + 1]], type = "vert") %>%
-    print
+  connectGrob(vert[[i]], vert[[i + 1]], type = "vert") |>
+    print()
 }
-connectGrob(vert$included, grps[[1]], type = "N")
-connectGrob(vert$included, grps[[2]], type = "N")
+connectGrob(vert$included, grps, type = "N")
 
-connectGrob(vert$eligible, excluded, type = "L")
+connectGrob(vert$eligible, excluded, type = "L", label = "Excluded")
 
 # Print boxes
 vert
@@ -290,7 +288,32 @@ odd
 odd2
 ```
 
+`connectGrob()` also supports connecting one box to many boxes, or many boxes to one box.
+For merging many boxes into one, `type = "fan_in_top"` distributes the attachment points evenly along the top edge of the destination box, with an optional margin.
+
+```{r connect_multi, fig.width = 9, fig.height = 4}
+grid.newpage()
+
+# Three upstream boxes + one side box
+a1 <- boxGrob("A1", x = .15, y = .85, box_gp = gpar(fill = "#E6F2FF"))
+a2 <- boxGrob("A2", x = .45, y = .85, box_gp = gpar(fill = "#E6F2FF"))
+a3 <- boxGrob("A3", x = .75, y = .85, box_gp = gpar(fill = "#E6F2FF"))
+b_side <- boxGrob("B",  x = .82, y = .50, box_gp = gpar(fill = "#FFF3BF"))
+
+# Target box
+b <- boxGrob("B", x = .50, y = .18, box_gp = gpar(fill = "#D3F9D8"))
+
+# Draw boxes
+a1; a2; a3; b_side; b
+
+# Many -> one: merge on top with evenly distributed attachment points + margin
+connectGrob(list(a1, a2, a3, b_side), b,
+            type = "fan_in_top",
+            margin = 4)
+```
+
 # Alignment
+
 
 We frequently want to align boxes in either a horizontal or a vertical row. For this there are two functions, `alignHorizontal()` and `alignVertical()`.
 
@@ -404,20 +427,16 @@ alignVertical(reference = align_3,
 
 Similarly to alignment we often want to spread our boxes within a space so that we use all the available space in the `viewport`. This can be done through the `spreadHorizontal()` and `spreadVertical()`. You can both spread the entire span or only between a subspan that is defined using the `.to` and `.from` arguments.
 
-```{r horizontal_spread, fig.width=11, fig.height=6}
-b1 <- boxGrob("B1",
-              y = .85,
-              x = 0.1,
-              bjust = c(0, 0))
-b2 <- boxGrob("B2",
-              y = .65,
-              x = .6)
-b3 <- boxGrob("B3",
-              y = .45,
-              x = .6)
-b4 <- boxGrob("B4 with long\ndescription",
-              y = .7,
-              x = .8)
+Numeric `.from`, `.to`, and `.margin` values are interpreted as proportions of the current viewport (`npc`).
+If only one of `.from` or `.to` is specified, the other defaults to the full span (`0 npc` or `1 npc`).
+The `.margin` argument adds padding at both ends of the span (also when using `.from`/`.to`).
+
+
+```{r horizontal_spread, fig.width = 11, fig.height = 6}
+b1 <- boxGrob("B1", y = .85, x = .1, bjust = c(0, 0))
+b2 <- boxGrob("B2", y = .65, x = .6)
+b3 <- boxGrob("B3", y = .45, x = .6)
+b4 <- boxGrob("B4 with long\ndescription", y = .7, x = .8)
 
 from <- boxGrob("from",
                 y = .25,
@@ -430,58 +449,59 @@ to <- boxGrob("to this wide box",
               bjust = "right",
               box_gp = gpar(fill = "darkred"),
               txt_gp = gpar(col = "white"))
-
-
-txtOut <- function(txt, refBx) {
-  grid.text(txt, 
-            x = unit(2, "mm"), 
-            y = coords(refBx)$top + unit(2, "mm"), 
+txtOut <- function(txt, y_top) {
+  grid.text(txt,
+            x = unit(2, "mm"),
+            y = y_top + unit(2, "mm"),
             just = c("left", "bottom"))
-  grid.lines(y = coords(refBx)$top + unit(1, "mm"),
+  grid.lines(y = y_top + unit(1, "mm"),
              gp = gpar(col = "grey"))
 }
+
+drawRow <- function(label, row_y, spread_args = list()) {
+  row <- alignVertical(reference = row_y, b1, b2, b3, b4, .position = "top")
+  txtOut(label, coords(row[[1]])$top)
+  do.call(spreadHorizontal, c(list(row), spread_args))
+}
+
+rowYs <- unit(c(.93, .76, .59, .42, .25, .12), "npc")
+
 grid.newpage()
-txtOut("Basic", b1)
-alignVertical(reference = b1, 
-              b1, b2, b3, b4,
-              .position = "top") %>% 
-  spreadHorizontal()
 
-txtOut("From-to", b2)
-alignVertical(reference = b2, 
-              b1, b2, b3, b4,
-              .position = "top") %>% 
-  spreadHorizontal(.from = .2,
-                   .to = .7)
+drawRow("Basic (viewport)", rowYs[1])
+drawRow("From–to + margin (numeric = npc)", rowYs[2],
+        spread_args = list(.from = .2, .to = .7, .margin = .05))
+drawRow("Only .to (defaults .from = 0)", rowYs[3],
+        spread_args = list(.to = .7))
+drawRow("Only .from (defaults .to = 1)", rowYs[4],
+        spread_args = list(.from = .2))
 
-txtOut("From-to with center and reverse the box order", b3)
-alignVertical(reference = b3, 
-              b1, b2, b3, b4,
-              .position = "top") %>% 
-  spreadHorizontal(.from = .7,
-                   .to = .2,
-                   .type = "center")
+# Row 5: Between boxes (box-to-box span)
+row5_y <- rowYs[5]
+row5 <- alignVertical(reference = row5_y, b1, b2, b3, b4, .position = "top")
+txtOut("Between boxes", coords(row5[[1]])$top)
 
-txtOut("Between boxes", from)
-from
-to
-alignVertical(reference = from, 
-              b1, b2, b3, b4,
-              .position = "top") %>% 
-  spreadHorizontal(.from = from,
-                   .to = to)
+span <- alignVertical(reference = row5_y, from  = from, to = to, .position = "top")
+span
+spreadHorizontal(row5, .from = span$from, .to = span$to)
 
-# Now we switch the order and set the type to center the distance between the boxes
+# Row 6: Reverse box order + center distribution
+row6_y <- unit(.10, "npc")
+
 bottom_from <- moveBox(from, x = coords(to)$right, y = 0, just = c(1, 0))
-bottom_to <- moveBox(to, x = coords(from)$left, y = 0, just = c(0, 0))
-bottom_from
+bottom_to <- moveBox(to, x = coords(from)$left, y = 0, just = c(0, 0)) 
+bottom_from 
 bottom_to
-alignVertical(reference = bottom_from, 
-              b1, b2, b3, b4,
-              .position = "bottom") %>% 
-  spreadHorizontal(.from = bottom_from,
-                   .to = bottom_to,
-                   .type = "center")
+
+row6 <- alignVertical(reference = bottom_from, b1, b2, b3, b4, .position = "bottom")
+txtOut("Reverse box order + center", coords(row6[[4]])$top)
+
+spreadHorizontal(row6,
+                 .from = bottom_from,
+                 .to = bottom_to,
+                 .type = "center")
+
+
 ```
 
 Vertical spreading follows the same pattern:
@@ -516,20 +536,20 @@ grid.newpage()
 txtOut("Basic", b1)
 alignHorizontal(reference = b1, 
                 b1, b2, b3, b4,
-                .position = "left") %>% 
+                .position = "left") |> 
   spreadVertical()
 
 txtOut("From-to", b2)
 alignHorizontal(reference = b2, 
                 b1, b2, b3, b4,
-                .position = "left") %>% 
+                .position = "left") |> 
   spreadVertical(.from = .2,
                  .to = .7)
 
 txtOut("From-to with center and reverse the box order", b3)
 alignHorizontal(reference = b3, 
                 b1, b2, b3, b4,
-                .position = "left") %>% 
+                .position = "left") |> 
   spreadVertical(.from = .7,
                  .to = .2,
                  .type = "center")
@@ -557,16 +577,16 @@ alignVertical(
   .position = "top",
   boxGrob(expression(bold("Bold text"))),
   boxGrob(expression(italic("Italics text"))),
-  boxGrob(expression(paste("Mixed: ", italic("Italics"), " and ", bold("bold"))))) %>% 
-  spreadHorizontal
+  boxGrob(expression(paste("Mixed: ", italic("Italics"), " and ", bold("bold"))))) |> 
+  spreadHorizontal()
 
 # Math
 alignVertical(
   reference = .5,
   boxGrob(expression(paste("y = ", beta[0], " + ", beta[1], X[1], " + ", beta[2], X[2]^2))),
   boxGrob(expression(sum(n, i == 1, x) %subset% " \u211D")),
-  boxGrob(expression(beta ~~ gamma ~~ Gamma))) %>% 
-  spreadHorizontal
+  boxGrob(expression(beta ~~ gamma ~~ Gamma))) |> 
+  spreadHorizontal()
 
 ##########
 # Quotes #
@@ -575,8 +595,8 @@ a = 5
 alignVertical(
   reference = 0,
   .position = "bottom",
-  bquote(alpha == theta[1] * .(a) + ldots) %>% boxGrob,
-  paste("argument", sQuote("x"), "\nmust be non-zero") %>% boxGrob) %>% 
+  bquote(alpha == theta[1] * .(a) + ldots) |> boxGrob(),
+  paste("argument", sQuote("x"), "\nmust be non-zero") |> boxGrob()) |> 
   spreadHorizontal(.from = .2, .to = .8)
 ```
 

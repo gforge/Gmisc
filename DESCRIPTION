@@ -1,5 +1,5 @@
 Package: Gmisc
-Version: 3.0.4
+Version: 3.1.0
 Title: Descriptive Statistics, Transition Plots, and More
 Authors@R: c(
     person(given = "Max", family = "Gordon",
@@ -47,4 +47,4 @@ Encoding: UTF-8
 NeedsCompilation: yes
 LinkingTo: Rcpp
 VignetteBuilder: knitr
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3

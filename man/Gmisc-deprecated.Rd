@@ -2,6 +2,7 @@
 % Please edit documentation in R/deprecated.R
 \docType{package}
 \name{Gmisc-deprecated}
+\alias{-package}
 \alias{Gmisc-deprecated}
 \alias{forestplot2}
 \title{Deprecated function(s) in \pkg{Gmisc}}

@@ -4,60 +4,137 @@
 \alias{connectGrob}
 \alias{print.connect_boxes}
 \alias{plot.connect_boxes}
-\title{Connect boxes with an arrow}
+\alias{print.connect_boxes_list}
+\alias{plot.connect_boxes_list}
+\title{Connect boxes with arrows}
 \usage{
 connectGrob(
   start,
   end,
-  type = c("vertical", "horizontal", "L", "-", "Z", "N"),
+  type = c("vertical", "horizontal", "L", "-", "Z", "N", "fan_in_top"),
   subelmnt = c("right", "left"),
   lty_gp = getOption("connectGrob", default = gpar(fill = "black")),
   arrow_obj = getOption("connectGrobArrow", default = arrow(ends = "last", type =
-    "closed"))
+    "closed")),
+  split_pad = unit(2, "mm"),
+  margin = NULL,
+  label = NULL,
+  label_gp = grid::gpar(cex = 0.9),
+  label_bg_gp = grid::gpar(fill = "white", col = NA),
+  label_pad = unit(1.5, "mm"),
+  label_pos = c("mid", "near_start", "near_end"),
+  label_offset = unit(2, "mm")
 )
 
 \method{print}{connect_boxes}(x, ...)
 
 \method{plot}{connect_boxes}(x, ...)
+
+\method{print}{connect_boxes_list}(x, ...)
+
+\method{plot}{connect_boxes_list}(x, ...)
 }
 \arguments{
-\item{start}{The start box}
+\item{start}{A \code{boxGrob}/\code{boxPropGrob}, or a list of boxes (many-to-one).}
 
-\item{end}{The end box}
+\item{end}{A \code{boxGrob}/\code{boxPropGrob}, or a list of boxes (one-to-many).}
 
-\item{type}{How the boxes are stacked. The \code{L} alternative generates a
-straight line up/down and then turns to righT/left for connecting with the end.
-The \code{-} generates a straight horizontal arrow. The \code{Z} creates a
-horizontal line that looks like a \code{Z} with 90 degree turns. The option
-\code{N} allows for vertical lines.}
+\item{type}{Connector type, see Details.}
 
-\item{subelmnt}{If we have a split box we can specify the right/left x as the
-connector point.}
+\item{subelmnt}{For split boxes, which sub-element to anchor to: \code{"left"} or \code{"right"}.}
 
-\item{lty_gp}{The \code{\link[grid]{gpar}} for the line. Set
-\code{connectGrob} option if you want to customize all the arrows at once.}
+\item{lty_gp}{A \code{\link[grid:gpar]{grid::gpar()}} controlling line appearance. Can also be set globally via
+\code{options(connectGrob = ...)}.}
 
-\item{arrow_obj}{The arrow spec according to \code{\link[grid]{arrow}}. Set
-\code{connectGrobArrow} option if you want to customize all the arrows at once.}
+\item{arrow_obj}{Arrow specification created with \code{\link[grid:arrow]{grid::arrow()}}. Can also be set globally via
+\code{options(connectGrobArrow = ...)}.}
+
+\item{split_pad}{Padding around the shared bend point for multi-box connections.
+Numeric values are interpreted as millimeters.}
+
+\item{margin}{For \code{type = "fan_in_top"}, the margin applied at the left and right ends of the
+end box top edge before distributing attachment points. Numeric values are interpreted
+as millimeters.}
+
+\item{label}{Optional text label for one-to-one connectors (e.g. \code{"yes"} / \code{"no"}).
+Only supported when both \code{start} and \code{end} are single boxes.}
+
+\item{label_gp}{A \code{\link[grid:gpar]{grid::gpar()}} controlling label appearance.}
+
+\item{label_bg_gp}{A \code{\link[grid:gpar]{grid::gpar()}} controlling label background appearance.
+Defaults to a white background with no border.}
+
+\item{label_pad}{Padding inside the label background. Numeric values are interpreted
+as millimeters.}
+
+\item{label_pos}{Where to place the label along the connector: \code{"mid"}, \code{"near_start"}, or \code{"near_end"}.}
+
+\item{label_offset}{Offset for the label away from the connector line.}
 
 \item{x}{The grob to print/plot}
 
 \item{...}{Passed to \code{\link[grid]{grid.draw}}}
 }
 \value{
-grob with an arrow
+\itemize{
+\item One-to-one: a \code{\link[grid:grid.grob]{grid::grob()}} with class \code{"connect_boxes"}.
+\item One-to-many or many-to-one: a list of grobs with class \code{"connect_boxes_list"}.
+}
 }
 \description{
-The function creates a grob that links two boxes together. It looks for
-which side it should attach the arrow, e.g. if the start is on top of
-the bottom it should attach to the bottom edge of ther start box and then
-to the top at the end.
+Creates connectors between boxes.
 }
 \details{
-The exact positions of the line is stored at the \code{attr(..., "line")}.
-If you want to draw your own custom line all you need to do is check which
-\code{attr(my_line, "line")$x} and \code{attr(my_line, "line")$y} you want
-to attach to and then create your own custom \code{\link[grid:grid.lines]{linesGrob}}.
+The function supports:
+\itemize{
+\item \strong{One-to-one}: a single start box connected to a single end box.
+\item \strong{One-to-many}: a single start box connected to multiple end boxes.
+\item \strong{Many-to-one}: multiple start boxes connected to a single end box.
+}
+
+Many-to-many connections are \strong{not supported}.
+
+If either \code{start} or \code{end} is a list, a list of connector grobs is returned
+(one per connection). Otherwise a single connector grob is returned.
+
+Each connector stores its computed geometry in \code{attr(x, "line")}
+(or for each element when a list is returned). This can be reused to construct
+custom connectors using the calculated coordinates.
+\subsection{Connector types}{
+
+\code{type} controls the connector shape:
+\itemize{
+\item \code{"vertical"}: straight vertical connector
+\item \code{"horizontal"}: straight horizontal connector
+\item \code{"L"}: vertical then horizontal (direction chosen automatically)
+\item \code{"-"}: straight horizontal connector at the end box y-position
+\item \code{"Z"}: horizontal connector with two 90-degree turns
+\item \code{"N"}: vertical connector with one horizontal segment
+When connecting to or from multiple boxes, all connectors share the same bend height.
+\item \code{"fan_in_top"}: many-to-one connector merging onto the \emph{top edge} of the end box
+Attachment points are evenly distributed along the edge (with optional \code{margin}),
+and all connectors share a common bend height.
+}
+
+For \code{type = "N"} and \code{type = "fan_in_top"} with multi-box connections, a shared
+bend position is computed so that the horizontal segment aligns visually across
+all connectors.
+}
+
+\subsection{Labels}{
+
+For one-to-one connectors you can add a text label (for example \code{"yes"} / \code{"no"}).
+The label is placed near the midpoint of the connector.
+The label is drawn with a white background for readability.
+Use \code{label_pad} to control padding around the text and \code{label_offset} to move
+the label away from the connector.
+}
+
+\subsection{Split boxes}{
+
+When connecting to or from a \code{boxPropGrob}, \code{subelmnt} controls whether the left
+or right sub-box x-coordinate is used as the anchor point.
+}
 }
 \examples{
 library(grid)

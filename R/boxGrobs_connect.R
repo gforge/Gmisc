@@ -1,159 +1,151 @@
-#' Connect boxes with an arrow
+#' Connect boxes with arrows
 #'
-#' The function creates a grob that links two boxes together. It looks for
-#' which side it should attach the arrow, e.g. if the start is on top of
-#' the bottom it should attach to the bottom edge of ther start box and then
-#' to the top at the end.
+#' Creates connectors between boxes.
 #'
-#' The exact positions of the line is stored at the \code{attr(..., "line")}.
-#' If you want to draw your own custom line all you need to do is check which
-#' \code{attr(my_line, "line")$x} and \code{attr(my_line, "line")$y} you want
-#' to attach to and then create your own custom \code{\link[grid:grid.lines]{linesGrob}}.
+#' The function supports:
 #'
-#' @param start The start box
-#' @param end The end box
-#' @param type How the boxes are stacked. The \code{L} alternative generates a
-#'  straight line up/down and then turns to righT/left for connecting with the end.
-#'  The \code{-} generates a straight horizontal arrow. The \code{Z} creates a
-#'  horizontal line that looks like a \code{Z} with 90 degree turns. The option
-#'  \code{N} allows for vertical lines.
-#' @param subelmnt If we have a split box we can specify the right/left x as the
-#'  connector point.
-#' @param lty_gp The \code{\link[grid]{gpar}} for the line. Set
-#' \code{connectGrob} option if you want to customize all the arrows at once.
-#' @param arrow_obj The arrow spec according to \code{\link[grid]{arrow}}. Set
-#' \code{connectGrobArrow} option if you want to customize all the arrows at once.
+#' - **One-to-one**: a single start box connected to a single end box.
+#' - **One-to-many**: a single start box connected to multiple end boxes.
+#' - **Many-to-one**: multiple start boxes connected to a single end box.
 #'
-#' @return grob with an arrow
-#' @export
+#' Many-to-many connections are **not supported**.
 #'
-#' @importFrom checkmate assert_class
+#' If either `start` or `end` is a list, a list of connector grobs is returned
+#' (one per connection). Otherwise a single connector grob is returned.
+#'
+#' Each connector stores its computed geometry in `attr(x, "line")`
+#' (or for each element when a list is returned). This can be reused to construct
+#' custom connectors using the calculated coordinates.
+#'
+#' ## Connector types
+#'
+#' `type` controls the connector shape:
+#'
+#' - `"vertical"`: straight vertical connector
+#' - `"horizontal"`: straight horizontal connector
+#' - `"L"`: vertical then horizontal (direction chosen automatically)
+#' - `"-"`: straight horizontal connector at the end box y-position
+#' - `"Z"`: horizontal connector with two 90-degree turns
+#' - `"N"`: vertical connector with one horizontal segment
+#'   When connecting to or from multiple boxes, all connectors share the same bend height.
+#' - `"fan_in_top"`: many-to-one connector merging onto the *top edge* of the end box
+#'   Attachment points are evenly distributed along the edge (with optional `margin`),
+#'   and all connectors share a common bend height.
+#'
+#' For `type = "N"` and `type = "fan_in_top"` with multi-box connections, a shared
+#' bend position is computed so that the horizontal segment aligns visually across
+#' all connectors.
+#'
+#' ## Labels
+#'
+#' For one-to-one connectors you can add a text label (for example `"yes"` / `"no"`).
+#' The label is placed near the midpoint of the connector.
+
+#' The label is drawn with a white background for readability.
+#' Use `label_pad` to control padding around the text and `label_offset` to move
+#' the label away from the connector.
+#'
+#' ## Split boxes
+#'
+#' When connecting to or from a `boxPropGrob`, `subelmnt` controls whether the left
+#' or right sub-box x-coordinate is used as the anchor point.
+#'
+#' @param start A `boxGrob`/`boxPropGrob`, or a list of boxes (many-to-one).
+#' @param end A `boxGrob`/`boxPropGrob`, or a list of boxes (one-to-many).
+#' @param type Connector type, see Details.
+#' @param subelmnt For split boxes, which sub-element to anchor to: `"left"` or `"right"`.
+#' @param lty_gp A [grid::gpar()] controlling line appearance. Can also be set globally via
+#'   `options(connectGrob = ...)`.
+#' @param arrow_obj Arrow specification created with [grid::arrow()]. Can also be set globally via
+#'   `options(connectGrobArrow = ...)`.
+#' @param split_pad Padding around the shared bend point for multi-box connections.
+#'   Numeric values are interpreted as millimeters.
+#' @param margin For `type = "fan_in_top"`, the margin applied at the left and right ends of the
+#'   end box top edge before distributing attachment points. Numeric values are interpreted
+#'   as millimeters.
+#' @param label Optional text label for one-to-one connectors (e.g. `"yes"` / `"no"`).
+#'   Only supported when both `start` and `end` are single boxes.
+#' @param label_gp A [grid::gpar()] controlling label appearance.
+#' @param label_pos Where to place the label along the connector: `"mid"`, `"near_start"`, or `"near_end"`.
+#' @param label_offset Offset for the label away from the connector line.
+#' @param label_pad Padding inside the label background. Numeric values are interpreted
+#'   as millimeters.
+#' @param label_bg_gp A [grid::gpar()] controlling label background appearance.
+#'   Defaults to a white background with no border.
+#'
+#' @return
+#' - One-to-one: a [grid::grob()] with class `"connect_boxes"`.
+#' - One-to-many or many-to-one: a list of grobs with class `"connect_boxes_list"`.
+#'
 #' @family flowchart components
+#' @export
 #' @rdname connect
 #' @example inst/examples/connectGrob_example.R
+#' @md
 connectGrob <- function(
-                        start,
-                        end,
-                        type = c("vertical", "horizontal", "L", "-", "Z", "N"),
-                        subelmnt = c("right", "left"),
-                        lty_gp = getOption("connectGrob",
-                          default = gpar(fill = "black")
-                        ),
-                        arrow_obj = getOption("connectGrobArrow",
-                          default = arrow(ends = "last", type = "closed")
-                        )) {
-  assert_class(start, "box")
-  assert_class(end, "box")
-  assert_class(lty_gp, "gpar")
-  assert_class(arrow_obj, "arrow")
-
-  # We use the coordinates provided with the boxes
-  start <- coords(start)
-  end <- coords(end)
-
+    start,
+    end,
+    type = c("vertical", "horizontal", "L", "-", "Z", "N", "fan_in_top"),
+    subelmnt = c("right", "left"),
+    lty_gp = getOption("connectGrob", default = gpar(fill = "black")),
+    arrow_obj = getOption("connectGrobArrow", default = arrow(ends = "last", type = "closed")),
+    split_pad = unit(2, "mm"),
+    margin = NULL,
+    label = NULL,
+    label_gp = grid::gpar(cex = 0.9),
+    label_bg_gp = grid::gpar(fill = "white", col = NA),
+    label_pad = unit(1.5, "mm"),
+    label_pos = c("mid", "near_start", "near_end"),
+    label_offset = unit(2, "mm")
+) {
   type <- match.arg(type)
-  if (missing(subelmnt)) {
-    subelmnt <- ""
-  } else {
-    subelmnt <- sprintf("%s_", match.arg(subelmnt))
+  label_pos <- match.arg(label_pos)
+  
+  if (prIsBoxList(start) && prIsBoxList(end)) {
+    stop("Both 'start' and 'end' cannot be lists (not implemented).", call. = FALSE)
   }
-  getX4elmnt <- function(elmnt, side = c("left", "right", "x")) {
-    side <- match.arg(side)
-    if (side == "x" && !is.null(elmnt[[sprintf("%s%s", subelmnt, side)]])) {
-      return(elmnt[[sprintf("%s%s", subelmnt, side)]])
-    } else {
-      return(elmnt[[side]])
-    }
+  
+  # Labels currently supported only for one-to-one
+  if (!is.null(label) && (prIsBoxList(start) || prIsBoxList(end))) {
+    stop("'label' is only supported for one-to-one connections.", call. = FALSE)
   }
-  line <- list()
-  cnvrt <- function(val) {
-    convertHeight(val, unitTo = "mm", valueOnly = TRUE)
+  
+  if (prIsBoxList(start)) {
+    if (type == "fan_in_top") {
+      return(prConnectManyToOneFanTop(
+        starts = start,
+        end = end,
+        subelmnt = subelmnt,
+        lty_gp = lty_gp,
+        arrow_obj = arrow_obj,
+        margin = margin,
+        split_pad = split_pad
+      ))
+    }
+    return(prConnectManyToOne(start, end, type, subelmnt, lty_gp, arrow_obj, split_pad = split_pad))
   }
-  if (type %in% c("L", "-")) {
-    if (type == "-") {
-      line$y <- unit.c(end$y, end$y, end$y)
-    } else {
-      line$y <- unit.c(start$bottom, end$y, end$y)
-    }
-    if (cnvrt(getX4elmnt(start, "x")) < cnvrt(getX4elmnt(end, "x"))) {
-      line$x <- unit.c(getX4elmnt(start, "x"), getX4elmnt(start, "x"), end$left)
-    } else {
-      line$x <- unit.c(getX4elmnt(start, "x"), getX4elmnt(start, "x"), end$right)
-    }
-  } else if (type == "Z") {
-    if (prCnvrtX(start$x) < prCnvrtX(end$x)) {
-      line$x <- unit.c(
-        start$right,
-        start$right + distance(start, end, type = "h", half = TRUE),
-        start$right + distance(start, end, type = "h", half = TRUE),
-        end$left
-      )
-    } else {
-      line$x <- unit.c(
-        start$left,
-        start$left - distance(start, end, type = "h", half = TRUE),
-        start$left - distance(start, end, type = "h", half = TRUE),
-        end$right
-      )
-    }
-
-    line$y <- unit.c(
-      start$y,
-      start$y,
-      end$y,
-      end$y
-    )
-  } else if (type == "N") {
-    dist_y <- distance(start, end, type = "v", half = TRUE)
-    if (prCnvrtY(start$y) < prCnvrtY(end$y)) {
-      line$y <- unit.c(
-        start$top,
-        start$top + dist_y,
-        start$top + dist_y,
-        end$bottom
-      )
-    } else {
-      line$y <- unit.c(
-        start$bottom,
-        start$bottom - dist_y,
-        start$bottom - dist_y,
-        end$top
-      )
-    }
-
-    line$x <- unit.c(
-      getX4elmnt(start, "x"),
-      getX4elmnt(start, "x"),
-      getX4elmnt(end, "x"),
-      getX4elmnt(end, "x")
-    )
-  } else if (type == "vertical") {
-    line$x <- unit.c(getX4elmnt(start, "x"), getX4elmnt(end, "x"))
-    if (cnvrt(start$y) < cnvrt(end$y)) {
-      line$y <- unit.c(start$top, end$bottom)
-    } else {
-      line$y <- unit.c(start$bottom, end$top)
-    }
-  } else {
-    line$y <- unit.c(start$y, end$y)
-    if (cnvrt(getX4elmnt(start, "x")) < cnvrt(getX4elmnt(end, "x"))) {
-      line$x <- unit.c(start$right, end$left)
-    } else {
-      line$x <- unit.c(start$left, end$right)
-    }
+  
+  if (prIsBoxList(end)) {
+    return(prConnectOneToMany(start, end, type, subelmnt, lty_gp, arrow_obj, split_pad = split_pad))
   }
-
-  lg <- linesGrob(
-    x = line$x,
-    y = line$y,
-    gp = lty_gp,
-    arrow = arrow_obj
-  )
-  structure(lg,
-    line = line,
-    class = c("connect_boxes", class(lg))
+  
+  prConnect1(
+    start = start,
+    end = end,
+    type = type,
+    subelmnt = subelmnt,
+    lty_gp = lty_gp,
+    arrow_obj = arrow_obj,
+    label = label,
+    label_gp = label_gp,
+    label_bg_gp = label_bg_gp,
+    label_pad = label_pad,
+    label_pos = label_pos,
+    label_offset = label_offset
   )
 }
+
+
 
 #' The print/plot calls the \code{\link[grid]{grid.draw}} function on the object
 #' @param x The grob to print/plot
@@ -167,3 +159,16 @@ print.connect_boxes <- function(x, ...) {
 #' @rdname connect
 #' @export
 plot.connect_boxes <- print.connect_boxes
+
+
+#' @rdname connect
+#' @export
+print.connect_boxes_list <- function(x, ...) {
+  for (g in x) grid.draw(g, ...)
+  invisible(x)
+}
+
+#' @rdname connect
+#' @export
+plot.connect_boxes_list <- print.connect_boxes_list
+

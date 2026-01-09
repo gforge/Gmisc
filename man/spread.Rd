@@ -6,25 +6,51 @@
 \alias{spreadHorizontal}
 \title{Spread boxes}
 \usage{
-spreadVertical(..., .from = NULL, .to = NULL, .type = c("between", "center"))
+spreadVertical(
+  ...,
+  .from = NULL,
+  .to = NULL,
+  .margin = unit(0, "npc"),
+  .type = c("between", "center")
+)
 
-spreadHorizontal(..., .from = NULL, .to = NULL, .type = c("between", "center"))
+spreadHorizontal(
+  ...,
+  .from = NULL,
+  .to = NULL,
+  .margin = unit(0, "npc"),
+  .type = c("between", "center")
+)
 }
 \arguments{
 \item{...}{A set of boxes to spread. Can also be a \code{list} of boxes.}
 
-\item{.from}{A box that the spread originates from. If left empty the entire \code{viewport} will be used.}
+\item{.from}{Starting point of the span. Can be a box, a coordinate/unit, or a
+numeric value interpreted as \code{npc}. If only \code{.from} is provided, \code{.to} defaults
+to \verb{1 npc}.}
 
-\item{.to}{A box that the spread ends at. If left empty the entire \code{viewport} will be used.}
+\item{.to}{Ending point of the span. Can be a box, a coordinate/unit, or a
+numeric value interpreted as \code{npc}. If only \code{.to} is provided, \code{.from} defaults
+to \verb{0 npc}.}
 
-\item{.type}{If \code{between} the space between the boxes will be identical while
-\code{center} has each box's center is equally distributed.}
+\item{.margin}{Optional padding applied at both ends of the span. Can be a
+\code{\link[grid:unit]{grid::unit}} or a numeric value interpreted as \code{npc}. Applied whether the
+span comes from \code{.from} / \code{.to} or the viewport.}
+
+\item{.type}{If \code{between}, the space \emph{between} boxes is identical. If \code{center},
+the centers of the boxes are equally distributed across the span.}
 }
 \value{
-\code{list} with the boxes that have been spread
+A \code{list} with the boxes that have been spread.
 }
 \description{
-Spreads a set of \code{\link{boxGrob}}/\code{\link{boxPropGrob}} in either horizontal or vertical direction.
+Spreads a set of \code{\link{boxGrob}}/\code{\link{boxPropGrob}} in either horizontal or vertical
+direction within a given span.
+}
+\details{
+The span can be defined explicitly using \code{.from} / \code{.to}, or implicitly by the
+current viewport. Numeric values are interpreted as proportions of the viewport
+(\code{npc} units).
 }
 \examples{
 library(grid)
