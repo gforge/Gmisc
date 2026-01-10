@@ -83,33 +83,33 @@
 #' @example inst/examples/connectGrob_example.R
 #' @md
 connectGrob <- function(
-    start,
-    end,
-    type = c("vertical", "horizontal", "L", "-", "Z", "N", "fan_in_top"),
-    subelmnt = c("right", "left"),
-    lty_gp = getOption("connectGrob", default = gpar(fill = "black")),
-    arrow_obj = getOption("connectGrobArrow", default = arrow(ends = "last", type = "closed")),
-    split_pad = unit(2, "mm"),
-    margin = NULL,
-    label = NULL,
-    label_gp = grid::gpar(cex = 0.9),
-    label_bg_gp = grid::gpar(fill = "white", col = NA),
-    label_pad = unit(1.5, "mm"),
-    label_pos = c("mid", "near_start", "near_end"),
-    label_offset = unit(2, "mm")
+  start,
+  end,
+  type = c("vertical", "horizontal", "L", "-", "Z", "N", "fan_in_top"),
+  subelmnt = c("right", "left"),
+  lty_gp = getOption("connectGrob", default = gpar(fill = "black")),
+  arrow_obj = getOption("connectGrobArrow", default = arrow(ends = "last", type = "closed")),
+  split_pad = unit(2, "mm"),
+  margin = unit(2, "mm"),
+  label = NULL,
+  label_gp = grid::gpar(cex = 0.9),
+  label_bg_gp = grid::gpar(fill = "white", col = NA),
+  label_pad = unit(1.5, "mm"),
+  label_pos = c("mid", "near_start", "near_end"),
+  label_offset = unit(2, "mm")
 ) {
   type <- match.arg(type)
   label_pos <- match.arg(label_pos)
-  
+
   if (prIsBoxList(start) && prIsBoxList(end)) {
     stop("Both 'start' and 'end' cannot be lists (not implemented).", call. = FALSE)
   }
-  
+
   # Labels currently supported only for one-to-one
   if (!is.null(label) && (prIsBoxList(start) || prIsBoxList(end))) {
     stop("'label' is only supported for one-to-one connections.", call. = FALSE)
   }
-  
+
   if (prIsBoxList(start)) {
     if (type == "fan_in_top") {
       return(prConnectManyToOneFanTop(
@@ -124,11 +124,11 @@ connectGrob <- function(
     }
     return(prConnectManyToOne(start, end, type, subelmnt, lty_gp, arrow_obj, split_pad = split_pad))
   }
-  
+
   if (prIsBoxList(end)) {
     return(prConnectOneToMany(start, end, type, subelmnt, lty_gp, arrow_obj, split_pad = split_pad))
   }
-  
+
   prConnect1(
     start = start,
     end = end,
@@ -144,7 +144,6 @@ connectGrob <- function(
     label_offset = label_offset
   )
 }
-
 
 
 #' The print/plot calls the \code{\link[grid]{grid.draw}} function on the object
@@ -171,4 +170,3 @@ print.connect_boxes_list <- function(x, ...) {
 #' @rdname connect
 #' @export
 plot.connect_boxes_list <- print.connect_boxes_list
-

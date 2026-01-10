@@ -17,7 +17,7 @@ connectGrob(
   arrow_obj = getOption("connectGrobArrow", default = arrow(ends = "last", type =
     "closed")),
   split_pad = unit(2, "mm"),
-  margin = NULL,
+  margin = unit(2, "mm"),
   label = NULL,
   label_gp = grid::gpar(cex = 0.9),
   label_bg_gp = grid::gpar(fill = "white", col = NA),
@@ -141,27 +141,30 @@ library(grid)
 grid.newpage()
 
 # Initiate the boxes that we want to connect
-start <- boxGrob("Top", x = .5, y = .8)
-end <- boxGrob("Bottom", x = .5, y = .2)
-side <- boxPropGrob("Side", "Left", "Right", prop = .3, x = .2, y = .8)
-sub_side_left <- boxGrob("Left", x = attr(side, "coords")$left_x, y = .5)
-sub_side_right <- boxGrob("Right", x = attr(side, "coords")$right_x, y = .5)
-exclude <- boxGrob("Exclude:\n - Too sick\n - Prev. surgery", x = .8, y = .5, just = "left")
+boxes <- list(
+  start = boxGrob("Top", x = .5, y = .8),
+  end = boxGrob("Bottom", x = .5, y = .2),
+  side = boxPropGrob("Side", "Left", "Right", prop = .3, x = .2, y = .8),
+  exclude = boxGrob("Exclude:\n - Too sick\n - Prev. surgery", x = .8, y = .5, just = "left")
+)
 
 # Connect the boxes and print/plot them
-connectGrob(start, end, "vertical")
-connectGrob(start, side, "horizontal")
-connectGrob(side, sub_side_left, "v", "l")
-connectGrob(side, sub_side_right, "v", "r")
-connectGrob(start, exclude, "L")
+connectGrob(boxes$start, boxes$end, "vertical")
+connectGrob(boxes$start, boxes$side, "horizontal")
+connectGrob(boxes$start, boxes$exclude, "L")
 
-# Print the grobs
-start
-end
-side
-exclude
-sub_side_left
-sub_side_right
+# We can also connect to/from lists
+side_boxes <- list(
+  left = boxGrob("Left", x = attr(boxes$side, "coords")$left_x, y = .5),
+  right = boxGrob("Right", x = attr(boxes$side, "coords")$right_x, y = .5)
+)
+
+connectGrob(boxes$side, side_boxes$left, "v", "l")
+connectGrob(boxes$side, side_boxes$right, "v", "r")
+
+# Print the boxes
+boxes
+side_boxes
 }
 \seealso{
 Other flowchart components: 

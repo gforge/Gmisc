@@ -9,7 +9,8 @@ moveBox(
   x = NULL,
   y = NULL,
   space = c("absolute", "relative"),
-  just = NULL
+  just = NULL,
+  .subelement = NULL
 )
 }
 \arguments{
@@ -26,9 +27,13 @@ moveBox(
 (1) you only want to change the justification in the vertical direction you can retain the
 existing justification by using \code{NA}, e.g. \code{c(NA, 'top')}, (2) if you specify only one string
 and that string is either \code{top} or \code{bottom} it will assume vertical justification.}
+
+\item{.subelement}{If a \code{list} of boxes is provided, this can be a name, index, or a vector of names/indices
+to target a single nested element to move; the function will return the original list with the
+targeted element replaced by its moved version.}
 }
 \value{
-The element with updated
+The element with updated viewport and coordinates
 }
 \description{
 Moves a \code{\link{boxGrob}}/\code{\link{boxPropGrob}} by modifying it's \code{\link[grid:viewport]{viewport}}.
@@ -39,8 +44,41 @@ to each other and depend on each box's width/height.
 library(grid)
 grid.newpage()
 
-box <- boxGrob("A simple box", x = .5, y = .8)
-moveBox(box, x = -.2, space = "relative")
+pushViewport(viewport(y = 0.85, height = unit(.3, "npc")))
+grid.rect(gp = gpar(col = "steelblue"))
+grid.text("Example 1", y = .9, x = unit(10, "mm"), just = "left")
+box <- boxGrob("A simple box", x = .5, y = .5) # Start at the middle
+moveBox(box, x = -.2, space = "relative") # Move to the left
+popViewport()
+
+
+# Advanced example: create a nested list of treatment boxes, spread them horizontally,
+# then move a single nested element (`Ibuprofen`) using `.subelement` via a pipe.
+pushViewport(viewport(y = 0.35, height = unit(.7, "npc") - unit(2, "mm")))
+grid.rect(gp = gpar(col = "lightgreen"))
+
+boxes <- list(
+    population = boxGrob("Population"),
+    treatment = list(
+        Ibuprofen = boxGrob("Ibuprofen"),
+        Paracetamol = boxGrob("Paracetamol"),
+        Aspirin = boxGrob("Aspirin")
+    ),
+    followup = paste("Follow-up 4 weeks:",
+        " - EQ-5D 5L",
+        " - Lab",
+        sep = "\n"
+    ) |>
+        boxGrob(just = "left")
+) |>
+    alignHorizontal(.position = "center") |>
+    spreadVertical() |>
+    spreadHorizontal(.from = unit(0.1, "npc"), .to = unit(0.9, "npc"), .type = "center", .subelement = "treatment") |>
+    moveBox(y = -0.1, space = "relative", .subelement = c("treatment", "Ibuprofen"))
+
+boxes
+connectGrob(boxes$population, boxes$treatment, type = "N")
+connectGrob(boxes$treatment, boxes$followup, type = "fan_in_top")
 }
 \seealso{
 Other flowchart components: 

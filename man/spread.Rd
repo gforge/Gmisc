@@ -63,37 +63,22 @@ current viewport. Numeric values are interpreted as proportions of the viewport
 library(grid)
 grid.newpage()
 
-box1 <- boxGrob("B1", x = .2, y = .8)
-box2 <- boxGrob("B2\n\n\neach\nbox\neven\nspace\nbetween", x = .2, y = .8)
-box3 <- boxGrob("B3", x = .2, y = .8)
-box4 <- boxGrob("B4", x = .2, y = .8)
-box5 <- boxGrob("B5", x = .2, y = .8)
+# Create a set of boxes
+start <- boxGrob("Top", x = .5, y = .8)
+end <- boxGrob("Bottom", x = .5, y = .2)
+side <- boxPropGrob("Side", "Left", "Right", prop = .3, x = .2, y = .8)
+exclude <- boxGrob("Exclude:\n - Too sick\n - Prev. surgery", x = .8, y = .5, just = "left")
 
-spread_boxes <- spreadVertical(box1,
-                               box2,
-                               box3,
-                               a = box4,
-                               box5, 
-                               .type = "between")
-for (b in spread_boxes) {
-  print(b)
-}
+# We can chain the spread operations
+boxes <- spreadVertical(
+  start = start,
+  middle = list(side, exclude),
+  end = end
+) |>
+  spreadHorizontal(.subelement = "middle", .from = 0.2, .to = 0.8)
 
-box1 <- boxGrob("B1\n\nanother group\ncenter oriented", x = .6, y = .8)
-box2 <- boxGrob("B2", x = .6, y = .8)
-box3 <- boxGrob("B3", x = .6, y = .8)
-box4 <- boxGrob("B4", x = .6, y = .8)
-box5 <- boxGrob("B5", x = .6, y = .8)
-
-spread_boxes <- spreadVertical(box1,
-                               box2,
-                               box3,
-                               a = box4,
-                               box5, 
-                               .type = "center")
-for (b in spread_boxes) {
-  print(b)
-}
+# Now we can print them all at once
+boxes
 }
 \seealso{
 Other flowchart components: 

@@ -1,36 +1,23 @@
 library(grid)
 grid.newpage()
 
-box <- boxGrob("A cool\nreference\nbox",
-               x = .5, y = .8,
-               box_gp = gpar(fill = "#ADB5C7"))
-another_box <- boxGrob("A horizontal box", x = .1, y =  .5)
-yet_another_box <- boxGrob("Another horizontal box", x = .8, y = .3)
+# Create a reference box
+box <- boxGrob("A cool reference box",
+  x = .5, y = .8,
+  box_gp = gpar(fill = "#ADB5C7")
+)
 
-alignedBoxes <- alignHorizontal(box,
-                                another_box,
-                                yet_another_box,
-                                .position = "right")
+# Create a group of boxes to align
+boxes <- list(
+  another_box = boxGrob("A horizontal box", x = .1, y = .5),
+  yet_another_box = boxGrob("Another horizontal box", x = .8, y = .3)
+)
 
+# Align the group and then individual boxes within that group
+aligned_boxes <- boxes |>
+  alignHorizontal(reference = box, .position = "right") |>
+  alignVertical(reference = .5, .position = "center")
+
+# Print the reference and the aligned boxes
 box
-for (b in alignedBoxes) {
-  print(b)
-}
-
-
-vert_box <- boxGrob("Vert", 
-                    x = .8, y = .3,
-                    box_gp = gpar(fill = "darkgreen"),
-                    txt_gp = gpar(col = "white"))
-another_vert_box <- boxGrob("Another vertical", 
-                            x = .1, y =  .5,
-                            box_gp = gpar(fill = "darkgreen"),
-                            txt_gp = gpar(col = "white"))
-
-alignedBoxes <- alignVertical(box,
-                              vert_box,
-                              another_vert_box,
-                              .position = "bottom")
-for (b in alignedBoxes) {
-  print(b)
-}
+aligned_boxes
