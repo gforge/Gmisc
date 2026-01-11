@@ -30,7 +30,7 @@
 #' @inheritParams calculateLinesAndArrow
 #' @examples
 #' library(grid)
-#' grid.newpage()
+#' grid::grid.newpage()
 #' arrowGrob <- bezierArrowGradient(
 #'   x = c(.1, .3, .6, .9),
 #'   y = c(0.2, 0.2, 0.9, 0.9)
@@ -65,10 +65,10 @@ bezierArrowGradient <- function(x = c(0.2, .7, .3, .9),
   }
 
   if (!length(rm_intersect) == 1L ||
-      !is.numeric(rm_intersect)    ||
-      rm_intersect %% 1 != 0       ||
-      rm_intersect < 0L           ||
-      rm_intersect > 3L) {
+    !is.numeric(rm_intersect) ||
+    rm_intersect %% 1 != 0 ||
+    rm_intersect < 0L ||
+    rm_intersect > 3L) {
     stop("`rm_intersect` must be 0, 1, 2, or 3 (see ?calculateLinesAndArrow).")
   }
 

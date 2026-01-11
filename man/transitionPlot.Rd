@@ -163,7 +163,7 @@ transition_matrix[1, ] <- 200 * c(.5, .25, .25)
 transition_matrix[2, ] <- 540 * c(.75, .10, .15)
 transition_matrix[3, ] <- 340 * c(0, .2, .80)
 
-grid.newpage()
+grid::grid.newpage()
 transitionPlot(transition_matrix,
   box_txt = c("First", "Second", "Third"),
   type_of_arrow = "simple",
@@ -183,7 +183,7 @@ end_box_clr <- c(
   colorRampPalette(c(start_box_clr[2], "#000000"))(10)[2]
 )
 # Create a new grid
-grid.newpage()
+grid::grid.newpage()
 transitionPlot(transition_matrix,
   box_prop = box_prop,
   fill_start_box = start_box_clr, fill_end_box = end_box_clr,

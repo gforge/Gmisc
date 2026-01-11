@@ -73,6 +73,7 @@ aligned_boxes
 Other flowchart components: 
 \code{\link{boxGrob}()},
 \code{\link{boxPropGrob}()},
+\code{\link{boxShapes}},
 \code{\link{connectGrob}()},
 \code{\link{coords}()},
 \code{\link{distance}()},

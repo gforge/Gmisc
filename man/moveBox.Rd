@@ -73,18 +73,28 @@ boxes <- list(
 ) |>
     alignHorizontal(.position = "center") |>
     spreadVertical() |>
-    spreadHorizontal(.from = unit(0.1, "npc"), .to = unit(0.9, "npc"), .type = "center", .subelement = "treatment") |>
-    moveBox(y = -0.1, space = "relative", .subelement = c("treatment", "Ibuprofen"))
+    spreadHorizontal(
+        .from = unit(0.1, "npc"),
+        .to = unit(0.9, "npc"),
+        .type = "center",
+        .subelement = "treatment"
+    ) |>
+    moveBox(
+        y = 0.1,
+        space = "relative",
+        .subelement = c("treatment", "Ibuprofen")
+    )
 
 boxes
 connectGrob(boxes$population, boxes$treatment, type = "N")
-connectGrob(boxes$treatment, boxes$followup, type = "fan_in_top")
+connectGrob(boxes$treatment, boxes$followup, type = "N")
 }
 \seealso{
 Other flowchart components: 
 \code{\link{align}},
 \code{\link{boxGrob}()},
 \code{\link{boxPropGrob}()},
+\code{\link{boxShapes}},
 \code{\link{connectGrob}()},
 \code{\link{coords}()},
 \code{\link{distance}()},

@@ -153,6 +153,19 @@ connectGrob <- function(
 #' @export
 print.connect_boxes <- function(x, ...) {
   grid.draw(x, ...)
+  # If labels attached, draw them on top
+  labels <- attr(x, "connector_labels")
+  if (!is.null(labels)) {
+    gp <- attr(x, "connector_label_gp")
+    if (is.null(gp)) gp <- gpar(cex = 0.9)
+    bg_gp <- attr(x, "connector_label_bg_gp")
+    if (is.null(bg_gp)) bg_gp <- gpar(fill = "white", col = NA)
+    off <- attr(x, "connector_label_offset")
+    if (is.null(off)) off <- list(x_offset = unit(0, "mm"), y_offset = unit(0, "mm"))
+    labelConnector(list(x), labels = labels, x_offset = off$x_offset, y_offset = off$y_offset, gp = gp, bg_gp = bg_gp)
+  }
+
+  invisible(x)
 }
 
 #' @rdname connect
@@ -164,6 +177,18 @@ plot.connect_boxes <- print.connect_boxes
 #' @export
 print.connect_boxes_list <- function(x, ...) {
   for (g in x) grid.draw(g, ...)
+  # If labels attached, draw them on top
+  labels <- attr(x, "connector_labels")
+  if (!is.null(labels)) {
+    gp <- attr(x, "connector_label_gp")
+    if (is.null(gp)) gp <- gpar(cex = 0.9)
+    bg_gp <- attr(x, "connector_label_bg_gp")
+    if (is.null(bg_gp)) bg_gp <- gpar(fill = "white", col = NA)
+    off <- attr(x, "connector_label_offset")
+    if (is.null(off)) off <- list(x_offset = unit(0, "mm"), y_offset = unit(0, "mm"))
+    labelConnector(x, labels = labels, x_offset = off$x_offset, y_offset = off$y_offset, gp = gp, bg_gp = bg_gp)
+  }
+
   invisible(x)
 }
 

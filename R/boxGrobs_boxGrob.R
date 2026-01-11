@@ -15,6 +15,11 @@
 #' @param box_gp The \code{\link[grid]{gpar}} style to apply to the box function of `box_fn` below.
 #' @param box_fn Function to create box for the text. Parameters of `x=0.5`, `y=0.5` and `box_gp` will
 #'  be passed to this function and return a \code{grob} object.
+#' @seealso The package provides several convenience shape helpers that can be
+#' passed to `boxGrob(..., box_fn = ...)`: \code{boxDiamondGrob},
+#' \code{boxEllipseGrob}, \code{boxRackGrob}, \code{boxServerGrob},
+#' \code{boxDatabaseGrob}, \code{boxDocumentGrob}, \code{boxDocumentsGrob}, and
+#' \code{boxTapeGrob}. For examples see the vignette: \code{vignette("Grid-based_flowcharts", package = "Gmisc")}.
 #' @param name a character identifier for the \code{grob}. Used to find the \code{grob} on the display
 #'  list and/or as a child of another grob.
 #'
@@ -26,8 +31,9 @@
 #' @family flowchart components
 #' @order 1
 #' @examples
-#' library(grid)
-#' grid.newpage()
+#' # Note: grid functions are explicitly namespaced in examples to avoid
+#' # relying on attaching the grid package in R CMD check.
+#' grid::grid.newpage()
 #' boxGrob("My box")
 boxGrob <- function(label,
                     y = unit(.5, "npc"),
@@ -36,10 +42,12 @@ boxGrob <- function(label,
                     height,
                     just = "center",
                     bjust = "center",
-                    txt_gp = getOption("boxGrobTxt", default = gpar(color = "black",
-                                                                    cex = 1)),
-                    box_gp = getOption("boxGrob", default = gpar(fill = "white")) ,
-                    box_fn  = roundrectGrob,
+                    txt_gp = getOption("boxGrobTxt", default = gpar(
+                      color = "black",
+                      cex = 1
+                    )),
+                    box_gp = getOption("boxGrob", default = gpar(fill = "white")),
+                    box_fn = roundrectGrob,
                     name = NULL) {
   assert(
     checkString(label),
@@ -59,7 +67,27 @@ boxGrob <- function(label,
   x <- prAsUnit(x)
   y <- prAsUnit(y)
 
-  txt_padding <- unit(4 * ifelse(is.null(txt_gp$cex), 1, txt_gp$cex), "mm")
+  # Slightly larger default padding so specialized shapes (diamond/ellipse)
+  # have breathing room and text doesn't sit too tight against the border.
+  txt_padding <- unit(6 * ifelse(is.null(txt_gp$cex), 1, txt_gp$cex), "mm")
+
+  # Call the box function early to collect any suggested padding attributes
+  # (e.g., diamonds may request extra padding). This allows the padding to
+  # influence text layout and the computed box width/height.
+  rect <- do.call(box_fn, list(x = .5, y = .5, gp = box_gp))
+  extra_pad <- attr(rect, "box_fn_padding")
+  if (!is.null(extra_pad)) {
+    tryCatch(
+      {
+        txt_padding <- txt_padding + extra_pad
+      },
+      error = function(e) {
+        # ignore silently if attribute is not a proper unit
+      }
+    )
+  }
+
+  # Create text grob using the (possibly) adjusted padding
   txt <- textGrob(
     label = label,
     x = prGetX4Txt(just, txt_padding), y = .5,
@@ -86,8 +114,6 @@ boxGrob <- function(label,
     height = height,
     just = bjust
   )
-
-  rect <- do.call(box_fn, list(x = .5, y = .5, gp = box_gp))
 
   gl <- grobTree(
     gList(

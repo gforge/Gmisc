@@ -30,7 +30,7 @@
 #' @family flowchart components
 #' @examples
 #' library(grid)
-#' grid.newpage()
+#' grid::grid.newpage()
 #' boxPropGrob("Main label", "Left text", "Right text", prop = .3)
 boxPropGrob <- function(label,
                         label_left,
@@ -88,8 +88,10 @@ boxPropGrob <- function(label,
     y = unit(5, "mm")
   )
 
-  label_measures <- list(width = 0,
-                         height = 0)
+  label_measures <- list(
+    width = 0,
+    height = 0
+  )
 
   main_label <- NULL
   if (!missing(label)) {
@@ -106,26 +108,31 @@ boxPropGrob <- function(label,
     main_label <- grobTree(
       name = "main_label",
       gList(roundrectGrob(gp = box_highlight_gp), tg),
-      vp = viewport(height = unit(label_measures$height, "mm"),
-                    y = 1,
-                    just = "top")
+      vp = viewport(
+        height = unit(label_measures$height, "mm"),
+        y = 1,
+        just = "top"
+      )
     )
-
   }
 
   sublabel <- list()
   if (!missing(label_left)) {
-    sublabel$left <- prBuildSubLabel(label = label_left,
-                                     prop = prop,
-                                     txt_gp = txt_left_gp,
-                                     side = "left")
+    sublabel$left <- prBuildSubLabel(
+      label = label_left,
+      prop = prop,
+      txt_gp = txt_left_gp,
+      side = "left"
+    )
   }
 
   if (!missing(label_right)) {
-    sublabel$right <- prBuildSubLabel(label = label_right,
-                                      prop = prop,
-                                      txt_gp = txt_right_gp,
-                                      side = "right")
+    sublabel$right <- prBuildSubLabel(
+      label = label_right,
+      prop = prop,
+      txt_gp = txt_right_gp,
+      side = "right"
+    )
   }
 
   space_between_label_and_sublabel <- unit(0, "mm")
@@ -178,7 +185,7 @@ boxPropGrob <- function(label,
         prCnvrtX(spacer$x)
     }
 
-    base_width <- max(label_measures$width, total_sublabel_width  )
+    base_width <- max(label_measures$width, total_sublabel_width)
 
     # Due to the proportions we may need to force a larger window
     get_min_width <- function(sl) {
@@ -261,17 +268,19 @@ prBuildSubLabel <- function(label,
                             side = c("left", "right")) {
   side <- match.arg(side)
   if (side == "left") {
-    x = prop / 2
-    width = prop
+    x <- prop / 2
+    width <- prop
   } else {
     x <- prop + (1 - prop) / 2
     width <- 1 - prop
   }
 
-  vp <- viewport(x = x, width = width,
-                 y = 1,
-                 just = c('centre', 'top'),
-                 name = paste0("vp_label_", side))
+  vp <- viewport(
+    x = x, width = width,
+    y = 1,
+    just = c("centre", "top"),
+    name = paste0("vp_label_", side)
+  )
   tg <- textGrob(
     label = label,
     x = .5, y = 0.5,
@@ -281,6 +290,7 @@ prBuildSubLabel <- function(label,
     gp = txt_gp
   )
   structure(tg,
-            height = prCnvrtY(grobHeight(tg) + unit(.5, units = "lines")),
-            width = prCnvrtX(grobWidth(tg) + unit(.5, units = "lines")))
+    height = prCnvrtY(grobHeight(tg) + unit(.5, units = "lines")),
+    width = prCnvrtX(grobWidth(tg) + unit(.5, units = "lines"))
+  )
 }

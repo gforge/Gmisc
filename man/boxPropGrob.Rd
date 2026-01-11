@@ -80,13 +80,14 @@ that has its own background.
 }
 \examples{
 library(grid)
-grid.newpage()
+grid::grid.newpage()
 boxPropGrob("Main label", "Left text", "Right text", prop = .3)
 }
 \seealso{
 Other flowchart components: 
 \code{\link{align}},
 \code{\link{boxGrob}()},
+\code{\link{boxShapes}},
 \code{\link{connectGrob}()},
 \code{\link{coords}()},
 \code{\link{distance}()},

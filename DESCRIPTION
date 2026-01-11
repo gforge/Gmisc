@@ -4,6 +4,8 @@ Title: Descriptive Statistics, Transition Plots, and More
 Authors@R: c(
     person(given = "Max", family = "Gordon",
            email = "max@gforge.se", role = c("aut", "cre")))
+Author: Max Gordon [aut, cre]
+Maintainer: Max Gordon <max@gforge.se>
 Description: Utilities for common medical-statistics graphics
     and tables, including automatic creation of publication-ready "Table 1"
     summaries; transition (Sankey) plots; flow-chart helpers that extend the

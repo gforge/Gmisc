@@ -10,6 +10,7 @@
 #' @order 2
 print.box <- function(x, ...) {
   grid.draw(x, ...)
+  invisible(x)
 }
 
 #' @rdname box

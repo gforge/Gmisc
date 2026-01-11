@@ -85,6 +85,7 @@ Other flowchart components:
 \code{\link{align}},
 \code{\link{boxGrob}()},
 \code{\link{boxPropGrob}()},
+\code{\link{boxShapes}},
 \code{\link{connectGrob}()},
 \code{\link{coords}()},
 \code{\link{distance}()},

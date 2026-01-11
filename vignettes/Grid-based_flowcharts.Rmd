@@ -1,7 +1,7 @@
 ---
 title: "Building a flowchart"
 author: "Max Gordon"
-date: "29 june 2020"
+date: "11 January 2026"
 output:
   rmarkdown::html_vignette:
     toc: true
@@ -84,7 +84,6 @@ vert
 excluded
 ```
 
-
 # Basic components explained
 
 There is a basic set of components that are used for generating flowcharts:
@@ -111,7 +110,6 @@ boxGrob(txt)
 ```
 
 We can position and style this box as any element:
-
 
 ```{r styled_box, fig.height = 3, fig.width = 3}
 grid.newpage()
@@ -220,6 +218,83 @@ grid.circle(y = prop_bx_coords$top,
             gp = gpar(fill = "orange"))
 ```
 
+# Additional box shapes
+
+You can create alternate box shapes by passing a custom `box_fn` to `boxGrob`,
+or use the convenience helpers `boxDiamondGrob()`, `boxEllipseGrob()` and
+`boxRackGrob()` that ship with the package.
+
+```{r extra_shapes, fig.height = 3, fig.width = 6}
+# --- Branch labels + sharp diamond variant ---
+grid.newpage()
+
+# rounded and sharp diamond examples
+d_rounded <- boxDiamondGrob("Decision", box_gp = gpar(fill = "#FFF4E6"))
+d_sharp   <- boxDiamondGrob("Decision\n(sharp)", rounded = FALSE, box_gp = gpar(fill = "#FFF4E6"))
+
+# outcomes
+e <- boxEllipseGrob("Local", box_gp = gpar(fill = "#E6FFF4"))
+r <- boxServerGrob("Server", box_gp = gpar(fill = "#E8F0FF"))
+
+# arrange and draw
+boxes <- list(decision = d_rounded, outcomes = list(e, r)) |>
+  spreadHorizontal(.from = unit(.1, "npc"), .to = unit(.9, "npc"), .subelement = "outcomes") |>
+  spreadVertical() |>
+  print()
+
+# 1) quick many-to-many style connector (no labels)
+con <- connectGrob(boxes$decision, boxes$outcomes, type = "N")
+print(con)
+
+# 2) explicit per-branch connectors with labels (preferred when you want text)
+connectGrob(boxes$decision, boxes$outcomes[[1]], type = "N", label = "Local") |> print()
+connectGrob(boxes$decision, boxes$outcomes[[2]], type = "N", label = "Server") |> print()
+
+# 3) If you prefer the single connector and want labels on each branch:
+#    place text at the midpoint of each returned grob (example)
+con_list <- connectGrob(boxes$decision, boxes$outcomes, type = "N")
+# Preferred: attach labels and let `print()` handle rendering
+con_list <- setConnectorLabels(con_list, c("Local", "Server"))
+print(con_list)
+```
+
+# Standard flowchart shapes
+
+Below are a few commonly-used flowchart shapes demonstrating their typical
+appearance and usage.
+
+```{r standard_shapes, fig.height = 3.5, fig.width = 8}
+# Arrange shapes in three rows for better readability
+# 1) Grid-based objects (basic boxGrob / boxPropGrob / rect)
+row1 <- list(
+  boxGrob("Box (default)", box_gp = gpar(fill = "#EFEFEF"), y = unit(.85, "npc")),
+  boxPropGrob("Prop", "Left", "Right", prop = .4, box_left_gp = gpar(fill = "#EFEFAF"), box_right_gp = gpar(fill = "#EFAFEF"), y = unit(.85, "npc")),
+  boxGrob("Rectangle", box_fn = rectGrob, box_gp = gpar(fill = "#EFEFEF"), y = unit(.85, "npc"))
+)
+
+# 2) Gmisc row 1 (rounded/sharp diamond + ellipse + rack + server)
+row2 <- list(
+  boxDiamondGrob("Diamond\n(rounded)", box_gp = gpar(fill = "#FFF4E6"), y = unit(.55, "npc")),
+  boxDiamondGrob("Diamond\n(sharp)", rounded = FALSE, box_gp = gpar(fill = "#FFF4E6"), y = unit(.55, "npc")),
+  boxEllipseGrob("Ellipse", box_gp = gpar(fill = "#E6FFF4"), y = unit(.55, "npc")),
+  boxRackGrob("Rack", box_gp = gpar(fill = "#E8F0FF"), y = unit(.55, "npc")),
+  boxServerGrob("Server", box_gp = gpar(fill = "#E8F0FF"), y = unit(.55, "npc"))
+)
+
+# 3) Gmisc row 2 (database, document, documents, tape)
+row3 <- list(
+  boxDatabaseGrob("Database", box_gp = gpar(fill = "#DFF4E6"), y = unit(.25, "npc")),
+  boxDocumentGrob("Document", box_gp = gpar(fill = "#FFF6E6"), y = unit(.25, "npc")),
+  boxDocumentsGrob("Documents", box_gp = gpar(fill = "#FFF6E6"), y = unit(.25, "npc")),
+  boxTapeGrob("Tape", box_gp = gpar(fill = "#E6F0FF"), y = unit(.25, "npc"))
+)
+
+# Spread each row across the horizontal span
+spreadHorizontal(row1, .from = unit(.05, "npc"), .to = unit(.95, "npc"))
+spreadHorizontal(row2, .from = unit(.05, "npc"), .to = unit(.95, "npc"))
+spreadHorizontal(row3, .from = unit(.05, "npc"), .to = unit(.95, "npc"))
+```
+
 # Connecting the boxes
 
 In order to make connecting boxes with an arrow there is the `connectGrob` function. Here's an example of how you can use it for connecting a set of boxes:
@@ -311,7 +386,6 @@ connectGrob(list(a1, a2, a3, b_side), b,
 ```
 
 # Alignment
-
 
 We frequently want to align boxes in either a horizontal or a vertical row. For this there are two functions, `alignHorizontal()` and `alignVertical()`.
 
@@ -428,7 +502,6 @@ Similarly to alignment we often want to spread our boxes within a space so that 
 Numeric `.from`, `.to`, and `.margin` values are interpreted as proportions of the current viewport (`npc`).
 If only one of `.from` or `.to` is specified, the other defaults to the full span (`0 npc` or `1 npc`).
 The `.margin` argument adds padding at both ends of the span (also when using `.from`/`.to`).
-
 
 ```{r horizontal_spread, fig.width = 11, fig.height = 6}
 b1 <- boxGrob("B1", y = .85, x = .1, bjust = c(0, 0))
@@ -559,10 +632,10 @@ It is possible to use the R `expression` or the `bquote` functions to produce bo
 
 A few pointers on `expression`...
 
-* expressions with multiple elements should be combined using `paste`. E.g. `expression(paste(beta, "1"))` would produce $\beta1$
-* the behavior of `paste` when used in expression is more like the normal behavior or `paste0` (i.e. no separating space)
-* Greek letters can be entered outside of quotes by typing the name e.g. `expression(beta)` will become $\beta$ and `expression(Gamma)` will become $\Gamma$ (note the case, not all Greek letters are available in upper case)
-* superscripts are done via `expression(x^2)` and subscripts via `expression(x[2])`
+- expressions with multiple elements should be combined using `paste`. E.g. `expression(paste(beta, "1"))` would produce $\beta1$
+- the behavior of `paste` when used in expression is more like the normal behavior or `paste0` (i.e. no separating space)
+- Greek letters can be entered outside of quotes by typing the name e.g. `expression(beta)` will become $\beta$ and `expression(Gamma)` will become $\Gamma$ (note the case, not all Greek letters are available in upper case)
+- superscripts are done via `expression(x^2)` and subscripts via `expression(x[2])`
 
 ```{r math_expressions, fig.width=6, fig.height=3}
 grid.newpage()
@@ -627,13 +700,12 @@ Important to note is that the grid allows you to define precise units or relativ
 
 ## Relative units
 
+- `npc` - ranges from 0-1 where 1 is 100% of the `viewport` width.
+- `snpc` - similar to `npc` but is the same length in height/width.
+- `lines` - the height of a line. The go-to method if you want to know the height of a few lines of text. It's relative to the `viewport`'s `fontsize` and `lineheight`.
+- `char` - the `lines` without the `lineheight` part.
 
-* `npc` - ranges from 0-1 where 1 is 100% of the `viewport` width.
-* `snpc` - similar to `npc` but is the same length in height/width.
-* `lines` - the height of a line. The go-to method if you want to know the height of a few lines of text. It's relative to the `viewport`'s `fontsize` and  `lineheight`.
-* `char` - the `lines` without the `lineheight` part.
-
-Below we draw a line with relative units in two nested viewports. Note that the to lines are generated  from the exact same `grob` object but appear different depending on the `viewport` they are in:
+Below we draw a line with relative units in two nested viewports. Note that the to lines are generated from the exact same `grob` object but appear different depending on the `viewport` they are in:
 
 ```{r relative_lines, fig.height = 3, fig.width = 3}
 grid.newpage()
@@ -649,11 +721,10 @@ grid.draw(lg)
 popViewport()
 ```
 
-
 ## Absolute units
 
-* `mm` - probably my go-to unit when I want something absolute.
-* `inch` - if you prefer inches I guess this is the go-to choice.
+- `mm` - probably my go-to unit when I want something absolute.
+- `inch` - if you prefer inches I guess this is the go-to choice.
 
 Below we draw a line with absolute units in two nested `viewports`. Note that the lines have the exact same length:
 

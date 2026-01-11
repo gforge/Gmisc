@@ -82,14 +82,22 @@ that provide information on an object.
 }
 
 \examples{
-library(grid)
-grid.newpage()
+# Note: grid functions are explicitly namespaced in examples to avoid
+# relying on attaching the grid package in R CMD check.
+grid::grid.newpage()
 boxGrob("My box")
 }
 \seealso{
+The package provides several convenience shape helpers that can be
+passed to `boxGrob(..., box_fn = ...)`: \code{boxDiamondGrob},
+\code{boxEllipseGrob}, \code{boxRackGrob}, \code{boxServerGrob},
+\code{boxDatabaseGrob}, \code{boxDocumentGrob}, \code{boxDocumentsGrob}, and
+\code{boxTapeGrob}. For examples see the vignette: \code{vignette("Grid-based_flowcharts", package = "Gmisc")}.
+
 Other flowchart components: 
 \code{\link{align}},
 \code{\link{boxPropGrob}()},
+\code{\link{boxShapes}},
 \code{\link{connectGrob}()},
 \code{\link{coords}()},
 \code{\link{distance}()},

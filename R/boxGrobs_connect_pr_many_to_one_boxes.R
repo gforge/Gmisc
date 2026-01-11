@@ -90,8 +90,17 @@ prConnectManyToOne <- function(
     s <- s_coords[[i]]
 
     x_end <- unit(assigned_end_vals[i], "npc")
+
+    # For the centered straight branch, force the start x coords to match the
+    # assigned end position so the trunk is perfectly vertical.
+    if (centered && i == mid_sorted_idx) {
+      x_start0 <- x_end
+    } else {
+      x_start0 <- x_at(s, "x")
+    }
+
     line <- list(
-      x = unit.c(x_at(s, "x"), x_at(s, "x"), x_end, x_end),
+      x = unit.c(x_start0, x_start0, x_end, x_end),
       y = unit.c(start_attach(s), bend_y, bend_y, end_attach)
     )
     lg <- linesGrob(x = line$x, y = line$y, gp = lty_gp, arrow = arrow_obj)

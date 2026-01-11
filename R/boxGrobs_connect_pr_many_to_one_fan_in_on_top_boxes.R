@@ -35,12 +35,45 @@ prNShouldUseCenteredBranch <- function(items, target, tolerance = 0.1) {
     return(FALSE)
   }
   coords_items <- lapply(items, coords)
-  x_vals <- vapply(coords_items, function(s) convertX(s$x, "npc", valueOnly = TRUE), numeric(1))
+
+  # Robust conversion helper: try grid conversion first then fall back to numeric
+  # extraction from unit-like objects (works for 'simpleUnit' representations).
+  get_npc <- function(u) {
+    v <- tryCatch(convertX(u, "npc", valueOnly = TRUE), error = function(e) NA_real_)
+    if (!is.na(v)) {
+      return(v)
+    }
+    vnum <- as.numeric(u)
+    vnum <- vnum[!is.na(vnum) & vnum >= -1 & vnum <= 2]
+    if (length(vnum)) {
+      return(vnum[1])
+    }
+    NA_real_
+  }
+
+  x_vals <- vapply(coords_items, function(s) get_npc(s$x), numeric(1))
   ord <- order(x_vals)
   middle_idx_sorted <- ord[(n + 1) / 2]
   middle_x <- x_vals[middle_idx_sorted]
-  targ_x <- convertX(prConvert2Coords(target)$x, "npc", valueOnly = TRUE)
-  targ_w <- convertWidth(prConvert2Coords(target)$width, "npc", valueOnly = TRUE)
+
+  targ_coords <- prConvert2Coords(target)
+  targ_x <- get_npc(targ_coords$x)
+
+  # Prefer converting declared width; if that fails (e.g. units not resolvable
+  # in the current device/context) fall back to left/right edge difference
+  # and finally to a permissive default so that lack of a convertible width
+  # does not prevent a centered branch from being used.
+  targ_w <- tryCatch(convertWidth(targ_coords$width, "npc", valueOnly = TRUE), error = function(e) NA_real_)
+  if (is.na(targ_w) || targ_w <= 0) {
+    left <- tryCatch(convertX(targ_coords$left, "npc", valueOnly = TRUE), error = function(e) NA_real_)
+    right <- tryCatch(convertX(targ_coords$right, "npc", valueOnly = TRUE), error = function(e) NA_real_)
+    if (!is.na(left) && !is.na(right)) {
+      targ_w <- right - left
+    } else {
+      targ_w <- 1
+    }
+  }
+
   abs(middle_x - targ_x) <= tolerance * targ_w
 }
 
@@ -182,18 +215,31 @@ prGenerateLines <- function(starts, end, bend_y, xs_end, lty_gp, arrow_obj, sube
   centered <- prNShouldUseCenteredBranch(starts, end)
   if (centered) {
     mid_sorted_idx <- ord[(length(ord) + 1) / 2]
-    assigned_end_vals[mid_sorted_idx] <- convertX(prConvert2Coords(end)$x, "npc", valueOnly = TRUE)
+    targ_center <- tryCatch(convertX(prConvert2Coords(end)$x, "npc", valueOnly = TRUE), error = function(e) NA_real_)
+    # Prefer the target center when available; otherwise fall back to the
+    # start's x coordinate to guarantee a vertical trunk when conversions fail.
+    if (!is.na(targ_center)) {
+      assigned_end_vals[mid_sorted_idx] <- targ_center
+    } else if (!is.na(starts_x_vals[mid_sorted_idx])) {
+      assigned_end_vals[mid_sorted_idx] <- starts_x_vals[mid_sorted_idx]
+    }
   }
 
   trunk_grobs <- lapply(seq_along(starts_x_units), function(i) {
     x_start <- starts_x_units[[i]]
     x_end <- unit(assigned_end_vals[i], "npc")
 
-    # Convert start to npc unit as well
-    if (!inherits(x_start, "unit")) {
-      x_start <- unit(x_start, "npc")
+    # If this is the centered branch, force the trunk to be vertical by
+    # using the assigned end value for both start and end x coordinates.
+    if (centered && i == mid_sorted_idx) {
+      x_start <- x_end
     } else {
-      x_start <- convertX(x_start, unitTo = "npc")
+      # Convert start to npc unit as well
+      if (!inherits(x_start, "unit")) {
+        x_start <- unit(x_start, "npc")
+      } else {
+        x_start <- convertX(x_start, unitTo = "npc")
+      }
     }
 
     mk(
@@ -202,6 +248,19 @@ prGenerateLines <- function(starts, end, bend_y, xs_end, lty_gp, arrow_obj, sube
       arrow = arrow_obj
     )
   })
+
+  # If we used a centered straight branch, make the corresponding stem
+  # vertical as well by matching its x coords to the assigned trunk x value.
+  if (centered) {
+    mid_sorted_idx <- ord[(length(ord) + 1) / 2]
+    x_val_npc <- assigned_end_vals[mid_sorted_idx]
+    if (!is.na(x_val_npc)) {
+      x_unit <- unit(x_val_npc, "npc")
+      old_stem <- stem_grobs[[mid_sorted_idx]]
+      y_vals <- attr(old_stem, "line")$y
+      stem_grobs[[mid_sorted_idx]] <- mk(x = unit.c(x_unit, x_unit), y = y_vals, arrow = NULL)
+    }
+  }
 
   structure(c(stem_grobs, trunk_grobs),
     class = c("connect_boxes_list", "list")
