@@ -11,7 +11,7 @@
 connectGrob(
   start,
   end,
-  type = c("vertical", "horizontal", "L", "-", "Z", "N", "fan_in_top"),
+  type = c("vertical", "horizontal", "L", "-", "Z", "N", "fan_in_top", "fan_in_center"),
   subelmnt = c("right", "left"),
   lty_gp = getOption("connectGrob", default = gpar(fill = "black")),
   arrow_obj = getOption("connectGrobArrow", default = arrow(ends = "last", type =
@@ -114,6 +114,10 @@ When connecting to or from multiple boxes, all connectors share the same bend he
 \item \code{"fan_in_top"}: many-to-one connector merging onto the \emph{top edge} of the end box
 Attachment points are evenly distributed along the edge (with optional \code{margin}),
 and all connectors share a common bend height.
+\item \code{"fan_in_center"}: many-to-one connector that aggregates stems onto a horizontal
+bus (shared at the computed bend height) and then a single centered trunk with an
+arrow that points to the \emph{center} of the end box. Useful when you want a single
+arrow to represent the merged flow (e.g. a middle trunk bus).
 }
 
 For \code{type = "N"} and \code{type = "fan_in_top"} with multi-box connections, a shared
@@ -162,6 +166,9 @@ side_boxes <- list(
 connectGrob(boxes$side, side_boxes$left, "v", "l")
 connectGrob(boxes$side, side_boxes$right, "v", "r")
 
+# Fan-in center example: multiple starts into one center bus and single trunk
+connectGrob(list(boxes$start, boxGrob("S2", x = .3, y = .7), boxGrob("S3", x = .7, y = .7)), boxes$end, type = "fan_in_center")
+
 # Print the boxes
 boxes
 side_boxes
@@ -170,6 +177,7 @@ side_boxes
 Other flowchart components: 
 \code{\link{align}},
 \code{\link{boxGrob}()},
+\code{\link{boxHeaderGrob}()},
 \code{\link{boxPropGrob}()},
 \code{\link{boxShapes}},
 \code{\link{coords}()},

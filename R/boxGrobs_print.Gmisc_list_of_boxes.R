@@ -14,6 +14,9 @@ print.Gmisc_list_of_boxes <- function(x, ...) {
       for (i in 1:length(box)) {
         print(box[[i]])
       }
+    } else if (is.list(box)) {
+      # treat plain lists containing boxes as nested Gmisc_list_of_boxes for printing
+      print(prExtendClass(box, "Gmisc_list_of_boxes"))
     } else {
       stop("Element is not a grob or a Gmisc_list_of_boxes", class(box))
     }

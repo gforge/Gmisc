@@ -1,4 +1,20 @@
-prConnectOneToMany <- function(
+#' Default One-to-Many connector
+#' @noRd
+prConnectOneToManyStandard <- function(
+  start,
+  ends,
+  type,
+  subelmnt,
+  lty_gp,
+  arrow_obj
+) {
+  grobs <- lapply(ends, function(e) prConnect1(start, e, type, subelmnt, lty_gp, arrow_obj))
+  structure(grobs, class = c("connect_boxes_list", "list"))
+}
+
+#' One-to-Many N connector (shared bend)
+#' @noRd
+prConnectOneToManyN <- function(
   start,
   ends,
   type,
@@ -11,18 +27,33 @@ prConnectOneToMany <- function(
   if (is.numeric(split_pad)) split_pad <- unit(split_pad, "mm")
   assert_class(split_pad, "unit")
 
-  # Default: just call the single connector for each end
-  if (type != "N") {
-    grobs <- lapply(ends, function(e) prConnect1(start, e, type, subelmnt, lty_gp, arrow_obj))
-    return(structure(grobs, class = c("connect_boxes_list", "list")))
-  }
-
-  # Special: shared bend height for N (use midpoint of the shortest edge gap)
   s <- coords(start)
   end_coords <- lapply(ends, coords)
 
-  y_mm <- function(u) convertHeight(u, "mm", valueOnly = TRUE)
+  # Determine vertical parameters (bend height and attachment edges)
+  v_params <- prGetOneToManyNVerticalParameters(s, end_coords, split_pad)
 
+  # Determine horizontal parameters (assigned slots on end boxes)
+  x_params <- prGetOneToManyNAssignedX(start, s, ends, end_coords, subelmnt)
+
+  # Create the list of grobs
+  grobs <- prMakeOneToManyNGrobs(
+    s = s,
+    end_coords = end_coords,
+    v_params = v_params,
+    x_params = x_params,
+    lty_gp = lty_gp,
+    arrow_obj = arrow_obj
+  )
+
+  structure(grobs, class = c("connect_boxes_list", "list"))
+}
+
+
+#' Calculate vertical parameters for One-to-Many N connector
+#' @noRd
+prGetOneToManyNVerticalParameters <- function(s, end_coords, split_pad) {
+  y_mm <- function(u) convertHeight(u, "mm", valueOnly = TRUE)
   s_y <- y_mm(s$y)
   e_y <- vapply(end_coords, function(e) y_mm(e$y), numeric(1))
 
@@ -30,39 +61,37 @@ prConnectOneToMany <- function(
   dir_up <- s_y < min(e_y)
   if (!dir_down && !dir_up) dir_down <- mean(e_y) < s_y
 
-  # Compute half-gaps (same metric as single N)
-  if (dir_down) {
-    d <- lapply(end_coords, function(e) distance(s, e, type = "v", half = TRUE))
-    d_min <- Reduce(unit.pmin, d)
+  d <- lapply(end_coords, function(e) distance(s, e, type = "v", half = TRUE))
+  d_min <- Reduce(unit.pmin, d)
 
+  if (dir_down) {
     # midpoint relative to the closest end
     bend_y <- s$bottom - d_min
-
-    # optional clamp so we never end up "past" start/beyond ends if layout is odd
     bend_y <- unit.pmax(bend_y, unit(0, "npc"))
     bend_y <- unit.pmin(bend_y, s$bottom - split_pad)
-
     start_attach <- s$bottom
-    end_attach <- function(e) e$top
+    end_attach_fn <- function(e) e$top
   } else {
-    d <- lapply(end_coords, function(e) distance(s, e, type = "v", half = TRUE))
-    d_min <- Reduce(unit.pmin, d)
-
     bend_y <- s$top + d_min
-
     bend_y <- unit.pmin(bend_y, unit(1, "npc"))
     bend_y <- unit.pmax(bend_y, s$top + split_pad)
-
     start_attach <- s$top
-    end_attach <- function(e) e$bottom
+    end_attach_fn <- function(e) e$bottom
   }
 
-  # subelement x picking (same semantics as single)
-  if (missing(subelmnt)) {
-    sub_prefix <- ""
-  } else {
-    sub_prefix <- sprintf("%s_", match.arg(subelmnt, c("right", "left")))
-  }
+  list(
+    bend_y = bend_y,
+    start_attach = start_attach,
+    end_attach_fn = end_attach_fn
+  )
+}
+
+
+#' Calculate assigned X positions for One-to-Many N connector
+#' @noRd
+prGetOneToManyNAssignedX <- function(start, s, ends, end_coords, subelmnt) {
+  # subelement x selection (for split boxes)
+  sub_prefix <- if (missing(subelmnt)) "" else paste0(match.arg(subelmnt, c("right", "left")), "_")
   x_at <- function(pos, side = c("left", "right", "x")) {
     side <- match.arg(side)
     if (side == "x" && !is.null(pos[[paste0(sub_prefix, side)]])) {
@@ -75,24 +104,44 @@ prConnectOneToMany <- function(
   end_x_vals <- vapply(end_coords, function(e) convertX(x_at(e, "x"), "npc", valueOnly = TRUE), numeric(1))
   ord <- order(end_x_vals)
   assigned_end_vals <- numeric(length(end_x_vals))
-  assigned_end_vals[ord] <- end_x_vals[ord] # preserve order (redundant but explicit)
+  assigned_end_vals[ord] <- end_x_vals[ord]
 
-  centered <- prNShouldUseCenteredBranch(end_coords, start)
+  centered <- prNShouldUseCenteredBranch(ends, start)
+  mid_sorted_idx <- NA
   if (centered) {
     mid_sorted_idx <- ord[(length(ord) + 1) / 2]
     assigned_end_vals[mid_sorted_idx] <- convertX(s$x, "npc", valueOnly = TRUE)
   }
 
-  grobs <- lapply(seq_along(end_coords), function(i) {
+  list(
+    assigned_end_vals = assigned_end_vals,
+    mid_sorted_idx = mid_sorted_idx,
+    centered = centered,
+    x_at_fn = x_at
+  )
+}
+
+
+#' Create the list of grobs for One-to-Many N connector
+#' @noRd
+prMakeOneToManyNGrobs <- function(s, end_coords, v_params, x_params, lty_gp, arrow_obj) {
+  lapply(seq_along(end_coords), function(i) {
     e <- end_coords[[i]]
-    x_end <- unit(assigned_end_vals[i], "npc")
+    x_end <- unit(x_params$assigned_end_vals[i], "npc")
+
+    # For the centered straight branch, force the start x coords to match the
+    # assigned end position so the trunk is perfectly vertical.
+    if (x_params$centered && i == x_params$mid_sorted_idx) {
+      x_start0 <- x_end
+    } else {
+      x_start0 <- x_params$x_at_fn(s, "x")
+    }
+
     line <- list(
-      x = unit.c(x_at(s, "x"), x_at(s, "x"), x_end, x_end),
-      y = unit.c(start_attach, bend_y, bend_y, end_attach(e))
+      x = unit.c(x_start0, x_start0, x_end, x_end),
+      y = unit.c(v_params$start_attach, v_params$bend_y, v_params$bend_y, v_params$end_attach_fn(e))
     )
-    lg <- linesGrob(x = line$x, y = line$y, gp = lty_gp, arrow = arrow_obj)
+    lg <- grid::linesGrob(x = line$x, y = line$y, gp = lty_gp, arrow = arrow_obj)
     structure(lg, line = line, class = c("connect_boxes", class(lg)))
   })
-
-  structure(grobs, class = c("connect_boxes_list", "list"))
 }

@@ -28,9 +28,10 @@ moveBox(
 existing justification by using \code{NA}, e.g. \code{c(NA, 'top')}, (2) if you specify only one string
 and that string is either \code{top} or \code{bottom} it will assume vertical justification.}
 
-\item{.subelement}{If a \code{list} of boxes is provided, this can be a name, index, or a vector of names/indices
-to target a single nested element to move; the function will return the original list with the
-targeted element replaced by its moved version.}
+\item{.subelement}{If a \code{list} of boxes is provided, this can be a name, index, a deep path (e.g. \code{c("detail", 1)}) or a
+vector of names/indices to target a single nested element to move. You can also pass
+multiple targets as a list of paths (e.g. \code{list(c("detail", 1), c("followup", 1))}).
+The function will return the original list with the targeted element(s) replaced by their moved version(s).}
 }
 \value{
 The element with updated viewport and coordinates
@@ -93,6 +94,7 @@ connectGrob(boxes$treatment, boxes$followup, type = "N")
 Other flowchart components: 
 \code{\link{align}},
 \code{\link{boxGrob}()},
+\code{\link{boxHeaderGrob}()},
 \code{\link{boxPropGrob}()},
 \code{\link{boxShapes}},
 \code{\link{connectGrob}()},

@@ -11,7 +11,7 @@ vignette: >
   %\usepackage[utf8]{inputenc}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options:
-  chunk_output_type: console
+  chunk_output_type: inline
 ---
 
 ```{r setup, include = FALSE}
@@ -364,23 +364,31 @@ odd2
 `connectGrob()` also supports connecting one box to many boxes, or many boxes to one box.
 For merging many boxes into one, `type = "fan_in_top"` distributes the attachment points evenly along the top edge of the destination box, with an optional margin.
 
-```{r connect_multi, fig.width = 9, fig.height = 4}
+```{r connect_multi, fig.width = 4, fig.height = 4}
 grid.newpage()
 
 # Three upstream boxes + one side box
-a1 <- boxGrob("A1", x = .15, y = .85, box_gp = gpar(fill = "#E6F2FF"))
-a2 <- boxGrob("A2", x = .45, y = .85, box_gp = gpar(fill = "#E6F2FF"))
-a3 <- boxGrob("A3", x = .75, y = .85, box_gp = gpar(fill = "#E6F2FF"))
-b_side <- boxGrob("B",  x = .82, y = .50, box_gp = gpar(fill = "#FFF3BF"))
+a_boxes <- paste("A", 1:3) |>
+  lapply(\(x) boxGrob(x, box_gp = gpar(fill = "#E6F2FF"))) |>
+  spreadHorizontal(.from = unit(.1, "npc"), .to = unit(1, "npc") - unit(1, "cm")) |>
+  alignVertical(.position="top",
+                reference = unit(1, "npc")) |>
+  print()
+
+b_side <- boxGrob("B",  y = .70, box_gp = gpar(fill = "#FFF3BF")) |>
+  moveBox(x = unit(1, "npc"),
+          just = 1) |>
+  print()
 
 # Target box
-b <- boxGrob("B", x = .50, y = .18, box_gp = gpar(fill = "#D3F9D8"))
+c <- boxGrob("C", x = .50, box_gp = gpar(fill = "#D3F9D8"), width = unit(4, "cm")) |>
+  moveBox(y = unit(0, "npc"),
+          just = "bottom") |>
+  print()
 
-# Draw boxes
-a1; a2; a3; b_side; b
 
 # Many -> one: merge on top with evenly distributed attachment points + margin
-connectGrob(list(a1, a2, a3, b_side), b,
+connectGrob(c(a_boxes, list(b_side)), c,
             type = "fan_in_top",
             margin = 4)
 ```
@@ -503,7 +511,7 @@ Numeric `.from`, `.to`, and `.margin` values are interpreted as proportions of t
 If only one of `.from` or `.to` is specified, the other defaults to the full span (`0 npc` or `1 npc`).
 The `.margin` argument adds padding at both ends of the span (also when using `.from`/`.to`).
 
-```{r horizontal_spread, fig.width = 11, fig.height = 6}
+```{r horizontal_spread, fig.width = 11, fig.height = 8}
 b1 <- boxGrob("B1", y = .85, x = .1, bjust = c(0, 0))
 b2 <- boxGrob("B2", y = .65, x = .6)
 b3 <- boxGrob("B3", y = .45, x = .6)
@@ -626,6 +634,146 @@ alignHorizontal(reference = b3,
                  .type = "center")
 ```
 
+# Complex nested flowcharts with boxHeaderGrob
+
+The `boxHeaderGrob()` function creates boxes with centered headers and left-justified body text, perfect for flowcharts with structured information like timelines or protocols. Here's an example of a randomized trial flowchart with shared criteria and two treatment arms:
+
+```{r complex_nested, fig.width = 9, fig.height = 7}
+# Helper function to convert nested structure to grobs
+make_boxes <- function(x) {
+  if (is.list(x) && !inherits(x, "box_header")) {
+    return(lapply(x, make_boxes))
+  }
+
+  if (inherits(x, "box_header")) {
+    return(do.call(boxHeaderGrob, x))
+  }
+
+  # Simple text box fallback
+  args <- attr(x, "args")
+  if (is.null(args)) return(boxGrob(label = x))
+
+  args$label <- x
+  do.call(boxGrob, args)
+}
+
+# Define styling for different elements
+arm_a_style <- list(
+  header = gpar(fill = "#E8F5E9", col = "#2E7D32", lwd = 1.4),
+  box = gpar(fill = "#F1F8E9", col = "#43A047")
+)
+
+arm_b_style <- list(
+  header = gpar(fill = "#FFF8E1", col = "#EF6C00", lwd = 1.4),
+  box = gpar(fill = "#FFFDE7", col = "#F9A825")
+)
+
+# Build flowchart structure
+flowchart <- list(
+  # Shared inclusion criteria
+  criteria = structure(
+    list(
+      header = "Inclusion Criteria",
+      body = paste(
+        "• Adults aged 18-65",
+        "• Confirmed diagnosis",
+        "• Written informed consent",
+        "• No contraindications",
+        "• Available for 6-month follow-up",
+        sep = "\n"
+      ),
+      box_gp = gpar(fill = "#E3F2FD", col = "#1E88E5", lwd = 1.4),
+      body_gp = gpar(fontsize = 10)
+    ),
+    class = "box_header"
+  ),
+
+  # Two treatment arms
+  arms = list(
+    arm_a = list(
+      # Arm header
+      structure("Intensive Protocol", args = list(
+        box_gp = arm_a_style$header,
+        txt_gp = gpar(fontsize = 11, fontface = "bold")
+      )),
+
+      # Timeline boxes
+      structure(list(
+        header = "Week 0-1",
+        body = "• Daily sessions\n• Supervised therapy\n",
+        box_gp = arm_a_style$box,
+        body_gp = gpar(fontsize = 9.5)
+      ), class = "box_header"),
+
+      structure(list(
+        header = "Week 2-4",
+        body = "• 3× weekly sessions\n• Progressive loading",
+        box_gp = arm_a_style$box,
+        body_gp = gpar(fontsize = 9.5)
+      ), class = "box_header"),
+
+      structure(list(
+        header = "Week 5-8",
+        body = "• Home program\n• Monthly check-ins\n• Return to activity",
+        box_gp = arm_a_style$box,
+        body_gp = gpar(fontsize = 9.5)
+      ), class = "box_header")
+    ),
+
+    arm_b = list(
+      # Arm header
+      structure("Standard Care", args = list(
+        box_gp = arm_b_style$header,
+        txt_gp = gpar(fontsize = 11, fontface = "bold")
+      )),
+
+      # Timeline boxes - different schedule
+      structure(list(
+        header = "Month 0",
+        body = "• Initial consultation\n• Exercise booklet",
+        box_gp = arm_b_style$box,
+        body_gp = gpar(fontsize = 9.5)
+      ), class = "box_header"),
+
+      structure(list(
+        header = "Month 3",
+        body = "• Follow-up visit\n• Progress review",
+        box_gp = arm_b_style$box,
+        body_gp = gpar(fontsize = 9.5)
+      ), class = "box_header"),
+
+      structure(list(
+        header = "Month 6",
+        body = "• Final assessment\n• Discharge planning",
+        box_gp = arm_b_style$box,
+        body_gp = gpar(fontsize = 9.5)
+      ), class = "box_header")
+    )
+  )
+)
+
+# Convert to grobs and layout
+grid.newpage()
+boxes <- flowchart |>
+  make_boxes() |>
+  spreadVertical() |>
+  spreadHorizontal(.subelement = "arms", .from = 0.15, .to = 0.85) |>
+  spreadVertical(.subelement = c("arms", "arm_a"), .from = 0.65) |>
+  spreadVertical(.subelement = c("arms", "arm_b"), .from = 0.65) |>
+  print()
+
+# Connect criteria to both arms
+connectGrob(boxes$criteria, boxes$arms, type = "N")
+
+# Connect timeline within each arm
+for (arm_name in names(boxes$arms)) {
+  arm_boxes <- boxes$arms[[arm_name]]
+  for (i in 2:length(arm_boxes)) {
+    connectGrob(arm_boxes[[i-1]], arm_boxes[[i]], type = "v") |> print()
+  }
+}
+```
+
 # Math expressions in boxes
 
 It is possible to use the R `expression` or the `bquote` functions to produce bold or italics text, or even formulas.
@@ -643,31 +791,32 @@ grid.newpage()
 # Expressions #
 ###############
 # Font style
-alignVertical(
-  reference = 1,
-  .position = "top",
-  boxGrob(expression(bold("Bold text"))),
-  boxGrob(expression(italic("Italics text"))),
-  boxGrob(expression(paste("Mixed: ", italic("Italics"), " and ", bold("bold"))))) |>
+list(expression(bold("Bold text")),
+     expression(italic("Italics text")),
+     expression(paste("Mixed: ", italic("Italics"), " and ", bold("bold")))) |>
+  lapply(boxGrob) |>
+  alignVertical(reference = unit(1, "npc"),
+                .position = "top") |>
   spreadHorizontal()
 
 # Math
-alignVertical(
-  reference = .5,
-  boxGrob(expression(paste("y = ", beta[0], " + ", beta[1], X[1], " + ", beta[2], X[2]^2))),
-  boxGrob(expression(sum(n, i == 1, x) %subset% " \u211D")),
-  boxGrob(expression(beta ~~ gamma ~~ Gamma))) |>
+list(expression(paste("y = ", beta[0], " + ", beta[1], X[1], " + ", beta[2], X[2]^2)),
+     expression(paste(hat(mu) == sum(frac(x[i], n), i == 1, n))),
+     expression(paste(int(a, b, f(x) * dx) == F(b) - F(a)))) |>
+  lapply(boxGrob) |>
+  alignVertical(reference = unit(0.5, "npc"),
+                .position = "center") |>
   spreadHorizontal()
 
 ##########
 # Quotes #
 ##########
 a = 5
-alignVertical(
-  reference = 0,
-  .position = "bottom",
-  bquote(alpha == theta[1] * .(a) + ldots) |> boxGrob(),
-  paste("argument", sQuote("x"), "\nmust be non-zero") |> boxGrob()) |>
+list(bquote(alpha == theta[1] * .(a) + ldots),
+     paste("argument", sQuote("x"), "\nmust be non-zero")) |>
+  lapply(boxGrob) |>
+  alignVertical(reference = unit(0, "npc"),
+                .position = "bottom") |>
   spreadHorizontal(.from = .2, .to = .8)
 ```
 

@@ -25,7 +25,7 @@ prConvert2Coords <- function(obj) {
   }
 
   # If a list is provided, recursively convert each element and merge edges
-  if (inherits(obj, "list") & !is.grob(obj) & !is.unit(obj)) {
+  if (inherits(obj, "list") && !is.grob(obj) && !is.unit(obj)) {
     if (length(obj) == 0) stop("Expected a non-empty list of boxes/coords/units")
 
     coords_list <- lapply(obj, prConvert2Coords)
@@ -33,14 +33,20 @@ prConvert2Coords <- function(obj) {
     # Helper to extract numeric npc values for a given name and orientation
     get_vals <- function(name, orient) {
       vals <- sapply(coords_list, function(c) {
-        if (!is.null(c[[name]])) {
-          if (orient == "x") convertWidth(c[[name]], "npc", valueOnly = TRUE) else convertHeight(c[[name]], "npc", valueOnly = TRUE)
+        if (is.null(c[[name]])) {
+          return(NA_real_)
+        }
+
+        if (orient == "x") {
+          convertWidth(c[[name]], "npc", valueOnly = TRUE)
         } else {
-          NA_real_
+          convertHeight(c[[name]], "npc", valueOnly = TRUE)
         }
       })
       vals <- vals[!is.na(vals)]
-      if (length(vals) == 0) return(NULL)
+      if (length(vals) == 0) {
+        return(NULL)
+      }
       return(vals)
     }
 
@@ -106,11 +112,17 @@ prConvert2Coords <- function(obj) {
       vals <- vals[!is.na(vals)]
       if (length(vals) == 0) next
 
-      if (grepl("left", nm)) v <- min(vals)
-      else if (grepl("right", nm)) v <- max(vals)
-      else if (grepl("top", nm)) v <- max(vals)
-      else if (grepl("bottom", nm)) v <- min(vals)
-      else v <- mean(vals)
+      if (grepl("left", nm)) {
+        v <- min(vals)
+      } else if (grepl("right", nm)) {
+        v <- max(vals)
+      } else if (grepl("top", nm)) {
+        v <- max(vals)
+      } else if (grepl("bottom", nm)) {
+        v <- min(vals)
+      } else {
+        v <- mean(vals)
+      }
 
       out[[nm]] <- unit(v, "npc")
     }
@@ -140,6 +152,6 @@ prConvert2Coords <- function(obj) {
     half_height = unit(0, "npc"),
     width = unit(0, "npc"),
     half_width = unit(0, "npc")
-  )  |>
-  structure(class = c("box_coords", "list"))
+  ) |>
+    structure(class = c("box_coords", "list"))
 }

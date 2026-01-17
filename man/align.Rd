@@ -23,7 +23,8 @@ alignHorizontal(
 }
 \arguments{
 \item{reference}{A \code{\link{boxGrob}}/\code{\link{boxPropGrob}}/\code{\link{coords}} object or a \code{\link[grid:unit]{unit}} or a
-numerical value that can be converted into a \code{\link[grid:unit]{unit}} of \code{npc} type.}
+numerical value that can be converted into a \code{\link[grid:unit]{unit}} of \code{npc} type. If a numeric scalar is
+provided and is \code{0} or greater than the number of boxes, it is treated as a coordinate (no error is raised).}
 
 \item{...}{A set of boxes.}
 
@@ -31,9 +32,14 @@ numerical value that can be converted into a \code{\link[grid:unit]{unit}} of \c
 see the accepted arguments}
 
 \item{.subelement}{If a \code{list} of boxes is provided, this parameter can be used
-to target a specific element (by name or index) for the alignment operation.
-The function will then return the original list with the targeted element
-replaced by its aligned version.}
+to target a specific element (by name or index), or a deep path into nested
+lists (e.g., \code{c("detail", 1)}), for the alignment operation. You can also
+provide multiple targets by giving a list of paths (e.g., \code{list(c("detail", 1), c("followup", 1))}).
+When a list of boxes is \emph{piped} into \code{alignVertical()}/\code{alignHorizontal()} and a named \code{reference} is
+provided (e.g. \code{my_boxes |> alignHorizontal(reference = c("grp","sub"), .subelement = ...)}), the
+function will unwrap a single-element wrapper so nested \code{.subelement} targets are found as expected.
+The function will return the original list with the targeted element(s)
+replaced by their aligned version(s).}
 
 \item{.sub_position}{When the box is a \code{\link{boxPropGrob}} it not only has the general \code{.positions} but
 also \code{left} and \code{right} which can be viewed as separate boxes that have simply been merged.}
@@ -65,13 +71,28 @@ aligned_boxes <- boxes |>
   alignHorizontal(reference = box, .position = "right") |>
   alignVertical(reference = .5, .position = "center")
 
+# Example: align a nested element inside a complex list using a deep path
+complex_list <- list(
+  arms = list(
+    early = list(boxGrob("Early", x = .2, y = .4)),
+    late = list(boxGrob("Late", x = .8, y = .2))
+  ),
+  detail = list(list(boxGrob("D_early", x = .1, y = .6)), list(boxGrob("D_late", x = .9, y = .1)))
+)
+
+# Align the first detail element to the early arm by deep path
+complex_list <- complex_list |>
+  alignHorizontal(reference = c("arms", "early"), .position = "center", .subelement = c("detail", 1))
+
 # Print the reference and the aligned boxes
 box
 aligned_boxes
+complex_list
 }
 \seealso{
 Other flowchart components: 
 \code{\link{boxGrob}()},
+\code{\link{boxHeaderGrob}()},
 \code{\link{boxPropGrob}()},
 \code{\link{boxShapes}},
 \code{\link{connectGrob}()},

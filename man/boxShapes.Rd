@@ -220,6 +220,7 @@ spreadHorizontal(list(d, e, r))
 Other flowchart components: 
 \code{\link{align}},
 \code{\link{boxGrob}()},
+\code{\link{boxHeaderGrob}()},
 \code{\link{boxPropGrob}()},
 \code{\link{connectGrob}()},
 \code{\link{coords}()},

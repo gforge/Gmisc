@@ -18,6 +18,20 @@ aligned_boxes <- boxes |>
   alignHorizontal(reference = box, .position = "right") |>
   alignVertical(reference = .5, .position = "center")
 
+# Example: align a nested element inside a complex list using a deep path
+complex_list <- list(
+  arms = list(
+    early = list(boxGrob("Early", x = .2, y = .4)),
+    late = list(boxGrob("Late", x = .8, y = .2))
+  ),
+  detail = list(list(boxGrob("D_early", x = .1, y = .6)), list(boxGrob("D_late", x = .9, y = .1)))
+)
+
+# Align the first detail element to the early arm by deep path
+complex_list <- complex_list |>
+  alignHorizontal(reference = c("arms", "early"), .position = "center", .subelement = c("detail", 1))
+
 # Print the reference and the aligned boxes
 box
 aligned_boxes
+complex_list

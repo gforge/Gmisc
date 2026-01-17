@@ -20,9 +20,11 @@
 #' @param .type If `between`, the space *between* boxes is identical. If `center`,
 #'   the centers of the boxes are equally distributed across the span.
 #' @param .subelement If a `list` of boxes is provided, this parameter can be used
-#'   to target a specific element (by name or index) for the spreading operation.
-#'   The function will then return the original list with the targeted element
-#'   replaced by its spread version.
+#'   to target a specific element (by name or index), or a deep path into nested
+#'   lists (e.g., `c("detail", 1)`), for the spreading operation. You can also
+#'   provide multiple targets by giving a list of paths (e.g., `list(c("detail", 1), c("followup", 1))`).
+#'   The function will return the original list with the targeted element(s)
+#'   replaced by their spread version(s).
 #'
 #' @return A `list` with the boxes that have been spread.
 #'
@@ -68,14 +70,37 @@ spreadVertical <- function(
   }
 
   if (!is.null(.subelement)) {
-    if (is.null(boxes2spread[[.subelement]])) {
-      if (length(boxes2spread) > 1 &&
-        is.list(boxes2spread[[1]]) &&
-        !inherits(boxes2spread[[1]], "box") &&
-        !is.null(boxes2spread[[1]][[.subelement]])) {
-        boxes2spread <- boxes2spread[[1]]
-      } else {
-        stop("The .subelement '", .subelement, "' was not found in the provided boxes.",
+    paths <- if (is.list(.subelement) && all(sapply(.subelement, is.atomic))) .subelement else list(.subelement)
+
+    # Resolve .from/.to if they are given as paths into the top-level list
+    resolve_endpoint <- function(endpoint) {
+      is_path_like <- is.list(endpoint) || (is.atomic(endpoint) && any(sapply(endpoint, is.character)))
+      if (is_path_like && length(boxes2spread) > 0 && !inherits(endpoint, "box")) {
+        ep <- get_list_element_by_path(boxes2spread, endpoint)
+        if (is.null(ep) && length(boxes2spread) > 1 && is.list(boxes2spread[[1]]) && !inherits(boxes2spread[[1]], "box")) {
+          ep <- get_list_element_by_path(boxes2spread[[1]], endpoint)
+        }
+        if (!is.null(ep)) {
+          return(ep)
+        }
+      }
+      endpoint
+    }
+
+    resolved_from <- resolve_endpoint(.from)
+    resolved_to <- resolve_endpoint(.to)
+
+    for (path in paths) {
+      target <- get_list_element_by_path(boxes2spread, path)
+      container_is_first <- FALSE
+
+      if (is.null(target) && length(boxes2spread) > 1 && is.list(boxes2spread[[1]]) && !inherits(boxes2spread[[1]], "box")) {
+        target <- get_list_element_by_path(boxes2spread[[1]], path)
+        container_is_first <- TRUE
+      }
+
+      if (is.null(target)) {
+        stop("The .subelement '", paste(path, collapse = " -> "), "' was not found in the provided boxes.",
           if (any(names(boxes2spread) %in% c("from", "to", "margin", "type"))) {
             "\nDid you forget the leading '.' for your arguments, e.g. .to=0.7 instead of to=0.7?"
           } else {
@@ -84,13 +109,22 @@ spreadVertical <- function(
           call. = FALSE
         )
       }
+
+      aligned <- spreadVertical(
+        target,
+        .from = resolved_from,
+        .to = resolved_to,
+        .margin = .margin,
+        .type = type
+      )
+
+      if (container_is_first) {
+        boxes2spread[[1]] <- set_list_element_by_path(boxes2spread[[1]], path, aligned)
+      } else {
+        boxes2spread <- set_list_element_by_path(boxes2spread, path, aligned)
+      }
     }
-    boxes2spread[[.subelement]] <- spreadVertical(boxes2spread[[.subelement]],
-      .from = .from,
-      .to = .to,
-      .margin = .margin,
-      .type = type
-    )
+
     return(structure(boxes2spread, class = c("Gmisc_list_of_boxes", class(boxes2spread))))
   }
 
@@ -152,14 +186,37 @@ spreadHorizontal <- function(..., .from = NULL, .to = NULL, .margin = unit(0, "n
   }
 
   if (!is.null(.subelement)) {
-    if (is.null(boxes2spread[[.subelement]])) {
-      if (length(boxes2spread) > 1 &&
-        is.list(boxes2spread[[1]]) &&
-        !inherits(boxes2spread[[1]], "box") &&
-        !is.null(boxes2spread[[1]][[.subelement]])) {
-        boxes2spread <- boxes2spread[[1]]
-      } else {
-        stop("The .subelement '", .subelement, "' was not found in the provided boxes.",
+    paths <- if (is.list(.subelement) && all(sapply(.subelement, is.atomic))) .subelement else list(.subelement)
+
+    resolve_endpoint <- function(endpoint) {
+      # Only attempt path resolution for character-like paths (e.g. c("detail", 1))
+      is_path_like <- is.list(endpoint) || (is.atomic(endpoint) && any(sapply(endpoint, is.character)))
+      if (is_path_like && length(boxes2spread) > 0 && !inherits(endpoint, "box")) {
+        ep <- get_list_element_by_path(boxes2spread, endpoint)
+        if (is.null(ep) && length(boxes2spread) > 1 && is.list(boxes2spread[[1]]) && !inherits(boxes2spread[[1]], "box")) {
+          ep <- get_list_element_by_path(boxes2spread[[1]], endpoint)
+        }
+        if (!is.null(ep)) {
+          return(ep)
+        }
+      }
+      endpoint
+    }
+
+    resolved_from <- resolve_endpoint(.from)
+    resolved_to <- resolve_endpoint(.to)
+
+    for (path in paths) {
+      target <- get_list_element_by_path(boxes2spread, path)
+      container_is_first <- FALSE
+
+      if (is.null(target) && length(boxes2spread) > 1 && is.list(boxes2spread[[1]]) && !inherits(boxes2spread[[1]], "box")) {
+        target <- get_list_element_by_path(boxes2spread[[1]], path)
+        container_is_first <- TRUE
+      }
+
+      if (is.null(target)) {
+        stop("The .subelement '", paste(path, collapse = " -> "), "' was not found in the provided boxes.",
           if (any(names(boxes2spread) %in% c("from", "to", "margin", "type"))) {
             "\nDid you forget the leading '.' for your arguments, e.g. .to=0.7 instead of to=0.7?"
           } else {
@@ -168,13 +225,22 @@ spreadHorizontal <- function(..., .from = NULL, .to = NULL, .margin = unit(0, "n
           call. = FALSE
         )
       }
+
+      aligned <- spreadHorizontal(
+        target,
+        .from = resolved_from,
+        .to = resolved_to,
+        .margin = .margin,
+        .type = type
+      )
+
+      if (container_is_first) {
+        boxes2spread[[1]] <- set_list_element_by_path(boxes2spread[[1]], path, aligned)
+      } else {
+        boxes2spread <- set_list_element_by_path(boxes2spread, path, aligned)
+      }
     }
-    boxes2spread[[.subelement]] <- spreadHorizontal(boxes2spread[[.subelement]],
-      .from = .from,
-      .to = .to,
-      .margin = .margin,
-      .type = type
-    )
+
     return(structure(boxes2spread, class = c("Gmisc_list_of_boxes", class(boxes2spread))))
   }
 
@@ -428,8 +494,5 @@ prApplyBoxSpread <- function(boxes2spread, distances, move_fn) {
     }
   }
 
-  structure(
-    ret,
-    class = c("Gmisc_list_of_boxes", class(ret))
-  )
+  prExtendClass(ret, "Gmisc_list_of_boxes")
 }

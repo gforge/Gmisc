@@ -31,6 +31,10 @@
 #' - `"fan_in_top"`: many-to-one connector merging onto the *top edge* of the end box
 #'   Attachment points are evenly distributed along the edge (with optional `margin`),
 #'   and all connectors share a common bend height.
+#' - `"fan_in_center"`: many-to-one connector that aggregates stems onto a horizontal
+#'   bus (shared at the computed bend height) and then a single centered trunk with an
+#'   arrow that points to the *center* of the end box. Useful when you want a single
+#'   arrow to represent the merged flow (e.g. a middle trunk bus).
 #'
 #' For `type = "N"` and `type = "fan_in_top"` with multi-box connections, a shared
 #' bend position is computed so that the horizontal segment aligns visually across
@@ -85,7 +89,7 @@
 connectGrob <- function(
   start,
   end,
-  type = c("vertical", "horizontal", "L", "-", "Z", "N", "fan_in_top"),
+  type = c("vertical", "horizontal", "L", "-", "Z", "N", "fan_in_top", "fan_in_center"),
   subelmnt = c("right", "left"),
   lty_gp = getOption("connectGrob", default = gpar(fill = "black")),
   arrow_obj = getOption("connectGrobArrow", default = arrow(ends = "last", type = "closed")),
@@ -101,41 +105,83 @@ connectGrob <- function(
   type <- match.arg(type)
   label_pos <- match.arg(label_pos)
 
-  if (prIsBoxList(start) && prIsBoxList(end)) {
-    stop("Both 'start' and 'end' cannot be lists (not implemented).", call. = FALSE)
-  }
+  # Normalize possible single-element wrapped lists so strategy detection
+  # correctly identifies lists of boxes (one-to-many / many-to-one).
+  start <- prFlattenBoxListIfNeeded(start)
+  end <- prFlattenBoxListIfNeeded(end)
 
-  # Labels currently supported only for one-to-one
-  if (!is.null(label) && (prIsBoxList(start) || prIsBoxList(end))) {
-    stop("'label' is only supported for one-to-one connections.", call. = FALSE)
-  }
+  # Also unwrap a first nested container when it clearly contains boxes so that
+  # the connector functions operate on the inner boxes rather than an outer
+  # grouping wrapper (this handles cases produced by spread/align pipelines).
+  start <- prMaybeUnwrapFirstContainerBoxes(start)
 
-  if (prIsBoxList(start)) {
-    if (type == "fan_in_top") {
-      return(prConnectManyToOneFanTop(
-        starts = start,
-        end = end,
-        subelmnt = subelmnt,
-        lty_gp = lty_gp,
-        arrow_obj = arrow_obj,
-        margin = margin,
-        split_pad = split_pad
-      ))
+  # If the *original* end is a list of group containers (each a list of boxes),
+  # the intention is usually to connect to the group's first element (header).
+  # Convert each container to its first boxed element *before* any unwrapping
+  # logic runs so we don't accidentally drop other groups.
+  if (is.list(end) && length(end) > 0 && all(vapply(end, is.list, logical(1)))) {
+    is_container_of_boxes <- vapply(end, function(el) {
+      length(el) > 0 && all(vapply(el, inherits, logical(1), "box"))
+    }, logical(1))
+    if (all(is_container_of_boxes)) {
+      end <- lapply(end, function(el) el[[1]])
     }
-    return(prConnectManyToOne(start, end, type, subelmnt, lty_gp, arrow_obj, split_pad = split_pad))
   }
 
-  if (prIsBoxList(end)) {
-    return(prConnectOneToMany(start, end, type, subelmnt, lty_gp, arrow_obj, split_pad = split_pad))
+  end <- prMaybeUnwrapFirstContainerBoxes(end)
+
+  # Ensure elements are normalized so single-element wrappers are unwrapped
+  # (e.g., list(box, list(box), box) -> list(box, box, box)).
+  start <- prNormalizeBoxElements(start)
+  end <- prNormalizeBoxElements(end)
+
+  # Collapse single-element lists containing a box into the bare box so that
+  # passing `list(box)` does not accidentally make both `start` and `end` be
+  # lists (which is an unsupported many-to-many case).
+  start <- prCollapseSingleBoxList(start)
+  end <- prCollapseSingleBoxList(end)
+
+
+  # If any top-level elements of `end` are containers (lists) take their
+  # first element as the representative header when that first element is a
+  # box. This is a permissive rule that handles mixed inputs produced by
+  # spread/align pipelines without failing.
+  # Only treat a *multi-element* list as a set of groups; if `end` is a
+  # single-element list (e.g., a boxed element wrapped as a list) we should
+  # not unwrap it here as that is used by other connector strategies.
+  if (!inherits(end, "box") && is.list(end) && length(end) > 1 && any(vapply(end, is.list, logical(1)))) {
+    end <- lapply(end, function(el) {
+      if (is.list(el) && length(el) > 0 && inherits(el[[1]], "box")) {
+        return(el[[1]])
+      }
+      el
+    })
   }
 
-  prConnect1(
+  # If we are connecting *many-to-one* (multiple starts to a single end) it is
+  # common for layout pipelines to produce a container-like structure for the
+  # end (for example when using `.subelement` or grouped spreads). If such a
+  # container accidentally reached this point, attempt to find the most
+  # appropriate boxed element to use as the end target (prefer the first
+  # boxed child). This keeps many-to-one strategies robust to mixed inputs.
+  if ((prIsBoxList(start) || inherits(start, "Gmisc_list_of_boxes")) && !inherits(end, "box") && is.list(end)) {
+    box_pos <- which(vapply(end, inherits, logical(1), "box"))
+    if (length(box_pos) >= 1) {
+      end <- end[[box_pos[1]]]
+    }
+  }
+
+
+  strategy <- prGetConnectorStrategy(start, end, type)
+  prCalculateConnector(
+    strategy,
     start = start,
     end = end,
-    type = type,
     subelmnt = subelmnt,
     lty_gp = lty_gp,
     arrow_obj = arrow_obj,
+    split_pad = split_pad,
+    margin = margin,
     label = label,
     label_gp = label_gp,
     label_bg_gp = label_bg_gp,

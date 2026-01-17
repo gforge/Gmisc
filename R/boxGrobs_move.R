@@ -13,9 +13,10 @@
 #'  (1) you only want to change the justification in the vertical direction you can retain the
 #'  existing justification by using `NA`, e.g. `c(NA, 'top')`, (2) if you specify only one string
 #'  and that string is either `top` or `bottom` it will assume vertical justification.
-#' @param .subelement If a `list` of boxes is provided, this can be a name, index, or a vector of names/indices
-#'  to target a single nested element to move; the function will return the original list with the
-#'  targeted element replaced by its moved version.
+#' @param .subelement If a `list` of boxes is provided, this can be a name, index, a deep path (e.g. `c("detail", 1)`) or a
+#'  vector of names/indices to target a single nested element to move. You can also pass
+#'  multiple targets as a list of paths (e.g. `list(c("detail", 1), c("followup", 1))`).
+#'  The function will return the original list with the targeted element(s) replaced by their moved version(s).
 #' @return The element with updated viewport and coordinates
 #'
 #' @md
@@ -39,25 +40,76 @@ moveBox <- function(element,
     }
 
     if (!is.null(.subelement)) {
-      path <- .subelement
+      # Normalize into list of paths
+      paths <- if (is.list(.subelement) && all(sapply(.subelement, is.atomic))) .subelement else list(.subelement)
 
-      # If first level not found, try to unwrap the first element (consistent with other helpers)
-      if (is.null(element[[path[1]]])) {
-        if (length(element) > 1 &&
-          is.list(element[[1]]) &&
-          !inherits(element[[1]], "box") &&
-          (function(el, path) {
-            cur <- el
-            for (p in path) {
-              if (is.null(cur[[p]])) {
-                return(FALSE)
+      for (path in paths) {
+        # If first level not found, try to unwrap the first element (consistent with other helpers)
+        if (is.null(element[[path[1]]])) {
+          if (length(element) > 1 &&
+            is.list(element[[1]]) &&
+            !inherits(element[[1]], "box") &&
+            (function(el, path) {
+              cur <- el
+              for (p in path) {
+                if (is.null(cur[[p]])) {
+                  return(FALSE)
+                }
+                cur <- cur[[p]]
               }
-              cur <- cur[[p]]
+              TRUE
+            })(element[[1]], path)) {
+            element <- element[[1]]
+          } else {
+            stop("The .subelement '", paste(path, collapse = "/"), "' was not found in the provided boxes.",
+              if (any(names(element) %in% c("x", "y", "space", "just"))) {
+                "\nDid you forget the leading '.' for your arguments, e.g. .subelement='name' instead of subelement='name'?"
+              } else {
+                ""
+              },
+              call. = FALSE
+            )
+          }
+        }
+
+        norm_seg <- function(s) {
+          if (is.numeric(s) || (is.character(s) && grepl("^[0-9]+$", s))) {
+            return(as.integer(s))
+          }
+          s
+        }
+
+        exists_nested <- function(el, path) {
+          cur <- el
+          for (p in path) {
+            pp <- norm_seg(p)
+            if (is.null(cur[[pp]])) {
+              return(FALSE)
             }
-            TRUE
-          })(element[[1]], path)) {
-          element <- element[[1]]
-        } else {
+            cur <- cur[[pp]]
+          }
+          TRUE
+        }
+
+        get_nested <- function(el, path) {
+          cur <- el
+          for (p in path) {
+            cur <- cur[[norm_seg(p)]]
+          }
+          cur
+        }
+
+        set_nested <- function(el, path, value) {
+          if (length(path) == 1) {
+            el[[norm_seg(path[[1]])]] <- value
+            return(el)
+          }
+          idx <- norm_seg(path[[1]])
+          el[[idx]] <- set_nested(el[[idx]], path[-1], value)
+          el
+        }
+
+        if (!exists_nested(element, path)) {
           stop("The .subelement '", paste(path, collapse = "/"), "' was not found in the provided boxes.",
             if (any(names(element) %in% c("x", "y", "space", "just"))) {
               "\nDid you forget the leading '.' for your arguments, e.g. .subelement='name' instead of subelement='name'?"
@@ -67,51 +119,13 @@ moveBox <- function(element,
             call. = FALSE
           )
         }
+
+        target <- get_nested(element, path)
+        moved_target <- moveBox(target, x = x, y = y, space = space, just = just)
+        element <- set_nested(element, path, moved_target)
       }
 
-      exists_nested <- function(el, path) {
-        cur <- el
-        for (p in path) {
-          if (is.null(cur[[p]])) {
-            return(FALSE)
-          }
-          cur <- cur[[p]]
-        }
-        TRUE
-      }
-
-      get_nested <- function(el, path) {
-        cur <- el
-        for (p in path) cur <- cur[[p]]
-        cur
-      }
-
-      set_nested <- function(el, path, value) {
-        if (length(path) == 1) {
-          el[[path[[1]]]] <- value
-          return(el)
-        }
-        idx <- path[[1]]
-        el[[idx]] <- set_nested(el[[idx]], path[-1], value)
-        el
-      }
-
-      if (!exists_nested(element, path)) {
-        stop("The .subelement '", paste(path, collapse = "/"), "' was not found in the provided boxes.",
-          if (any(names(element) %in% c("x", "y", "space", "just"))) {
-            "\nDid you forget the leading '.' for your arguments, e.g. .subelement='name' instead of subelement='name'?"
-          } else {
-            ""
-          },
-          call. = FALSE
-        )
-      }
-
-      target <- get_nested(element, path)
-      moved_target <- moveBox(target, x = x, y = y, space = space, just = just)
-      element <- set_nested(element, path, moved_target)
-
-      return(structure(element, class = c("Gmisc_list_of_boxes", class(element))))
+      return(prExtendClass(element, "Gmisc_list_of_boxes"))
     }
 
     if (space == "absolute") {
@@ -134,7 +148,7 @@ moveBox <- function(element,
     } else {
       ret <- sapply(element, \(el) moveBox(el, x = x, y = y, space = "relative"), simplify = FALSE)
     }
-    return(structure(ret, class = c("Gmisc_list_of_boxes", class(ret))))
+    return(prExtendClass(ret, "Gmisc_list_of_boxes"))
   }
 
   assert_class(element, "box")

@@ -43,9 +43,11 @@ span comes from \code{.from} / \code{.to} or the viewport.}
 the centers of the boxes are equally distributed across the span.}
 
 \item{.subelement}{If a \code{list} of boxes is provided, this parameter can be used
-to target a specific element (by name or index) for the spreading operation.
-The function will then return the original list with the targeted element
-replaced by its spread version.}
+to target a specific element (by name or index), or a deep path into nested
+lists (e.g., \code{c("detail", 1)}), for the spreading operation. You can also
+provide multiple targets by giving a list of paths (e.g., \code{list(c("detail", 1), c("followup", 1))}).
+The function will return the original list with the targeted element(s)
+replaced by their spread version(s).}
 }
 \value{
 A \code{list} with the boxes that have been spread.
@@ -69,21 +71,34 @@ end <- boxGrob("Bottom", x = .5, y = .2)
 side <- boxPropGrob("Side", "Left", "Right", prop = .3, x = .2, y = .8)
 exclude <- boxGrob("Exclude:\n - Too sick\n - Prev. surgery", x = .8, y = .5, just = "left")
 
-# We can chain the spread operations
-boxes <- spreadVertical(
+# We can chain the spread operations and print the result
+spreadVertical(
   start = start,
   middle = list(side, exclude),
   end = end
 ) |>
   spreadHorizontal(.subelement = "middle", .from = 0.2, .to = 0.8)
 
-# Now we can print them all at once
-boxes
+# Use device-level paging in interactive sessions so users can inspect the first plot
+# This will prompt before creating the next page; we restore the previous setting afterwards
+if (interactive()) {
+  old_ask <- grDevices::devAskNewPage(TRUE)
+  on.exit(grDevices::devAskNewPage(old_ask), add = TRUE)
+  grid.newpage() # will prompt on interactive devices
+} else {
+  # non-interactive: just start a fresh page for the next example
+  grid.newpage()
+}
+
+# Example: spread a nested subelement by deep path and print sequentially
+list(grp = list(middle = list(side, exclude))) |>
+  spreadHorizontal(.subelement = c("grp", "middle"), .from = 0.2, .to = 0.8)
 }
 \seealso{
 Other flowchart components: 
 \code{\link{align}},
 \code{\link{boxGrob}()},
+\code{\link{boxHeaderGrob}()},
 \code{\link{boxPropGrob}()},
 \code{\link{boxShapes}},
 \code{\link{connectGrob}()},

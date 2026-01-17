@@ -96,6 +96,7 @@ passed to `boxGrob(..., box_fn = ...)`: \code{boxDiamondGrob},
 
 Other flowchart components: 
 \code{\link{align}},
+\code{\link{boxHeaderGrob}()},
 \code{\link{boxPropGrob}()},
 \code{\link{boxShapes}},
 \code{\link{connectGrob}()},

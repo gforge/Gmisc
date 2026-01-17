@@ -1,5 +1,14 @@
 NEWS for the Gmisc package
 
+## Changes for 3.2.0
+
+- Added `boxHeaderGrob()` for creating flowchart boxes with centered header text and left-justified body text (e.g., bullet points). Fully compatible with all Gmisc flowchart helpers (`coords()`, `distance()`, `connectGrob()`, `spreadVertical()`, `alignHorizontal()`, etc.).
+- Added deep-path support for `.subelement` and `reference` in `alignVertical`, `alignHorizontal`, `spreadVertical`, `spreadHorizontal`, and `moveBox`, allowing nested paths (e.g. `c("detail", 1)`) and multiple targets (e.g. `list(c(...), c(...))`).
+- Added helpers `get_list_element_by_path()` and `set_list_element_by_path()` to support nested selection and assignment.
+- Updated examples (`inst/examples/alignBox_ex.R`, `inst/examples/spreadBox_ex.R`) and added tests (`tests/testthat/test-align-deep-path.R`, `tests/testthat/test-spread-move-deep-path.R`, `tests/testthat/test-align-subelement-deep.R`) covering deep-path selection and informative error messages.
+- Fixed `.subelement` resolution when a list of boxes is piped into `alignHorizontal()` or `alignVertical()` while providing a named `reference` argument; the piped list is now unwrapped so nested targets (e.g., `c("step_1", "non-surgical")`) are correctly found and aligned.
+- Fixed many-to-one connectors (N, fan_in_center, fan_in_top) to handle container-like inputs by automatically targeting the first box within a group.
+
 ## Changes for 3.1.0
 
 - Added support for lists of boxes in `prConvert2Coords`, allowing for merged bounding box calculations in `npc` units.
