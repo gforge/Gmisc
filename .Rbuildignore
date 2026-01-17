@@ -5,9 +5,14 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^visual_tests
+^tests/visual_tests$
+^tests/visual_tests/.*
+^tests/testthat/.*\.pdf$
 ^\.travis\.yml$
 ^cran-comments\.md$
 .vscode
+^inst/extdata/.*\.html$
+^inst/extdata/.*\.css$
 Gmisc/inst/extdata/Full_test_suite_files/*
 .lintr
 ^CRAN-SUBMISSION$
@@ -18,3 +23,4 @@ Gmisc/inst/extdata/Full_test_suite_files/*
 ^\.Rcheck$
 ^Gmisc-manual\.tex$
 ^src/.*\.(o|so|rds)$
+^.github/

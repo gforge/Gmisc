@@ -1,5 +1,10 @@
 linters: linters_with_defaults(
   line_length_linter(120),
+  indentation_linter(
+    indent = 2L,
+    hanging_indent_style = c("tidy", "always", "never"),
+    assignment_as_infix = TRUE
+  ),
   object_length_linter(120),
   object_name_linter(styles = c("camelCase", "snake_case")),
   trailing_whitespace_linter(),
