@@ -22,7 +22,7 @@ latex.descMrg <- function(object, ...) {
   }
 
   NextMethod(
-    generic = NULL, 
+    generic = NULL,
     object = object,
     ...
   )
@@ -35,10 +35,10 @@ latex.descMrg <- function(object, ...) {
 #' @import magrittr
 htmlTable.descMrg <- function(x, ...) {
   dots <- list(...)
-  htmlTable_args <- attr(x, "htmlTable_args")
-  for (n in names(htmlTable_args)) {
+  attr_args <- attr(x, "htmlTable_args")
+  for (n in names(attr_args)) {
     if (!n %in% names(dots)) {
-      dots[[n]] <- htmlTable_args[[n]]
+      dots[[n]] <- attr_args[[n]]
     }
   }
 

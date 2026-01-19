@@ -46,7 +46,7 @@ spreadVertical <- function(
 ) {
   type <- match.arg(.type)
 
-  .margin <- prAsNpc(.margin)
+  .margin <- prAsUnit(.margin, units = "npc")
   ft <- prNormalizeFromTo(.from, .to, axis = "y")
   .from <- ft$from
   .to <- ft$to
@@ -147,7 +147,6 @@ spreadVertical <- function(
   new_y_distances <- prGetNewDistances(
     span_info = span_info,
     type = type,
-    convert_to_axis_fn = convertY,
     orientation = "vertical"
   )
 
@@ -166,7 +165,7 @@ spreadHorizontal <- function(..., .from = NULL, .to = NULL, .margin = unit(0, "n
                              .type = c("between", "center"), .subelement = NULL) {
   type <- match.arg(.type)
 
-  .margin <- prAsNpc(.margin)
+  .margin <- prAsUnit(.margin, units = "npc")
   ft <- prNormalizeFromTo(.from, .to, axis = "x")
   .from <- ft$from
   .to <- ft$to
@@ -177,7 +176,11 @@ spreadHorizontal <- function(..., .from = NULL, .to = NULL, .margin = unit(0, "n
   if (!is.null(dots_names)) {
     typos <- dots_names[dots_names %in% c("from", "to", "margin", "type", "subelement")]
     if (length(typos) > 0) {
-      warning("Arguments [", paste(typos, collapse = ", "), "] should probably be prefixed with a '.', e.g. .", typos[1], ", as they are otherwise interpreted as boxes to be spread.", call. = FALSE)
+      warning(
+        "Arguments [", paste(typos, collapse = ", "), "] should probably be prefixed with a '.', e.g. .",
+        typos[1], ", as they are otherwise interpreted as boxes to be spread.",
+        call. = FALSE
+      )
     }
   }
 
@@ -263,7 +266,6 @@ spreadHorizontal <- function(..., .from = NULL, .to = NULL, .margin = unit(0, "n
   new_x_distances <- prGetNewDistances(
     span_info = span_info,
     type = type,
-    convert_to_axis_fn = convertX,
     orientation = "horizontal"
   )
 
@@ -305,13 +307,16 @@ prGetSpanSpace <- function(
   }
   if (!inherits(.margin, "unit")) stop("`.margin` must be a grid::unit or numeric.", call. = FALSE)
 
+  axis <- if (orientation == "horizontal") "x" else "y"
+
   to_npc <- function(u) {
-    if (orientation == "horizontal") convertX(u, unitTo = "npc") else convertY(u, unitTo = "npc")
+    unit(prGetNpcValue(u, axis), "npc")
   }
 
   # Normalize margin into npc and ensure non-negative
   margin_npc <- to_npc(.margin)
-  if (convertWidth(margin_npc, "npc", valueOnly = TRUE) < 0) {
+  mn_val <- prGetNpcSize(margin_npc, axis)
+  if (is.na(mn_val) || mn_val < 0) {
     stop("`.margin` must be >= 0.", call. = FALSE)
   }
 
@@ -403,7 +408,8 @@ prGetSpanSpace <- function(
   span_npc <- to_npc(dist) + extra_space
 
   # Must not be negative after margin/size adjustments
-  if (convertWidth(span_npc, "npc", valueOnly = TRUE) < 0) {
+  sp_val <- prGetNpcSize(span_npc, axis)
+  if (is.na(sp_val) || sp_val < 0) {
     stop(
       "No space left to spread boxes: span collapsed (from/to too close or margin too large).",
       call. = FALSE
@@ -416,7 +422,8 @@ prGetSpanSpace <- function(
     for (b in boxes_in_between) {
       available_space <- available_space - to_npc(prConvert2Coords(b)[[type_size_key]])
     }
-    if (convertWidth(available_space, "npc", valueOnly = TRUE) < 0) {
+    av_val <- prGetNpcSize(available_space, axis)
+    if (is.na(av_val) || av_val < 0) {
       stop(
         "No space left to spread boxes: in-between boxes exceed the available span.",
         call. = FALSE
@@ -439,28 +446,30 @@ prGetSpanSpace <- function(
 }
 
 
-prGetNewDistances <- function(span_info, type, convert_to_axis_fn,
+prGetNewDistances <- function(span_info, type,
                               orientation = c("vertical", "horizontal")) {
   orientation <- match.arg(orientation)
+  axis <- if (orientation == "vertical") "y" else "x"
   type_size_key <- ifelse(orientation == "vertical", "height", "width")
   type_half_size_key <- paste0("half_", type_size_key)
 
-  to_npc <- function(u) convert_to_axis_fn(u, unitTo = "npc")
+  to_npc_pos <- function(u) unit(prGetNpcValue(u, axis), "npc")
+  to_npc_size <- function(u) unit(prGetNpcSize(u, axis), "npc")
 
   space_distance <- span_info$available_space / (length(span_info$boxes_in_between) + 1)
 
   new_coordinate <- NULL
-  offset <- to_npc(span_info$start_pos)
+  offset <- to_npc_pos(span_info$start_pos)
 
   if (!is.null(span_info$first)) {
-    new_coordinate <- to_npc(span_info$start_pos) - span_info$sign * to_npc(prConvert2Coords(span_info$first)[[type_half_size_key]])
-    offset <- if (type == "center") new_coordinate else to_npc(span_info$start_pos)
+    new_coordinate <- to_npc_pos(span_info$start_pos) - span_info$sign * to_npc_size(prConvert2Coords(span_info$first)[[type_half_size_key]])
+    offset <- if (type == "center") new_coordinate else to_npc_pos(span_info$start_pos)
   }
 
   for (b in span_info$boxes_in_between) {
     if (type == "between") {
-      new_position <- offset + span_info$sign * (space_distance + to_npc(prConvert2Coords(b)[[type_half_size_key]]))
-      offset <- offset + span_info$sign * (space_distance + to_npc(prConvert2Coords(b)[[type_size_key]]))
+      new_position <- offset + span_info$sign * (space_distance + to_npc_size(prConvert2Coords(b)[[type_half_size_key]]))
+      offset <- offset + span_info$sign * (space_distance + to_npc_size(prConvert2Coords(b)[[type_size_key]]))
     } else {
       new_position <- offset + span_info$sign * space_distance
       offset <- offset + span_info$sign * space_distance
@@ -469,7 +478,7 @@ prGetNewDistances <- function(span_info, type, convert_to_axis_fn,
   }
 
   if (!is.null(span_info$last)) {
-    last_position <- to_npc(span_info$end_pos) + span_info$sign * to_npc(prConvert2Coords(span_info$last)[[type_half_size_key]])
+    last_position <- to_npc_pos(span_info$end_pos) + span_info$sign * to_npc_size(prConvert2Coords(span_info$last)[[type_half_size_key]])
     new_coordinate <- unit.c(new_coordinate, last_position)
   }
 

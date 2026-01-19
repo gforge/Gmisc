@@ -140,7 +140,6 @@ moveBox <- function(element,
         if (!is.null(y)) target_y <- prAdjustPos(just, target_y, grp_coords$height, axis = "y")
       }
 
-      # Use convertX/Y to ensure we can do subtraction if units differ, although usually it's npc or mm
       shift_x <- if (!is.null(target_x)) target_x - grp_coords$x else unit(0, "npc")
       shift_y <- if (!is.null(target_y)) target_y - grp_coords$y else unit(0, "npc")
 

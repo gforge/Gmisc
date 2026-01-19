@@ -17,9 +17,9 @@ pcCalculateXPositions <- function(starts, end, margin = unit(2, "mm")) {
   e <- coords(end)
   n <- length(starts)
   xs_end <- prEdgeSlots(e$left, e$right, n = n, margin = margin)
-  # Convert attachment x positions to npc units for stable resizing
-  xs_end <- convertX(xs_end, unitTo = "npc")
-  return(xs_end)
+  # Convert attachment x positions to npc numeric values and wrap back to
+  # npc units so downstream code can rely on `unit(..., 'npc')` values.
+  unit(vapply(xs_end, \(u) prGetNpcValue(u, "x"), numeric(1)), "npc")
 }
 
 #' Generate connector line grobs for fan-in-on-top
@@ -71,7 +71,7 @@ prGenerateLines <- function(starts, end, bend_y, xs_end, lty_gp, arrow_obj, sube
     if (!inherits(x0, "unit")) {
       x0 <- unit(x0, "npc")
     } else {
-      x0 <- convertX(x0, unitTo = "npc")
+      x0 <- prGetNpcValue(x0, "x") |> unit("npc")
     }
     y0 <- if (starts_above) s$bottom else s$top
 
@@ -98,7 +98,7 @@ prGenerateLines <- function(starts, end, bend_y, xs_end, lty_gp, arrow_obj, sube
   # If centered straight branch desired, override middle assigned slot
   centered <- prNShouldUseCenteredBranch(starts, end)
   if (centered) {
-    mid_sorted_idx <- ord[(length(ord) + 1) / 2]
+    mid_sorted_idx <- ord[ceiling(length(ord) / 2)]
     targ_center <- prGetNpcValue(prConvert2Coords(end)$x, "x")
     # Prefer the target center when available; otherwise fall back to the
     # start's x coordinate to guarantee a vertical trunk when conversions fail.
@@ -137,7 +137,7 @@ prGenerateLines <- function(starts, end, bend_y, xs_end, lty_gp, arrow_obj, sube
   # If we used a centered straight branch, make the corresponding stem
   # vertical as well by matching its x coords to the assigned trunk x value.
   if (centered) {
-    mid_sorted_idx <- ord[(length(ord) + 1) / 2]
+    mid_sorted_idx <- ord[ceiling(length(ord) / 2)]
     x_val_npc <- assigned_end_vals[mid_sorted_idx]
     if (!is.na(x_val_npc)) {
       x_unit <- unit(x_val_npc, "npc")

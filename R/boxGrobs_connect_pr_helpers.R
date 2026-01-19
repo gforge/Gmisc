@@ -137,14 +137,14 @@ prNShouldUseCenteredBranch <- function(items, target, tolerance = 0.1) {
   targ_coords <- prConvert2Coords(target)
   targ_x <- prGetNpcValue(targ_coords$x, "x")
 
-  # Prefer converting declared width; if that fails (e.g. units not resolvable
-  # in the current device/context) fall back to left/right edge difference
-  # and finally to a permissive default so that lack of a convertible width
-  # does not prevent a centered branch from being used.
-  targ_w <- tryCatch(convertWidth(targ_coords$width, "npc", valueOnly = TRUE), error = function(e) NA_real_)
+  # Prefer converting declared width (npc numeric). If that fails (e.g. units
+  # not resolvable in the current device/context) fall back to left/right
+  # edge difference using `prGetNpcValue`. Finally default to 1 so lack of a
+  # convertible width doesn't prevent centered-branch behavior.
+  targ_w <- prGetNpcSize(targ_coords$width, "x")
   if (is.na(targ_w) || targ_w <= 0) {
-    left <- tryCatch(convertX(targ_coords$left, "npc", valueOnly = TRUE), error = function(e) NA_real_)
-    right <- tryCatch(convertX(targ_coords$right, "npc", valueOnly = TRUE), error = function(e) NA_real_)
+    left <- prGetNpcValue(targ_coords$left, "x")
+    right <- prGetNpcValue(targ_coords$right, "x")
     if (!is.na(left) && !is.na(right)) {
       targ_w <- right - left
     } else {
@@ -153,6 +153,22 @@ prNShouldUseCenteredBranch <- function(items, target, tolerance = 0.1) {
   }
 
   abs(middle_x - targ_x) <= tolerance * targ_w
+}
+
+# Assign end-slot positions to start positions in a stable, shared way.
+# Returns list with `assigned` numeric (length n), `ord` ordering indices,
+# and `mid_idx` the index of the chosen center start.
+prAssignSlots <- function(starts_x_vals, xs_end_vals) {
+  n <- length(starts_x_vals)
+  if (n == 0L) {
+    return(list(assigned = numeric(0), ord = integer(0), mid_idx = integer(0)))
+  }
+  ord <- order(starts_x_vals)
+  assigned <- numeric(n)
+  assigned[ord] <- xs_end_vals
+  mid_pos <- ceiling(n / 2)
+  mid_idx <- ord[mid_pos]
+  list(assigned = assigned, ord = ord, mid_idx = mid_idx)
 }
 
 #' Calculate bend Y coordinate for shared-bend connectors
@@ -183,16 +199,28 @@ prCalculateBendY <- function(
   # Calculate the minimum vertical distance between each start box and end box
   d_min <- Reduce(unit.pmin, lapply(s_coords, function(s) distance(s, e, type = "v", half = TRUE)))
 
+  # Ensure d_min is safely mixed with npc coordinates by converting to npc
+  # before arithmetic with e$top/e$bottom. `distance()` may return device
+  # units (mm) so converting avoids unit-mix errors.
+  d_min_npc <- tryCatch(convertY(d_min, unitTo = "npc"), error = function(e) NA)
+  if (inherits(d_min_npc, "unit")) {
+    d_min_use <- d_min_npc
+  } else {
+    # Fall back: coerce numeric or NA to a small npc offset
+    d_min_num <- if (is.numeric(d_min)) d_min else NA_real_
+    if (is.na(d_min_num)) d_min_use <- unit(0.01, "npc") else d_min_use <- unit(d_min_num, "npc")
+  }
+
   # Determine if the start boxes are above the end box
   starts_above <- prStartsAbove(starts, end)
 
   if (edge == "top" || (edge == "auto" && starts_above)) {
     # Bend is between starts bottom and end top
-    bend_y <- e$top + d_min
+    bend_y <- e$top + d_min_use
     bend_y <- unit.pmax(bend_y, e$top + split_pad)
   } else {
     # Bend is between starts top and end bottom
-    bend_y <- e$bottom - d_min
+    bend_y <- e$bottom - d_min_use
     bend_y <- unit.pmin(bend_y, e$bottom - split_pad)
   }
 

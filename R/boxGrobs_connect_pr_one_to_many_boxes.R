@@ -102,14 +102,15 @@ prGetOneToManyNAssignedX <- function(start, s, ends, end_coords, subelmnt) {
 
   # Map ends left->right and, if centered alignment holds, make middle end align with start
   end_x_vals <- vapply(end_coords, \(e) prGetNpcValue(x_at(e, "x"), "x"), numeric(1))
-  ord <- order(end_x_vals)
-  assigned_end_vals <- numeric(length(end_x_vals))
-  assigned_end_vals[ord] <- end_x_vals[ord]
+  # Use shared assignment helper for stable ordering
+  slots_res <- prAssignSlots(end_x_vals, end_x_vals)
+  assigned_end_vals <- slots_res$assigned
+  ord <- slots_res$ord
 
   centered <- prNShouldUseCenteredBranch(ends, start)
   mid_sorted_idx <- NA
   if (centered) {
-    mid_sorted_idx <- ord[(length(ord) + 1) / 2]
+    mid_sorted_idx <- slots_res$mid_idx
     assigned_end_vals[mid_sorted_idx] <- prGetNpcValue(s$x, "x")
   }
 

@@ -97,15 +97,16 @@ prGetManyToOneNAssignedX <- function(starts, s_coords, e, subelmnt) {
   # can be detected and handled (center straight branch when appropriate).
   starts_x_vals <- vapply(s_coords, function(s) prGetNpcValue(x_at(s, "x"), "x"), numeric(1))
   xs_end_vals <- vapply(prEdgeSlots(e$left, e$right, n = length(starts)), function(u) prGetNpcValue(u, "x"), numeric(1))
-  ord <- order(starts_x_vals)
-  assigned_end_vals <- numeric(length(starts_x_vals))
-  assigned_end_vals[ord] <- xs_end_vals
+  # Use shared assignment helper for stable mapping from starts -> end slots
+  slots_res <- prAssignSlots(starts_x_vals, xs_end_vals)
+  assigned_end_vals <- slots_res$assigned
+  ord <- slots_res$ord
 
   # If centered straight branch desired, make the middle start attach to end center
   centered <- prNShouldUseCenteredBranch(starts, e)
   mid_sorted_idx <- NA
   if (centered) {
-    mid_sorted_idx <- ord[(length(ord) + 1) / 2]
+    mid_sorted_idx <- slots_res$mid_idx
     assigned_end_vals[mid_sorted_idx] <- prGetNpcValue(prConvert2Coords(e)$x, "x")
   }
 

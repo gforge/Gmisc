@@ -638,7 +638,7 @@ alignHorizontal(reference = b3,
 
 The `boxHeaderGrob()` function creates boxes with centered headers and left-justified body text, perfect for flowcharts with structured information like timelines or protocols. Here's an example of a randomized trial flowchart with shared criteria and two treatment arms:
 
-```{r complex_nested, fig.width = 9, fig.height = 7}
+```{r complex_nested, fig.width = 7, fig.height = 8}
 # Helper function to convert nested structure to grobs
 make_boxes <- function(x) {
   if (is.list(x) && !inherits(x, "box_header")) {

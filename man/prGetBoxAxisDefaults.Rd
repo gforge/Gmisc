@@ -2,13 +2,16 @@
 % Please edit documentation in R/boxGrob_spread_npc_norm_helpers.R
 \name{prGetBoxAxisDefaults}
 \alias{prGetBoxAxisDefaults}
-\title{Get default from/to values for an axis}
+\title{Get default from/to values for an axis
+Get default from/to values for an axis}
 \usage{
 prGetBoxAxisDefaults(axis = c("x", "y"))
 }
 \arguments{
-\item{axis}{Axis, either "x" or "y"
-#' @return A list with `from` and `to` values as `unit` objects}
+\item{axis}{Axis, either "x" or "y"}
+}
+\value{
+A list with `from` and `to` values as `unit` objects
 }
 \description{
 When axis is "x", the default is from 0 to 1 npc, i.e. left to right.

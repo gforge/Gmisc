@@ -7,12 +7,21 @@
 prConvert2Coords(obj)
 }
 \arguments{
-\item{obj}{A single or a \code{list} of \code{[}boxGrob\verb{], }\code{\link{boxPropGrob}}, \code{[}coords\verb{] output, }\code{\link[grid:unit]{unit}}
-or a numeric value that can be converted to an \code{npc} \code{[}unit\verb{][grid::unit]. If a }list\verb{is provided the function recursively converts each element and returns bounding coordinates that encompass all elements; the returned units are in}npc` so the coordinates resize with the viewport.}
+\item{obj}{A single or a \code{list} of objects. Supported element types include:
+\itemize{
+\item \code{boxGrob} or \code{boxPropGrob}
+\item output from \code{coords}
+\item a \code{unit} (grid) or a numeric value coercible to an \code{npc} unit
+}
+
+When a \code{list} is provided the function recursively converts each element and
+returns bounding coordinates that encompass all elements. The returned
+units are in \code{npc} so the coordinates resize with the viewport.}
 }
 \value{
-A \code{list} with all the points that \code{\link{coords}} returns. For list inputs the function returns merged
-bounding coordinates (class \code{box_coords}) with units in \code{npc}.
+A \code{list} with the points produced by \code{coords}. For list inputs the
+function returns merged bounding coordinates (class \code{box_coords}) with
+units in \code{npc}.
 }
 \description{
 Sometimes we have an object that can be either a box,
@@ -21,9 +30,11 @@ want is a \code{list} of coordinates that we can use for
 calculating distance, alignment and other things.
 }
 \details{
-When given a list, \code{prConvert2Coords} computes the min/max of edges (or uses center +/- half sizes
-if edges are missing) to create a merged bounding box. Any additional coordinate names present on elements
-are merged heuristically (e.g., \verb{left*} -> min, \verb{right*} -> max, else averaged).
+When given a list, \code{prConvert2Coords} computes the min/max of
+edges (or uses center +/- half sizes when edges are missing) to create a
+merged bounding box. Any additional coordinate names present on elements
+are merged heuristically (for example, \verb{left*} -> min, \verb{right*} -> max,
+otherwise averaged).
 }
 \examples{
 box1 <- boxGrob("A", x = .2, y = .8)
