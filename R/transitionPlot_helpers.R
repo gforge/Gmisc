@@ -269,7 +269,7 @@ prTpPlotArrows <- function(type,
         # Add line width addition if it is a background line
         if (!is.na(add_width)) {
           if (is.unit(add_width)) {
-            a_width <- a_width + convertY(add_width, unitTo = "npc", valueOnly = TRUE)
+            a_width <- a_width + prGetNpcValue(add_width, "y")
           } else {
             a_width <- a_width * add_width
           }
@@ -301,7 +301,7 @@ prTpPlotArrows <- function(type,
         # Add line width addition if it is a background line
         if (!is.na(add_width)) {
           if (is.unit(add_width)) {
-            a_width <- a_width + convertY(add_width, unitTo = "npc", valueOnly = TRUE)
+            a_width <- a_width + prGetNpcValue(add_width, "y")
           } else {
             a_width <- a_width * add_width
           }

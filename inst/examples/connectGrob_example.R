@@ -24,7 +24,12 @@ connectGrob(boxes$side, side_boxes$left, "v", "l")
 connectGrob(boxes$side, side_boxes$right, "v", "r")
 
 # Fan-in center example: multiple starts into one center bus and single trunk
-connectGrob(list(boxes$start, boxGrob("S2", x = .3, y = .7), boxGrob("S3", x = .7, y = .7)), boxes$end, type = "fan_in_center")
+list(
+  boxes$start,
+  boxGrob("S2", x = .3, y = .7),
+  boxGrob("S3", x = .7, y = .7)
+) |>
+  connectGrob(boxes$end, type = "fan_in_center")
 
 # Print the boxes
 boxes
