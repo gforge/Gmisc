@@ -15,13 +15,13 @@ testthat::test_that("alignHorizontal accepts piped list with named reference arg
         early_followup = early_followup,
         followup = late_followup
     ) |>
-        spreadHorizontal(.subelement = "step_1") |>
-        spreadHorizontal(.subelement = "treatment", .from = 0.35)
+        spreadHorizontal(subelement = "step_1") |>
+        spreadHorizontal(subelement = "treatment", from = 0.35)
 
     # The case that previously failed: a piped list and a named 'reference' arg
     expect_silent(result <- boxes_mid |> alignHorizontal(
         reference = c("treatment", "late"),
-        .subelement = c("step_1", "non-surgical")
+       subelement = c("step_1", "non-surgical")
     ))
 
     # Verify the targeted subelement exists and has been replaced (i.e., alignment returned a box)

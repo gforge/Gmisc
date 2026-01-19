@@ -6,7 +6,7 @@ test_that("setConnectorLabels attaches attributes and printing returns object", 
     c <- boxServerGrob("S")
 
     boxes <- list(decision = a, outcomes = list(b, c)) |>
-        spreadHorizontal(.from = unit(.1, "npc"), .to = unit(.9, "npc"), .subelement = "outcomes") |>
+        spreadHorizontal(from = unit(.1, "npc"), to = unit(.9, "npc"), subelement = "outcomes") |>
         spreadVertical()
 
     con_list <- connectGrob(boxes$decision, boxes$outcomes, type = "N")

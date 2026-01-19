@@ -3,7 +3,8 @@ Version: 3.2.0
 Title: Descriptive Statistics, Transition Plots, and More
 Authors@R: c(
     person(given = "Max", family = "Gordon",
-           email = "max@gforge.se", role = c("aut", "cre")))
+           email = "max@gforge.se", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-8080-5815")))
 Author: Max Gordon [aut, cre]
 Maintainer: Max Gordon <max@gforge.se>
 Description: Utilities for common medical-statistics graphics

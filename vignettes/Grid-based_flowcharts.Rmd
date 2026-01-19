@@ -11,7 +11,7 @@ vignette: >
   %\usepackage[utf8]{inputenc}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options:
-  chunk_output_type: inline
+  chunk_output_type: console
 ---
 
 ```{r setup, include = FALSE}
@@ -28,60 +28,49 @@ library(grid)
 A flowchart is a type of diagram that represents a workflow or process. In research we often want to explain how we recruited our patients, how many that were available from the start, how many that were excluded and how many were left at the final analysis. The **Gmisc** package provides a convenient set of functions for doing this using the R's built-in `grid` package with some bells and whistles. Below is a simple example that illustrates what we're aiming for.
 
 ```{r, fig.height = 7, fig.width = 8}
-org_cohort <- boxGrob(glue("Stockholm population",
-                           "n = {pop}",
-                           pop = txtInt(1632798),
-                           .sep = "\n"))
-eligible <- boxGrob(glue("Eligible",
+grid.newpage()
+flowchart(source = glue("Stockholm population",
+                        "n = {pop}",
+                        pop = txtInt(1632798),
+                        .sep = "\n"),
+          eligible = glue("Eligible",
                           "n = {pop}",
-                           pop = txtInt(10032),
-                           .sep = "\n"))
-included <- boxGrob(glue("Randomized",
+                          pop = txtInt(10032),
+                          .sep = "\n"),
+          included = glue("Randomized",
                          "n = {incl}",
                          incl = txtInt(122),
-                         .sep = "\n"))
-grp_a <- boxGrob(glue("Treatment A",
-                      "n = {recr}",
-                      recr = txtInt(43),
-                      .sep = "\n"))
-
-grp_b <- boxGrob(glue("Treatment B",
-                      "n = {recr}",
-                      recr = txtInt(122 - 43 - 30),
-                      .sep = "\n"))
-
-excluded <- boxGrob(glue("Excluded (n = {tot}):",
-                         " - not interested: {uninterested}",
-                         " - contra-indicated: {contra}",
-                         tot = 30,
-                         uninterested = 12,
-                         contra = 30 - 12,
                          .sep = "\n"),
-                    just = "left")
-
-grid.newpage()
-vert <- spreadVertical(org_cohort,
-               eligible = eligible,
-               included = included,
-               grps = list(grp_a, grp_b)) |>
-  spreadHorizontal(.subelement = "grps")
-
-excluded <- moveBox(excluded,
-                    x = .8,
-                    y = coords(vert$included)$top + distance(vert$eligible, vert$included, half = TRUE, center = FALSE))
-
-for (i in 1:(length(vert) - 1)) {
-  from <- vert[[i]]
-  to <- vert[[i + 1]]
-  connectGrob(vert[[i]], vert[[i + 1]], type = ifelse(is.grob(to), "vert", "N")) |>
-    print()
-}
-
-connectGrob(vert$eligible, excluded, type = "L", label = "Excluded")
-
-# Print boxes
-vert
-excluded
+          groups = list(
+            glue("Treatment A",
+                 "n = {recr}",
+                 recr = txtInt(43),
+                 .sep = "\n"),
+            glue("Treatment B",
+                 "n = {recr}",
+                 recr = txtInt(122 - 43 - 30),
+                 .sep = "\n")
+          )) |> 
+  spread(axis = "y") |>
+  spread(.subelement = "groups", axis = "x") |>
+  insert(list(excluded = boxHeaderGrob(header = glue("Excluded (n = {tot}):", tot = 30),
+                          body = glue(" - not interested: {uninterested}",
+                                      " - contra-indicated: {contra}",
+                                      uninterested = 12,
+                                      contra = 30 - 12,
+                                      .sep = "\n"),
+                          bjust = "left",
+                          header_gp = getOption("boxGrobTxt", default = gpar(
+                            color = "black",
+                            cex = 1
+                          )))), 
+         after = "eligible", 
+         name = "excluded") |> 
+  move(name = "excluded", x = .8) |>
+  connect("source", "eligible", type = "vert") |>
+  connect("eligible", "included", type = "vert") |>
+  connect("included", "groups", type = "N") |>
+  connect("eligible", "excluded", type = "L", label = "Excluded")
 ```
 
 # Basic components explained
@@ -772,6 +761,27 @@ for (arm_name in names(boxes$arms)) {
     connectGrob(arm_boxes[[i-1]], arm_boxes[[i]], type = "v") |> print()
   }
 }
+```
+
+# The S3 Layout API
+
+The package provides a pipelined API where you can construct your flowchart as a single object (a list of boxes with connection attributes) and then print/plot it. This reduces the need for manual loops and `print()` calls for connectors.
+
+```{r s3_api_example, fig.height=8, fig.width=6, eval=FALSE}
+grid.newpage()
+
+# Define the nodes
+b1 <- boxGrob("Start", y = 0.8)
+b2 <- boxGrob("Process", y = 0.5)
+b3 <- boxGrob("End", y = 0.2)
+
+# Pipeline: list -> align -> connect -> print
+list(start = b1, process = b2, end = b3) |>
+  align(axis = "y") |>
+  spread(axis = "x") |> 
+  connect("start", "process", type = "horizontal") |>
+  connect("process", "end", type = "horizontal") |>
+  print()
 ```
 
 # Math expressions in boxes

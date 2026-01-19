@@ -1,4 +1,4 @@
-testthat::test_that("spread and move accept deep .subelement paths", {
+testthat::test_that("spread and move accept deep subelement paths", {
     library(grid)
     library(checkmate)
     make_stub_box <- function(label, x = 0.5, y = 0.5) {
@@ -29,11 +29,11 @@ testthat::test_that("spread and move accept deep .subelement paths", {
     )
 
     # If a path does not exist we get informative error
-    expect_error(moveBox(nested, x = 0.5, .subelement = c("no", "such")), "The .subelement 'no/such' was not found", fixed = TRUE)
+    expect_error(moveBox(nested, x = 0.5, subelement = c("no", "such")), "The subelement 'no/such' was not found", fixed = TRUE)
 
     # Multiple paths: if the first path is missing we get an informative error
-    expect_error(moveBox(nested, x = 0.5, .subelement = list(c("missing", "x"), c("grp", "sub", 1))), "The .subelement 'missing/x' was not found", fixed = TRUE)
+    expect_error(moveBox(nested, x = 0.5, subelement = list(c("missing", "x"), c("grp", "sub", 1))), "The subelement 'missing/x' was not found", fixed = TRUE)
 
     # Spread: attempting to target missing path raises same informative error
-    expect_error(spreadVertical(nested, .subelement = c("no", "pe")), "The .subelement 'no -> pe' was not found", fixed = TRUE)
+    expect_error(spreadVertical(nested, subelement = c("no", "pe")), "The subelement 'no -> pe' was not found", fixed = TRUE)
 })

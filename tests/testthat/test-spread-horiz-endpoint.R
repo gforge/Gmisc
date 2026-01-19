@@ -1,4 +1,4 @@
-testthat::test_that("spreadHorizontal handles numeric endpoints with .subelement name", {
+testthat::test_that("spreadHorizontal handles numeric endpoints with subelement name", {
   # Load package internals for this integration test
   # No package load needed; tests run in package context during R CMD check
   library(grid)
@@ -25,7 +25,7 @@ testthat::test_that("spreadHorizontal handles numeric endpoints with .subelement
 
   # Execute: we only assert that the specific integer-selection error is not raised
   res <- tryCatch(
-    list(value = spreadHorizontal(boxes, .subelement = "arms", .from = 0.25, .to = 0.75), error = NULL),
+    list(value = spreadHorizontal(boxes, subelement = "arms", from = 0.25, to = 0.75), error = NULL),
     error = function(e) list(value = NULL, error = e)
   )
 

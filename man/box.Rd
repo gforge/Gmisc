@@ -95,14 +95,18 @@ passed to `boxGrob(..., box_fn = ...)`: \code{boxDiamondGrob},
 \code{boxTapeGrob}. For examples see the vignette: \code{vignette("Grid-based_flowcharts", package = "Gmisc")}.
 
 Other flowchart components: 
-\code{\link{align}},
+\code{\link{align}()},
+\code{\link{append}()},
 \code{\link{boxHeaderGrob}()},
 \code{\link{boxPropGrob}()},
 \code{\link{boxShapes}},
 \code{\link{connectGrob}()},
 \code{\link{coords}()},
 \code{\link{distance}()},
+\code{\link{flowchart}()},
+\code{\link{insert}()},
+\code{\link{move}()},
 \code{\link{moveBox}()},
-\code{\link{spread}}
+\code{\link{spread}()}
 }
 \concept{flowchart components}

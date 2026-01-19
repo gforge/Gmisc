@@ -13,7 +13,7 @@ testthat::test_that("connectGrob to group containers uses first box in each grou
         )
     ) |>
         spreadVertical() |>
-        spreadHorizontal(.subelement = "groups", .from = 0.2, .to = 0.8)
+        spreadHorizontal(subelement = "groups", from = 0.2, to = 0.8)
 
     # Connect common to groups: expecting one connector per group (2 connectors)
     con <- connectGrob(boxes$common, boxes$groups, type = "N")

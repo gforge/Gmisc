@@ -15,7 +15,7 @@ prGetBoxAxisDefaults <- function(axis = c("x", "y")) {
   }
 }
 
-prNormalizeFromTo <- function(.from, .to, axis = c("x", "y")) {
+prNormalizeFromTo <- function(from, to, axis = c("x", "y")) {
   axis <- match.arg(axis)
   defaults <- prGetBoxAxisDefaults(axis)
 
@@ -34,17 +34,17 @@ prNormalizeFromTo <- function(.from, .to, axis = c("x", "y")) {
 
     u
   }
-  .from <- prAsNPC(.from)
-  .to <- prAsNPC(.to)
+  from <- prAsNPC(from)
+  to <- prAsNPC(to)
 
-  if (!is.null(.from) && is.null(.to)) {
-    .to <- defaults$to
-  } else if (is.null(.from) && !is.null(.to)) {
-    .from <- defaults$from
-  } else if (is.null(.from) && is.null(.to)) {
-    .from <- defaults$from
-    .to <- defaults$to
+  if (!is.null(from) && is.null(to)) {
+    to <- defaults$to
+  } else if (is.null(from) && !is.null(to)) {
+    from <- defaults$from
+  } else if (is.null(from) && is.null(to)) {
+    from <- defaults$from
+    to <- defaults$to
   }
 
-  list(from = .from, to = .to)
+  list(from = from, to = to)
 }

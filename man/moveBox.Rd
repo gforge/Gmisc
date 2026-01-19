@@ -10,7 +10,7 @@ moveBox(
   y = NULL,
   space = c("absolute", "relative"),
   just = NULL,
-  .subelement = NULL
+  subelement = NULL
 )
 }
 \arguments{
@@ -28,7 +28,7 @@ moveBox(
 existing justification by using \code{NA}, e.g. \code{c(NA, 'top')}, (2) if you specify only one string
 and that string is either \code{top} or \code{bottom} it will assume vertical justification.}
 
-\item{.subelement}{If a \code{list} of boxes is provided, this can be a name, index, a deep path (e.g. \code{c("detail", 1)}) or a
+\item{subelement}{If a \code{list} of boxes is provided, this can be a name, index, a deep path (e.g. \code{c("detail", 1)}) or a
 vector of names/indices to target a single nested element to move. You can also pass
 multiple targets as a list of paths (e.g. \code{list(c("detail", 1), c("followup", 1))}).
 The function will return the original list with the targeted element(s) replaced by their moved version(s).}
@@ -92,7 +92,8 @@ connectGrob(boxes$treatment, boxes$followup, type = "N")
 }
 \seealso{
 Other flowchart components: 
-\code{\link{align}},
+\code{\link{align}()},
+\code{\link{append}()},
 \code{\link{boxGrob}()},
 \code{\link{boxHeaderGrob}()},
 \code{\link{boxPropGrob}()},
@@ -100,6 +101,9 @@ Other flowchart components:
 \code{\link{connectGrob}()},
 \code{\link{coords}()},
 \code{\link{distance}()},
-\code{\link{spread}}
+\code{\link{flowchart}()},
+\code{\link{insert}()},
+\code{\link{move}()},
+\code{\link{spread}()}
 }
 \concept{flowchart components}

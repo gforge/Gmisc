@@ -218,14 +218,18 @@ spreadHorizontal(list(d, e, r))
 \code{\link{boxGrob}} for usage and the `box_fn` argument
 
 Other flowchart components: 
-\code{\link{align}},
+\code{\link{align}()},
+\code{\link{append}()},
 \code{\link{boxGrob}()},
 \code{\link{boxHeaderGrob}()},
 \code{\link{boxPropGrob}()},
 \code{\link{connectGrob}()},
 \code{\link{coords}()},
 \code{\link{distance}()},
+\code{\link{flowchart}()},
+\code{\link{insert}()},
+\code{\link{move}()},
 \code{\link{moveBox}()},
-\code{\link{spread}}
+\code{\link{spread}()}
 }
 \concept{flowchart components}

@@ -12,8 +12,8 @@ boxHeaderGrob(
   width,
   height,
   bjust = "center",
-  header_gp = gpar(fontsize = 10.5, fontface = "bold", color = "black"),
-  body_gp = gpar(fontsize = 9, color = "black"),
+  header_gp = getOption("boxHeaderGrobTxt", default = gpar(color = "black", cex = 1)),
+  body_gp = getOption("boxBodyGrobTxt", default = gpar(color = "black", cex = 0.9)),
   box_gp = getOption("boxGrob", default = gpar(fill = "white")),
   box_fn = roundrectGrob,
   name = NULL
@@ -89,14 +89,18 @@ connectGrob(box1, box2, type = "vertical")
 }
 \seealso{
 Other flowchart components: 
-\code{\link{align}},
+\code{\link{align}()},
+\code{\link{append}()},
 \code{\link{boxGrob}()},
 \code{\link{boxPropGrob}()},
 \code{\link{boxShapes}},
 \code{\link{connectGrob}()},
 \code{\link{coords}()},
 \code{\link{distance}()},
+\code{\link{flowchart}()},
+\code{\link{insert}()},
+\code{\link{move}()},
 \code{\link{moveBox}()},
-\code{\link{spread}}
+\code{\link{spread}()}
 }
 \concept{flowchart components}

@@ -33,11 +33,11 @@ testthat::test_that("connectGrob handles nested step_1 from vignette flow", {
     early_followup = early_followup,
     followup = late_followup
   ) |>
-    spreadHorizontal(.subelement = "step_1") |>
-    spreadHorizontal(.subelement = "treatment", .from = 0.35) |>
+    spreadHorizontal(subelement = "step_1") |>
+    spreadHorizontal(subelement = "treatment", from = 0.35) |>
     alignHorizontal(
       reference = c("treatment", "late"),
-      .subelement = c("step_1", "non-surgical")
+     subelement = c("step_1", "non-surgical")
     )
 
   # Should not error: connect from start to the step_1 group

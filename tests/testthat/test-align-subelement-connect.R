@@ -1,4 +1,4 @@
-testthat::test_that("alignHorizontal .subelement replacement doesn't create self-referential boxes and connectors split", {
+testthat::test_that("alignHorizontal subelement replacement doesn't create self-referential boxes and connectors split", {
     library(grid)
 
     start <- boxGrob("start")
@@ -13,15 +13,15 @@ testthat::test_that("alignHorizontal .subelement replacement doesn't create self
         arm_text = arm_text,
         footer = boxGrob("footer")
     ) |>
-        spreadHorizontal(.subelement = "arms", .from = 0.05, .to = 0.95) |>
-        spreadHorizontal(.subelement = "arm_text", .from = 0.05, .to = 0.95) |>
+        spreadHorizontal(subelement = "arms", from = 0.05, to = 0.95) |>
+        spreadHorizontal(subelement = "arm_text", from = 0.05, to = 0.95) |>
         alignHorizontal(
             reference = c("arm_text", 1),
-            .subelement = c("arms", "early")
+           subelement = c("arms", "early")
         ) |>
         alignHorizontal(
             reference = c("arm_text", 2),
-            .subelement = c("arms", "late")
+           subelement = c("arms", "late")
         )
 
     # arms should be a plain list of boxes (not a self-referential copy of `boxes`)

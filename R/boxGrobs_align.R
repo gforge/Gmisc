@@ -6,9 +6,9 @@
 #'  numerical value that can be converted into a [`unit`][grid::unit] of `npc` type. If a numeric scalar is
 #'  provided and is `0` or greater than the number of boxes, it is treated as a coordinate (no error is raised).
 #' @param ... A set of boxes.
-#' @param .position How to align the boxes, differs slightly for vertical and horizontal alignment
+#' @param position How to align the boxes, differs slightly for vertical and horizontal alignment
 #'  see the accepted arguments
-#' @param .subelement If a `list` of boxes is provided, this parameter can be used
+#' @param subelement If a `list` of boxes is provided, this parameter can be used
 #'   to target a specific element (by name or index), or a deep path into nested
 #'   lists (e.g., `c("detail", 1)`), for the alignment operation. You can also
 #'   provide multiple targets by giving a list of paths (e.g., `list(c("detail", 1), c("followup", 1))`).
@@ -27,8 +27,8 @@
 #' @rdname align
 
 
-alignVertical <- function(reference, ..., .position = c("center", "top", "bottom"), .subelement = NULL) {
-  position <- match.arg(.position)
+alignVertical <- function(reference, ..., position = c("center", "top", "bottom"), subelement = NULL) {
+  position <- match.arg(position)
 
   boxes2align <- list(...)
 
@@ -62,22 +62,9 @@ alignVertical <- function(reference, ..., .position = c("center", "top", "bottom
     boxes2align <- boxes2align[[1]]
   }
 
-  # Check for common typos in arguments
-  dots_names <- names(boxes2align)
-  if (!is.null(dots_names)) {
-    typos <- dots_names[dots_names %in% c("position", "sub_position", "subelement")]
-    if (length(typos) > 0) {
-      warning(
-        "Arguments [", paste(typos, collapse = ", "), "] should probably be prefixed with a '.', e.g. .", typos[1],
-        ", as they are otherwise interpreted as boxes to be aligned.",
-        call. = FALSE
-      )
-    }
-  }
-
-  if (!is.null(.subelement)) {
+  if (!is.null(subelement)) {
     # Normalize into a list of paths (each path is an atomic vector)
-    paths <- if (is.list(.subelement) && all(sapply(.subelement, is.atomic))) .subelement else list(.subelement)
+    paths <- if (is.list(subelement) && all(sapply(subelement, is.atomic))) subelement else list(subelement)
 
     for (path in paths) {
       # Find target using helper (search top-level and first nested container)
@@ -92,15 +79,7 @@ alignVertical <- function(reference, ..., .position = c("center", "top", "bottom
       }
 
       if (is.null(target)) {
-        stop("The .subelement '", paste(path, collapse = " -> "), "' was not found in the provided boxes.",
-          if (any(names(boxes2align) %in% c("position", "sub_position"))) {
-            paste(
-              "\nDid you forget the leading '.' for your arguments,",
-              " e.g. .position='top' instead of position='top'?"
-            )
-          } else {
-            ""
-          },
+        stop("The subelement '", paste(path, collapse = " -> "), "' was not found in the provided boxes.",
           call. = FALSE
         )
       }
@@ -111,7 +90,7 @@ alignVertical <- function(reference, ..., .position = c("center", "top", "bottom
       aligned <- alignVertical(
         reference = ref_for_call,
         target,
-        .position = position
+        position = position
       )
 
       # If the target was a single box, the recursive call returns a
@@ -152,12 +131,12 @@ alignVertical <- function(reference, ..., .position = c("center", "top", "bottom
 alignHorizontal <- function(
   reference,
   ...,
-  .position = c("center", "left", "right"),
-  .sub_position = c("none", "left", "right"),
-  .subelement = NULL
+  position = c("center", "left", "right"),
+  sub_position = c("none", "left", "right"),
+  subelement = NULL
 ) {
-  position <- match.arg(.position)
-  sub_position <- match.arg(.sub_position)
+  position <- match.arg(position)
+  sub_position <- match.arg(sub_position)
 
   boxes2align <- list(...)
 
@@ -188,18 +167,9 @@ alignHorizontal <- function(
     boxes2align <- boxes2align[[1]]
   }
 
-  # Check for common typos in arguments
-  dots_names <- names(boxes2align)
-  if (!is.null(dots_names)) {
-    typos <- dots_names[dots_names %in% c("position", "sub_position", "subelement")]
-    if (length(typos) > 0) {
-      warning("Arguments [", paste(typos, collapse = ", "), "] should probably be prefixed with a '.', e.g. .", typos[1], ", as they are otherwise interpreted as boxes to be aligned.", call. = FALSE)
-    }
-  }
-
-  if (!is.null(.subelement)) {
+  if (!is.null(subelement)) {
     # Normalize into a list of paths (each path is an atomic vector)
-    paths <- if (is.list(.subelement) && all(sapply(.subelement, is.atomic))) .subelement else list(.subelement)
+    paths <- if (is.list(subelement) && all(sapply(subelement, is.atomic))) subelement else list(subelement)
 
     for (path in paths) {
       # Find target using helper (search top-level and first nested container)
@@ -208,15 +178,7 @@ alignHorizontal <- function(
       container_is_first <- res$container_is_first
 
       if (is.null(target)) {
-        stop("The .subelement '", paste(path, collapse = " -> "), "' was not found in the provided boxes.",
-          if (any(names(boxes2align) %in% c("position", "sub_position"))) {
-            paste(
-              "\nDid you forget the leading '.' for your arguments,",
-              " e.g. .position='left' instead of position='left'?"
-            )
-          } else {
-            ""
-          },
+        stop("The subelement '", paste(path, collapse = " -> "), "' was not found in the provided boxes.",
           call. = FALSE
         )
       }
@@ -227,8 +189,8 @@ alignHorizontal <- function(
       aligned <- alignHorizontal(
         reference = ref_for_call,
         target,
-        .position = position,
-        .sub_position = sub_position
+        position = position,
+        sub_position = sub_position
       )
 
       # Unwrap single-element aligned box when target is a single box to

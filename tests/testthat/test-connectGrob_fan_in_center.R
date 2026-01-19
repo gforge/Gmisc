@@ -12,7 +12,7 @@ test_that("fan_in_center creates bus and single trunk arrow", {
     boxes <- list(population = pop, treatment = treatments, followup = followup)
     boxes <- boxes |>
         spreadVertical() |>
-        spreadHorizontal(.from = unit(0.1, "npc"), .to = unit(0.9, "npc"), .type = "center", .subelement = "treatment")
+        spreadHorizontal(from = unit(0.1, "npc"), to = unit(0.9, "npc"), type = "center", subelement = "treatment")
 
     con <- connectGrob(boxes$treatment, boxes$followup, type = "fan_in_center")
     expect_s3_class(con, "connect_boxes_list")

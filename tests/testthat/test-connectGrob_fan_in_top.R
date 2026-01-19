@@ -13,7 +13,7 @@ test_that("fan_in_top works with default margin and nested lists", {
     boxes <- list(population = pop, treatment = treatments, followup = followup)
     boxes <- boxes |>
         spreadVertical() |>
-        spreadHorizontal(.from = unit(0.1, "npc"), .to = unit(0.9, "npc"), .type = "center", .subelement = "treatment")
+        spreadHorizontal(from = unit(0.1, "npc"), to = unit(0.9, "npc"), type = "center", subelement = "treatment")
 
     # This should not error and should return a connect_boxes_list
     con <- connectGrob(boxes$treatment, boxes$followup, type = "fan_in_top")

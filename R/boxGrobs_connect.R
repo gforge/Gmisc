@@ -221,8 +221,9 @@ plot.connect_boxes <- print.connect_boxes
 
 #' @rdname connect
 #' @export
-print.connect_boxes_list <- function(x, ...) {
-  for (g in x) grid.draw(g, ...)
+#' @importFrom grid grid.draw
+grid.draw.connect_boxes_list <- function(x, recording = TRUE) {
+  for (g in x) grid.draw(g, recording = recording)
   # If labels attached, draw them on top
   labels <- attr(x, "connector_labels")
   if (!is.null(labels)) {
@@ -232,9 +233,15 @@ print.connect_boxes_list <- function(x, ...) {
     if (is.null(bg_gp)) bg_gp <- gpar(fill = "white", col = NA)
     off <- attr(x, "connector_label_offset")
     if (is.null(off)) off <- list(x_offset = unit(0, "mm"), y_offset = unit(0, "mm"))
-    labelConnector(x, labels = labels, x_offset = off$x_offset, y_offset = off$y_offset, gp = gp, bg_gp = bg_gp)
+    lbl_obj <- labelConnector(x, labels = labels, x_offset = off$x_offset, y_offset = off$y_offset, gp = gp, bg_gp = bg_gp)
+    print(lbl_obj)
   }
+}
 
+#' @rdname connect
+#' @export
+print.connect_boxes_list <- function(x, ...) {
+  grid.draw(x)
   invisible(x)
 }
 

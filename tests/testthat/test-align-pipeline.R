@@ -1,4 +1,4 @@
-testthat::test_that("alignHorizontal pipeline with .subelement works end-to-end", {
+testthat::test_that("alignHorizontal pipeline with subelement works end-to-end", {
     library(grid)
 
     org_cohort <- paste("Proximal humerus fracture", "  - >= 18 years", "  - <= 4 weeks of trauma", "  - Not pathological", sep = "\n") |> boxGrob(just = "left")
@@ -16,11 +16,11 @@ testthat::test_that("alignHorizontal pipeline with .subelement works end-to-end"
             early_followup = early_followup,
             followup = late_followup
         ) |>
-            spreadHorizontal(.subelement = "step_1") |>
-            spreadHorizontal(.subelement = "treatment", .from = 0.35) |>
+            spreadHorizontal(subelement = "step_1") |>
+            spreadHorizontal(subelement = "treatment", from = 0.35) |>
             alignHorizontal(
                 reference = c("treatment", "late"),
-                .subelement = c("step_1", "non-surgical")
+               subelement = c("step_1", "non-surgical")
             )
     })
 })

@@ -59,6 +59,6 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Max Gordon \email{max@gforge.se}
+\strong{Maintainer}: Max Gordon \email{max@gforge.se} (\href{https://orcid.org/0000-0002-8080-5815}{ORCID})
 
 }

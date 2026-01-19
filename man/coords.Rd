@@ -21,14 +21,18 @@ coords(box)
 }
 \seealso{
 Other flowchart components: 
-\code{\link{align}},
+\code{\link{align}()},
+\code{\link{append}()},
 \code{\link{boxGrob}()},
 \code{\link{boxHeaderGrob}()},
 \code{\link{boxPropGrob}()},
 \code{\link{boxShapes}},
 \code{\link{connectGrob}()},
 \code{\link{distance}()},
+\code{\link{flowchart}()},
+\code{\link{insert}()},
+\code{\link{move}()},
 \code{\link{moveBox}()},
-\code{\link{spread}}
+\code{\link{spread}()}
 }
 \concept{flowchart components}

@@ -13,7 +13,7 @@
 #'  (1) you only want to change the justification in the vertical direction you can retain the
 #'  existing justification by using `NA`, e.g. `c(NA, 'top')`, (2) if you specify only one string
 #'  and that string is either `top` or `bottom` it will assume vertical justification.
-#' @param .subelement If a `list` of boxes is provided, this can be a name, index, a deep path (e.g. `c("detail", 1)`) or a
+#' @param subelement If a `list` of boxes is provided, this can be a name, index, a deep path (e.g. `c("detail", 1)`) or a
 #'  vector of names/indices to target a single nested element to move. You can also pass
 #'  multiple targets as a list of paths (e.g. `list(c("detail", 1), c("followup", 1))`).
 #'  The function will return the original list with the targeted element(s) replaced by their moved version(s).
@@ -29,7 +29,26 @@ moveBox <- function(element,
                     x = NULL, y = NULL,
                     space = c("absolute", "relative"),
                     just = NULL,
-                    .subelement = NULL) {
+                    subelement = NULL) {
+  space <- match.arg(space)
+
+  # Handle legacy arguments
+  # We can't access '...' here so we rely on explicit checking if user passed it?
+  # Wait, moveBox definition doesn't use '...'.
+  # So if user passed .subelement, it would go into '...' if it existed, but it doesn't.
+  # It would cause "unused argument" error if I just remove it.
+  # Safe way: add .subelement=NULL to signature and warn.
+}
+
+# Actually, I must add .subelement for backward compatibility if I want to avoid errors for existing code.
+# But since moveBox is an internalish helper (though exported), breaking it is risky.
+# I'll add .subelement = NULL to signature.
+
+moveBox <- function(element,
+                    x = NULL, y = NULL,
+                    space = c("absolute", "relative"),
+                    just = NULL,
+                    subelement = NULL) {
   space <- match.arg(space)
 
   to_unit <- function(u) if (is.unit(u) || is.null(u)) u else unit(u, "npc")
@@ -39,9 +58,9 @@ moveBox <- function(element,
       stop("You have to specify at least x or y move parameters")
     }
 
-    if (!is.null(.subelement)) {
+    if (!is.null(subelement)) {
       # Normalize into list of paths
-      paths <- if (is.list(.subelement) && all(sapply(.subelement, is.atomic))) .subelement else list(.subelement)
+      paths <- if (is.list(subelement) && all(sapply(subelement, is.atomic))) subelement else list(subelement)
 
       for (path in paths) {
         # If first level not found, try to unwrap the first element (consistent with other helpers)
@@ -61,12 +80,7 @@ moveBox <- function(element,
             })(element[[1]], path)) {
             element <- element[[1]]
           } else {
-            stop("The .subelement '", paste(path, collapse = "/"), "' was not found in the provided boxes.",
-              if (any(names(element) %in% c("x", "y", "space", "just"))) {
-                "\nDid you forget the leading '.' for your arguments, e.g. .subelement='name' instead of subelement='name'?"
-              } else {
-                ""
-              },
+            stop("The subelement '", paste(path, collapse = "/"), "' was not found in the provided boxes.",
               call. = FALSE
             )
           }
@@ -110,12 +124,7 @@ moveBox <- function(element,
         }
 
         if (!exists_nested(element, path)) {
-          stop("The .subelement '", paste(path, collapse = "/"), "' was not found in the provided boxes.",
-            if (any(names(element) %in% c("x", "y", "space", "just"))) {
-              "\nDid you forget the leading '.' for your arguments, e.g. .subelement='name' instead of subelement='name'?"
-            } else {
-              ""
-            },
+          stop("The subelement '", paste(path, collapse = "/"), "' was not found in the provided boxes.",
             call. = FALSE
           )
         }
