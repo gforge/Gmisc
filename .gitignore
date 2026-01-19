@@ -19,3 +19,5 @@ inst/extdata/Full_test_suite_files/*
 .vscode
 /doc/
 /Meta/
+# Ignore generated R plots
+Rplots.pdf

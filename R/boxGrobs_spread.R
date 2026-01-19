@@ -125,7 +125,7 @@ spreadVertical <- function(
       }
     }
 
-    return(structure(boxes2spread, class = c("Gmisc_list_of_boxes", class(boxes2spread))))
+    return(prExtendClass(boxes2spread, "Gmisc_list_of_boxes"))
   }
 
   assert_list(boxes2spread, min.len = 1)
@@ -244,7 +244,7 @@ spreadHorizontal <- function(..., .from = NULL, .to = NULL, .margin = unit(0, "n
       }
     }
 
-    return(structure(boxes2spread, class = c("Gmisc_list_of_boxes", class(boxes2spread))))
+    return(prExtendClass(boxes2spread, "Gmisc_list_of_boxes"))
   }
 
   assert_list(boxes2spread, min.len = 1)

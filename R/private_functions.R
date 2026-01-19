@@ -178,6 +178,23 @@ prConvertWidthToMm <- function(val) {
   convertWidth(val, unitTo = "mm", valueOnly = TRUE)
 }
 
+#' @title Convert millimetres to NPC
+#' @description Convert a numeric in millimetres to a `unit` in `npc`.
+#' @param mm_val Numeric millimetres value.
+#' @param axis Character 'x' or 'y' to choose convertX/convertY.
+#' @return A `unit` in `npc`.
+#' @keywords internal
+#' @noRd
+prConvertMmToNpc <- function(mm_val, axis = c("x", "y")) {
+  axis <- match.arg(axis)
+  if (!is.numeric(mm_val) || length(mm_val) != 1 || is.na(mm_val)) {
+    return(unit(NA_real_, "npc"))
+  }
+  conv <- if (axis == "x") convertX else convertY
+  v <- tryCatch(conv(unit(mm_val, "mm"), "npc", valueOnly = TRUE), error = function(e) NA_real_)
+  unit(v, "npc")
+}
+
 #' @title Extract numeric NPC position
 #' @description Obtain a numeric NPC position from a `unit` or numeric-like
 #'   input. Attempts `convertX/convertY` first and falls back to numeric

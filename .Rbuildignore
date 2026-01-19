@@ -23,4 +23,5 @@ Gmisc/inst/extdata/Full_test_suite_files/*
 ^\.Rcheck$
 ^Gmisc-manual\.tex$
 ^src/.*\.(o|so|rds)$
+^.github$
 ^.github/

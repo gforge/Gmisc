@@ -11,23 +11,26 @@ prLineMidpoint <- function(line) {
   total <- sum(seg)
 
   if (!is.finite(total) || total <= 0) {
-    # Fallback: first point
-    return(list(x = unit(x[1], "mm"), y = unit(y[1], "mm")))
+    # Fallback: first point (return as npc units)
+    return(list(x = prConvertMmToNpc(x[1], "x"), y = prConvertMmToNpc(y[1], "y")))
   }
 
   half <- total / 2
   cs <- c(0, cumsum(seg))
   i <- max(which(cs <= half))
 
-  if (i >= length(seg)) {
-    return(list(x = unit(x[length(x)], "mm"), y = unit(y[length(y)], "mm")))
+  # If the selected segment has zero or non-finite length, fall back to the
+  # start point of that segment. Otherwise compute the fractional position
+  # along the segment (works for single-segment lines as well).
+  if (!is.finite(seg[i]) || seg[i] <= 0) {
+    return(list(x = prConvertMmToNpc(x[i], "x"), y = prConvertMmToNpc(y[i], "y")))
   }
 
   t <- (half - cs[i]) / seg[i]
   xm <- x[i] + t * (x[i + 1] - x[i])
   ym <- y[i] + t * (y[i + 1] - y[i])
 
-  list(x = unit(xm, "mm"), y = unit(ym, "mm"))
+  list(x = prConvertMmToNpc(xm, "x"), y = prConvertMmToNpc(ym, "y"))
 }
 
 prLineLabelPos <- function(line, prefer = c("auto", "horizontal", "longest")) {
