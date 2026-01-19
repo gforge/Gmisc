@@ -43,13 +43,13 @@ a <- boxDiamondGrob("D")
 b <- boxEllipseGrob("L")
 c <- boxServerGrob("S")
 boxes <- list(decision = a, outcomes = list(b, c)) |>
-    spreadHorizontal(
-        .from = grid::unit(.1, "npc"),
-        .to = grid::unit(.9, "npc"),
-        .subelement = "outcomes"
-    ) |>
-    spreadVertical()
+  spreadHorizontal(
+    .from = grid::unit(.1, "npc"),
+    .to = grid::unit(.9, "npc"),
+    .subelement = "outcomes"
+  ) |>
+  spreadVertical()
 
 connectGrob(boxes$decision, boxes$outcomes, type = "N") |>
-    labelConnector(c("Local", "Server"))
+  labelConnector(c("Local", "Server"))
 }

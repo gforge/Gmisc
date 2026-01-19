@@ -95,8 +95,8 @@ prGetManyToOneNAssignedX <- function(starts, s_coords, e, subelmnt) {
 
   # Map end attachment slots to starts by left->right order so central alignment
   # can be detected and handled (center straight branch when appropriate).
-  starts_x_vals <- vapply(s_coords, function(s) convertX(x_at(s, "x"), "npc", valueOnly = TRUE), numeric(1))
-  xs_end_vals <- convertX(prEdgeSlots(e$left, e$right, n = length(starts)), "npc", valueOnly = TRUE)
+  starts_x_vals <- vapply(s_coords, function(s) prGetNpcValue(x_at(s, "x"), "x"), numeric(1))
+  xs_end_vals <- vapply(prEdgeSlots(e$left, e$right, n = length(starts)), function(u) prGetNpcValue(u, "x"), numeric(1))
   ord <- order(starts_x_vals)
   assigned_end_vals <- numeric(length(starts_x_vals))
   assigned_end_vals[ord] <- xs_end_vals
@@ -106,7 +106,7 @@ prGetManyToOneNAssignedX <- function(starts, s_coords, e, subelmnt) {
   mid_sorted_idx <- NA
   if (centered) {
     mid_sorted_idx <- ord[(length(ord) + 1) / 2]
-    assigned_end_vals[mid_sorted_idx] <- convertX(prConvert2Coords(e)$x, "npc", valueOnly = TRUE)
+    assigned_end_vals[mid_sorted_idx] <- prGetNpcValue(prConvert2Coords(e)$x, "x")
   }
 
   list(

@@ -102,8 +102,8 @@ boxPropGrob <- function(label,
       name = "label",
       gp = txt_gp
     )
-    label_measures$height <- (prCnvrtX(grobHeight(tg)) + 2)
-    label_measures$width <- prCnvrtX(grobWidth(tg))
+    label_measures$height <- (prConvertWidthToMm(grobHeight(tg)) + 2)
+    label_measures$width <- prConvertWidthToMm(grobWidth(tg))
 
     main_label <- grobTree(
       name = "main_label",
@@ -182,7 +182,7 @@ boxPropGrob <- function(label,
     total_sublabel_width <- 0
     if (length(sublabel) > 0) {
       total_sublabel_width <- sum(sapply(sublabel, function(x) attr(x, "width"))) +
-        prCnvrtX(spacer$x)
+        prConvertWidthToMm(spacer$x)
     }
 
     base_width <- max(label_measures$width, total_sublabel_width)
@@ -194,8 +194,8 @@ boxPropGrob <- function(label,
       }
 
       attr(sl, "width") +
-        prCnvrtX(txt_padding) +
-        prCnvrtX(spacer$x)
+        prConvertWidthToMm(txt_padding) +
+        prConvertWidthToMm(spacer$x)
     }
 
     min_left <- get_min_width(sublabel$left)
@@ -237,13 +237,13 @@ boxPropGrob <- function(label,
   )
 
   xtr_coordinate_fns <- list(
-    left_x = function(x, width, half_width) x - half_width + unit(prCnvrtX(width) * prop / 2, "mm"),
+    left_x = function(x, width, half_width) x - half_width + unit(prConvertWidthToMm(width) * prop / 2, "mm"),
     right_x = function(x, width, half_width) {
       x - half_width +
-        unit(prCnvrtX(width) * prop + prCnvrtX(width) * (1 - prop) / 2, "mm")
+        unit(prConvertWidthToMm(width) * prop + prConvertWidthToMm(width) * (1 - prop) / 2, "mm")
     },
     prop_x = function(x, width, half_width) {
-      x - half_width + unit(prCnvrtX(width) * prop, "mm")
+      x - half_width + unit(prConvertWidthToMm(width) * prop, "mm")
     }
   )
 
@@ -290,7 +290,7 @@ prBuildSubLabel <- function(label,
     gp = txt_gp
   )
   structure(tg,
-    height = prCnvrtY(grobHeight(tg) + unit(.5, units = "lines")),
-    width = prCnvrtX(grobWidth(tg) + unit(.5, units = "lines"))
+    height = prConvertHeightToMm(grobHeight(tg) + unit(.5, units = "lines")),
+    width = prConvertWidthToMm(grobWidth(tg) + unit(.5, units = "lines"))
   )
 }

@@ -53,9 +53,9 @@ prConnectOneToManyN <- function(
 #' Calculate vertical parameters for One-to-Many N connector
 #' @noRd
 prGetOneToManyNVerticalParameters <- function(s, end_coords, split_pad) {
-  y_mm <- function(u) convertHeight(u, "mm", valueOnly = TRUE)
-  s_y <- y_mm(s$y)
-  e_y <- vapply(end_coords, function(e) y_mm(e$y), numeric(1))
+  # Use explicit conversion helper for clarity
+  s_y <- prConvertHeightToMm(s$y)
+  e_y <- vapply(end_coords, \(e) prConvertHeightToMm(e$y), numeric(1))
 
   dir_down <- s_y > max(e_y)
   dir_up <- s_y < min(e_y)
@@ -101,7 +101,7 @@ prGetOneToManyNAssignedX <- function(start, s, ends, end_coords, subelmnt) {
   }
 
   # Map ends left->right and, if centered alignment holds, make middle end align with start
-  end_x_vals <- vapply(end_coords, function(e) convertX(x_at(e, "x"), "npc", valueOnly = TRUE), numeric(1))
+  end_x_vals <- vapply(end_coords, \(e) prGetNpcValue(x_at(e, "x"), "x"), numeric(1))
   ord <- order(end_x_vals)
   assigned_end_vals <- numeric(length(end_x_vals))
   assigned_end_vals[ord] <- end_x_vals[ord]
@@ -110,7 +110,7 @@ prGetOneToManyNAssignedX <- function(start, s, ends, end_coords, subelmnt) {
   mid_sorted_idx <- NA
   if (centered) {
     mid_sorted_idx <- ord[(length(ord) + 1) / 2]
-    assigned_end_vals[mid_sorted_idx] <- convertX(s$x, "npc", valueOnly = TRUE)
+    assigned_end_vals[mid_sorted_idx] <- prGetNpcValue(s$x, "x")
   }
 
   list(

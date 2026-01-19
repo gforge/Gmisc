@@ -41,6 +41,7 @@ This file contains concise, project-specific guidance so an AI coding agent can 
 - Minimize side effects; prefer pure functions returning values when possible. If state changes are required, keep them localized and well-tested.
 - Every new helper should have a unit test and concise roxygen documentation; include small runnable examples where helpful.
 - Keep functions easy to reason about — short, well-named, and focused on one task.
+- Indentation is 2 spaces; use `<-` for assignment; naming uses camelCase for functions, snake_case for variables, and `pr` prefix for private helpers.
 
 ### Function organization and naming
 

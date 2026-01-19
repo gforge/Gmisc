@@ -19,24 +19,24 @@
 #' b <- boxEllipseGrob("L")
 #' c <- boxServerGrob("S")
 #' boxes <- list(decision = a, outcomes = list(b, c)) |>
-#'     spreadHorizontal(
-#'         .from = grid::unit(.1, "npc"),
-#'         .to = grid::unit(.9, "npc"),
-#'         .subelement = "outcomes"
-#'     ) |>
-#'     spreadVertical()
+#'   spreadHorizontal(
+#'     .from = grid::unit(.1, "npc"),
+#'     .to = grid::unit(.9, "npc"),
+#'     .subelement = "outcomes"
+#'   ) |>
+#'   spreadVertical()
 #'
 #' connectGrob(boxes$decision, boxes$outcomes, type = "N") |>
-#'     labelConnector(c("Local", "Server"))
+#'   labelConnector(c("Local", "Server"))
 #' @export
 labelConnector <- function(
-    con,
-    labels,
-    x_offset = unit(0, "mm"),
-    y_offset = unit(0, "mm"),
-    gp = gpar(cex = 0.9),
-    bg_gp = gpar(fill = "white", col = NA),
-    pad = unit(2, "mm")
+  con,
+  labels,
+  x_offset = unit(0, "mm"),
+  y_offset = unit(0, "mm"),
+  gp = gpar(cex = 0.9),
+  bg_gp = gpar(fill = "white", col = NA),
+  pad = unit(2, "mm")
 ) {
   if (!is.list(con)) stop("'con' must be a list of connector grobs")
 
@@ -70,8 +70,8 @@ labelConnector <- function(
     ln <- attr(g, "line")
 
     # convert coords to npc numeric values (works for mixed unit objects)
-    xvals <- tryCatch(convertX(ln$x, "npc", valueOnly = TRUE), error = function(e) as.numeric(ln$x))
-    yvals <- tryCatch(convertY(ln$y, "npc", valueOnly = TRUE), error = function(e) as.numeric(ln$y))
+    xvals <- vapply(ln$x, \(u) prGetNpcValue(u, "x"), numeric(1))
+    yvals <- vapply(ln$y, \(u) prGetNpcValue(u, "y"), numeric(1))
 
     # take midpoint (mean of numeric ranges) as label anchor
     x_mid <- mean(range(xvals, na.rm = TRUE))
@@ -134,18 +134,27 @@ print.Gmisc_connector_label <- function(x, ...) {
 #' @param labels Character vector of labels (recycled to match connector length).
 #' @param gp A `gpar` for label text.
 #' @param bg_gp A `gpar` for label background.
-#' @param x_offset,y_offset Unit offsets for label placement.
+#' @param x_offset Unit offsets for label placement.
+#' @param y_offset Unit offsets for label placement.
 #' @return The connector object with attributes set (invisibly).
 #' @export
-setConnectorLabels <- function(con, labels, gp = gpar(cex = 0.9), bg_gp = gpar(fill = "white", col = NA), x_offset = unit(0, "mm"), y_offset = unit(0, "mm")) {
+setConnectorLabels <- function(
+  con,
+  labels,
+  gp = gpar(cex = 0.9),
+  bg_gp = gpar(fill = "white", col = NA),
+  x_offset = unit(0, "mm"),
+  y_offset = unit(0, "mm")
+) {
   if (!is.list(con)) stop("'con' must be a connector list or single connector")
   n <- length(con)
   attr(con, "connector_labels") <- rep_len(as.character(labels), n)
   attr(con, "connector_label_gp") <- gp
   attr(con, "connector_label_bg_gp") <- bg_gp
   attr(con, "connector_label_offset") <- list(x_offset = x_offset, y_offset = y_offset)
-  structure(con,
-            class = "Gmisc_extended_connector_labels"
+  structure(
+    con,
+    class = "Gmisc_extended_connector_labels"
   )
 }
 
@@ -169,7 +178,14 @@ print.Gmisc_extended_connector_labels <- function(x, ...) {
     off <- attr(x, "connector_label_offset")
     if (is.null(off)) off <- list(x_offset = unit(0, "mm"), y_offset = unit(0, "mm"))
 
-    lbl_obj <- labelConnector(x, labels = labels, x_offset = off$x_offset, y_offset = off$y_offset, gp = gp, bg_gp = bg_gp)
+    lbl_obj <- labelConnector(
+      x,
+      labels = labels,
+      x_offset = off$x_offset,
+      y_offset = off$y_offset,
+      gp = gp,
+      bg_gp = bg_gp
+    )
     print(lbl_obj)
   }
 

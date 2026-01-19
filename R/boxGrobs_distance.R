@@ -1,4 +1,3 @@
-
 #' Get the distance between grid objects
 #'
 #' Retrieves the distance between two boxes as absolute \code{"mm"} units. The function also
@@ -54,10 +53,10 @@ distance <- function(box1,
   box_coords1 <- prConvert2Coords(box1)
   box_coords2 <- prConvert2Coords(box2)
 
-  type = match.arg(type)
-  converter_fn <- ifelse(type == "horizontal", prCnvrtX, prCnvrtY)
-  from = NA
-  to = NA
+  type <- match.arg(type)
+  converter_fn <- ifelse(type == "horizontal", prConvertWidthToMm, prConvertHeightToMm)
+  from <- NA
+  to <- NA
   if (type == "vertical") {
     if (converter_fn(box_coords1$y) > converter_fn(box_coords2$y)) {
       if (center) {
@@ -78,7 +77,7 @@ distance <- function(box1,
     }
     ret <- converter_fn(to) - converter_fn(from)
   } else if (type == "horizontal") {
-    if (prCnvrtX(box_coords1$x) < prCnvrtX(box_coords2$x)) {
+    if (prConvertWidthToMm(box_coords1$x) < prConvertWidthToMm(box_coords2$x)) {
       if (center) {
         from <- box_coords1$x
         to <- box_coords2$x
@@ -99,7 +98,7 @@ distance <- function(box1,
   } else if (type == "euclidean") {
     ydist <- distance(box1 = box1, box2 = box2, type = "vertical", center = center)
     xdist <- distance(box1 = box1, box2 = box2, type = "horizontal", center = center)
-    ret <- sqrt(prCnvrtY(ydist)^2 + prCnvrtX(xdist)^2)
+    ret <- sqrt(prConvertHeightToMm(ydist)^2 + prConvertWidthToMm(xdist)^2)
   } else {
     stop("Unreachable code")
   }
@@ -125,7 +124,8 @@ distance <- function(box1,
     type = type,
     box_coords1 = box_coords1,
     box_coords2 = box_coords2,
-    center = center)
+    center = center
+  )
 }
 
 #' @rdname distance
@@ -142,7 +142,8 @@ print.Gmisc_unit <- function(x, ...) {
     paste0(" - type: ", as.character(attr(x, "type"))),
     paste0(" - center: ", as.character(attr(x, "center"))),
     "",
-    sep = "\n")
+    sep = "\n"
+  )
   cat(repr)
   invisible(x)
 }

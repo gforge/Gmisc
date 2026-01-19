@@ -55,14 +55,14 @@ prEdgeSlots <- function(left, right, n, margin = unit(0, "mm")) {
   stopifnot(inherits(margin, "unit"))
   stopifnot(n >= 1)
 
-  L <- left + margin
-  R <- right - margin
+  leftWithMargin <- left + margin
+  rightMinusMargin <- right - margin
   if (n == 1) {
-    return(unit.c((L + R) / 2))
+    return(unit.c((leftWithMargin + rightMinusMargin) / 2))
   }
 
-  step <- (R - L) / (n + 1)
-  xs <- L + step * seq_len(n)
+  step <- (rightMinusMargin - leftWithMargin) / (n + 1)
+  xs <- leftWithMargin + step * seq_len(n)
   unit.c(xs)
 }
 
@@ -105,8 +105,7 @@ prStartsAbove <- function(starts, end) {
   if (inherits(starts, "box")) starts <- list(starts)
   s_coords <- lapply(starts, coords)
   e <- coords(end)
-  y_mm <- function(u) convertY(u, unitTo = "mm", valueOnly = TRUE)
-  mean(vapply(s_coords, function(s) y_mm(s$y), numeric(1))) > y_mm(e$y)
+  mean(vapply(s_coords, function(s) prConvertHeightToMm(s$y), numeric(1))) > prConvertHeightToMm(e$y)
 }
 
 #' Determine whether an N connector can use a straight center branch
@@ -129,28 +128,14 @@ prNShouldUseCenteredBranch <- function(items, target, tolerance = 0.1) {
   }
   coords_items <- lapply(items, coords)
 
-  # Robust conversion helper: try grid conversion first then fall back to numeric
-  # extraction from unit-like objects (works for 'simpleUnit' representations).
-  get_npc <- function(u) {
-    v <- tryCatch(convertX(u, "npc", valueOnly = TRUE), error = function(e) NA_real_)
-    if (!is.na(v)) {
-      return(v)
-    }
-    vnum <- as.numeric(u)
-    vnum <- vnum[!is.na(vnum) & vnum >= -1 & vnum <= 2]
-    if (length(vnum)) {
-      return(vnum[1])
-    }
-    NA_real_
-  }
-
-  x_vals <- vapply(coords_items, function(s) get_npc(s$x), numeric(1))
+  # Use centralized helper for robust npc extraction
+  x_vals <- vapply(coords_items, function(s) prGetNpcValue(s$x, "x"), numeric(1))
   ord <- order(x_vals)
   middle_idx_sorted <- ord[(n + 1) / 2]
   middle_x <- x_vals[middle_idx_sorted]
 
   targ_coords <- prConvert2Coords(target)
-  targ_x <- get_npc(targ_coords$x)
+  targ_x <- prGetNpcValue(targ_coords$x, "x")
 
   # Prefer converting declared width; if that fails (e.g. units not resolvable
   # in the current device/context) fall back to left/right edge difference
@@ -185,7 +170,12 @@ prNShouldUseCenteredBranch <- function(items, target, tolerance = 0.1) {
 #' @return A `grid::unit` giving the y-coordinate of the shared bend point.
 #' @keywords internal
 #' @noRd
-prCalculateBendY <- function(starts, end, edge = c("auto", "top", "bottom"), margin = unit(2, "mm"), split_pad = unit(0, "mm")) {
+prCalculateBendY <- function(
+  starts,
+  end,
+  edge = c("auto", "top", "bottom"),
+  margin = unit(2, "mm"), split_pad = unit(0, "mm")
+) {
   edge <- match.arg(edge)
   s_coords <- lapply(starts, coords)
   e <- coords(end)

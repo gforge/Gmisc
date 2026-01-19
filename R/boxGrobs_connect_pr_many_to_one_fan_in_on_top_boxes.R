@@ -86,9 +86,9 @@ prGenerateLines <- function(starts, end, bend_y, xs_end, lty_gp, arrow_obj, sube
   #    trunks meet the end's top edge in a visually consistent way. Also, when
   #    there is an odd number of starts and the middle one is aligned with the
   #    end (within tolerance) make that branch target the end center (straight).
-  starts_x_units <- lapply(s_coords, function(s) x_at(s, "x"))
-  starts_x_vals <- vapply(starts_x_units, function(u) convertX(u, "npc", valueOnly = TRUE), numeric(1))
-  xs_end_vals <- convertX(xs_end, "npc", valueOnly = TRUE)
+  starts_x_units <- lapply(s_coords, \(s) x_at(s, "x"))
+  starts_x_vals <- vapply(starts_x_units, \(u) prGetNpcValue(u, "x"), numeric(1))
+  xs_end_vals <- vapply(xs_end, \(u) prGetNpcValue(u, "x"), numeric(1))
   ord <- order(starts_x_vals)
 
   # map left-to-right end slots to starts
@@ -99,7 +99,7 @@ prGenerateLines <- function(starts, end, bend_y, xs_end, lty_gp, arrow_obj, sube
   centered <- prNShouldUseCenteredBranch(starts, end)
   if (centered) {
     mid_sorted_idx <- ord[(length(ord) + 1) / 2]
-    targ_center <- tryCatch(convertX(prConvert2Coords(end)$x, "npc", valueOnly = TRUE), error = function(e) NA_real_)
+    targ_center <- prGetNpcValue(prConvert2Coords(end)$x, "x")
     # Prefer the target center when available; otherwise fall back to the
     # start's x coordinate to guarantee a vertical trunk when conversions fail.
     if (!is.na(targ_center)) {
@@ -118,11 +118,12 @@ prGenerateLines <- function(starts, end, bend_y, xs_end, lty_gp, arrow_obj, sube
     if (centered && i == mid_sorted_idx) {
       x_start <- x_end
     } else {
-      # Convert start to npc unit as well
+      # Convert start to npc unit as well. If it's a unit-like object, use
+      # prGetNpcValue to obtain the numeric npc and wrap back to a unit.
       if (!inherits(x_start, "unit")) {
         x_start <- unit(x_start, "npc")
       } else {
-        x_start <- convertX(x_start, unitTo = "npc")
+        x_start <- prGetNpcValue(x_start, "x") |> unit("npc")
       }
     }
 
