@@ -50,7 +50,7 @@ flowchart(source = glue("Stockholm population",
                  "n = {recr}",
                  recr = txtInt(122 - 43 - 30),
                  .sep = "\n")
-          )) |> 
+          )) |>
   spread(axis = "y") |>
   spread(.subelement = "groups", axis = "x") |>
   insert(list(excluded = boxHeaderGrob(header = glue("Excluded (n = {tot}):", tot = 30),
@@ -63,9 +63,9 @@ flowchart(source = glue("Stockholm population",
                           header_gp = getOption("boxGrobTxt", default = gpar(
                             color = "black",
                             cex = 1
-                          )))), 
-         after = "eligible", 
-         name = "excluded") |> 
+                          )))),
+         after = "eligible",
+         name = "excluded") |>
   move(name = "excluded", x = .8) |>
   connect("source", "eligible", type = "vert") |>
   connect("eligible", "included", type = "vert") |>
@@ -778,7 +778,7 @@ b3 <- boxGrob("End", y = 0.2)
 # Pipeline: list -> align -> connect -> print
 list(start = b1, process = b2, end = b3) |>
   align(axis = "y") |>
-  spread(axis = "x") |> 
+  spread(axis = "x") |>
   connect("start", "process", type = "horizontal") |>
   connect("process", "end", type = "horizontal") |>
   print()
@@ -899,6 +899,77 @@ pushViewport(viewport(x = 0, y = .6, just = "left", width = .4, height = .4, ang
 grid.rect(gp = gpar(fill = "lightblue")) # A translucent box to indicate the new viewport
 grid.draw(lg)
 popViewport()
+```
+
+# A complex example
+
+Here is a more complex example demonstrating the power of the grid-based flowcharts. This example uses `flowchart`, `spread`, `align` and `connect` functions to create a detailed clinical study flowchart.
+
+```{r complex_example, fig.height = 7, fig.width = 6}
+# Define the boxes
+org_cohort <- glue("Proximal humerus fracture",
+                   "  - \u2265 18 years",
+                   "  - \u2264 4 weeks of trauma",
+                   "  - Not pathological",
+                   .sep = "\n") |>
+  boxGrob(just = "left",
+          box_gp = gpar(fill = "#E3F2FD"))
+
+surgery <- glue("Surgery",
+                "  - Direct (\u2248 4%)",
+                "  - Delayed (\u2248 4%)",
+                .sep = "\n") |>
+  boxGrob(just = "left",
+          box_gp = gpar(fill = "#F8BBD0"))
+
+randomize <- boxGrob("Non-surgical\nRandomise",
+                     box_gp = gpar(fill = "#FFF3E0"))
+
+treatments <- list(early = boxGrob("Early rehab",
+                                   box_gp = gpar(fill = "#DCEDC8")),
+                   late = boxGrob("Late rehab",
+                                  box_gp = gpar(fill = "#DCEDC8")),
+                   obs = boxGrob("Observation",
+                                 box_gp = gpar(fill = "#E0E0E0")))
+
+early_followup <- glue("Early follow-up",
+                       "  - 2 weeks [PNRS]",
+                       "  - 4 weeks [PNRS]",
+                       .sep = "\n") |>
+  boxGrob(just = "left",
+          box_gp = gpar(fill = "#E0F7FA"))
+
+late_followup <- glue("Late follow-up",
+                      "  - 2-10 months (random) [OSS, PNRS]",
+                      "  - 1 year [OSS, PNRS, accelerometer]",
+                      "  - 2 years [OSS, PNRS]",
+                      "  - 5 years [OSS, PNRS]",
+                      .sep = "\n") |>
+  boxGrob(just = "left",
+                       box_gp = gpar(fill = "#E0F7FA"))
+
+# Create the flowchart
+grid.newpage()
+flowchart(start = org_cohort,
+          step_1 = list(surgery = surgery,
+                        `non-surgical` = randomize),
+          treatment = treatments,
+          early_followup = early_followup,
+          followup = late_followup) |>
+  spread(axis = "y") |>
+  spread(axis = "x", .subelement = "step_1") |>
+  spread(axis = "x", .subelement = "treatment", .from = 0.35) |>
+  align(axis = "x",
+        reference = c("treatment", "late"),
+        .subelement = c("step_1", "non-surgical")) |>
+  connect(from = "start", to = "step_1", type = "N") |>
+  connect(from = "step_1$non-surgical", to = "treatment", type = "N") |>
+  connect(from = "treatment", to = "early_followup", type = "fan_in_center") |>
+  connect(from = "early_followup", to = "followup", type = "v") |>
+  connect(from = "early_followup", to = "step_1$surgery", type = "Z",
+          label = "Crossover\nto surgery") |>
+  connect(from = "step_1$surgery", to = "followup", type = "L") |>
+  print()
 ```
 
 # Tips for debugging
