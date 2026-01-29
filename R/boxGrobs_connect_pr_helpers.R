@@ -108,6 +108,7 @@ prStartsAbove <- function(starts, end) {
   mean(vapply(s_coords, function(s) prConvertHeightToMm(s$y), numeric(1))) > prConvertHeightToMm(e$y)
 }
 
+
 #' Determine whether an N connector can use a straight center branch
 #'
 #' For an N (shared-bend) layout, return TRUE when there are an odd number of
@@ -193,36 +194,97 @@ prCalculateBendY <- function(
   margin = unit(2, "mm"), split_pad = unit(0, "mm")
 ) {
   edge <- match.arg(edge)
-  s_coords <- lapply(starts, coords)
-  e <- coords(end)
+  if (inherits(starts, "box")) starts <- list(starts)
 
-  # Calculate the minimum vertical distance between each start box and end box
-  d_min <- Reduce(unit.pmin, lapply(s_coords, function(s) distance(s, e, type = "v", half = TRUE)))
+  # Calculate distances to find closest box
+  s_dists <- vapply(starts, function(s) {
+    as.numeric(distance(s, end, type = "v", half = FALSE))
+  }, numeric(1))
 
-  # Ensure d_min is safely mixed with npc coordinates by converting to npc
-  # before arithmetic with e$top/e$bottom. `distance()` may return device
-  # units (mm) so converting avoids unit-mix errors.
-  d_min_npc <- tryCatch(convertY(d_min, unitTo = "npc"), error = function(e) NA)
-  if (inherits(d_min_npc, "unit")) {
-    d_min_use <- d_min_npc
-  } else {
-    # Fall back: coerce numeric or NA to a small npc offset
-    d_min_num <- if (is.numeric(d_min)) d_min else NA_real_
-    if (is.na(d_min_num)) d_min_use <- unit(0.01, "npc") else d_min_use <- unit(d_min_num, "npc")
-  }
+  closest_idx <- which.min(s_dists)
+  closest_s <- starts[[closest_idx]]
+  s_coords <- coords(closest_s)
+  e_coords <- coords(end)
 
-  # Determine if the start boxes are above the end box
   starts_above <- prStartsAbove(starts, end)
+
+  if (inherits(split_pad, "numeric")) split_pad <- unit(split_pad, "mm")
 
   if (edge == "top" || (edge == "auto" && starts_above)) {
     # Bend is between starts bottom and end top
-    bend_y <- e$top + d_min_use
-    bend_y <- unit.pmax(bend_y, e$top + split_pad)
+    bend_y <- MidDistanceY(s_coords$bottom, e_coords$top)
+    bend_y <- unit.pmax(bend_y, e_coords$top + split_pad)
   } else {
     # Bend is between starts top and end bottom
-    bend_y <- e$bottom - d_min_use
-    bend_y <- unit.pmin(bend_y, e$bottom - split_pad)
+    bend_y <- MidDistanceY(s_coords$top, e_coords$bottom)
+    bend_y <- unit.pmin(bend_y, e_coords$bottom - split_pad)
   }
 
   return(bend_y)
+}
+
+#' Determine if start boxes are positioned to the left of the end box
+#'
+#' Internal helper that compares the mean horizontal position of the `starts` boxes
+#' with the `end` box x position. Values are converted to millimetres for a
+#' device-independent comparison.
+#'
+#' @param starts A `list` of `boxGrob` objects or a single `boxGrob`.
+#' @param end A `boxGrob` object.
+#' @return `TRUE` if the mean x of `starts` is to the left `end`'s x, otherwise `FALSE`.
+#' @keywords internal
+#' @noRd
+prStartsLeft <- function(starts, end) {
+  if (inherits(starts, "box")) starts <- list(starts)
+  s_coords <- lapply(starts, coords)
+  e <- coords(end)
+  mean(vapply(s_coords, function(s) prConvertWidthToMm(s$x), numeric(1))) < prConvertWidthToMm(e$x)
+}
+
+#' Calculate bend X coordinate for shared-bend connectors
+#'
+#' Compute a suitable horizontal bend point for shared-bend connectors.
+#'
+#' @param starts A `list` of start `boxGrob` objects.
+#' @param end A single end `boxGrob` object.
+#' @param edge Which edge of the end box to use: `"auto"` (closest), `"left"`, or `"right"`.
+#' @param margin A `grid::unit` (unused, kept for API compatibility).
+#' @param split_pad Padding to enforce around the shared bend point.
+#' @return A `grid::unit` giving the x-coordinate of the shared bend point.
+#' @keywords internal
+#' @noRd
+prCalculateBendX <- function(
+  starts,
+  end,
+  edge = c("auto", "left", "right"),
+  margin = unit(2, "mm"), split_pad = unit(0, "mm")
+) {
+  edge <- match.arg(edge)
+  if (inherits(starts, "box")) starts <- list(starts)
+
+  # Calculate distances to find closest box
+  s_dists <- vapply(starts, function(s) {
+    as.numeric(distance(s, end, type = "h", half = FALSE))
+  }, numeric(1))
+
+  closest_idx <- which.min(s_dists)
+  closest_s <- starts[[closest_idx]]
+  s_coords <- coords(closest_s)
+  e_coords <- coords(end)
+
+  starts_left <- prStartsLeft(starts, end)
+
+  if (inherits(split_pad, "numeric")) split_pad <- unit(split_pad, "mm")
+
+  if (edge == "right" || (edge == "auto" && !starts_left)) {
+    # Bend is between starts left and end right
+    bend_x <- MidDistanceX(s_coords$left, e_coords$right)
+    bend_x <- unit.pmax(bend_x, e_coords$right + split_pad)
+  } else {
+    # Bend is between starts right and end left
+    bend_x <- MidDistanceX(s_coords$right, e_coords$left)
+    bend_x <- unit.pmin(bend_x, e_coords$left - split_pad)
+  }
+
+  return(bend_x)
 }

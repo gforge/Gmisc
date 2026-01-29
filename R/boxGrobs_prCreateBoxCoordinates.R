@@ -9,8 +9,15 @@ prCreateBoxCoordinates <- function(viewport_data, extra_coordinate_functions = N
   # Adjust center depending on the viewport position
   x <- prAdjustPos(viewport_data$just, viewport_data$x, viewport_data$width, axis = "x")
   y <- prAdjustPos(viewport_data$just, viewport_data$y, viewport_data$height, axis = "y")
-  half_height <- unit(prGetNpcSize(viewport_data$height, "y") / 2, "npc")
-  half_width <- unit(prGetNpcSize(viewport_data$width, "x") / 2, "npc")
+
+  height <- viewport_data$height
+  if (!is.unit(height)) height <- unit(height, "npc")
+
+  width <- viewport_data$width
+  if (!is.unit(width)) width <- unit(width, "npc")
+
+  half_height <- height * 0.5
+  half_width <- width * 0.5
 
   coordinates <- list(
     left = x - half_width,
