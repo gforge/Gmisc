@@ -338,12 +338,13 @@ prGetSpanSpace <- function(
     first <- boxes2spread[[1]]
     last <- tail(boxes2spread, 1)[[1]]
 
+    # Anchor at the viewport margins (leave box half-sizes to later adjustments)
     if (orientation == "vertical") {
-      start_pos <- unit(1, "npc") - margin_npc - prConvert2Coords(first)[[type_size_key]]
-      end_pos <- unit(0, "npc") + margin_npc + prConvert2Coords(last)[[type_size_key]]
+      start_pos <- unit(1, "npc") - margin_npc
+      end_pos <- unit(0, "npc") + margin_npc
     } else {
-      start_pos <- unit(0, "npc") + margin_npc + prConvert2Coords(first)[[type_size_key]]
-      end_pos <- unit(1, "npc") - margin_npc + prConvert2Coords(last)[[type_size_key]]
+      start_pos <- unit(0, "npc") + margin_npc
+      end_pos <- unit(1, "npc") - margin_npc
     }
 
     dist <- distance(box1 = start_pos, box2 = end_pos, type = orientation)

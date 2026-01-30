@@ -54,7 +54,7 @@ popViewport()
 
 
 # Advanced example: create a nested list of treatment boxes, spread them horizontally,
-# then move a single nested element (`Ibuprofen`) using `.subelement` via a pipe.
+# then move a single nested element (`Ibuprofen`) using `subelement` via a pipe.
 pushViewport(viewport(y = 0.35, height = unit(.7, "npc") - unit(2, "mm")))
 grid.rect(gp = gpar(col = "lightgreen"))
 
@@ -91,7 +91,7 @@ connectGrob(boxes$population, boxes$treatment, type = "N")
 connectGrob(boxes$treatment, boxes$followup, type = "N")
 }
 \seealso{
-Other flowchart components: 
+Other flowchart components:
 \code{\link{align}()},
 \code{\link{append}()},
 \code{\link{boxGrob}()},

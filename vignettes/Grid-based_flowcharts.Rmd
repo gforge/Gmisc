@@ -52,7 +52,7 @@ flowchart(source = glue("Stockholm population",
                  .sep = "\n")
           )) |>
   spread(axis = "y") |>
-  spread(.subelement = "groups", axis = "x") |>
+  spread(subelement = "groups", axis = "x") |>
   insert(list(excluded = boxHeaderGrob(header = glue("Excluded (n = {tot}):", tot = 30),
                           body = glue(" - not interested: {uninterested}",
                                       " - contra-indicated: {contra}",
@@ -227,7 +227,7 @@ r <- boxServerGrob("Server", box_gp = gpar(fill = "#E8F0FF"))
 
 # arrange and draw
 boxes <- list(decision = d_rounded, outcomes = list(e, r)) |>
-  spreadHorizontal(.from = unit(.1, "npc"), .to = unit(.9, "npc"), .subelement = "outcomes") |>
+  spreadHorizontal(from = unit(.1, "npc"), to = unit(.9, "npc"), subelement = "outcomes") |>
   spreadVertical() |>
   print()
 
@@ -746,9 +746,9 @@ grid.newpage()
 boxes <- flowchart |>
   make_boxes() |>
   spreadVertical() |>
-  spreadHorizontal(.subelement = "arms", .from = 0.15, .to = 0.85) |>
-  spreadVertical(.subelement = c("arms", "arm_a"), .from = 0.65) |>
-  spreadVertical(.subelement = c("arms", "arm_b"), .from = 0.65) |>
+  spreadHorizontal(subelement = "arms", from = 0.15, to = 0.85) |>
+  spreadVertical(subelement = c("arms", "arm_a"), from = 0.65) |>
+  spreadVertical(subelement = c("arms", "arm_b"), from = 0.65) |>
   print()
 
 # Connect criteria to both arms
@@ -957,7 +957,7 @@ flowchart(start = org_cohort,
           early_followup = early_followup,
           followup = late_followup) |>
   spread(axis = "y") |>
-  spread(axis = "x", .subelement = "step_1") |>
+  spread(axis = "x", subelement = "step_1") |>
   spread(axis = "x", .subelement = "treatment", .from = 0.35) |>
   align(axis = "x",
         reference = c("treatment", "late"),

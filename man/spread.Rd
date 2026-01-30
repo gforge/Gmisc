@@ -96,7 +96,7 @@ spreadVertical(
   middle = list(side, exclude),
   end = end
 ) |>
-  spreadHorizontal(.subelement = "middle", .from = 0.2, .to = 0.8)
+  spreadHorizontal(subelement = "middle", from = 0.2, to = 0.8)
 
 # Use device-level paging in interactive sessions so users can inspect the first plot
 # This will prompt before creating the next page; we restore the previous setting afterwards
@@ -111,10 +111,10 @@ if (interactive()) {
 
 # Example: spread a nested subelement by deep path and print sequentially
 list(grp = list(middle = list(side, exclude))) |>
-  spreadHorizontal(.subelement = c("grp", "middle"), .from = 0.2, .to = 0.8)
+  spreadHorizontal(subelement = c("grp", "middle"), from = 0.2, to = 0.8)
 }
 \seealso{
-Other flowchart components: 
+Other flowchart components:
 \code{\link{align}()},
 \code{\link{append}()},
 \code{\link{boxGrob}()},
@@ -129,7 +129,7 @@ Other flowchart components:
 \code{\link{move}()},
 \code{\link{moveBox}()}
 
-Other flowchart components: 
+Other flowchart components:
 \code{\link{align}()},
 \code{\link{append}()},
 \code{\link{boxGrob}()},
