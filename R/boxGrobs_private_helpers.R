@@ -133,8 +133,11 @@ prAdjustPos <- function(bjust, pos, size, axis = c("x", "y")) {
   if (is.na(just_val)) {
     return(pos)
   }
-  offset <- prGetNpcSize(size, axis) * (0.5 - just_val)
-  pos + unit(offset, "npc")
+
+  if (!is.unit(size)) size <- unit(size, "npc")
+
+  offset <- size * (0.5 - just_val)
+  pos + offset
 }
 
 #' @title Compute x position for text within a box
