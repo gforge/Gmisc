@@ -20,10 +20,8 @@ prAddEmptyVals <- function(t, missing_value) {
   # TODO: This function does not respect the order in
   # the factored variable. This could potentially be
   # a problem although probably more theoretical
-  all_row_names <- c()
-  for (n in names(t)) {
-    all_row_names <- union(all_row_names, names(t[[n]]))
-  }
+  # collect unique row names in the order they appear (union() sorts)
+  all_row_names <- unique(unlist(lapply(t, names), use.names = FALSE))
 
   # No rownames exist, this occurs often
   # when there is only one row and that row doesn't
@@ -34,7 +32,7 @@ prAddEmptyVals <- function(t, missing_value) {
 
   # The missing NA element should always be last
   if (any(is.na(all_row_names))) {
-    all_row_names <- append(all_row_names[is.na(all_row_names) == FALSE], NA)
+    all_row_names <- append(all_row_names[!is.na(all_row_names)], NA)
   }
 
   ret <- list()

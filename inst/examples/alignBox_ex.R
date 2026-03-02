@@ -14,9 +14,9 @@ boxes <- list(
 )
 
 # Align the group and then individual boxes within that group
-aligned_boxes <- boxes |>
-  alignHorizontal(reference = box, .position = "right") |>
-  alignVertical(reference = .5, .position = "center")
+# (do not pipe the list into the function, as the first argument is `reference`)
+aligned_boxes <- alignHorizontal(boxes, reference = box, position = "right") |>
+  alignVertical(reference = .5, position = "center")
 
 # Example: align a nested element inside a complex list using a deep path
 complex_list <- list(
@@ -34,8 +34,8 @@ complex_list <- list(
 complex_list <- complex_list |>
   alignHorizontal(
     reference = c("arms", "early"),
-    .position = "center",
-    .subelement = c("detail", 1)
+    position = "center",
+    subelement = c("detail", 1)
   )
 
 # Print the reference and the aligned boxes

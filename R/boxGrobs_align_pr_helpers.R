@@ -36,12 +36,24 @@ prNormalizeAndValidateBoxes <- function(boxes2align) {
 
     # Validate members
     for (box in boxes2align) {
-        if (!inherits(box, "box") && !is.list(box) && !is.grob(box)) {
-            stop("Element must be a box or a list of boxes")
-        }
+      prAssertBoxOrListOfBoxes(box)
     }
 
     boxes2align
+}
+
+prAssertBoxOrListOfBoxes <- function(box) {
+  if (!inherits(box, "box") && !is.list(box) && !is.grob(box)) {
+    if (inherits(box, "character")) {
+      stop("Element must be a box or a list of boxes, got character: '", box, "'", call. = FALSE)
+    }
+
+    if (inherits(box, "numeric")) {
+      stop("Element must be a box or a list of boxes, got numeric: ", box, call. = FALSE)
+    }
+
+    stop("Element must be a box or a list of boxes, got object of class ", paste(class(box), collapse = ", "), call. = FALSE)
+  }
 }
 
 # Resolve a reference that may be provided as a path into boxes2align

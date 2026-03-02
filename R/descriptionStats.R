@@ -80,9 +80,9 @@ describeMean <- function(x,
 
   ret <- c(sprintf(
     "%s (%s%s)",
-    txtRound(mean(x, na.rm = T), digits = digits, digits.nonzero = digits.nonzero),
+    txtRound(mean(x, na.rm = TRUE), digits = digits, digits.nonzero = digits.nonzero),
     plusmin_str,
-    txtRound(sd(x, na.rm = T), digits = digits, digits.nonzero = digits.nonzero)
+    txtRound(sd(x, na.rm = TRUE), digits = digits, digits.nonzero = digits.nonzero)
   ))
 
   # LaTeX complains if any formula isn't encapsulated within $ signs
@@ -90,7 +90,7 @@ describeMean <- function(x,
     ret <- sprintf("$%s$", ret)
   }
 
-  if (useNA %in% c("ifany", "always") & sum(is.na(x)) > 0) {
+  if (useNA %in% c("ifany", "always") && sum(is.na(x)) > 0) {
     ret <- rbind(
       ret,
       descGetMissing(
@@ -181,7 +181,7 @@ describeMedian <- function(x,
     txtRound(quantile(x, probs = range_quantiles[2], na.rm = TRUE), digits = digits, digits.nonzero = digits.nonzero)
   )
 
-  if (useNA %in% c("ifany", "always") & sum(is.na(x)) > 0) {
+  if (useNA %in% c("ifany", "always") && sum(is.na(x)) > 0) {
     ret <- rbind(
       ret,
       descGetMissing(
@@ -296,8 +296,8 @@ describeProp <- function(x,
     x <- factor(x)
   }
 
-  reference_name = levels(x)[default_ref]
-  no <- sum(x == reference_name, na.rm = T)
+  reference_name <- levels(x)[default_ref]
+  no <- sum(x == reference_name, na.rm = TRUE)
 
   # Don't count missing since those are treated as factors if any
   percent <- 100 * no / length(x[is.na(x) == FALSE])
@@ -410,7 +410,6 @@ describeFactors <- function(x,
 
   # Check if we should relate to an external total
   if (!missing(horizontal_proportions)) {
-
     # Error check the horizontal_proportions variable
     # First check that it's a table or at least a vector
     if (is.numeric(horizontal_proportions) == FALSE ||

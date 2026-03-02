@@ -14,13 +14,17 @@ descGetMissing <- function(x,
                            language = "en",
                            useNA.digits = 1,
                            ...) {
-  if (!any(is.na(x))) return(invisible())
-  df_arg_list <- list(x = is.na(x),
-                      html = html,
-                      number_first = number_first,
-                      percentage_sign = percentage_sign,
-                      language = language,
-                      digits = useNA.digits)
+  if (!any(is.na(x))) {
+    return(invisible())
+  }
+  df_arg_list <- list(
+    x = is.na(x),
+    html = html,
+    number_first = number_first,
+    percentage_sign = percentage_sign,
+    language = language,
+    digits = useNA.digits
+  )
   dot_args <- list(...)
   for (n in names(dot_args)) {
     if (!n %in% names(df_arg_list)) {
@@ -28,5 +32,5 @@ descGetMissing <- function(x,
     }
   }
   missing <- fastDoCall(describeFactors, df_arg_list)
-  return(missing["TRUE",])
+  return(missing["TRUE", ])
 }

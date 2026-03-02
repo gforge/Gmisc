@@ -20,9 +20,9 @@
 #' c <- boxServerGrob("S")
 #' boxes <- list(decision = a, outcomes = list(b, c)) |>
 #'   spreadHorizontal(
-#'     .from = grid::unit(.1, "npc"),
-#'     .to = grid::unit(.9, "npc"),
-#'     .subelement = "outcomes"
+#'     from = grid::unit(.1, "npc"),
+#'     to = grid::unit(.9, "npc"),
+#'     subelement = "outcomes"
 #'   ) |>
 #'   spreadVertical()
 #'

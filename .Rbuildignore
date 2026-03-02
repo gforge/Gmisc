@@ -25,3 +25,4 @@ Gmisc/inst/extdata/Full_test_suite_files/*
 ^src/.*\.(o|so|rds)$
 ^.github$
 ^.github/
+^docs/

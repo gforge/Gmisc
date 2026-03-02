@@ -113,9 +113,7 @@ spreadVertical <- function(
 
   assert_list(boxes2spread, min.len = 1)
   for (box in boxes2spread) {
-    if (!inherits(box, "box") && !is.list(box)) {
-      stop("Element must be a box or a list of boxes")
-    }
+    prAssertBoxOrListOfBoxes(box)
   }
 
   span_info <- prGetSpanSpace(
@@ -215,9 +213,7 @@ spreadHorizontal <- function(..., from = NULL, to = NULL, margin = unit(0, "npc"
 
   assert_list(boxes2spread, min.len = 1)
   for (box in boxes2spread) {
-    if (!inherits(box, "box") && !is.list(box)) {
-      stop("Element must be a box or a list of boxes")
-    }
+    prAssertBoxOrListOfBoxes(box)
   }
 
   span_info <- prGetSpanSpace(
@@ -259,9 +255,7 @@ prGetSpanSpace <- function(
   # ---- input checks / normalization ----
   stopifnot(is.list(boxes2spread), length(boxes2spread) >= 1)
   for (b in boxes2spread) {
-    if (!inherits(b, "box") && !is.list(b)) {
-      stop("Element must be a box or a list of boxes")
-    }
+    prAssertBoxOrListOfBoxes(b)
   }
 
   if (missing(type) || is.null(type)) stop("`type` must be provided.", call. = FALSE)

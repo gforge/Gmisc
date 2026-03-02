@@ -17,9 +17,9 @@ URL: https://gforge.se
 BugReports: https://github.com/gforge/Gmisc/issues
 Depends:
     R (>= 4.1.0),
-    Rcpp (>= 0.11.4),
     htmlTable (>= 2.0.0)
 Imports:
+    Rcpp (>= 0.11.4),
     abind,
     checkmate,
     forestplot,
@@ -41,6 +41,8 @@ Imports:
     yaml,
     utils
 Suggests:
+    bench,
+    vdiffr,
     datasets,
     dplyr,
     jsonlite,

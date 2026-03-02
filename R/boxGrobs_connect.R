@@ -220,6 +220,8 @@ plot.connect_boxes <- print.connect_boxes
 
 
 #' @rdname connect
+#' @param recording Passed to [grid::grid.draw()] when rendering each element in
+#'  the list. Defaults to `TRUE` (record drawing for later replay).
 #' @export
 #' @importFrom grid grid.draw
 grid.draw.connect_boxes_list <- function(x, recording = TRUE) {

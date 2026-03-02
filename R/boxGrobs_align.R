@@ -124,7 +124,7 @@ alignVertical <- function(reference, ..., position = c("center", "top", "bottom"
 
 
 #' @rdname align
-#' @param .sub_position When the box is a [`boxPropGrob`] it not only has the general `.positions` but
+#' @param sub_position When the box is a [`boxPropGrob`] it not only has the general `.positions` but
 #'  also `left` and `right` which can be viewed as separate boxes that have simply been merged.
 #' @md
 #' @export

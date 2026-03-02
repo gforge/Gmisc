@@ -87,6 +87,9 @@ as millimeters.}
 
 \item{...}{Arguments passed on to [`connectGrob`].}
 
+\item{recording}{Passed to [grid::grid.draw()] when rendering each element in
+the list. Defaults to `TRUE` (record drawing for later replay).}
+
 \item{from}{The name (string) or index of the start box in `x`. Multiple values allowed.}
 
 \item{to}{The name (string) or index of the end box in `x`. Multiple values allowed.}
