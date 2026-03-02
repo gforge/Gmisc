@@ -114,7 +114,7 @@ list(grp = list(middle = list(side, exclude))) |>
   spreadHorizontal(subelement = c("grp", "middle"), from = 0.2, to = 0.8)
 }
 \seealso{
-Other flowchart components:
+Other flowchart components: 
 \code{\link{align}()},
 \code{\link{append}()},
 \code{\link{boxGrob}()},
@@ -129,7 +129,7 @@ Other flowchart components:
 \code{\link{move}()},
 \code{\link{moveBox}()}
 
-Other flowchart components:
+Other flowchart components: 
 \code{\link{align}()},
 \code{\link{append}()},
 \code{\link{boxGrob}()},

@@ -18,7 +18,7 @@ prIsSingleElementWrappedList <- function(x) {
 # Helper: Does the list contain multiple top-level elements and the first
 # element is itself a nested list container (not a box/grob)? This is used
 # as the condition for searching inside the first container when resolving
-# `.subelement` paths (we only do this when there are multiple top-level
+# `subelement` paths (we only do this when there are multiple top-level
 # elements to avoid changing behavior for single-element inputs).
 prHasNestedFirstContainer <- function(x) {
     is.list(x) && length(x) > 1 && is.list(x[[1]]) && !inherits(x[[1]], "box") && !is.grob(x[[1]])
@@ -36,24 +36,24 @@ prNormalizeAndValidateBoxes <- function(boxes2align) {
 
     # Validate members
     for (box in boxes2align) {
-      prAssertBoxOrListOfBoxes(box)
+        prAssertBoxOrListOfBoxes(box)
     }
 
     boxes2align
 }
 
 prAssertBoxOrListOfBoxes <- function(box) {
-  if (!inherits(box, "box") && !is.list(box) && !is.grob(box)) {
-    if (inherits(box, "character")) {
-      stop("Element must be a box or a list of boxes, got character: '", box, "'", call. = FALSE)
-    }
+    if (!inherits(box, "box") && !is.list(box) && !is.grob(box)) {
+        if (inherits(box, "character")) {
+            stop("Element must be a box or a list of boxes, got character: '", box, "'", call. = FALSE)
+        }
 
-    if (inherits(box, "numeric")) {
-      stop("Element must be a box or a list of boxes, got numeric: ", box, call. = FALSE)
-    }
+        if (inherits(box, "numeric")) {
+            stop("Element must be a box or a list of boxes, got numeric: ", box, call. = FALSE)
+        }
 
-    stop("Element must be a box or a list of boxes, got object of class ", paste(class(box), collapse = ", "), call. = FALSE)
-  }
+        stop("Element must be a box or a list of boxes, got object of class ", paste(class(box), collapse = ", "), call. = FALSE)
+    }
 }
 
 # Resolve a reference that may be provided as a path into boxes2align

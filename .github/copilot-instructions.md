@@ -27,7 +27,7 @@ This file contains concise, project-specific guidance so an AI coding agent can 
 - Always run tests in _package mode_ (load the package first). File-mode (calling `testthat::test_file()` without `devtools::load_all()`) does not load the package and may require `source()` calls in tests; that is discouraged.
   - Example of how the test suite is run in CI and by maintainers: `Rscript -e 'devtools::load_all(); testthat::test_dir("tests/testthat", reporter = "summary")'`.
 - `tests/testthat/helper-*.R` files are _automatically sourced in package mode_; do not `source()` package R files from tests. If you see `source()` in tests, consider removing it and ensuring the package loads correctly in package mode.
-- When adding tests, prefer informative error messages for user-facing checks. Example: tests expect messages like "The .subelement 'no/such' was not found" (see `tests/testthat/test-spread-move-deep-path.R`).
+- When adding tests, prefer informative error messages for user-facing checks. Example: tests expect messages like "The subelement 'no/such' was not found" (see `tests/testthat/test-spread-move-deep-path.R`).
 - Visual / heavy tests:
   - Visual tests produce artifacts (pdf/html). These are excluded from the build by `.Rbuildignore` and `.gitignore`. Avoid committing generated visual outputs unless necessary.
 

@@ -94,7 +94,7 @@ connectGrob(boxes$treatment, boxes$followup, type = "N")
 ## End(Not run)
 }
 \seealso{
-Other flowchart components:
+Other flowchart components: 
 \code{\link{align}()},
 \code{\link{append}()},
 \code{\link{boxGrob}()},

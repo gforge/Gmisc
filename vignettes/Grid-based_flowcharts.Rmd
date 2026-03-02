@@ -958,10 +958,10 @@ flowchart(start = org_cohort,
           followup = late_followup) |>
   spread(axis = "y") |>
   spread(axis = "x", subelement = "step_1") |>
-  spread(axis = "x", .subelement = "treatment", .from = 0.35) |>
+  spread(axis = "x", subelement = "treatment", .from = 0.35) |>
   align(axis = "x",
         reference = c("treatment", "late"),
-        .subelement = c("step_1", "non-surgical")) |>
+        subelement = c("step_1", "non-surgical")) |>
   connect(from = "start", to = "step_1", type = "N") |>
   connect(from = "step_1$non-surgical", to = "treatment", type = "N") |>
   connect(from = "treatment", to = "early_followup", type = "fan_in_center") |>

@@ -35,14 +35,10 @@ moveBox <- function(element,
   # Handle legacy arguments
   # We can't access '...' here so we rely on explicit checking if user passed it?
   # Wait, moveBox definition doesn't use '...'.
-  # So if user passed .subelement, it would go into '...' if it existed, but it doesn't.
+  # So if user passed subelement, it would go into '...' if it existed, but it doesn't.
   # It would cause "unused argument" error if I just remove it.
-  # Safe way: add .subelement=NULL to signature and warn.
+  # Safe way: add subelement=NULL to signature and warn.
 }
-
-# Actually, I must add .subelement for backward compatibility if I want to avoid errors for existing code.
-# But since moveBox is an internalish helper (though exported), breaking it is risky.
-# I'll add .subelement = NULL to signature.
 
 moveBox <- function(element,
                     x = NULL, y = NULL,

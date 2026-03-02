@@ -25,7 +25,7 @@ test_that("Box move absolute", {
 })
 
 
-test_that(".subelement moves a single element in a list (shallow)", {
+test_that("subelement moves a single element in a list (shallow)", {
   b1 <- boxGrob("b1", x = .1, y = .1)
   b2 <- boxGrob("b2", x = .2, y = .2)
   L <- list(b1 = b1, b2 = b2)
@@ -37,7 +37,7 @@ test_that(".subelement moves a single element in a list (shallow)", {
 })
 
 
-test_that(".subelement supports nested path", {
+test_that("subelement supports nested path", {
   b <- boxGrob("b", x = .5, y = .5)
   L <- list(group = list(sub = b))
   L2 <- moveBox(L, y = -0.2, subelement = c("group", "sub"), space = "relative")
@@ -45,7 +45,7 @@ test_that(".subelement supports nested path", {
 })
 
 
-test_that(".subelement supports numeric index", {
+test_that("subelement supports numeric index", {
   b1 <- boxGrob("b1", x = .1, y = .1)
   b2 <- boxGrob("b2", x = .2, y = .2)
   L <- list(b1, b2)

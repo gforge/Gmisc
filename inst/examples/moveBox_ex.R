@@ -12,7 +12,7 @@ popViewport()
 ## Advanced example (skipped during R CMD check)
 ## Not run:
 # Advanced example: create a nested list of treatment boxes, spread them horizontally,
-# then move a single nested element (`Ibuprofen`) using `.subelement` via a pipe.
+# then move a single nested element (`Ibuprofen`) using `subelement` via a pipe.
 pushViewport(viewport(y = 0.35, height = unit(.7, "npc") - unit(2, "mm")))
 grid.rect(gp = gpar(col = "lightgreen"))
 
