@@ -479,17 +479,17 @@ grid.newpage()
 align_1
 alignVertical(reference = align_1,
               b1, b2, b3,
-              .position = "top")
+              position = "top")
 
 align_2
 alignVertical(reference = align_2,
               b1, b2, b3,
-              .position = "center")
+              position = "center")
 
 align_3
 alignVertical(reference = align_3,
               b1, b2, b3,
-              .position = "bottom")
+              position = "bottom")
 ```
 
 # Spreading
@@ -527,7 +527,7 @@ txtOut <- function(txt, y_top) {
 }
 
 drawRow <- function(label, row_y, spread_args = list()) {
-  row <- alignVertical(reference = row_y, b1, b2, b3, b4, .position = "top")
+  row <- alignVertical(reference = row_y, b1, b2, b3, b4, position = "top")
   txtOut(label, coords(row[[1]])$top)
   do.call(spreadHorizontal, c(list(row), spread_args))
 }
@@ -538,18 +538,18 @@ grid.newpage()
 
 drawRow("Basic (viewport)", rowYs[1])
 drawRow("From–to + margin (numeric = npc)", rowYs[2],
-        spread_args = list(.from = .2, .to = .7, .margin = .05))
-drawRow("Only .to (defaults .from = 0)", rowYs[3],
-        spread_args = list(.to = .7))
-drawRow("Only .from (defaults .to = 1)", rowYs[4],
-        spread_args = list(.from = .2))
+        spread_args = list(from = .2, to = .7, margin = .05))
+drawRow("Only to (defaults from = 0)", rowYs[3],
+        spread_args = list(to = .7))
+drawRow("Only from (defaults to = 1)", rowYs[4],
+        spread_args = list(from = .2))
 
 # Row 5: Between boxes (box-to-box span)
 row5_y <- rowYs[5]
-row5 <- alignVertical(reference = row5_y, b1, b2, b3, b4, .position = "top")
+row5 <- alignVertical(reference = row5_y, b1, b2, b3, b4, position = "top")
 txtOut("Between boxes", coords(row5[[1]])$top)
 
-span <- alignVertical(reference = row5_y, from  = from, to = to, .position = "top")
+span <- alignVertical(reference = row5_y, from  = from, to = to, position = "top")
 span
 spreadHorizontal(row5, .from = span$from, .to = span$to)
 
@@ -561,13 +561,13 @@ bottom_to <- moveBox(to, x = coords(from)$left, y = 0, just = c(0, 0))
 bottom_from
 bottom_to
 
-row6 <- alignVertical(reference = bottom_from, b1, b2, b3, b4, .position = "bottom")
+row6 <- alignVertical(reference = bottom_from, b1, b2, b3, b4, position = "bottom")
 txtOut("Reverse box order + center", coords(row6[[4]])$top)
 
 spreadHorizontal(row6,
-                 .from = bottom_from,
-                 .to = bottom_to,
-                 .type = "center")
+                 from = bottom_from,
+                 to = bottom_to,
+                 type = "center")
 
 
 ```
@@ -604,23 +604,23 @@ grid.newpage()
 txtOut("Basic", b1)
 alignHorizontal(reference = b1,
                 b1, b2, b3, b4,
-                .position = "left") |>
+                position = "left") |>
   spreadVertical()
 
 txtOut("From-to", b2)
 alignHorizontal(reference = b2,
                 b1, b2, b3, b4,
-                .position = "left") |>
-  spreadVertical(.from = .2,
-                 .to = .7)
+                position = "left") |>
+  spreadVertical(from = .2,
+                 to = .7)
 
 txtOut("From-to with center and reverse the box order", b3)
 alignHorizontal(reference = b3,
                 b1, b2, b3, b4,
-                .position = "left") |>
-  spreadVertical(.from = .7,
-                 .to = .2,
-                 .type = "center")
+                position = "left") |>
+  spreadVertical(from = .7,
+                 to = .2,
+                 type = "center")
 ```
 
 # Complex nested flowcharts with boxHeaderGrob
@@ -905,7 +905,7 @@ popViewport()
 
 Here is a more complex example demonstrating the power of the grid-based flowcharts. This example uses `flowchart`, `spread`, `align` and `connect` functions to create a detailed clinical study flowchart.
 
-```{r complex_example, fig.height = 7, fig.width = 6}
+```{r complex_example, fig.height = 9, fig.width = 9}
 # Define the boxes
 org_cohort <- glue("Proximal humerus fracture",
                    "  - \u2265 18 years",
@@ -958,7 +958,7 @@ flowchart(start = org_cohort,
           followup = late_followup) |>
   spread(axis = "y") |>
   spread(axis = "x", subelement = "step_1") |>
-  spread(axis = "x", subelement = "treatment", .from = 0.35) |>
+  spread(axis = "x", subelement = "treatment", from = 0.35) |>
   align(axis = "x",
         reference = c("treatment", "late"),
         subelement = c("step_1", "non-surgical")) |>
