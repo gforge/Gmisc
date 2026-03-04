@@ -10,8 +10,8 @@
 #' @examples
 #' MidDistanceX(unit(.1, "npc"), unit(.8, "npc"))
 MidDistanceX <- function(u1, u2) {
-  if (!is.unit(u1)) u1 <- unit(u1, "npc")
-  if (!is.unit(u2)) u2 <- unit(u2, "npc")
+  if (!grid::is.unit(u1)) u1 <- grid::unit(u1, "npc")
+  if (!grid::is.unit(u2)) u2 <- grid::unit(u2, "npc")
   (u1 + u2) * 0.5
 }
 
