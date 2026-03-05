@@ -8,7 +8,7 @@
 #' @return A unit object
 #' @export
 #' @examples
-#' MidDistanceX(unit(.1, "npc"), unit(.8, "npc"))
+#' MidDistanceX(grid::unit(.1, "npc"), grid::unit(.8, "npc"))
 MidDistanceX <- function(u1, u2) {
   if (!grid::is.unit(u1)) u1 <- grid::unit(u1, "npc")
   if (!grid::is.unit(u2)) u2 <- grid::unit(u2, "npc")

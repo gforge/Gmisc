@@ -22,5 +22,5 @@ Calculates the midpoint between two units. If the arguments are
 numeric they are converted to npc units.
 }
 \examples{
-MidDistanceX(unit(.1, "npc"), unit(.8, "npc"))
+MidDistanceX(grid::unit(.1, "npc"), grid::unit(.8, "npc"))
 }
