@@ -135,11 +135,27 @@ prConnect1 <- function(
     } else {
       line$y <- unit.c(start$bottom, end$y, end$y)
     }
-    if (prConvertWidthToMm(getX4elmnt(start, "x")) < prConvertWidthToMm(getX4elmnt(end, "x"))) {
-      line$x <- unit.c(getX4elmnt(start, "x"), getX4elmnt(start, "x"), end$left)
+    start_x_mm    <- prConvertWidthToMm(getX4elmnt(start, "x"))
+    end_x_mm      <- prConvertWidthToMm(getX4elmnt(end,   "x"))
+    end_right_mm  <- prConvertWidthToMm(end$right)
+    end_left_mm   <- prConvertWidthToMm(end$left)
+    if (start_x_mm < end_x_mm) {
+      # Start is to the left of end centre → approach from the left
+      h_end <- end$left
+      if (prConvertWidthToMm(h_end) <= start_x_mm) {
+        # Overlap: end's left edge crosses start.x (box is wide).
+        # Fall back to end centre so the horizontal segment still goes rightward.
+        h_end <- getX4elmnt(end, "x")
+      }
+    } else if (end_right_mm < start_x_mm) {
+      # Normal right-approach: end's right edge is clearly left of start → use it
+      h_end <- end$right
     } else {
-      line$x <- unit.c(getX4elmnt(start, "x"), getX4elmnt(start, "x"), end$right)
+      # Overlap: end's right edge crosses start.x (box is wide).
+      # Fall back to end centre so the horizontal segment still goes leftward.
+      h_end <- getX4elmnt(end, "x")
     }
+    line$x <- unit.c(getX4elmnt(start, "x"), getX4elmnt(start, "x"), h_end)
   } else if (type == "Z") {
     if (prConvertWidthToMm(start$x) < prConvertWidthToMm(end$x)) {
       line$x <- unit.c(
