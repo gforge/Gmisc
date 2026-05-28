@@ -62,11 +62,19 @@
 #'   `options(connectGrob = ...)`.
 #' @param arrow_obj Arrow specification created with [grid::arrow()]. Can also be set globally via
 #'   `options(connectGrobArrow = ...)`.
+#' @param arrow_size Optional numeric (mm). When supplied, overrides the arrow head length in
+#'   `arrow_obj` without requiring the user to rebuild the entire arrow specification.
 #' @param split_pad Padding around the shared bend point for multi-box connections.
 #'   Numeric values are interpreted as millimeters.
 #' @param margin For `type = "fan_in_top"`, the margin applied at the left and right ends of the
 #'   end box top edge before distributing attachment points. Numeric values are interpreted
 #'   as millimeters.
+#' @param smooth Logical; if `TRUE` interior orthogonal corners are replaced by smooth
+#'   Bézier arcs. Default `FALSE` preserves the existing sharp-corner behaviour.
+#' @param corner_radius Radius of the rounded corner arc when `smooth = TRUE`.
+#'   A [grid::unit()] or numeric (interpreted as millimeters). Default `unit(3, "mm")`.
+#' @param side For `type = "side"`, which side of the start box to exit from.
+#'   `"auto"` (default) picks the side that faces the end box.
 #' @param label Optional text label for one-to-one connectors (e.g. `"yes"` / `"no"`).
 #'   Only supported when both `start` and `end` are single boxes.
 #' @param label_gp A [grid::gpar()] controlling label appearance.
@@ -89,12 +97,16 @@
 connectGrob <- function(
   start,
   end,
-  type = c("vertical", "horizontal", "L", "-", "Z", "N", "fan_in_top", "fan_in_center"),
+  type = c("vertical", "horizontal", "L", "-", "Z", "N", "fan_in_top", "fan_in_center", "side"),
   subelmnt = c("right", "left"),
   lty_gp = getOption("connectGrob", default = gpar(fill = "black")),
   arrow_obj = getOption("connectGrobArrow", default = arrow(ends = "last", type = "closed")),
+  arrow_size = NULL,
   split_pad = unit(2, "mm"),
   margin = unit(2, "mm"),
+  smooth = FALSE,
+  corner_radius = unit(3, "mm"),
+  side = c("auto", "left", "right"),
   label = NULL,
   label_gp = grid::gpar(cex = 0.9),
   label_bg_gp = grid::gpar(fill = "white", col = NA),
@@ -104,6 +116,18 @@ connectGrob <- function(
 ) {
   type <- match.arg(type)
   label_pos <- match.arg(label_pos)
+  side <- match.arg(side)
+
+  if (!is.null(arrow_size)) {
+    ends_map <- c("1" = "first", "2" = "last", "3" = "both")
+    type_map <- c("1" = "open", "2" = "closed")
+    arrow_obj <- arrow(
+      ends = ends_map[as.character(arrow_obj$ends)],
+      type = type_map[as.character(arrow_obj$type)],
+      angle = arrow_obj$angle,
+      length = unit(arrow_size, "mm")
+    )
+  }
 
   # Normalize possible single-element wrapped lists so strategy detection
   # correctly identifies lists of boxes (one-to-many / many-to-one).
@@ -182,6 +206,9 @@ connectGrob <- function(
     arrow_obj = arrow_obj,
     split_pad = split_pad,
     margin = margin,
+    smooth = smooth,
+    corner_radius = corner_radius,
+    side = side,
     label = label,
     label_gp = label_gp,
     label_bg_gp = label_bg_gp,

@@ -21,7 +21,11 @@ boxGrob(
     ifelse(is.null(txt_gp$cex), 1, txt_gp$cex), "mm")),
   box_gp = getOption("boxGrob", default = gpar(fill = "white")),
   box_fn = roundrectGrob,
-  name = NULL
+  name = NULL,
+  badge_label = NULL,
+  badge_position = "top",
+  badge_gp = gpar(fill = "steelblue", col = NA),
+  badge_txt_gp = gpar(col = "white", cex = 0.7)
 )
 
 \method{print}{box}(x, ...)

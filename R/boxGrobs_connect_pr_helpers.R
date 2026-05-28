@@ -241,6 +241,128 @@ prStartsLeft <- function(starts, end) {
   mean(vapply(s_coords, function(s) prConvertWidthToMm(s$x), numeric(1))) < prConvertWidthToMm(e$x)
 }
 
+#' Render a connector line, optionally with rounded corners
+#'
+#' Replaces `linesGrob()` as the final rendering step for all connector types.
+#' When `smooth = FALSE` (default) it behaves identically to the previous
+#' `linesGrob()` call. When `smooth = TRUE` each interior orthogonal corner is
+#' replaced by a Bézier arc computed with [gnrlBezierPoints()], which is already
+#' used elsewhere in the package (transitionPlot etc.).
+#'
+#' Rules:
+#' - Only 3- and 4-point paths have interior corners; 2-point paths are always
+#'   straight and ignore `smooth`.
+#' - The corner radius is clamped to half the length of each adjacent segment so
+#'   the arc cannot overshoot into a neighbouring segment.
+#' - The arrow is placed only on the final straight segment.
+#'
+#' @param x,y `unit` vectors of path points (same length, >= 2).
+#' @param smooth Logical; if `TRUE` round interior corners.
+#' @param corner_radius A `unit` or numeric (mm) giving the desired corner radius.
+#' @param gp [grid::gpar()] for line appearance.
+#' @param arrow [grid::arrow()] specification (applied to final segment only).
+#' @return A single grob (linesGrob or grobTree).
+#' @keywords internal
+#' @noRd
+prRenderLine <- function(x, y,
+                         smooth = FALSE,
+                         corner_radius = unit(3, "mm"),
+                         gp,
+                         arrow) {
+  n <- length(x)
+  stopifnot(n == length(y), n >= 2)
+
+  if (!smooth || n < 3) {
+    return(grid::linesGrob(x = x, y = y, gp = gp, arrow = arrow))
+  }
+
+  if (is.numeric(corner_radius)) corner_radius <- unit(corner_radius, "mm")
+
+  # Convert all points to mm for arithmetic
+  xmm <- prConvertWidthToMm(x)
+  ymm <- prConvertHeightToMm(y)
+
+  # Vectorized mm->npc helpers (prConvertMmToNpc only accepts length-1 inputs)
+  mm2npc_x <- function(v) vapply(v, function(m) as.numeric(prConvertMmToNpc(m, "x")), numeric(1))
+  mm2npc_y <- function(v) vapply(v, function(m) as.numeric(prConvertMmToNpc(m, "y")), numeric(1))
+
+  # Build list of grobs: alternating straight segments and arcs
+  grobs <- list()
+
+  # Walk point-by-point. For each interior corner i (2 <= i <= n-1):
+  #   1. compute the clamped radius r
+  #   2. back up r along the incoming segment  -> P_in
+  #   3. advance r along the outgoing segment  -> P_out
+  #   4. emit a straight segment from previous end to P_in
+  #   5. emit a bezier arc from P_in through corner P to P_out
+
+  prev_x <- xmm[1]
+  prev_y <- ymm[1]
+
+  r_mm <- as.numeric(convertUnit(corner_radius, "mm"))
+
+  for (i in seq(2, n - 1)) {
+    # Incoming segment: from prev to P[i]
+    seg1_dx <- xmm[i] - prev_x
+    seg1_dy <- ymm[i] - prev_y
+    seg1_len <- sqrt(seg1_dx^2 + seg1_dy^2)
+
+    # Outgoing segment: from P[i] to P[i+1]
+    seg2_dx <- xmm[i + 1] - xmm[i]
+    seg2_dy <- ymm[i + 1] - ymm[i]
+    seg2_len <- sqrt(seg2_dx^2 + seg2_dy^2)
+
+    # Clamp to half of each adjacent segment
+    r <- min(r_mm, seg1_len / 2, seg2_len / 2)
+
+    if (seg1_len <= 0 || seg2_len <= 0 || r <= 0) {
+      # Degenerate — just record the corner as a passthrough
+      prev_x <- xmm[i]
+      prev_y <- ymm[i]
+      next
+    }
+
+    # Unit vectors
+    u1x <- seg1_dx / seg1_len; u1y <- seg1_dy / seg1_len
+    u2x <- seg2_dx / seg2_len; u2y <- seg2_dy / seg2_len
+
+    # Arc entry and exit points in mm
+    pin_x  <- xmm[i] - r * u1x;  pin_y  <- ymm[i] - r * u1y
+    pout_x <- xmm[i] + r * u2x;  pout_y <- ymm[i] + r * u2y
+
+    # Straight segment from prev to P_in (no arrow — not the last segment)
+    grobs[[length(grobs) + 1]] <- grid::linesGrob(
+      x = unit(mm2npc_x(c(prev_x, pin_x)), "npc"),
+      y = unit(mm2npc_y(c(prev_y, pin_y)), "npc"),
+      gp = gp, arrow = NULL
+    )
+
+    # Bézier arc: 3 control points — P_in, corner P, P_out
+    ctrl <- data.frame(
+      x = mm2npc_x(c(pin_x,  xmm[i], pout_x)),
+      y = mm2npc_y(c(pin_y,  ymm[i], pout_y))
+    )
+    arc_pts <- gnrlBezierPoints(ctrl, length_out = 20L)
+    grobs[[length(grobs) + 1]] <- grid::linesGrob(
+      x = unit(arc_pts[, 1], "npc"), y = unit(arc_pts[, 2], "npc"),
+      gp = gp, arrow = NULL
+    )
+
+    prev_x <- pout_x
+    prev_y <- pout_y
+  }
+
+  # Final straight segment — this one gets the arrow
+  grobs[[length(grobs) + 1]] <- grid::linesGrob(
+    x = unit(mm2npc_x(c(prev_x, xmm[n])), "npc"),
+    y = unit(mm2npc_y(c(prev_y, ymm[n])), "npc"),
+    gp = gp, arrow = arrow
+  )
+
+  do.call(grobTree, grobs)
+}
+
+
 #' Calculate bend X coordinate for shared-bend connectors
 #'
 #' Compute a suitable horizontal bend point for shared-bend connectors.

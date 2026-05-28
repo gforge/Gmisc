@@ -31,7 +31,8 @@ prGetConnectorStrategy <- function(start, end, type) {
         "Z" = "Z",
         "N" = "N",
         "fan_in_top" = "FanInTop",
-        "fan_in_center" = "FanInCenter"
+        "fan_in_center" = "FanInCenter",
+        "side" = "Side"
     )
 
     type_name <- type_map[type]
@@ -73,7 +74,9 @@ prCalculateConnector.ConnectorStrategy <- function(strategy, ...) {
             type = strategy$type,
             subelmnt = args$subelmnt,
             lty_gp = args$lty_gp,
-            arrow_obj = args$arrow_obj
+            arrow_obj = args$arrow_obj,
+            smooth = args$smooth,
+            corner_radius = args$corner_radius
         ))
     }
 
@@ -84,7 +87,9 @@ prCalculateConnector.ConnectorStrategy <- function(strategy, ...) {
             type = strategy$type,
             subelmnt = args$subelmnt,
             lty_gp = args$lty_gp,
-            arrow_obj = args$arrow_obj
+            arrow_obj = args$arrow_obj,
+            smooth = args$smooth,
+            corner_radius = args$corner_radius
         ))
     }
 
@@ -96,6 +101,9 @@ prCalculateConnector.ConnectorStrategy <- function(strategy, ...) {
         subelmnt = args$subelmnt,
         lty_gp = args$lty_gp,
         arrow_obj = args$arrow_obj,
+        smooth = args$smooth,
+        corner_radius = args$corner_radius,
+        side = args$side,
         label = args$label,
         label_gp = args$label_gp,
         label_bg_gp = args$label_bg_gp,
@@ -149,7 +157,9 @@ prCalculateConnector.ManyToOneNConnectorStrategy <- function(strategy, ...) {
         subelmnt = args$subelmnt,
         lty_gp = args$lty_gp,
         arrow_obj = args$arrow_obj,
-        split_pad = args$split_pad
+        split_pad = args$split_pad,
+        smooth = args$smooth,
+        corner_radius = args$corner_radius
     )
 }
 
@@ -165,6 +175,8 @@ prCalculateConnector.OneToManyNConnectorStrategy <- function(strategy, ...) {
         subelmnt = args$subelmnt,
         lty_gp = args$lty_gp,
         arrow_obj = args$arrow_obj,
-        split_pad = args$split_pad
+        split_pad = args$split_pad,
+        smooth = args$smooth,
+        corner_radius = args$corner_radius
     )
 }

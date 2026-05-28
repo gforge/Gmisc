@@ -15,13 +15,18 @@
 connectGrob(
   start,
   end,
-  type = c("vertical", "horizontal", "L", "-", "Z", "N", "fan_in_top", "fan_in_center"),
+  type = c("vertical", "horizontal", "L", "-", "Z", "N", "fan_in_top", "fan_in_center",
+    "side"),
   subelmnt = c("right", "left"),
   lty_gp = getOption("connectGrob", default = gpar(fill = "black")),
   arrow_obj = getOption("connectGrobArrow", default = arrow(ends = "last", type =
     "closed")),
+  arrow_size = NULL,
   split_pad = unit(2, "mm"),
   margin = unit(2, "mm"),
+  smooth = FALSE,
+  corner_radius = unit(3, "mm"),
+  side = c("auto", "left", "right"),
   label = NULL,
   label_gp = grid::gpar(cex = 0.9),
   label_bg_gp = grid::gpar(fill = "white", col = NA),
@@ -61,12 +66,24 @@ connect(x, ...)
 \item{arrow_obj}{Arrow specification created with \code{\link[grid:arrow]{grid::arrow()}}. Can also be set globally via
 \code{options(connectGrobArrow = ...)}.}
 
+\item{arrow_size}{Optional numeric (mm). When supplied, overrides the arrow head length in
+\code{arrow_obj} without requiring the user to rebuild the entire arrow specification.}
+
 \item{split_pad}{Padding around the shared bend point for multi-box connections.
 Numeric values are interpreted as millimeters.}
 
 \item{margin}{For \code{type = "fan_in_top"}, the margin applied at the left and right ends of the
 end box top edge before distributing attachment points. Numeric values are interpreted
 as millimeters.}
+
+\item{smooth}{Logical; if \code{TRUE} interior orthogonal corners are replaced by smooth
+Bézier arcs. Default \code{FALSE} preserves the existing sharp-corner behaviour.}
+
+\item{corner_radius}{Radius of the rounded corner arc when \code{smooth = TRUE}.
+A \code{\link[grid:unit]{grid::unit()}} or numeric (interpreted as millimeters). Default \code{unit(3, "mm")}.}
+
+\item{side}{For \code{type = "side"}, which side of the start box to exit from.
+\code{"auto"} (default) picks the side that faces the end box.}
 
 \item{label}{Optional text label for one-to-one connectors (e.g. \code{"yes"} / \code{"no"}).
 Only supported when both \code{start} and \code{end} are single boxes.}

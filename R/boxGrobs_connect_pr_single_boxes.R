@@ -92,6 +92,9 @@ prConnect1 <- function(
   subelmnt,
   lty_gp,
   arrow_obj,
+  smooth = FALSE,
+  corner_radius = unit(3, "mm"),
+  side = c("auto", "left", "right"),
   label = NULL,
   label_gp = grid::gpar(cex = 0.9),
   label_bg_gp = grid::gpar(fill = "white", col = NA),
@@ -106,6 +109,7 @@ prConnect1 <- function(
   if (!is.null(label)) assert_class(label_gp, "gpar")
 
   label_pos <- match.arg(label_pos)
+  side <- match.arg(side)
 
   start <- coords(start)
   end <- coords(end)
@@ -173,6 +177,21 @@ prConnect1 <- function(
     } else {
       line$y <- unit.c(start$bottom, end$top)
     }
+  } else if (type == "side") {
+    # Horizontal-first exit: leave from start side, travel horizontally,
+    # then drop vertically to the end box.
+    end_is_right <- prConvertWidthToMm(getX4elmnt(end, "x")) > prConvertWidthToMm(start$x)
+    exit_x <- if (side == "right" || (side == "auto" && end_is_right)) {
+      start$right
+    } else {
+      start$left
+    }
+    line$x <- unit.c(exit_x, getX4elmnt(end, "x"), getX4elmnt(end, "x"))
+    if (prConvertHeightToMm(start$y) > prConvertHeightToMm(end$y)) {
+      line$y <- unit.c(start$y, start$y, end$top)
+    } else {
+      line$y <- unit.c(start$y, start$y, end$bottom)
+    }
   } else { # horizontal
     line$y <- unit.c(start$y, end$y)
     if (prConvertWidthToMm(getX4elmnt(start, "x")) < prConvertWidthToMm(getX4elmnt(end, "x"))) {
@@ -182,7 +201,11 @@ prConnect1 <- function(
     }
   }
 
-  lg <- grid::linesGrob(x = line$x, y = line$y, gp = lty_gp, arrow = arrow_obj)
+  lg <- prRenderLine(
+    x = line$x, y = line$y,
+    smooth = smooth, corner_radius = corner_radius,
+    gp = lty_gp, arrow = arrow_obj
+  )
 
 
   if (!is.null(label) && nzchar(label)) {

@@ -52,7 +52,11 @@ boxGrob <- function(label,
                     txt_padding = getOption("boxGrobTxtPadding", default = unit(6 * ifelse(is.null(txt_gp$cex), 1, txt_gp$cex), "mm")),
                     box_gp = getOption("boxGrob", default = gpar(fill = "white")),
                     box_fn = roundrectGrob,
-                    name = NULL) {
+                    name = NULL,
+                    badge_label = NULL,
+                    badge_position = "top",
+                    badge_gp = gpar(fill = "steelblue", col = NA),
+                    badge_txt_gp = gpar(col = "white", cex = 0.7)) {
   assert(
     checkString(label),
     checkNumeric(label),
@@ -119,11 +123,40 @@ boxGrob <- function(label,
     just = bjust
   )
 
+  # Build the inner gList. When a badge is requested, add badge grobs inside the
+  # same viewport so that all x/y coordinates share the same coordinate system
+  # (viewport npc + absolute mm offsets) — no compound-unit misalignment.
+  inner <- if (!is.null(badge_label)) {
+    badge_h   <- unit(4.5, "mm")
+    badge_w   <- unit(11,  "mm")
+    badge_pad <- unit(1.5, "mm")   # gap from the left edge of the box
+
+    # Center of the badge pill in viewport coordinates.
+    # unit(0, "npc") = left edge of viewport; badge_w * 0.5 + badge_pad moves
+    # the center rightward so the pill's left side sits badge_pad from the box edge.
+    b_x <- unit(0, "npc") + badge_w * 0.5 + badge_pad
+    b_y <- unit(1, "npc")   # exactly the top border of the box
+
+    badge_bg <- roundrectGrob(
+      x = b_x, y = b_y,
+      width = badge_w, height = badge_h,
+      r = unit(2, "mm"),   # rounded corners — standard badge shape
+      just = "center",
+      gp = badge_gp
+    )
+    badge_lbl <- textGrob(
+      label = as.character(badge_label),
+      x = b_x, y = b_y,
+      just = "center",
+      gp = badge_txt_gp
+    )
+    gList(rect, txt, badge_bg, badge_lbl)
+  } else {
+    gList(rect, txt)
+  }
+
   gl <- grobTree(
-    gList(
-      rect,
-      txt
-    ),
+    inner,
     vp = do.call(viewport, vp_args),
     name = name,
     cl = "box"

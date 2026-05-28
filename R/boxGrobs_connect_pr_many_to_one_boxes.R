@@ -8,9 +8,11 @@ prConnectManyToOneStandard <- function(
   type,
   subelmnt,
   lty_gp,
-  arrow_obj
+  arrow_obj,
+  smooth = FALSE,
+  corner_radius = unit(3, "mm")
 ) {
-  grobs <- lapply(starts, function(s) prConnect1(s, end, type, subelmnt, lty_gp, arrow_obj))
+  grobs <- lapply(starts, function(s) prConnect1(s, end, type, subelmnt, lty_gp, arrow_obj, smooth = smooth, corner_radius = corner_radius))
   structure(grobs, class = c("connect_boxes_list", "list"))
 }
 
@@ -23,7 +25,9 @@ prConnectManyToOneN <- function(
   subelmnt,
   lty_gp,
   arrow_obj,
-  split_pad = unit(2, "mm")
+  split_pad = unit(2, "mm"),
+  smooth = FALSE,
+  corner_radius = unit(3, "mm")
 ) {
   # If `end` is container-like, attempt to find a reasonable boxed target.
   if (!inherits(end, "box")) {
@@ -48,7 +52,9 @@ prConnectManyToOneN <- function(
     v_params = v_params,
     x_params = x_params,
     lty_gp = lty_gp,
-    arrow_obj = arrow_obj
+    arrow_obj = arrow_obj,
+    smooth = smooth,
+    corner_radius = corner_radius
   )
 
   structure(grobs, class = c("connect_boxes_list", "list"))
@@ -121,7 +127,8 @@ prGetManyToOneNAssignedX <- function(starts, s_coords, e, subelmnt) {
 
 #' Create the list of grobs for Many-to-One N connector
 #' @noRd
-prMakeManyToOneNGrobs <- function(s_coords, v_params, x_params, lty_gp, arrow_obj) {
+prMakeManyToOneNGrobs <- function(s_coords, v_params, x_params, lty_gp, arrow_obj,
+                                  smooth = FALSE, corner_radius = unit(3, "mm")) {
   lapply(seq_along(s_coords), function(i) {
     s <- s_coords[[i]]
     x_end <- unit(x_params$assigned_end_vals[i], "npc")
@@ -138,7 +145,8 @@ prMakeManyToOneNGrobs <- function(s_coords, v_params, x_params, lty_gp, arrow_ob
       x = unit.c(x_start0, x_start0, x_end, x_end),
       y = unit.c(v_params$start_attach_fn(s), v_params$bend_y, v_params$bend_y, v_params$end_attach)
     )
-    lg <- linesGrob(x = line$x, y = line$y, gp = lty_gp, arrow = arrow_obj)
+    lg <- prRenderLine(x = line$x, y = line$y, smooth = smooth, corner_radius = corner_radius,
+                       gp = lty_gp, arrow = arrow_obj)
     structure(lg, line = line, class = unique(c("connect_boxes", class(lg))))
   })
 }

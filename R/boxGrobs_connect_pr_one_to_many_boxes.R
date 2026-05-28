@@ -6,9 +6,11 @@ prConnectOneToManyStandard <- function(
   type,
   subelmnt,
   lty_gp,
-  arrow_obj
+  arrow_obj,
+  smooth = FALSE,
+  corner_radius = unit(3, "mm")
 ) {
-  grobs <- lapply(ends, function(e) prConnect1(start, e, type, subelmnt, lty_gp, arrow_obj))
+  grobs <- lapply(ends, function(e) prConnect1(start, e, type, subelmnt, lty_gp, arrow_obj, smooth = smooth, corner_radius = corner_radius))
   structure(grobs, class = c("connect_boxes_list", "list"))
 }
 
@@ -21,7 +23,9 @@ prConnectOneToManyN <- function(
   subelmnt,
   lty_gp,
   arrow_obj,
-  split_pad = unit(2, "mm") # only used for shared-bend types
+  split_pad = unit(2, "mm"), # only used for shared-bend types
+  smooth = FALSE,
+  corner_radius = unit(3, "mm")
 ) {
   assert_class(start, "box")
   if (is.numeric(split_pad)) split_pad <- unit(split_pad, "mm")
@@ -43,7 +47,9 @@ prConnectOneToManyN <- function(
     v_params = v_params,
     x_params = x_params,
     lty_gp = lty_gp,
-    arrow_obj = arrow_obj
+    arrow_obj = arrow_obj,
+    smooth = smooth,
+    corner_radius = corner_radius
   )
 
   structure(grobs, class = c("connect_boxes_list", "list"))
@@ -125,7 +131,8 @@ prGetOneToManyNAssignedX <- function(start, s, ends, end_coords, subelmnt) {
 
 #' Create the list of grobs for One-to-Many N connector
 #' @noRd
-prMakeOneToManyNGrobs <- function(s, end_coords, v_params, x_params, lty_gp, arrow_obj) {
+prMakeOneToManyNGrobs <- function(s, end_coords, v_params, x_params, lty_gp, arrow_obj,
+                                  smooth = FALSE, corner_radius = unit(3, "mm")) {
   lapply(seq_along(end_coords), function(i) {
     e <- end_coords[[i]]
     x_end <- unit(x_params$assigned_end_vals[i], "npc")
@@ -142,7 +149,8 @@ prMakeOneToManyNGrobs <- function(s, end_coords, v_params, x_params, lty_gp, arr
       x = unit.c(x_start0, x_start0, x_end, x_end),
       y = unit.c(v_params$start_attach, v_params$bend_y, v_params$bend_y, v_params$end_attach_fn(e))
     )
-    lg <- grid::linesGrob(x = line$x, y = line$y, gp = lty_gp, arrow = arrow_obj)
+    lg <- prRenderLine(x = line$x, y = line$y, smooth = smooth, corner_radius = corner_radius,
+                       gp = lty_gp, arrow = arrow_obj)
     structure(lg, line = line, class = c("connect_boxes", class(lg)))
   })
 }
