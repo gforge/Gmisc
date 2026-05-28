@@ -74,15 +74,23 @@ connect.Gmisc_list_of_boxes <- function(x, from = NULL, to = NULL, ...) {
   if (length(start_boxes) == 1) start_boxes <- start_boxes[[1]]
   if (length(end_boxes) == 1) end_boxes <- end_boxes[[1]]
 
-  # Create the connection grob
-  # Filter args to remove legacy ones if any remain
-  call_args <- c(list(start = start_boxes, end = end_boxes), args)
-  # Note: args might still contain .from/.to if we didn't remove them from list(...)
-  # But we constructed 'args' from list(...) and removed them.
-  # Wait, 'args' is a local variable. '...' is passed to connectGrob via do.call?
-  # No, I should use do.call with cleaned args.
+  # Support pairwise list-to-list mapping in the S3 flowchart API.
+  # This keeps connectGrob() many-to-many unsupported while making
+  # connect("groups", "groups2") behave as users expect.
+  if (prIsBoxList(start_boxes) && prIsBoxList(end_boxes)) {
+    if (length(start_boxes) != length(end_boxes)) {
+      stop("When both 'from' and 'to' resolve to lists of boxes, they must have the same length.", call. = FALSE)
+    }
 
-  cg <- do.call(connectGrob, call_args)
+    cg <- mapply(function(s, e) {
+      do.call(connectGrob, c(list(start = s, end = e), args))
+    }, start_boxes, end_boxes, SIMPLIFY = FALSE)
+    class(cg) <- c("connect_boxes_list", "list")
+  } else {
+    # Create the connection grob
+    call_args <- c(list(start = start_boxes, end = end_boxes), args)
+    cg <- do.call(connectGrob, call_args)
+  }
 
   # Append to attributes
   current_conns <- attr(x, "connections")

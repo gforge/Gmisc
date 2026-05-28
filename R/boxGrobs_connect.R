@@ -164,7 +164,7 @@ connectGrob <- function(
   # container accidentally reached this point, attempt to find the most
   # appropriate boxed element to use as the end target (prefer the first
   # boxed child). This keeps many-to-one strategies robust to mixed inputs.
-  if ((prIsBoxList(start) || inherits(start, "Gmisc_list_of_boxes")) && !inherits(end, "box") && is.list(end)) {
+  if ((prIsBoxList(start) || inherits(start, "Gmisc_list_of_boxes")) && !inherits(end, "box") && is.list(end) && !prIsBoxList(end)) {
     box_pos <- which(vapply(end, inherits, logical(1), "box"))
     if (length(box_pos) >= 1) {
       end <- end[[box_pos[1]]]
