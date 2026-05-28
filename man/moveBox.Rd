@@ -94,19 +94,20 @@ connectGrob(boxes$treatment, boxes$followup, type = "N")
 ## End(Not run)
 }
 \seealso{
-Other flowchart components: 
-\code{\link{align}()},
-\code{\link{append}()},
-\code{\link{boxGrob}()},
-\code{\link{boxHeaderGrob}()},
-\code{\link{boxPropGrob}()},
+Other flowchart components:
+\code{\link[=align]{align()}},
+\code{\link[=append]{append()}},
+\code{\link[=boxGrob]{boxGrob()}},
+\code{\link[=boxHeaderGrob]{boxHeaderGrob()}},
+\code{\link[=boxPropGrob]{boxPropGrob()}},
 \code{\link{boxShapes}},
-\code{\link{connectGrob}()},
-\code{\link{coords}()},
-\code{\link{distance}()},
-\code{\link{flowchart}()},
-\code{\link{insert}()},
-\code{\link{move}()},
-\code{\link{spread}()}
+\code{\link[=connectGrob]{connectGrob()}},
+\code{\link[=coords]{coords()}},
+\code{\link[=distance]{distance()}},
+\code{\link[=equalizeWidths]{equalizeWidths()}},
+\code{\link[=flowchart]{flowchart()}},
+\code{\link[=insert]{insert()}},
+\code{\link[=move]{move()}},
+\code{\link[=spread]{spread()}}
 }
 \concept{flowchart components}

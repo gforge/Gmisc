@@ -73,6 +73,39 @@ flowchart(source = glue("Stockholm population",
   connect("eligible", "excluded", type = "L", label = "Excluded")
 ```
 
+# Consistent grouped widths and global text padding
+
+When building grouped flows (for example CONSORT-style diagrams), it is often useful to:
+
+- reduce text padding globally for all `boxGrob()` calls
+- make corresponding boxes in different levels share the same width
+
+The snippet below demonstrates both via `options(boxGrobTxtPadding = ...)` and `equalizeWidths()`.
+
+```{r flowchart-group-width-and-padding, fig.height = 5.5, fig.width = 8}
+old_opts <- options(boxGrobTxtPadding = unit(2, "mm"))
+
+flowchart(
+  rando = glue("Randomised\nN = 100"),
+  groups = list(
+    glue("Group 1\nn = 50"),
+    glue("Group 2\nn = 50")
+  ),
+  groups2 = list(
+    glue("Analysed\nn = 49"),
+    glue("Analysed\nn = 48")
+  )
+) |>
+  spread(axis = "y", margin = unit(0.02, "npc")) |>
+  spread(subelement = "groups", axis = "x", margin = unit(.05, "npc")) |>
+  spread(subelement = "groups2", axis = "x", margin = unit(.05, "npc")) |>
+  equalizeWidths(subelement = list("groups", "groups2")) |>
+  connect("rando", "groups", type = "N") |>
+  connect("groups", "groups2", type = "vertical")
+
+options(old_opts)
+```
+
 # Basic components explained
 
 There is a basic set of components that are used for generating flowcharts:

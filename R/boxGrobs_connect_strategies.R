@@ -61,6 +61,7 @@ prCalculateConnector <- function(strategy, ...) {
 
 #' Default fallback for connector strategies
 #' @noRd
+#' @export
 prCalculateConnector.ConnectorStrategy <- function(strategy, ...) {
     # If no specific strategy for the type+config combination exists,
     # we fall back to the config-level default handlers.
@@ -106,6 +107,7 @@ prCalculateConnector.ConnectorStrategy <- function(strategy, ...) {
 
 #' Specific strategy for Many-to-One Fan-in Center
 #' @noRd
+#' @export
 prCalculateConnector.ManyToOneFanInCenterConnectorStrategy <- function(strategy, ...) {
     args <- list(...)
     prConnectManyToOneFanCenter(
@@ -121,6 +123,7 @@ prCalculateConnector.ManyToOneFanInCenterConnectorStrategy <- function(strategy,
 
 #' Specific strategy for Many-to-One Fan-in Top
 #' @noRd
+#' @export
 prCalculateConnector.ManyToOneFanInTopConnectorStrategy <- function(strategy, ...) {
     args <- list(...)
     prConnectManyToOneFanTop(
@@ -136,6 +139,7 @@ prCalculateConnector.ManyToOneFanInTopConnectorStrategy <- function(strategy, ..
 
 #' Specific strategy for Many-to-One N
 #' @noRd
+#' @export
 prCalculateConnector.ManyToOneNConnectorStrategy <- function(strategy, ...) {
     args <- list(...)
     prConnectManyToOneN(
@@ -151,6 +155,7 @@ prCalculateConnector.ManyToOneNConnectorStrategy <- function(strategy, ...) {
 
 #' Specific strategy for One-to-Many N
 #' @noRd
+#' @export
 prCalculateConnector.OneToManyNConnectorStrategy <- function(strategy, ...) {
     args <- list(...)
     prConnectOneToManyN(

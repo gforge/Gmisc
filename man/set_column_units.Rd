@@ -25,7 +25,7 @@ mtcars_with_units <- mtcars \%>\%
 Hmisc::units(mtcars_with_units$wt)
 }
 \seealso{
-Other Hmisc helpers: 
-\code{\link{set_column_labels}()}
+Other Hmisc helpers:
+\code{\link[=set_column_labels]{set_column_labels()}}
 }
 \concept{Hmisc helpers}

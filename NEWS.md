@@ -1,5 +1,13 @@
 NEWS for the Gmisc package
 
+## Changes for 3.3.0
+
+- Added `equalizeWidths()` for flowchart box lists, allowing selected boxes (including nested `subelement` paths and list-of-boxes targets) to share a common width while preserving center positions.
+- Added `txt_padding` to `boxGrob()` and support for a global default via `options(boxGrobTxtPadding = ...)`.
+- Expanded the flowchart vignette with a grouped CONSORT-style example showing both global box text padding and width equalization across grouped levels.
+- Added tests for the new behavior in `tests/testthat/test-equalizeWidths.R` and `tests/testthat/test-boxGrob-padding-option.R`.
+- Updated package documentation pages generated from roxygen to include the new API and refreshed examples.
+
 ## Changes for 3.2.0
 
 - Added `boxHeaderGrob()` for creating flowchart boxes with centered header text and left-justified body text (e.g., bullet points). Fully compatible with all Gmisc flowchart helpers (`coords()`, `distance()`, `connectGrob()`, `spreadVertical()`, `alignHorizontal()`, etc.).

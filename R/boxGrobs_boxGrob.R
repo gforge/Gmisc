@@ -12,6 +12,9 @@
 #'  See the \code{just} option for the \code{\link[grid]{viewport}}
 #' @param txt_gp The \code{\link[grid]{gpar}} style to apply to the text. Set \code{boxGrobTxt} option
 #'  if you want to customize all the boxes at once.
+#' @param txt_padding Padding between text and box border. Can be provided as a
+#'  \code{\link[grid]{unit}} or numeric (interpreted as millimetres). You can set
+#'  a global default with \code{options(boxGrobTxtPadding = ...)}.
 #' @param box_gp The \code{\link[grid]{gpar}} style to apply to the box function of `box_fn` below.
 #' @param box_fn Function to create box for the text. Parameters of `x=0.5`, `y=0.5` and `box_gp` will
 #'  be passed to this function and return a \code{grob} object.
@@ -46,6 +49,7 @@ boxGrob <- function(label,
                       color = "black",
                       cex = 1
                     )),
+                    txt_padding = getOption("boxGrobTxtPadding", default = unit(6 * ifelse(is.null(txt_gp$cex), 1, txt_gp$cex), "mm")),
                     box_gp = getOption("boxGrob", default = gpar(fill = "white")),
                     box_fn = roundrectGrob,
                     name = NULL) {
@@ -58,6 +62,10 @@ boxGrob <- function(label,
   assert_unit(x)
   assert_unit(width)
   assert_unit(height)
+  if (is.numeric(txt_padding)) {
+    txt_padding <- unit(txt_padding, "mm")
+  }
+  assert_unit(txt_padding)
   assert_just(just)
   assert_just(bjust)
   assert_class(txt_gp, "gpar")
@@ -66,10 +74,6 @@ boxGrob <- function(label,
 
   x <- prAsUnit(x)
   y <- prAsUnit(y)
-
-  # Slightly larger default padding so specialized shapes (diamond/ellipse)
-  # have breathing room and text doesn't sit too tight against the border.
-  txt_padding <- unit(6 * ifelse(is.null(txt_gp$cex), 1, txt_gp$cex), "mm")
 
   # Call the box function early to collect any suggested padding attributes
   # (e.g., diamonds may request extra padding). This allows the padding to

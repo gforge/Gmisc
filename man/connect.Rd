@@ -96,7 +96,7 @@ the list. Defaults to `TRUE` (record drawing for later replay).}
 }
 \value{
 \itemize{
-\item One-to-one: a \code{\link[grid:grid.grob]{grid::grob()}} with class \code{"connect_boxes"}.
+\item One-to-one: a \code{\link[grid:grob]{grid::grob()}} with class \code{"connect_boxes"}.
 \item One-to-many or many-to-one: a list of grobs with class \code{"connect_boxes_list"}.
 }
 
@@ -207,34 +207,20 @@ side_boxes
 \seealso{
 [`connectGrob`]
 
-Other flowchart components: 
-\code{\link{align}()},
-\code{\link{append}()},
-\code{\link{boxGrob}()},
-\code{\link{boxHeaderGrob}()},
-\code{\link{boxPropGrob}()},
+Other flowchart components:
+\code{\link[=align]{align()}},
+\code{\link[=append]{append()}},
+\code{\link[=boxGrob]{boxGrob()}},
+\code{\link[=boxHeaderGrob]{boxHeaderGrob()}},
+\code{\link[=boxPropGrob]{boxPropGrob()}},
 \code{\link{boxShapes}},
-\code{\link{coords}()},
-\code{\link{distance}()},
-\code{\link{flowchart}()},
-\code{\link{insert}()},
-\code{\link{move}()},
-\code{\link{moveBox}()},
-\code{\link{spread}()}
-
-Other flowchart components: 
-\code{\link{align}()},
-\code{\link{append}()},
-\code{\link{boxGrob}()},
-\code{\link{boxHeaderGrob}()},
-\code{\link{boxPropGrob}()},
-\code{\link{boxShapes}},
-\code{\link{coords}()},
-\code{\link{distance}()},
-\code{\link{flowchart}()},
-\code{\link{insert}()},
-\code{\link{move}()},
-\code{\link{moveBox}()},
-\code{\link{spread}()}
+\code{\link[=coords]{coords()}},
+\code{\link[=distance]{distance()}},
+\code{\link[=equalizeWidths]{equalizeWidths()}},
+\code{\link[=flowchart]{flowchart()}},
+\code{\link[=insert]{insert()}},
+\code{\link[=move]{move()}},
+\code{\link[=moveBox]{moveBox()}},
+\code{\link[=spread]{spread()}}
 }
 \concept{flowchart components}

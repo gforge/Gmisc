@@ -17,6 +17,8 @@ boxGrob(
   just = "center",
   bjust = "center",
   txt_gp = getOption("boxGrobTxt", default = gpar(color = "black", cex = 1)),
+  txt_padding = getOption("boxGrobTxtPadding", default = unit(6 *
+    ifelse(is.null(txt_gp$cex), 1, txt_gp$cex), "mm")),
   box_gp = getOption("boxGrob", default = gpar(fill = "white")),
   box_fn = roundrectGrob,
   name = NULL
@@ -48,6 +50,10 @@ See the \code{just} option for the \code{\link[grid]{viewport}}}
 
 \item{txt_gp}{The \code{\link[grid]{gpar}} style to apply to the text. Set \code{boxGrobTxt} option
 if you want to customize all the boxes at once.}
+
+\item{txt_padding}{Padding between text and box border. Can be provided as a
+\code{\link[grid]{unit}} or numeric (interpreted as millimetres). You can set
+a global default with \code{options(boxGrobTxtPadding = ...)}.}
 
 \item{box_gp}{The \code{\link[grid]{gpar}} style to apply to the box function of `box_fn` below.}
 
@@ -94,19 +100,20 @@ passed to `boxGrob(..., box_fn = ...)`: \code{boxDiamondGrob},
 \code{boxDatabaseGrob}, \code{boxDocumentGrob}, \code{boxDocumentsGrob}, and
 \code{boxTapeGrob}. For examples see the vignette: \code{vignette("Grid-based_flowcharts", package = "Gmisc")}.
 
-Other flowchart components: 
-\code{\link{align}()},
-\code{\link{append}()},
-\code{\link{boxHeaderGrob}()},
-\code{\link{boxPropGrob}()},
+Other flowchart components:
+\code{\link[=align]{align()}},
+\code{\link[=append]{append()}},
+\code{\link[=boxHeaderGrob]{boxHeaderGrob()}},
+\code{\link[=boxPropGrob]{boxPropGrob()}},
 \code{\link{boxShapes}},
-\code{\link{connectGrob}()},
-\code{\link{coords}()},
-\code{\link{distance}()},
-\code{\link{flowchart}()},
-\code{\link{insert}()},
-\code{\link{move}()},
-\code{\link{moveBox}()},
-\code{\link{spread}()}
+\code{\link[=connectGrob]{connectGrob()}},
+\code{\link[=coords]{coords()}},
+\code{\link[=distance]{distance()}},
+\code{\link[=equalizeWidths]{equalizeWidths()}},
+\code{\link[=flowchart]{flowchart()}},
+\code{\link[=insert]{insert()}},
+\code{\link[=move]{move()}},
+\code{\link[=moveBox]{moveBox()}},
+\code{\link[=spread]{spread()}}
 }
 \concept{flowchart components}

@@ -61,4 +61,9 @@ Useful links:
 \author{
 \strong{Maintainer}: Max Gordon \email{max@gforge.se} (\href{https://orcid.org/0000-0002-8080-5815}{ORCID})
 
+Authors:
+\itemize{
+  \item Max Gordon \email{max@gforge.se} (\href{https://orcid.org/0000-0002-8080-5815}{ORCID})
+}
+
 }
