@@ -27,7 +27,7 @@ void
 \description{
 Checks if unit or number 0-1
 
-Assert that its a string or number
+Assert that it's a string or number
 
 Assert valid color
 }

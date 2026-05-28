@@ -31,10 +31,13 @@ fc <- flowchart(
 )
 
 fc |>
-  equalizeWidths(subelement = list(c("groups", 1), c("groups2", 1), c("groups", 2), c("groups2", 2)))
+  equalizeWidths(subelement = list(c("groups", 1),
+                                   c("groups2", 1),
+                                   c("groups", 2),
+                                   c("groups2", 2)))
 
 # Global fixed width via explicit argument
-fc |> equalizeWidths(subelement = "groups", width = unit(30, "mm"))
+fc |> equalizeWidths(subelement = "groups", width = grid::unit(30, "mm"))
 }
 \seealso{
 Other flowchart components:

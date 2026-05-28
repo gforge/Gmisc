@@ -261,7 +261,7 @@ prStartsLeft <- function(starts, end) {
 #' @param corner_radius A `unit` or numeric (mm) giving the desired corner radius.
 #' @param gp [grid::gpar()] for line appearance.
 #' @param arrow [grid::arrow()] specification (applied to final segment only).
-#' @return A single grob (linesGrob or grobTree).
+#' @return A single `linesGrob`.
 #' @keywords internal
 #' @noRd
 prRenderLine <- function(x, y,
@@ -286,15 +286,10 @@ prRenderLine <- function(x, y,
   mm2npc_x <- function(v) vapply(v, function(m) as.numeric(prConvertMmToNpc(m, "x")), numeric(1))
   mm2npc_y <- function(v) vapply(v, function(m) as.numeric(prConvertMmToNpc(m, "y")), numeric(1))
 
-  # Build list of grobs: alternating straight segments and arcs
-  grobs <- list()
-
-  # Walk point-by-point. For each interior corner i (2 <= i <= n-1):
-  #   1. compute the clamped radius r
-  #   2. back up r along the incoming segment  -> P_in
-  #   3. advance r along the outgoing segment  -> P_out
-  #   4. emit a straight segment from previous end to P_in
-  #   5. emit a bezier arc from P_in through corner P to P_out
+  # Accumulate the entire smooth path as a single coordinate vector (npc).
+  # Using one linesGrob avoids rendering seams at segment/arc joints.
+  path_x <- mm2npc_x(xmm[1])
+  path_y <- mm2npc_y(ymm[1])
 
   prev_x <- xmm[1]
   prev_y <- ymm[1]
@@ -302,64 +297,58 @@ prRenderLine <- function(x, y,
   r_mm <- as.numeric(convertUnit(corner_radius, "mm"))
 
   for (i in seq(2, n - 1)) {
-    # Incoming segment: from prev to P[i]
     seg1_dx <- xmm[i] - prev_x
     seg1_dy <- ymm[i] - prev_y
     seg1_len <- sqrt(seg1_dx^2 + seg1_dy^2)
 
-    # Outgoing segment: from P[i] to P[i+1]
     seg2_dx <- xmm[i + 1] - xmm[i]
     seg2_dy <- ymm[i + 1] - ymm[i]
     seg2_len <- sqrt(seg2_dx^2 + seg2_dy^2)
 
-    # Clamp to half of each adjacent segment
     r <- min(r_mm, seg1_len / 2, seg2_len / 2)
 
     if (seg1_len <= 0 || seg2_len <= 0 || r <= 0) {
-      # Degenerate — just record the corner as a passthrough
+      path_x <- c(path_x, mm2npc_x(xmm[i]))
+      path_y <- c(path_y, mm2npc_y(ymm[i]))
       prev_x <- xmm[i]
       prev_y <- ymm[i]
       next
     }
 
-    # Unit vectors
     u1x <- seg1_dx / seg1_len; u1y <- seg1_dy / seg1_len
     u2x <- seg2_dx / seg2_len; u2y <- seg2_dy / seg2_len
 
-    # Arc entry and exit points in mm
     pin_x  <- xmm[i] - r * u1x;  pin_y  <- ymm[i] - r * u1y
     pout_x <- xmm[i] + r * u2x;  pout_y <- ymm[i] + r * u2y
 
-    # Straight segment from prev to P_in (no arrow — not the last segment)
-    grobs[[length(grobs) + 1]] <- grid::linesGrob(
-      x = unit(mm2npc_x(c(prev_x, pin_x)), "npc"),
-      y = unit(mm2npc_y(c(prev_y, pin_y)), "npc"),
-      gp = gp, arrow = NULL
-    )
+    # Straight portion up to the arc entry point
+    path_x <- c(path_x, mm2npc_x(pin_x))
+    path_y <- c(path_y, mm2npc_y(pin_y))
 
-    # Bézier arc: 3 control points — P_in, corner P, P_out
+    # Bézier arc: control points are P_in, corner, P_out (quadratic)
     ctrl <- data.frame(
       x = mm2npc_x(c(pin_x,  xmm[i], pout_x)),
       y = mm2npc_y(c(pin_y,  ymm[i], pout_y))
     )
     arc_pts <- gnrlBezierPoints(ctrl, length_out = 20L)
-    grobs[[length(grobs) + 1]] <- grid::linesGrob(
-      x = unit(arc_pts[, 1], "npc"), y = unit(arc_pts[, 2], "npc"),
-      gp = gp, arrow = NULL
-    )
+    # arc_pts[1,] == P_in (already added above), so skip the first row
+    path_x <- c(path_x, arc_pts[-1L, 1])
+    path_y <- c(path_y, arc_pts[-1L, 2])
 
     prev_x <- pout_x
     prev_y <- pout_y
   }
 
-  # Final straight segment — this one gets the arrow
-  grobs[[length(grobs) + 1]] <- grid::linesGrob(
-    x = unit(mm2npc_x(c(prev_x, xmm[n])), "npc"),
-    y = unit(mm2npc_y(c(prev_y, ymm[n])), "npc"),
-    gp = gp, arrow = arrow
-  )
+  # Final straight segment to the last point
+  path_x <- c(path_x, mm2npc_x(xmm[n]))
+  path_y <- c(path_y, mm2npc_y(ymm[n]))
 
-  do.call(grobTree, grobs)
+  grid::linesGrob(
+    x = unit(path_x, "npc"),
+    y = unit(path_y, "npc"),
+    gp = gp,
+    arrow = arrow
+  )
 }
 
 

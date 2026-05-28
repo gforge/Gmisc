@@ -96,7 +96,7 @@ NEWS for the Gmisc package
 
 ## Changes for 1.9.0
 
-- Added id as a parameter to the `Transtion`-class
+- Added id as a parameter to the `Transition`-class
 - Fixed bad no. of `popViewport()` not adequately leaving the transitionClass viewport tree
 - Fixed bad `viewport` naming in `Transition`-class that was creating a conflict with multiple plots
 
@@ -550,3 +550,4 @@ NEWS for the Gmisc package
 ## Changes for 0.4.8.1
 
 - Fixed a few bugs to the `forestplot2`
+plot2`

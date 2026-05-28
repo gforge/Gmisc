@@ -67,6 +67,14 @@ be passed to this function and return a \code{grob} object.}
 \item{name}{a character identifier for the \code{grob}. Used to find the \code{grob} on the display
 list and/or as a child of another grob.}
 
+\item{badge_label}{Optional badge text to display at the top of the box.}
+
+\item{badge_position}{The position of the badge: "top" (currently only "top" supported).}
+
+\item{badge_gp}{The \code{\link[grid]{gpar}} style to apply to the badge background.}
+
+\item{badge_txt_gp}{The \code{\link[grid]{gpar}} style to apply to the badge text.}
+
 \item{...}{Passed to \code{\link[grid]{grid.draw}}}
 }
 \value{

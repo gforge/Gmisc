@@ -25,6 +25,10 @@
 #' \code{boxTapeGrob}. For examples see the vignette: \code{vignette("Grid-based_flowcharts", package = "Gmisc")}.
 #' @param name a character identifier for the \code{grob}. Used to find the \code{grob} on the display
 #'  list and/or as a child of another grob.
+#' @param badge_label Optional badge text to display at the top of the box.
+#' @param badge_position The position of the badge: "top" (currently only "top" supported).
+#' @param badge_gp The \code{\link[grid]{gpar}} style to apply to the badge background.
+#' @param badge_txt_gp The \code{\link[grid]{gpar}} style to apply to the badge text.
 #'
 #' @return A grob
 #' @export
