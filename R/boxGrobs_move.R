@@ -55,33 +55,14 @@ moveBox <- function(element,
     }
 
     if (!is.null(subelement)) {
+      has_nested_first_container <- function(x) {
+        is.list(x) && length(x) > 1 && is.list(x[[1]]) && !inherits(x[[1]], "box")
+      }
+
       # Normalize into list of paths
       paths <- if (is.list(subelement) && all(sapply(subelement, is.atomic))) subelement else list(subelement)
 
       for (path in paths) {
-        # If first level not found, try to unwrap the first element (consistent with other helpers)
-        if (is.null(element[[path[1]]])) {
-          if (length(element) > 1 &&
-            is.list(element[[1]]) &&
-            !inherits(element[[1]], "box") &&
-            (function(el, path) {
-              cur <- el
-              for (p in path) {
-                if (is.null(cur[[p]])) {
-                  return(FALSE)
-                }
-                cur <- cur[[p]]
-              }
-              TRUE
-            })(element[[1]], path)) {
-            element <- element[[1]]
-          } else {
-            stop("The subelement '", paste(path, collapse = "/"), "' was not found in the provided boxes.",
-              call. = FALSE
-            )
-          }
-        }
-
         norm_seg <- function(s) {
           if (is.numeric(s) || (is.character(s) && grepl("^[0-9]+$", s))) {
             return(as.integer(s))
@@ -120,6 +101,13 @@ moveBox <- function(element,
         }
 
         if (!exists_nested(element, path)) {
+          if (has_nested_first_container(element) && exists_nested(element[[1]], path)) {
+            target <- get_nested(element[[1]], path)
+            moved_target <- moveBox(target, x = x, y = y, space = space, just = just)
+            element[[1]] <- set_nested(element[[1]], path, moved_target)
+            next
+          }
+
           stop("The subelement '", paste(path, collapse = "/"), "' was not found in the provided boxes.",
             call. = FALSE
           )

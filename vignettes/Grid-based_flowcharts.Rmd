@@ -60,7 +60,7 @@ flowchart(
                 header_gp  = gpar(col = "#cc8800", cex = 1))),
          after = "eligible",
          name  = "excluded") |>
-  move(name = "excluded", x = .8) |>
+  move(subelement = "excluded", x = .8) |>
   connect("eligible", "excluded", type = "L",    lty_gp = excl_con_gp, arrow_size = 3,
           label = "Excluded") |>
   connect("source",   "eligible", type = "vert", lty_gp = main_con_gp, arrow_size = 3,
@@ -688,7 +688,7 @@ txtOut("Between boxes", coords(row5[[1]])$top)
 
 span <- alignVertical(reference = row5_y, from  = from, to = to, position = "top")
 span
-spreadHorizontal(row5, .from = span$from, .to = span$to)
+spreadHorizontal(row5, from = span$from, to = span$to)
 
 # Row 6: Reverse box order + center distribution
 row6_y <- unit(.10, "npc")

@@ -39,7 +39,7 @@ flowchart(source = glue("Stockholm population",
                                        )))),
          after = "eligible",
          name = "excluded") |>
-  move(name = "excluded", x = .8) |>
+  move(subelement = "excluded", x = .8) |>
   connect("source", "eligible", type = "vert") |>
   connect("eligible", "included", type = "vert") |>
   connect("included", "groups", type = "N") |>

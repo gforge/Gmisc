@@ -241,3 +241,47 @@ test_that("connect() errors on unequal list-to-list lengths", {
     "must have the same length"
   )
 })
+
+test_that("consort-style grouped pipeline with excluded branch remains stable", {
+  library(grid)
+
+  fc <- flowchart(
+    rando = "Randomised N = 100",
+    groups = list(
+      "Group1\nn = 50",
+      "Group2\nn = 50"
+    ),
+    groups2 = list(
+      "Analysed\nn = 49",
+      "Analysed\nn = 48"
+    ),
+    groups3 = list(
+      "Excluded\nn = 1",
+      "Excluded\nn = 2"
+    )
+  ) |>
+    spread(axis = "y", margin = unit(0.02, "npc")) |>
+    spread(subelement = "groups", axis = "x", margin = unit(.3, "npc")) |>
+    spread(subelement = "groups2", axis = "x", margin = unit(.1, "npc")) |>
+    spread(subelement = "groups3", axis = "x", margin = unit(.3, "npc")) |>
+    move(name = "groups2", x = .6) |>
+    connect("rando", "groups", type = "N") |>
+    connect("groups", "groups2", type = "L") |>
+    connect("groups", "groups3", type = "vert")
+
+  expect_s3_class(fc, "Gmisc_list_of_boxes")
+  expect_true(all(c("groups", "groups2", "groups3") %in% names(fc)))
+
+  conns <- attr(fc, "connections")
+  expect_type(conns, "list")
+  expect_equal(length(conns), 3)
+
+  expect_silent({
+    aligned <- fc |>
+      alignVertical("groups", subelement = "groups2")
+  })
+
+  expect_s3_class(aligned, "Gmisc_list_of_boxes")
+  expect_true(all(c("groups", "groups2", "groups3") %in% names(aligned)))
+  expect_equal(length(aligned$groups2), 2)
+})

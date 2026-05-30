@@ -24,3 +24,24 @@ testthat::test_that("alignHorizontal pipeline with subelement works end-to-end",
             )
     })
 })
+
+testthat::test_that("alignVertical accepts piped positional reference path", {
+    library(grid)
+
+    boxes <- flowchart(
+        rando = "Randomised",
+        groups = list("A", "B"),
+        groups2 = list("C", "D")
+    ) |>
+        spread(axis = "y", margin = unit(0.02, "npc")) |>
+        spread(subelement = "groups", axis = "x", margin = unit(.2, "npc")) |>
+        spread(subelement = "groups2", axis = "x", margin = unit(.2, "npc"))
+
+    expect_silent({
+        aligned <- boxes |>
+            alignVertical("groups", subelement = "groups2")
+    })
+
+    expect_s3_class(aligned, "Gmisc_list_of_boxes")
+    expect_equal(length(aligned$groups2), 2)
+})

@@ -47,6 +47,21 @@ alignVertical <- function(reference, ..., position = c("center", "top", "bottom"
     reference <- named_ref
   }
 
+  # Support piping a list into alignVertical() while passing a positional
+  # reference path, e.g. `boxes |> alignVertical("groups", subelement = "groups2")`.
+  # In this shape, the piped object is captured as `reference` and the first
+  # positional `...` argument is the intended reference.
+  if (is.list(reference) &&
+    !inherits(reference, "box") &&
+    length(boxes2align) >= 1 &&
+    is.null(names(boxes2align)) &&
+    !inherits(boxes2align[[1]], "box") &&
+    (is.atomic(boxes2align[[1]]) || is.list(boxes2align[[1]]))) {
+    ref_arg <- boxes2align[[1]]
+    boxes2align <- reference
+    reference <- ref_arg
+  }
+
   # Support piping a list into alignVertical(): if the user pipes a list as the
   # first argument and provides no '...' boxes, treat that list as the set of
   # boxes to align and use its first element as the reference.
@@ -150,6 +165,19 @@ alignHorizontal <- function(
     boxes2align$reference <- NULL
     boxes2align <- reference
     reference <- named_ref
+  }
+
+  # Support piping a list into alignHorizontal() while passing a positional
+  # reference path, e.g. `boxes |> alignHorizontal("groups", subelement = "groups2")`.
+  if (is.list(reference) &&
+    !inherits(reference, "box") &&
+    length(boxes2align) >= 1 &&
+    is.null(names(boxes2align)) &&
+    !inherits(boxes2align[[1]], "box") &&
+    (is.atomic(boxes2align[[1]]) || is.list(boxes2align[[1]]))) {
+    ref_arg <- boxes2align[[1]]
+    boxes2align <- reference
+    reference <- ref_arg
   }
 
   # Support piping a list into alignHorizontal(): if the user pipes a list as the

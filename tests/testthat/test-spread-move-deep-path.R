@@ -37,3 +37,27 @@ testthat::test_that("spread and move accept deep subelement paths", {
     # Spread: attempting to target missing path raises same informative error
     expect_error(spreadVertical(nested, subelement = c("no", "pe")), "The subelement 'no -> pe' was not found", fixed = TRUE)
 })
+
+testthat::test_that("moveBox preserves sibling branches when subelement is inside first nested container", {
+    library(grid)
+
+    wrapped <- list(
+        list(
+            groups = list(
+                boxGrob("A", x = 0.2, y = 0.8),
+                boxGrob("B", x = 0.4, y = 0.8)
+            ),
+            groups2 = list(
+                boxGrob("C", x = 0.2, y = 0.6),
+                boxGrob("D", x = 0.4, y = 0.6)
+            )
+        ),
+        excluded = list(boxGrob("Excluded", x = 0.85, y = 0.7))
+    )
+
+    moved <- moveBox(wrapped, x = 0.6, subelement = "groups2")
+
+    expect_equal(length(moved), 2)
+    expect_true(!is.null(moved$excluded))
+    expect_true(!is.null(moved[[1]]$groups2))
+})
