@@ -1,7 +1,7 @@
 ---
 title: "Building a flowchart"
 author: "Max Gordon"
-date: "11 January 2026"
+date: "28 May 2026"
 output:
   rmarkdown::html_vignette:
     toc: true
@@ -27,61 +27,190 @@ library(grid)
 
 A flowchart is a type of diagram that represents a workflow or process. In research we often want to explain how we recruited our patients, how many that were available from the start, how many that were excluded and how many were left at the final analysis. The **Gmisc** package provides a convenient set of functions for doing this using the R's built-in `grid` package with some bells and whistles. Below is a simple example that illustrates what we're aiming for.
 
-```{r, fig.height = 7, fig.width = 8}
-org_cohort <- boxGrob(glue("Stockholm population",
-                           "n = {pop}",
-                           pop = txtInt(1632798),
-                           .sep = "\n"))
-eligible <- boxGrob(glue("Eligible",
-                          "n = {pop}",
-                           pop = txtInt(10032),
-                           .sep = "\n"))
-included <- boxGrob(glue("Randomized",
-                         "n = {incl}",
-                         incl = txtInt(122),
-                         .sep = "\n"))
-grp_a <- boxGrob(glue("Treatment A",
-                      "n = {recr}",
-                      recr = txtInt(43),
-                      .sep = "\n"))
-
-grp_b <- boxGrob(glue("Treatment B",
-                      "n = {recr}",
-                      recr = txtInt(122 - 43 - 30),
-                      .sep = "\n"))
-
-excluded <- boxGrob(glue("Excluded (n = {tot}):",
-                         " - not interested: {uninterested}",
-                         " - contra-indicated: {contra}",
-                         tot = 30,
-                         uninterested = 12,
-                         contra = 30 - 12,
-                         .sep = "\n"),
-                    just = "left")
+```{r flowchart-example, fig.height = 7, fig.width = 8}
+# Shared styling
+main_box_gp <- gpar(fill = "#ddeeff", col = "#336699", lwd = 1.5)
+group_box_gp <- gpar(fill = "#e8f4e8", col = "#2e7d32", lwd = 1.5)
+excl_box_gp  <- gpar(fill = "#fff8e1", col = "#cc8800", lwd = 1.2)
+main_con_gp  <- gpar(col = "#336699", lwd = 1.5, fill = "#336699")
+excl_con_gp  <- gpar(col = "#cc8800", lwd = 1.2, fill = "#cc8800")
 
 grid.newpage()
-vert <- spreadVertical(org_cohort,
-               eligible = eligible,
-               included = included,
-               grps = list(grp_a, grp_b)) |>
-  spreadHorizontal(.subelement = "grps")
+flowchart(
+  source = boxGrob(glue("Stockholm population\nn = {pop}", pop = txtInt(1632798)),
+                   box_gp = main_box_gp),
+  eligible = boxGrob(glue("Eligible\nn = {pop}", pop = txtInt(10032)),
+                     box_gp = main_box_gp),
+  included = boxGrob(glue("Randomized\nn = {incl}", incl = txtInt(122)),
+                     box_gp = main_box_gp),
+  groups = list(
+    boxGrob(glue("Treatment A\nn = {n}", n = txtInt(43)),        box_gp = group_box_gp),
+    boxGrob(glue("Treatment B\nn = {n}", n = txtInt(122-43-30)), box_gp = group_box_gp)
+  )) |>
+  spread(axis = "y") |>
+  spread(subelement = "groups", axis = "x") |>
+  equalizeWidths(subelement = list("source", "eligible", "included")) |>
+  equalizeWidths(subelement = "groups") |>
+  insert(list(excluded = boxHeaderGrob(
+                header = glue("Excluded (n = {tot}):", tot = 30),
+                body   = glue(" - not interested: {n1}\n - contra-indicated: {n2}",
+                              n1 = 12, n2 = 18),
+                bjust      = "left",
+                box_gp     = excl_box_gp,
+                header_gp  = gpar(col = "#cc8800", cex = 1))),
+         after = "eligible",
+         name  = "excluded") |>
+  move(subelement = "excluded", x = .8) |>
+  connect("eligible", "excluded", type = "L",    lty_gp = excl_con_gp, arrow_size = 3,
+          label = "Excluded") |>
+  connect("source",   "eligible", type = "vert", lty_gp = main_con_gp, arrow_size = 3,
+          smooth = TRUE) |>
+  connect("eligible", "included", type = "vert", lty_gp = main_con_gp, arrow_size = 3,
+          smooth = TRUE) |>
+  connect("included", "groups",   type = "N",    lty_gp = main_con_gp, arrow_size = 3,
+          smooth = TRUE)
+```
 
-excluded <- moveBox(excluded,
-                    x = .8,
-                    y = coords(vert$included)$top + distance(vert$eligible, vert$included, half = TRUE, center = FALSE))
+# CONSORT-style flowchart
 
-for (i in 1:(length(vert) - 1)) {
-  from <- vert[[i]]
-  to <- vert[[i + 1]]
-  connectGrob(vert[[i]], vert[[i + 1]], type = ifelse(is.grob(to), "vert", "N")) |>
-    print()
-}
+A CONSORT diagram represents patient flow through a clinical trial. This example
+demonstrates the `flowchart()` pipe API at full scale, using named lists for parallel
+boxes, `spread()` to position each column, and pairwise `connect()` for the arms.
 
-connectGrob(vert$eligible, excluded, type = "L", label = "Excluded")
+Key points:
 
-# Print boxes
-vert
-excluded
+- `arms`, `lost`, and `analysis` are all **named lists** — `connect("arms", "lost", ...)`
+  automatically creates one connector per matching pair (same list index).
+- `type = "L"` exits the **bottom** of the assessed box and turns right, giving the
+  classic "down then right" exclusion branch instead of a direct side-exit.
+- `insert()` places the exclusion box into the list at the right vertical position;
+  `move()` shifts it into the right-hand column.
+- Badge labels extend above the box top and are not counted in the height used by
+  `spread()`, so a `margin` of 10 mm is used to leave room at the top.
+
+```{r consort_example, fig.width = 9, fig.height = 6}
+old_opts <- options(boxGrobTxtPadding = unit(3, "mm"))
+
+box_fill     <- gpar(fill = "#ddeeff", col = "#336699", lwd = 1.5)
+con_gp       <- gpar(col = "#336699", lwd = 1.5, fill = "#336699")
+side_gp      <- gpar(col = "#cc8800", lwd = 1.2, fill = "#cc8800")
+excl_fill    <- gpar(fill = "#fff8e1", col = "#cc8800", lwd = 1.2)
+badge_gp     <- gpar(fill = "#336699", col = NA)
+badge_txt_gp <- gpar(col = "white", cex = 0.65)
+
+# Arms span the inner portion; lost boxes flank outside on each side.
+# Using 0.28–0.72 keeps the arm centres far enough from the viewport edges
+# that the lost boxes' right/left edges don't cross the arm centres.
+left_from <- 0.28
+left_to   <- 0.72
+main_x    <- (left_from + left_to) / 2   # centre of the arms column (= 0.5)
+
+grid.newpage()
+flowchart(
+  assessed = boxGrob(
+    "Patients assessed for eligibility",
+    x = main_x, box_gp = box_fill,
+    badge_label = "840", badge_gp = badge_gp, badge_txt_gp = badge_txt_gp
+  ),
+  randomised = boxGrob(
+    "Randomised",
+    x = main_x, box_gp = box_fill,
+    badge_label = "126", badge_gp = badge_gp, badge_txt_gp = badge_txt_gp
+  ),
+  arms = list(
+    cast     = boxGrob("Randomised to\ncast immobilisation",
+                       box_gp = box_fill,
+                       badge_label = "62",
+                       badge_gp = badge_gp, badge_txt_gp = badge_txt_gp),
+    surgical = boxGrob("Randomised to\nsurgery",
+                       box_gp = box_fill,
+                       badge_label = "64",
+                       badge_gp = badge_gp, badge_txt_gp = badge_txt_gp)
+  ),
+  # Lost-to-follow-up: one per arm — spread from 0 to 1 so they land
+  # on the outside of each arm (left of cast, right of surgical)
+  lost = list(
+    lost_cast     = boxGrob("Lost to follow-up (n = 2)\n  1 No response\n  1 Other surgery",
+                            just = "left", box_gp = excl_fill),
+    lost_surgical = boxGrob("Lost to follow-up (n = 3)\n  2 No response\n  1 Other surgery",
+                            just = "left", box_gp = excl_fill)
+  ),
+  analysis = list(
+    analysis_cast     = boxGrob("Included in\nprimary analysis",
+                                box_gp = box_fill,
+                                badge_label = "60",
+                                badge_gp = badge_gp, badge_txt_gp = badge_txt_gp),
+    analysis_surgical = boxGrob("Included in\nprimary analysis",
+                                box_gp = box_fill,
+                                badge_label = "61",
+                                badge_gp = badge_gp, badge_txt_gp = badge_txt_gp)
+  )
+) |>
+  # Vertical spacing — extra margin to keep badges from being clipped at the top
+  spread(axis = "y", margin = unit(5, "mm")) |>
+  # Make arms and analysis boxes the same width so the same from/to spread
+  # places their centres at matching x positions (otherwise the wider arm text
+  # shifts centres relative to the narrower analysis text).
+  # Alternative: skip equalizeWidths() and explicitly align x-centres,
+  # e.g. with `align(axis = "x", reference = "analysis", subelement = "arms")`
+  # (equivalent to `alignHorizontal(reference = "analysis", subelement = "arms")`).
+  equalizeWidths(subelement = list("arms", "analysis")) |>
+  # Arms and analysis in the inner span; lost boxes spread across full width
+  # so that lost_cast lands left of cast and lost_surgical right of surgical
+  spread(axis = "x", subelement = "arms",     from = left_from, to = left_to) |>
+  spread(axis = "x", subelement = "analysis", from = left_from, to = left_to) |>
+  spread(axis = "x", subelement = "lost",     from = 0,         to = 1) |>
+  # Exclusion box: auto-positioned between assessed and randomised, then moved right
+  insert(list(excluded = boxGrob(
+    "Excluded (n = 714)\n  477 Stable ankle mortise\n   64 Incongruent ankle mortise\n   30 Previous serious trauma\n  143 Other reasons",
+    just = "left", box_gp = excl_fill
+  )), after = "assessed") |>
+  move(subelement = "excluded", x = 0.85) |>
+  # Main-flow connectors
+  connect("assessed",   "randomised", type = "v", lty_gp = con_gp,  arrow_size = 3, smooth = TRUE) |>
+  connect("randomised", "arms",       type = "N", lty_gp = con_gp,  arrow_size = 3, smooth = TRUE) |>
+  connect("arms",       "analysis",   type = "v", lty_gp = con_gp,  arrow_size = 3) |>
+  # type = "L": exits assessed's *bottom* then turns right — the "down then right" branch
+  connect("assessed", "excluded", type = "L", lty_gp = side_gp, arrow_size = 3, smooth = TRUE) |>
+  # Pairwise arm -> lost: sharp corners (smooth = FALSE) avoid a colour-transition
+  # artefact where the orange arc would diverge from the shared blue vertical path
+  # a few mm above the junction, making the line appear doubled.
+  connect("arms", "lost", type = "L", lty_gp = side_gp, arrow_size = 3, smooth = TRUE)
+
+options(old_opts)
+```
+
+# Consistent grouped widths and global text padding
+
+When building grouped flows (for example CONSORT-style diagrams), it is often useful to:
+
+- reduce text padding globally for all `boxGrob()` calls
+- make corresponding boxes in different levels share the same width
+
+The snippet below demonstrates both via `options(boxGrobTxtPadding = ...)` and `equalizeWidths()`.
+
+```{r flowchart-group-width-and-padding, fig.height = 5.5, fig.width = 8}
+old_opts <- options(boxGrobTxtPadding = unit(2, "mm"))
+
+flowchart(
+  rando = glue("Randomised\nN = 100"),
+  groups = list(
+    glue("Group 1\nn = 50"),
+    glue("Group 2\nn = 50")
+  ),
+  groups2 = list(
+    glue("Analysed\nn = 49"),
+    glue("Analysed\nn = 48")
+  )
+) |>
+  spread(axis = "y", margin = unit(0.02, "npc")) |>
+  spread(subelement = "groups", axis = "x", margin = unit(.05, "npc")) |>
+  spread(subelement = "groups2", axis = "x", margin = unit(.05, "npc")) |>
+  equalizeWidths(subelement = list("groups", "groups2")) |>
+  connect("rando", "groups", type = "N") |>
+  connect("groups", "groups2", type = "vertical")
+
+options(old_opts)
 ```
 
 # Basic components explained
@@ -121,7 +250,7 @@ boxGrob("A large\noffset\nyellow\nbox",
         box_gp = gpar(fill = "lightyellow", col = "darkblue"))
 ```
 
-# A box with proportiions
+# A box with proportions
 
 The `boxPropGrob` is for displaying proportions as the name indicates.
 
@@ -238,7 +367,7 @@ r <- boxServerGrob("Server", box_gp = gpar(fill = "#E8F0FF"))
 
 # arrange and draw
 boxes <- list(decision = d_rounded, outcomes = list(e, r)) |>
-  spreadHorizontal(.from = unit(.1, "npc"), .to = unit(.9, "npc"), .subelement = "outcomes") |>
+  spreadHorizontal(from = unit(.1, "npc"), to = unit(.9, "npc"), subelement = "outcomes") |>
   spreadVertical() |>
   print()
 
@@ -290,9 +419,9 @@ row3 <- list(
 )
 
 # Spread each row across the horizontal span
-spreadHorizontal(row1, .from = unit(.05, "npc"), .to = unit(.95, "npc"))
-spreadHorizontal(row2, .from = unit(.05, "npc"), .to = unit(.95, "npc"))
-spreadHorizontal(row3, .from = unit(.05, "npc"), .to = unit(.95, "npc"))
+spreadHorizontal(row1, from = unit(.05, "npc"), to = unit(.95, "npc"))
+spreadHorizontal(row2, from = unit(.05, "npc"), to = unit(.95, "npc"))
+spreadHorizontal(row3, from = unit(.05, "npc"), to = unit(.95, "npc"))
 ```
 
 # Connecting the boxes
@@ -364,23 +493,31 @@ odd2
 `connectGrob()` also supports connecting one box to many boxes, or many boxes to one box.
 For merging many boxes into one, `type = "fan_in_top"` distributes the attachment points evenly along the top edge of the destination box, with an optional margin.
 
-```{r connect_multi, fig.width = 9, fig.height = 4}
+```{r connect_multi, fig.width = 4, fig.height = 4}
 grid.newpage()
 
 # Three upstream boxes + one side box
-a1 <- boxGrob("A1", x = .15, y = .85, box_gp = gpar(fill = "#E6F2FF"))
-a2 <- boxGrob("A2", x = .45, y = .85, box_gp = gpar(fill = "#E6F2FF"))
-a3 <- boxGrob("A3", x = .75, y = .85, box_gp = gpar(fill = "#E6F2FF"))
-b_side <- boxGrob("B",  x = .82, y = .50, box_gp = gpar(fill = "#FFF3BF"))
+a_boxes <- paste("A", 1:3) |>
+  lapply(\(x) boxGrob(x, box_gp = gpar(fill = "#E6F2FF"))) |>
+  spreadHorizontal(from = unit(.1, "npc"), to = unit(1, "npc") - unit(1, "cm")) |>
+  alignVertical(position="top",
+                reference = unit(1, "npc")) |>
+  print()
+
+b_side <- boxGrob("B",  y = .70, box_gp = gpar(fill = "#FFF3BF")) |>
+  moveBox(x = unit(1, "npc"),
+          just = 1) |>
+  print()
 
 # Target box
-b <- boxGrob("B", x = .50, y = .18, box_gp = gpar(fill = "#D3F9D8"))
+c <- boxGrob("C", x = .50, box_gp = gpar(fill = "#D3F9D8"), width = unit(4, "cm")) |>
+  moveBox(y = unit(0, "npc"),
+          just = "bottom") |>
+  print()
 
-# Draw boxes
-a1; a2; a3; b_side; b
 
 # Many -> one: merge on top with evenly distributed attachment points + margin
-connectGrob(list(a1, a2, a3, b_side), b,
+connectGrob(c(a_boxes, list(b_side)), c,
             type = "fan_in_top",
             margin = 4)
 ```
@@ -425,22 +562,22 @@ grid.newpage()
 align_1
 alignHorizontal(reference = align_1,
                 b1, b2, b3,
-                .position = "left")
+                position = "left")
 
 align_2
 alignHorizontal(reference = align_2,
                 b1, b2, b3,
-                .position = "center",
-                .sub_position = "left")
+                position = "center",
+                sub_position = "left")
 alignHorizontal(reference = align_2,
                 b1, b2, b3,
-                .position = "left",
-                .sub_position = "right")
+                position = "left",
+                sub_position = "right")
 
 align_3
 alignHorizontal(reference = align_3,
                 b1, b2, b3,
-                .position = "right")
+                position = "right")
 ```
 
 Here are similar examples of vertical alignment:
@@ -482,17 +619,17 @@ grid.newpage()
 align_1
 alignVertical(reference = align_1,
               b1, b2, b3,
-              .position = "top")
+              position = "top")
 
 align_2
 alignVertical(reference = align_2,
               b1, b2, b3,
-              .position = "center")
+              position = "center")
 
 align_3
 alignVertical(reference = align_3,
               b1, b2, b3,
-              .position = "bottom")
+              position = "bottom")
 ```
 
 # Spreading
@@ -503,7 +640,7 @@ Numeric `.from`, `.to`, and `.margin` values are interpreted as proportions of t
 If only one of `.from` or `.to` is specified, the other defaults to the full span (`0 npc` or `1 npc`).
 The `.margin` argument adds padding at both ends of the span (also when using `.from`/`.to`).
 
-```{r horizontal_spread, fig.width = 11, fig.height = 6}
+```{r horizontal_spread, fig.width = 11, fig.height = 8}
 b1 <- boxGrob("B1", y = .85, x = .1, bjust = c(0, 0))
 b2 <- boxGrob("B2", y = .65, x = .6)
 b3 <- boxGrob("B3", y = .45, x = .6)
@@ -530,7 +667,7 @@ txtOut <- function(txt, y_top) {
 }
 
 drawRow <- function(label, row_y, spread_args = list()) {
-  row <- alignVertical(reference = row_y, b1, b2, b3, b4, .position = "top")
+  row <- alignVertical(reference = row_y, b1, b2, b3, b4, position = "top")
   txtOut(label, coords(row[[1]])$top)
   do.call(spreadHorizontal, c(list(row), spread_args))
 }
@@ -541,20 +678,20 @@ grid.newpage()
 
 drawRow("Basic (viewport)", rowYs[1])
 drawRow("From–to + margin (numeric = npc)", rowYs[2],
-        spread_args = list(.from = .2, .to = .7, .margin = .05))
-drawRow("Only .to (defaults .from = 0)", rowYs[3],
-        spread_args = list(.to = .7))
-drawRow("Only .from (defaults .to = 1)", rowYs[4],
-        spread_args = list(.from = .2))
+        spread_args = list(from = .2, to = .7, margin = .05))
+drawRow("Only to (defaults from = 0)", rowYs[3],
+        spread_args = list(to = .7))
+drawRow("Only from (defaults to = 1)", rowYs[4],
+        spread_args = list(from = .2))
 
 # Row 5: Between boxes (box-to-box span)
 row5_y <- rowYs[5]
-row5 <- alignVertical(reference = row5_y, b1, b2, b3, b4, .position = "top")
+row5 <- alignVertical(reference = row5_y, b1, b2, b3, b4, position = "top")
 txtOut("Between boxes", coords(row5[[1]])$top)
 
-span <- alignVertical(reference = row5_y, from  = from, to = to, .position = "top")
+span <- alignVertical(reference = row5_y, from  = from, to = to, position = "top")
 span
-spreadHorizontal(row5, .from = span$from, .to = span$to)
+spreadHorizontal(row5, from = span$from, to = span$to)
 
 # Row 6: Reverse box order + center distribution
 row6_y <- unit(.10, "npc")
@@ -564,13 +701,13 @@ bottom_to <- moveBox(to, x = coords(from)$left, y = 0, just = c(0, 0))
 bottom_from
 bottom_to
 
-row6 <- alignVertical(reference = bottom_from, b1, b2, b3, b4, .position = "bottom")
+row6 <- alignVertical(reference = bottom_from, b1, b2, b3, b4, position = "bottom")
 txtOut("Reverse box order + center", coords(row6[[4]])$top)
 
 spreadHorizontal(row6,
-                 .from = bottom_from,
-                 .to = bottom_to,
-                 .type = "center")
+                 from = bottom_from,
+                 to = bottom_to,
+                 type = "center")
 
 
 ```
@@ -607,23 +744,184 @@ grid.newpage()
 txtOut("Basic", b1)
 alignHorizontal(reference = b1,
                 b1, b2, b3, b4,
-                .position = "left") |>
+                position = "left") |>
   spreadVertical()
 
 txtOut("From-to", b2)
 alignHorizontal(reference = b2,
                 b1, b2, b3, b4,
-                .position = "left") |>
-  spreadVertical(.from = .2,
-                 .to = .7)
+                position = "left") |>
+  spreadVertical(from = .2,
+                 to = .7)
 
 txtOut("From-to with center and reverse the box order", b3)
 alignHorizontal(reference = b3,
                 b1, b2, b3, b4,
-                .position = "left") |>
-  spreadVertical(.from = .7,
-                 .to = .2,
-                 .type = "center")
+                position = "left") |>
+  spreadVertical(from = .7,
+                 to = .2,
+                 type = "center")
+```
+
+# Complex nested flowcharts with boxHeaderGrob
+
+The `boxHeaderGrob()` function creates boxes with centered headers and left-justified body text, perfect for flowcharts with structured information like timelines or protocols. Here's an example of a randomized trial flowchart with shared criteria and two treatment arms:
+
+```{r complex_nested, fig.width = 7, fig.height = 8}
+# Helper function to convert nested structure to grobs
+make_boxes <- function(x) {
+  if (is.list(x) && !inherits(x, "box_header")) {
+    return(lapply(x, make_boxes))
+  }
+
+  if (inherits(x, "box_header")) {
+    return(do.call(boxHeaderGrob, x))
+  }
+
+  # Simple text box fallback
+  args <- attr(x, "args")
+  if (is.null(args)) return(boxGrob(label = x))
+
+  args$label <- x
+  do.call(boxGrob, args)
+}
+
+# Define styling for different elements
+arm_a_style <- list(
+  header = gpar(fill = "#E8F5E9", col = "#2E7D32", lwd = 1.4),
+  box = gpar(fill = "#F1F8E9", col = "#43A047")
+)
+
+arm_b_style <- list(
+  header = gpar(fill = "#FFF8E1", col = "#EF6C00", lwd = 1.4),
+  box = gpar(fill = "#FFFDE7", col = "#F9A825")
+)
+
+# Build flowchart structure
+flowchart <- list(
+  # Shared inclusion criteria
+  criteria = structure(
+    list(
+      header = "Inclusion Criteria",
+      body = paste(
+        "• Adults aged 18-65",
+        "• Confirmed diagnosis",
+        "• Written informed consent",
+        "• No contraindications",
+        "• Available for 6-month follow-up",
+        sep = "\n"
+      ),
+      box_gp = gpar(fill = "#E3F2FD", col = "#1E88E5", lwd = 1.4),
+      body_gp = gpar(fontsize = 10)
+    ),
+    class = "box_header"
+  ),
+
+  # Two treatment arms
+  arms = list(
+    arm_a = list(
+      # Arm header
+      structure("Intensive Protocol", args = list(
+        box_gp = arm_a_style$header,
+        txt_gp = gpar(fontsize = 11, fontface = "bold")
+      )),
+
+      # Timeline boxes
+      structure(list(
+        header = "Week 0-1",
+        body = "• Daily sessions\n• Supervised therapy\n",
+        box_gp = arm_a_style$box,
+        body_gp = gpar(fontsize = 9.5)
+      ), class = "box_header"),
+
+      structure(list(
+        header = "Week 2-4",
+        body = "• 3× weekly sessions\n• Progressive loading",
+        box_gp = arm_a_style$box,
+        body_gp = gpar(fontsize = 9.5)
+      ), class = "box_header"),
+
+      structure(list(
+        header = "Week 5-8",
+        body = "• Home program\n• Monthly check-ins\n• Return to activity",
+        box_gp = arm_a_style$box,
+        body_gp = gpar(fontsize = 9.5)
+      ), class = "box_header")
+    ),
+
+    arm_b = list(
+      # Arm header
+      structure("Standard Care", args = list(
+        box_gp = arm_b_style$header,
+        txt_gp = gpar(fontsize = 11, fontface = "bold")
+      )),
+
+      # Timeline boxes - different schedule
+      structure(list(
+        header = "Month 0",
+        body = "• Initial consultation\n• Exercise booklet",
+        box_gp = arm_b_style$box,
+        body_gp = gpar(fontsize = 9.5)
+      ), class = "box_header"),
+
+      structure(list(
+        header = "Month 3",
+        body = "• Follow-up visit\n• Progress review",
+        box_gp = arm_b_style$box,
+        body_gp = gpar(fontsize = 9.5)
+      ), class = "box_header"),
+
+      structure(list(
+        header = "Month 6",
+        body = "• Final assessment\n• Discharge planning",
+        box_gp = arm_b_style$box,
+        body_gp = gpar(fontsize = 9.5)
+      ), class = "box_header")
+    )
+  )
+)
+
+# Convert to grobs and layout
+grid.newpage()
+boxes <- flowchart |>
+  make_boxes() |>
+  spreadVertical() |>
+  spreadHorizontal(subelement = "arms", from = 0.15, to = 0.85) |>
+  spreadVertical(subelement = c("arms", "arm_a"), from = 0.65) |>
+  spreadVertical(subelement = c("arms", "arm_b"), from = 0.65) |>
+  print()
+
+# Connect criteria to both arms
+connectGrob(boxes$criteria, boxes$arms, type = "N")
+
+# Connect timeline within each arm
+for (arm_name in names(boxes$arms)) {
+  arm_boxes <- boxes$arms[[arm_name]]
+  for (i in 2:length(arm_boxes)) {
+    connectGrob(arm_boxes[[i-1]], arm_boxes[[i]], type = "v") |> print()
+  }
+}
+```
+
+# The S3 Layout API
+
+The package provides a pipelined API where you can construct your flowchart as a single object (a list of boxes with connection attributes) and then print/plot it. This reduces the need for manual loops and `print()` calls for connectors.
+
+```{r s3_api_example, fig.height=8, fig.width=6, eval=FALSE}
+grid.newpage()
+
+# Define the nodes
+b1 <- boxGrob("Start", y = 0.8)
+b2 <- boxGrob("Process", y = 0.5)
+b3 <- boxGrob("End", y = 0.2)
+
+# Pipeline: list -> align -> connect -> print
+list(start = b1, process = b2, end = b3) |>
+  align(axis = "y") |>
+  spread(axis = "x") |>
+  connect("start", "process", type = "horizontal") |>
+  connect("process", "end", type = "horizontal") |>
+  print()
 ```
 
 # Math expressions in boxes
@@ -643,32 +941,33 @@ grid.newpage()
 # Expressions #
 ###############
 # Font style
-alignVertical(
-  reference = 1,
-  .position = "top",
-  boxGrob(expression(bold("Bold text"))),
-  boxGrob(expression(italic("Italics text"))),
-  boxGrob(expression(paste("Mixed: ", italic("Italics"), " and ", bold("bold"))))) |>
+list(expression(bold("Bold text")),
+     expression(italic("Italics text")),
+     expression(paste("Mixed: ", italic("Italics"), " and ", bold("bold")))) |>
+  lapply(boxGrob) |>
+  alignVertical(reference = unit(1, "npc"),
+                position = "top") |>
   spreadHorizontal()
 
 # Math
-alignVertical(
-  reference = .5,
-  boxGrob(expression(paste("y = ", beta[0], " + ", beta[1], X[1], " + ", beta[2], X[2]^2))),
-  boxGrob(expression(sum(n, i == 1, x) %subset% " \u211D")),
-  boxGrob(expression(beta ~~ gamma ~~ Gamma))) |>
+list(expression(paste("y = ", beta[0], " + ", beta[1], X[1], " + ", beta[2], X[2]^2)),
+     expression(paste(hat(mu) == sum(frac(x[i], n), i == 1, n))),
+     expression(paste(int(a, b, f(x) * dx) == F(b) - F(a)))) |>
+  lapply(boxGrob) |>
+  alignVertical(reference = unit(0.5, "npc"),
+                position = "center") |>
   spreadHorizontal()
 
 ##########
 # Quotes #
 ##########
 a = 5
-alignVertical(
-  reference = 0,
-  .position = "bottom",
-  bquote(alpha == theta[1] * .(a) + ldots) |> boxGrob(),
-  paste("argument", sQuote("x"), "\nmust be non-zero") |> boxGrob()) |>
-  spreadHorizontal(.from = .2, .to = .8)
+list(bquote(alpha == theta[1] * .(a) + ldots),
+     paste("argument", sQuote("x"), "\nmust be non-zero")) |>
+  lapply(boxGrob) |>
+  alignVertical(reference = unit(0, "npc"),
+                position = "bottom") |>
+  spreadHorizontal(from = .2, to = .8)
 ```
 
 See the `plotmath` help file for more details.
@@ -740,6 +1039,77 @@ pushViewport(viewport(x = 0, y = .6, just = "left", width = .4, height = .4, ang
 grid.rect(gp = gpar(fill = "lightblue")) # A translucent box to indicate the new viewport
 grid.draw(lg)
 popViewport()
+```
+
+# A complex example
+
+Here is a more complex example demonstrating the power of the grid-based flowcharts. This example uses `flowchart`, `spread`, `align` and `connect` functions to create a detailed clinical study flowchart.
+
+```{r complex_example, fig.height = 9, fig.width = 9}
+# Define the boxes
+org_cohort <- glue("Proximal humerus fracture",
+                   "  - \u2265 18 years",
+                   "  - \u2264 4 weeks of trauma",
+                   "  - Not pathological",
+                   .sep = "\n") |>
+  boxGrob(just = "left",
+          box_gp = gpar(fill = "#E3F2FD"))
+
+surgery <- glue("Surgery",
+                "  - Direct (\u2248 4%)",
+                "  - Delayed (\u2248 4%)",
+                .sep = "\n") |>
+  boxGrob(just = "left",
+          box_gp = gpar(fill = "#F8BBD0"))
+
+randomize <- boxGrob("Non-surgical\nRandomise",
+                     box_gp = gpar(fill = "#FFF3E0"))
+
+treatments <- list(early = boxGrob("Early rehab",
+                                   box_gp = gpar(fill = "#DCEDC8")),
+                   late = boxGrob("Late rehab",
+                                  box_gp = gpar(fill = "#DCEDC8")),
+                   obs = boxGrob("Observation",
+                                 box_gp = gpar(fill = "#E0E0E0")))
+
+early_followup <- glue("Early follow-up",
+                       "  - 2 weeks [PNRS]",
+                       "  - 4 weeks [PNRS]",
+                       .sep = "\n") |>
+  boxGrob(just = "left",
+          box_gp = gpar(fill = "#E0F7FA"))
+
+late_followup <- glue("Late follow-up",
+                      "  - 2-10 months (random) [OSS, PNRS]",
+                      "  - 1 year [OSS, PNRS, accelerometer]",
+                      "  - 2 years [OSS, PNRS]",
+                      "  - 5 years [OSS, PNRS]",
+                      .sep = "\n") |>
+  boxGrob(just = "left",
+                       box_gp = gpar(fill = "#E0F7FA"))
+
+# Create the flowchart
+grid.newpage()
+flowchart(start = org_cohort,
+          step_1 = list(surgery = surgery,
+                        `non-surgical` = randomize),
+          treatment = treatments,
+          early_followup = early_followup,
+          followup = late_followup) |>
+  spread(axis = "y") |>
+  spread(axis = "x", subelement = "step_1") |>
+  spread(axis = "x", subelement = "treatment", from = 0.35) |>
+  align(axis = "x",
+        reference = c("treatment", "late"),
+        subelement = c("step_1", "non-surgical")) |>
+  connect(from = "start", to = "step_1", type = "N") |>
+  connect(from = "step_1$non-surgical", to = "treatment", type = "N") |>
+  connect(from = "treatment", to = "early_followup", type = "fan_in_center") |>
+  connect(from = "early_followup", to = "followup", type = "v") |>
+  connect(from = "early_followup", to = "step_1$surgery", type = "Z",
+          label = "Crossover\nto surgery") |>
+  connect(from = "step_1$surgery", to = "followup", type = "L") |>
+  print()
 ```
 
 # Tips for debugging

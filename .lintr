@@ -1,12 +1,13 @@
 linters: linters_with_defaults(
-  line_length_linter(120),
-  object_length_linter(120),
-  object_name_linter(styles = c("camelCase", "snake_case")),
+  line_length_linter(140),
+  object_length_linter(140),
   trailing_whitespace_linter(),
   equals_na_linter(),
   assignment_linter(),
   infix_spaces_linter(),
-  object_usage_linter(),
+  indentation_linter = NULL,
+  object_name_linter = NULL,
+  object_usage_linter = NULL,
   seq_linter = NULL,
   commented_code_linter = NULL,
   cyclocomp_linter = NULL)

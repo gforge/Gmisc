@@ -27,7 +27,7 @@ mtcars_with_labels <- mtcars \%>\%
 Hmisc::label(mtcars_with_labels$mpg)
 }
 \seealso{
-Other Hmisc helpers: 
-\code{\link{set_column_units}()}
+Other Hmisc helpers:
+\code{\link[=set_column_units]{set_column_units()}}
 }
 \concept{Hmisc helpers}

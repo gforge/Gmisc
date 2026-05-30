@@ -7,6 +7,7 @@
 #' @param ... Ignored argument
 #' @export
 print.Gmisc_list_of_boxes <- function(x, ...) {
+  # Draw boxes
   for (box in x) {
     if (is.grob(box)) {
       grid.draw(box)
@@ -14,9 +15,21 @@ print.Gmisc_list_of_boxes <- function(x, ...) {
       for (i in 1:length(box)) {
         print(box[[i]])
       }
+    } else if (is.list(box)) {
+      # treat plain lists containing boxes as nested Gmisc_list_of_boxes for printing
+      print(prExtendClass(box, "Gmisc_list_of_boxes"))
     } else {
       stop("Element is not a grob or a Gmisc_list_of_boxes", class(box))
     }
   }
+
+  # Draw stored connections
+  conns <- attr(x, "connections")
+  if (!is.null(conns)) {
+    for (cg in conns) {
+      grid.draw(cg)
+    }
+  }
+
   invisible(x)
 }

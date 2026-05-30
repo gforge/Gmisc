@@ -85,11 +85,11 @@ by(my_var,
 \seealso{
 \code{\link{getDescriptionStatsBy}}
 
-Other descriptive functions: 
-\code{\link{describeMean}()},
-\code{\link{describeMedian}()},
-\code{\link{describeProp}()},
-\code{\link{getDescriptionStatsBy}()},
-\code{\link{getPvalWilcox}()}
+Other descriptive functions:
+\code{\link[=describeMean]{describeMean()}},
+\code{\link[=describeMedian]{describeMedian()}},
+\code{\link[=describeProp]{describeProp()}},
+\code{\link[=getDescriptionStatsBy]{getDescriptionStatsBy()}},
+\code{\link[=getPvalWilcox]{getPvalWilcox()}}
 }
 \concept{descriptive functions}

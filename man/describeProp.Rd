@@ -67,11 +67,11 @@ the number and the percentage
 describeProp(factor(sample(50, x = c("A", "B", NA), replace = TRUE)))
 }
 \seealso{
-Other descriptive functions: 
-\code{\link{describeFactors}()},
-\code{\link{describeMean}()},
-\code{\link{describeMedian}()},
-\code{\link{getDescriptionStatsBy}()},
-\code{\link{getPvalWilcox}()}
+Other descriptive functions:
+\code{\link[=describeFactors]{describeFactors()}},
+\code{\link[=describeMean]{describeMean()}},
+\code{\link[=describeMedian]{describeMedian()}},
+\code{\link[=getDescriptionStatsBy]{getDescriptionStatsBy()}},
+\code{\link[=getPvalWilcox]{getPvalWilcox()}}
 }
 \concept{descriptive functions}

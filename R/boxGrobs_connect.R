@@ -31,6 +31,10 @@
 #' - `"fan_in_top"`: many-to-one connector merging onto the *top edge* of the end box
 #'   Attachment points are evenly distributed along the edge (with optional `margin`),
 #'   and all connectors share a common bend height.
+#' - `"fan_in_center"`: many-to-one connector that aggregates stems onto a horizontal
+#'   bus (shared at the computed bend height) and then a single centered trunk with an
+#'   arrow that points to the *center* of the end box. Useful when you want a single
+#'   arrow to represent the merged flow (e.g. a middle trunk bus).
 #'
 #' For `type = "N"` and `type = "fan_in_top"` with multi-box connections, a shared
 #' bend position is computed so that the horizontal segment aligns visually across
@@ -58,11 +62,19 @@
 #'   `options(connectGrob = ...)`.
 #' @param arrow_obj Arrow specification created with [grid::arrow()]. Can also be set globally via
 #'   `options(connectGrobArrow = ...)`.
+#' @param arrow_size Optional numeric (mm). When supplied, overrides the arrow head length in
+#'   `arrow_obj` without requiring the user to rebuild the entire arrow specification.
 #' @param split_pad Padding around the shared bend point for multi-box connections.
 #'   Numeric values are interpreted as millimeters.
 #' @param margin For `type = "fan_in_top"`, the margin applied at the left and right ends of the
 #'   end box top edge before distributing attachment points. Numeric values are interpreted
 #'   as millimeters.
+#' @param smooth Logical; if `TRUE` interior orthogonal corners are replaced by smooth
+#'   Bézier arcs. Default `FALSE` preserves the existing sharp-corner behaviour.
+#' @param corner_radius Radius of the rounded corner arc when `smooth = TRUE`.
+#'   A [grid::unit()] or numeric (interpreted as millimeters). Default `unit(3, "mm")`.
+#' @param side For `type = "side"`, which side of the start box to exit from.
+#'   `"auto"` (default) picks the side that faces the end box.
 #' @param label Optional text label for one-to-one connectors (e.g. `"yes"` / `"no"`).
 #'   Only supported when both `start` and `end` are single boxes.
 #' @param label_gp A [grid::gpar()] controlling label appearance.
@@ -85,12 +97,16 @@
 connectGrob <- function(
   start,
   end,
-  type = c("vertical", "horizontal", "L", "-", "Z", "N", "fan_in_top"),
+  type = c("vertical", "horizontal", "L", "-", "Z", "N", "fan_in_top", "fan_in_center", "side"),
   subelmnt = c("right", "left"),
   lty_gp = getOption("connectGrob", default = gpar(fill = "black")),
   arrow_obj = getOption("connectGrobArrow", default = arrow(ends = "last", type = "closed")),
+  arrow_size = NULL,
   split_pad = unit(2, "mm"),
   margin = unit(2, "mm"),
+  smooth = FALSE,
+  corner_radius = unit(3, "mm"),
+  side = c("auto", "left", "right"),
   label = NULL,
   label_gp = grid::gpar(cex = 0.9),
   label_bg_gp = grid::gpar(fill = "white", col = NA),
@@ -100,42 +116,99 @@ connectGrob <- function(
 ) {
   type <- match.arg(type)
   label_pos <- match.arg(label_pos)
+  side <- match.arg(side)
 
-  if (prIsBoxList(start) && prIsBoxList(end)) {
-    stop("Both 'start' and 'end' cannot be lists (not implemented).", call. = FALSE)
+  if (!is.null(arrow_size)) {
+    ends_map <- c("1" = "first", "2" = "last", "3" = "both")
+    type_map <- c("1" = "open", "2" = "closed")
+    arrow_obj <- arrow(
+      ends = ends_map[as.character(arrow_obj$ends)],
+      type = type_map[as.character(arrow_obj$type)],
+      angle = arrow_obj$angle,
+      length = unit(arrow_size, "mm")
+    )
   }
 
-  # Labels currently supported only for one-to-one
-  if (!is.null(label) && (prIsBoxList(start) || prIsBoxList(end))) {
-    stop("'label' is only supported for one-to-one connections.", call. = FALSE)
-  }
+  # Normalize possible single-element wrapped lists so strategy detection
+  # correctly identifies lists of boxes (one-to-many / many-to-one).
+  start <- prFlattenBoxListIfNeeded(start)
+  end <- prFlattenBoxListIfNeeded(end)
 
-  if (prIsBoxList(start)) {
-    if (type == "fan_in_top") {
-      return(prConnectManyToOneFanTop(
-        starts = start,
-        end = end,
-        subelmnt = subelmnt,
-        lty_gp = lty_gp,
-        arrow_obj = arrow_obj,
-        margin = margin,
-        split_pad = split_pad
-      ))
+  # Also unwrap a first nested container when it clearly contains boxes so that
+  # the connector functions operate on the inner boxes rather than an outer
+  # grouping wrapper (this handles cases produced by spread/align pipelines).
+  start <- prMaybeUnwrapFirstContainerBoxes(start)
+
+  # If the *original* end is a list of group containers (each a list of boxes),
+  # the intention is usually to connect to the group's first element (header).
+  # Convert each container to its first boxed element *before* any unwrapping
+  # logic runs so we don't accidentally drop other groups.
+  if (is.list(end) && length(end) > 0 && all(vapply(end, is.list, logical(1)))) {
+    is_container_of_boxes <- vapply(end, function(el) {
+      length(el) > 0 && all(vapply(el, inherits, logical(1), "box"))
+    }, logical(1))
+    if (all(is_container_of_boxes)) {
+      end <- lapply(end, function(el) el[[1]])
     }
-    return(prConnectManyToOne(start, end, type, subelmnt, lty_gp, arrow_obj, split_pad = split_pad))
   }
 
-  if (prIsBoxList(end)) {
-    return(prConnectOneToMany(start, end, type, subelmnt, lty_gp, arrow_obj, split_pad = split_pad))
+  end <- prMaybeUnwrapFirstContainerBoxes(end)
+
+  # Ensure elements are normalized so single-element wrappers are unwrapped
+  # (e.g., list(box, list(box), box) -> list(box, box, box)).
+  start <- prNormalizeBoxElements(start)
+  end <- prNormalizeBoxElements(end)
+
+  # Collapse single-element lists containing a box into the bare box so that
+  # passing `list(box)` does not accidentally make both `start` and `end` be
+  # lists (which is an unsupported many-to-many case).
+  start <- prCollapseSingleBoxList(start)
+  end <- prCollapseSingleBoxList(end)
+
+
+  # If any top-level elements of `end` are containers (lists) take their
+  # first element as the representative header when that first element is a
+  # box. This is a permissive rule that handles mixed inputs produced by
+  # spread/align pipelines without failing.
+  # Only treat a *multi-element* list as a set of groups; if `end` is a
+  # single-element list (e.g., a boxed element wrapped as a list) we should
+  # not unwrap it here as that is used by other connector strategies.
+  if (!inherits(end, "box") && is.list(end) && length(end) > 1 && any(vapply(end, is.list, logical(1)))) {
+    end <- lapply(end, function(el) {
+      if (is.list(el) && length(el) > 0 && inherits(el[[1]], "box")) {
+        return(el[[1]])
+      }
+      el
+    })
   }
 
-  prConnect1(
+  # If we are connecting *many-to-one* (multiple starts to a single end) it is
+  # common for layout pipelines to produce a container-like structure for the
+  # end (for example when using `.subelement` or grouped spreads). If such a
+  # container accidentally reached this point, attempt to find the most
+  # appropriate boxed element to use as the end target (prefer the first
+  # boxed child). This keeps many-to-one strategies robust to mixed inputs.
+  if ((prIsBoxList(start) || inherits(start, "Gmisc_list_of_boxes")) && !inherits(end, "box") && is.list(end) && !prIsBoxList(end)) {
+    box_pos <- which(vapply(end, inherits, logical(1), "box"))
+    if (length(box_pos) >= 1) {
+      end <- end[[box_pos[1]]]
+    }
+  }
+
+
+  strategy <- prGetConnectorStrategy(start, end, type)
+  prCalculateConnector(
+    strategy,
     start = start,
     end = end,
-    type = type,
     subelmnt = subelmnt,
     lty_gp = lty_gp,
     arrow_obj = arrow_obj,
+    split_pad = split_pad,
+    margin = margin,
+    smooth = smooth,
+    corner_radius = corner_radius,
+    side = side,
     label = label,
     label_gp = label_gp,
     label_bg_gp = label_bg_gp,
@@ -174,9 +247,12 @@ plot.connect_boxes <- print.connect_boxes
 
 
 #' @rdname connect
+#' @param recording Passed to [grid::grid.draw()] when rendering each element in
+#'  the list. Defaults to `TRUE` (record drawing for later replay).
 #' @export
-print.connect_boxes_list <- function(x, ...) {
-  for (g in x) grid.draw(g, ...)
+#' @importFrom grid grid.draw
+grid.draw.connect_boxes_list <- function(x, recording = TRUE) {
+  for (g in x) grid.draw(g, recording = recording)
   # If labels attached, draw them on top
   labels <- attr(x, "connector_labels")
   if (!is.null(labels)) {
@@ -186,9 +262,15 @@ print.connect_boxes_list <- function(x, ...) {
     if (is.null(bg_gp)) bg_gp <- gpar(fill = "white", col = NA)
     off <- attr(x, "connector_label_offset")
     if (is.null(off)) off <- list(x_offset = unit(0, "mm"), y_offset = unit(0, "mm"))
-    labelConnector(x, labels = labels, x_offset = off$x_offset, y_offset = off$y_offset, gp = gp, bg_gp = bg_gp)
+    lbl_obj <- labelConnector(x, labels = labels, x_offset = off$x_offset, y_offset = off$y_offset, gp = gp, bg_gp = bg_gp)
+    print(lbl_obj)
   }
+}
 
+#' @rdname connect
+#' @export
+print.connect_boxes_list <- function(x, ...) {
+  grid.draw(x)
   invisible(x)
 }
 

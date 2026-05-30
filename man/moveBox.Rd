@@ -10,7 +10,7 @@ moveBox(
   y = NULL,
   space = c("absolute", "relative"),
   just = NULL,
-  .subelement = NULL
+  subelement = NULL
 )
 }
 \arguments{
@@ -28,9 +28,10 @@ moveBox(
 existing justification by using \code{NA}, e.g. \code{c(NA, 'top')}, (2) if you specify only one string
 and that string is either \code{top} or \code{bottom} it will assume vertical justification.}
 
-\item{.subelement}{If a \code{list} of boxes is provided, this can be a name, index, or a vector of names/indices
-to target a single nested element to move; the function will return the original list with the
-targeted element replaced by its moved version.}
+\item{subelement}{If a \code{list} of boxes is provided, this can be a name, index, a deep path (e.g. \code{c("detail", 1)}) or a
+vector of names/indices to target a single nested element to move. You can also pass
+multiple targets as a list of paths (e.g. \code{list(c("detail", 1), c("followup", 1))}).
+The function will return the original list with the targeted element(s) replaced by their moved version(s).}
 }
 \value{
 The element with updated viewport and coordinates
@@ -52,8 +53,10 @@ moveBox(box, x = -.2, space = "relative") # Move to the left
 popViewport()
 
 
+## Advanced example (skipped during R CMD check)
+## Not run:
 # Advanced example: create a nested list of treatment boxes, spread them horizontally,
-# then move a single nested element (`Ibuprofen`) using `.subelement` via a pipe.
+# then move a single nested element (`Ibuprofen`) using `subelement` via a pipe.
 pushViewport(viewport(y = 0.35, height = unit(.7, "npc") - unit(2, "mm")))
 grid.rect(gp = gpar(col = "lightgreen"))
 
@@ -71,33 +74,40 @@ boxes <- list(
     ) |>
         boxGrob(just = "left")
 ) |>
-    alignHorizontal(.position = "center") |>
+    alignHorizontal(position = "center") |>
     spreadVertical() |>
     spreadHorizontal(
-        .from = unit(0.1, "npc"),
-        .to = unit(0.9, "npc"),
-        .type = "center",
-        .subelement = "treatment"
+        from = unit(0.1, "npc"),
+        to = unit(0.9, "npc"),
+        type = "center",
+        subelement = "treatment"
     ) |>
     moveBox(
         y = 0.1,
         space = "relative",
-        .subelement = c("treatment", "Ibuprofen")
+        subelement = c("treatment", "Ibuprofen")
     )
 
 boxes
 connectGrob(boxes$population, boxes$treatment, type = "N")
 connectGrob(boxes$treatment, boxes$followup, type = "N")
+## End(Not run)
 }
 \seealso{
-Other flowchart components: 
-\code{\link{align}},
-\code{\link{boxGrob}()},
-\code{\link{boxPropGrob}()},
+Other flowchart components:
+\code{\link[=align]{align()}},
+\code{\link[=append]{append()}},
+\code{\link[=boxGrob]{boxGrob()}},
+\code{\link[=boxHeaderGrob]{boxHeaderGrob()}},
+\code{\link[=boxPropGrob]{boxPropGrob()}},
 \code{\link{boxShapes}},
-\code{\link{connectGrob}()},
-\code{\link{coords}()},
-\code{\link{distance}()},
-\code{\link{spread}}
+\code{\link[=connectGrob]{connectGrob()}},
+\code{\link[=coords]{coords()}},
+\code{\link[=distance]{distance()}},
+\code{\link[=equalizeWidths]{equalizeWidths()}},
+\code{\link[=flowchart]{flowchart()}},
+\code{\link[=insert]{insert()}},
+\code{\link[=move]{move()}},
+\code{\link[=spread]{spread()}}
 }
 \concept{flowchart components}

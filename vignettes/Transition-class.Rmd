@@ -94,7 +94,7 @@ transitions <- table(data$Charnley_class, data$Charnley_class_1yr) %>%
 transitions$render()
 ```
 
-Adding customizations are rather straight forward by setting the different field arguments:
+Adding customizations is rather straightforward by setting the different field arguments:
 
 ```{r}
 transitions <- table(data$Charnley_class, data$Charnley_class_1yr) %>%

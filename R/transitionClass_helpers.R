@@ -126,8 +126,8 @@ prTcPlotArrows <- function(trnstn_set,
         # Add line width addition if it is a background line
         if (!is.na(add_width)) {
           if (is.unit(add_width)) {
-            a_width <- a_width + convertY(add_width, unitTo = "npc", valueOnly = TRUE)
-            adjusted_lwd <- adjusted_lwd + convertY(add_width, unitTo = "npc", valueOnly = TRUE)
+            a_width <- a_width + prGetNpcValue(add_width, "y")
+            adjusted_lwd <- adjusted_lwd + prGetNpcValue(add_width, "y")
           } else {
             a_width <- a_width * add_width
             adjusted_lwd <- adjusted_lwd * add_width
@@ -226,8 +226,8 @@ prTcValidateAndPrepClr <- function(value, no_cols, no_rows, is3D) {
     if (NROW(value[[i]]) != no_rows[i]) {
       if (NROW(value[[i]]) == 1) {
         if (is.matrix(value[[i]]) &&
-            NCOL(value[[i]]) <= 2 &&
-            is3D) {
+          NCOL(value[[i]]) <= 2 &&
+          is3D) {
           value[[i]] <-
             matrix(value[[i]], nrow = no_rows[i], ncol = 2, byrow = TRUE)
         } else if (length(value[[i]]) == 1) {
@@ -319,12 +319,12 @@ prTcMatchClr <- function(add, org, no_cols, no_rows, is3D) {
             add <-
               list(
                 cbind(matrix(add[1, ],
-                             nrow = no_rows[1],
-                             ncol = 2
+                  nrow = no_rows[1],
+                  ncol = 2
                 )),
                 cbind(matrix(add[1, ],
-                             nrow = no_rows[1],
-                             ncol = 2
+                  nrow = no_rows[1],
+                  ncol = 2
                 ))
               )
           } else {
@@ -340,19 +340,23 @@ prTcMatchClr <- function(add, org, no_cols, no_rows, is3D) {
       }
     } else if (is.vector(add)) {
       if (length(add) == 2 && is3D) {
-        add <- lapply(1:2, function(col) cbind(rep(add[1], no_rows[col]),
-                                               rep(add[2], no_rows[col])))
+        add <- lapply(1:2, function(col) {
+          cbind(
+            rep(add[1], no_rows[col]),
+            rep(add[2], no_rows[col])
+          )
+        })
       } else if (length(add) == 1) {
         if (is3D) {
           add <-
             list(
               matrix(add,
-                     nrow = no_rows[1],
-                     ncol = 2
+                nrow = no_rows[1],
+                ncol = 2
               ),
               matrix(add,
-                     nrow = no_rows[2],
-                     ncol = 2
+                nrow = no_rows[2],
+                ncol = 2
               )
             )
         } else {
@@ -387,8 +391,8 @@ prTcMatchClr <- function(add, org, no_cols, no_rows, is3D) {
     # all colors
     if (is.matrix(add)) {
       if (ncol(add) != no_cols ||
-          any(nrow(add) != unique(no_rows)) ||
-          ((length(dim(add)) == 3) == is3D)) {
+        any(nrow(add) != unique(no_rows)) ||
+        ((length(dim(add)) == 3) == is3D)) {
         stop("Can't add the color matrix as suggested since the dimensions don't match")
       }
 
@@ -404,7 +408,7 @@ prTcMatchClr <- function(add, org, no_cols, no_rows, is3D) {
     } else if (inherits(add, "gpar")) {
       stop("Adding gpar after-a-fact is not supported")
     } else if (is.list(add) &&
-               length(add) != length(no_cols)) {
+      length(add) != length(no_cols)) {
       stop("The list is not of the same length as the number of columns")
     }
 
@@ -430,8 +434,10 @@ prTcMatchClr <- function(add, org, no_cols, no_rows, is3D) {
       add <- list(rep(list(add), tail(no_rows, 1)))
     } else if (is.list(add)) {
       if (length(add) != 1) {
-        stop("Invalid color list - expecting a list with 1 column",
-             " got one with ", length(add), " columns")
+        stop(
+          "Invalid color list - expecting a list with 1 column",
+          " got one with ", length(add), " columns"
+        )
       }
     } else if (is.matrix(add)) {
       if (ncol(add) == 2 && is3D) {
@@ -441,8 +447,8 @@ prTcMatchClr <- function(add, org, no_cols, no_rows, is3D) {
       } else if (length(add) == 1) {
         if (is3D) {
           add <- list(cbind(matrix(add[1, ],
-                                   nrow = tail(no_rows, 1),
-                                   ncol = 2
+            nrow = tail(no_rows, 1),
+            ncol = 2
           )))
         } else {
           add <- list(rep(add[1, ], tail(no_rows, 1)))
@@ -452,13 +458,16 @@ prTcMatchClr <- function(add, org, no_cols, no_rows, is3D) {
       }
     } else if (is.vector(add)) {
       if (length(add) == 2 && is3D) {
-        add <- list(cbind(rep(add[1], tail(no_rows, 1)),
-                          rep(add[2], tail(no_rows, 1))))
+        add <- list(cbind(
+          rep(add[1], tail(no_rows, 1)),
+          rep(add[2], tail(no_rows, 1))
+        ))
       } else if (length(add) == 1) {
         if (is3D) {
           add <- list(matrix(add,
-                             nrow = tail(no_rows, 1),
-                             ncol = 2))
+            nrow = tail(no_rows, 1),
+            ncol = 2
+          ))
         } else {
           add <- list(rep(add, tail(no_rows, 1)))
         }
