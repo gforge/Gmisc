@@ -71,11 +71,11 @@ describeMean(c(1:10, NA), useNA = "no")
 \seealso{
 \code{\link{getDescriptionStatsBy}}
 
-Other descriptive functions: 
-\code{\link{describeFactors}()},
-\code{\link{describeMedian}()},
-\code{\link{describeProp}()},
-\code{\link{getDescriptionStatsBy}()},
-\code{\link{getPvalWilcox}()}
+Other descriptive functions:
+\code{\link[=describeFactors]{describeFactors()}},
+\code{\link[=describeMedian]{describeMedian()}},
+\code{\link[=describeProp]{describeProp()}},
+\code{\link[=getDescriptionStatsBy]{getDescriptionStatsBy()}},
+\code{\link[=getPvalWilcox]{getPvalWilcox()}}
 }
 \concept{descriptive functions}

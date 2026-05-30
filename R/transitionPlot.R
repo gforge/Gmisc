@@ -375,10 +375,10 @@ transitionPlot <- function(transition_flow,
   vp_depth <- 1
   # Add plot margin
   prPushMarginViewport(
-    bottom = convertY(mar[1], unitTo = "npc"),
-    left = convertX(mar[2], unitTo = "npc"),
-    top = convertY(mar[3], unitTo = "npc"),
-    right = convertX(mar[4], unitTo = "npc"),
+    bottom = unit(prGetNpcValue(mar[1], "y"), "npc"),
+    left = unit(prGetNpcValue(mar[2], "x"), "npc"),
+    top = unit(prGetNpcValue(mar[3], "y"), "npc"),
+    right = unit(prGetNpcValue(mar[4], "x"), "npc"),
     "main_margins"
   )
 
@@ -410,9 +410,7 @@ transitionPlot <- function(transition_flow,
     right_label <- textGrob(box_label[2],
       gp = gpar(cex = box_label_cex)
     )
-    label_height <- convertY(max(grobHeight(left_label), grobHeight(right_label)),
-      unitTo = "npc", valueOnly = TRUE
-    )
+    label_height <- prGetNpcValue(max(grobHeight(left_label), grobHeight(right_label)), "y")
     # Add ygjp space and some margin
     label_height <- unit(label_height * 2 + label_height * 0.1, "npc")
     width <- list(

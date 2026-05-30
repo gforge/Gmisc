@@ -22,7 +22,9 @@ setConnectorLabels(
 
 \item{bg_gp}{A `gpar` for label background.}
 
-\item{x_offset, y_offset}{Unit offsets for label placement.}
+\item{x_offset}{Unit offsets for label placement.}
+
+\item{y_offset}{Unit offsets for label placement.}
 }
 \value{
 The connector object with attributes set (invisibly).

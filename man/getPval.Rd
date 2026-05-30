@@ -76,11 +76,11 @@ getPvalWilcox(
 )
 }
 \seealso{
-Other descriptive functions: 
-\code{\link{describeFactors}()},
-\code{\link{describeMean}()},
-\code{\link{describeMedian}()},
-\code{\link{describeProp}()},
-\code{\link{getDescriptionStatsBy}()}
+Other descriptive functions:
+\code{\link[=describeFactors]{describeFactors()}},
+\code{\link[=describeMean]{describeMean()}},
+\code{\link[=describeMedian]{describeMedian()}},
+\code{\link[=describeProp]{describeProp()}},
+\code{\link[=getDescriptionStatsBy]{getDescriptionStatsBy()}}
 }
 \concept{descriptive functions}

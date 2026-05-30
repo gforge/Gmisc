@@ -9,8 +9,10 @@ moveBox(box, x = -.2, space = "relative") # Move to the left
 popViewport()
 
 
+## Advanced example (skipped during R CMD check)
+## Not run:
 # Advanced example: create a nested list of treatment boxes, spread them horizontally,
-# then move a single nested element (`Ibuprofen`) using `.subelement` via a pipe.
+# then move a single nested element (`Ibuprofen`) using `subelement` via a pipe.
 pushViewport(viewport(y = 0.35, height = unit(.7, "npc") - unit(2, "mm")))
 grid.rect(gp = gpar(col = "lightgreen"))
 
@@ -28,20 +30,21 @@ boxes <- list(
     ) |>
         boxGrob(just = "left")
 ) |>
-    alignHorizontal(.position = "center") |>
+    alignHorizontal(position = "center") |>
     spreadVertical() |>
     spreadHorizontal(
-        .from = unit(0.1, "npc"),
-        .to = unit(0.9, "npc"),
-        .type = "center",
-        .subelement = "treatment"
+        from = unit(0.1, "npc"),
+        to = unit(0.9, "npc"),
+        type = "center",
+        subelement = "treatment"
     ) |>
     moveBox(
         y = 0.1,
         space = "relative",
-        .subelement = c("treatment", "Ibuprofen")
+        subelement = c("treatment", "Ibuprofen")
     )
 
 boxes
 connectGrob(boxes$population, boxes$treatment, type = "N")
 connectGrob(boxes$treatment, boxes$followup, type = "N")
+## End(Not run)

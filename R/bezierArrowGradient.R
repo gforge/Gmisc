@@ -256,6 +256,19 @@ bezierArrowGradient <- function(x = c(0.2, .7, .3, .9),
     bp <- lenCalc(bp)
   }
 
+  # Defensive cleanup: ensure bp$x and bp$y are numeric and free of NAs
+  bp$x <- as.numeric(bp$x)
+  bp$y <- as.numeric(bp$y)
+  valid_idx <- which(!is.na(bp$x) & !is.na(bp$y))
+  if (length(valid_idx) < 2) {
+    warning("Gradient aborted: insufficient valid bezier points after cleanup")
+    return(gList(pg))
+  }
+  if (length(valid_idx) < length(bp$x)) {
+    bp <- lapply(bp, function(v) v[valid_idx])
+    bp <- lenCalc(bp)
+  }
+
 
   ########################
   # Get the decrease and #

@@ -12,6 +12,9 @@
 #'  See the \code{just} option for the \code{\link[grid]{viewport}}
 #' @param txt_gp The \code{\link[grid]{gpar}} style to apply to the text. Set \code{boxGrobTxt} option
 #'  if you want to customize all the boxes at once.
+#' @param txt_padding Padding between text and box border. Can be provided as a
+#'  \code{\link[grid]{unit}} or numeric (interpreted as millimetres). You can set
+#'  a global default with \code{options(boxGrobTxtPadding = ...)}.
 #' @param box_gp The \code{\link[grid]{gpar}} style to apply to the box function of `box_fn` below.
 #' @param box_fn Function to create box for the text. Parameters of `x=0.5`, `y=0.5` and `box_gp` will
 #'  be passed to this function and return a \code{grob} object.
@@ -22,6 +25,10 @@
 #' \code{boxTapeGrob}. For examples see the vignette: \code{vignette("Grid-based_flowcharts", package = "Gmisc")}.
 #' @param name a character identifier for the \code{grob}. Used to find the \code{grob} on the display
 #'  list and/or as a child of another grob.
+#' @param badge_label Optional badge text to display at the top of the box.
+#' @param badge_position The position of the badge: "top" (currently only "top" supported).
+#' @param badge_gp The \code{\link[grid]{gpar}} style to apply to the badge background.
+#' @param badge_txt_gp The \code{\link[grid]{gpar}} style to apply to the badge text.
 #'
 #' @return A grob
 #' @export
@@ -46,9 +53,14 @@ boxGrob <- function(label,
                       color = "black",
                       cex = 1
                     )),
+                    txt_padding = getOption("boxGrobTxtPadding", default = unit(6 * ifelse(is.null(txt_gp$cex), 1, txt_gp$cex), "mm")),
                     box_gp = getOption("boxGrob", default = gpar(fill = "white")),
                     box_fn = roundrectGrob,
-                    name = NULL) {
+                    name = NULL,
+                    badge_label = NULL,
+                    badge_position = "top",
+                    badge_gp = gpar(fill = "steelblue", col = NA),
+                    badge_txt_gp = gpar(col = "white", cex = 0.7)) {
   assert(
     checkString(label),
     checkNumeric(label),
@@ -58,6 +70,10 @@ boxGrob <- function(label,
   assert_unit(x)
   assert_unit(width)
   assert_unit(height)
+  if (is.numeric(txt_padding)) {
+    txt_padding <- unit(txt_padding, "mm")
+  }
+  assert_unit(txt_padding)
   assert_just(just)
   assert_just(bjust)
   assert_class(txt_gp, "gpar")
@@ -66,10 +82,6 @@ boxGrob <- function(label,
 
   x <- prAsUnit(x)
   y <- prAsUnit(y)
-
-  # Slightly larger default padding so specialized shapes (diamond/ellipse)
-  # have breathing room and text doesn't sit too tight against the border.
-  txt_padding <- unit(6 * ifelse(is.null(txt_gp$cex), 1, txt_gp$cex), "mm")
 
   # Call the box function early to collect any suggested padding attributes
   # (e.g., diamonds may request extra padding). This allows the padding to
@@ -115,11 +127,40 @@ boxGrob <- function(label,
     just = bjust
   )
 
+  # Build the inner gList. When a badge is requested, add badge grobs inside the
+  # same viewport so that all x/y coordinates share the same coordinate system
+  # (viewport npc + absolute mm offsets) — no compound-unit misalignment.
+  inner <- if (!is.null(badge_label)) {
+    badge_h   <- unit(4.5, "mm")
+    badge_w   <- unit(11,  "mm")
+    badge_pad <- unit(1.5, "mm")   # gap from the left edge of the box
+
+    # Center of the badge pill in viewport coordinates.
+    # unit(0, "npc") = left edge of viewport; badge_w * 0.5 + badge_pad moves
+    # the center rightward so the pill's left side sits badge_pad from the box edge.
+    b_x <- unit(0, "npc") + badge_w * 0.5 + badge_pad
+    b_y <- unit(1, "npc")   # exactly the top border of the box
+
+    badge_bg <- roundrectGrob(
+      x = b_x, y = b_y,
+      width = badge_w, height = badge_h,
+      r = unit(2, "mm"),   # rounded corners — standard badge shape
+      just = "center",
+      gp = badge_gp
+    )
+    badge_lbl <- textGrob(
+      label = as.character(badge_label),
+      x = b_x, y = b_y,
+      just = "center",
+      gp = badge_txt_gp
+    )
+    gList(rect, txt, badge_bg, badge_lbl)
+  } else {
+    gList(rect, txt)
+  }
+
   gl <- grobTree(
-    gList(
-      rect,
-      txt
-    ),
+    inner,
     vp = do.call(viewport, vp_args),
     name = name,
     cl = "box"

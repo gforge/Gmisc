@@ -49,8 +49,8 @@ figCapNo("A plot with caption number = 2")
 options(org_opts)
 }
 \seealso{
-Other figure caption functions: 
-\code{\link{figCapNoLast}()},
-\code{\link{figCapNoNext}()}
+Other figure caption functions:
+\code{\link[=figCapNoLast]{figCapNoLast()}},
+\code{\link[=figCapNoNext]{figCapNoNext()}}
 }
 \concept{figure caption functions}

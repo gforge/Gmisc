@@ -6,8 +6,8 @@
 #'
 #' @section Awesome tables:
 #'
-#' The \code{\link{getDescriptionStatsBy}} is a straight forward function that
-#' aims at helping you to generate descriptive table stratified by different
+#' The \code{\link{getDescriptionStatsBy}} is a straightforward function that
+#' aims at helping you to generate a descriptive table stratified by different
 #' variables. In other words, the function returns everything you need for generating
 #' a \emph{Table 1} ready for publication. This function is accompanied by the
 #' \code{\link{describeMean}}, \code{\link{describeMedian}}, \code{\link{describeProp}},

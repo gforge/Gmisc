@@ -17,9 +17,15 @@ boxGrob(
   just = "center",
   bjust = "center",
   txt_gp = getOption("boxGrobTxt", default = gpar(color = "black", cex = 1)),
+  txt_padding = getOption("boxGrobTxtPadding", default = unit(6 *
+    ifelse(is.null(txt_gp$cex), 1, txt_gp$cex), "mm")),
   box_gp = getOption("boxGrob", default = gpar(fill = "white")),
   box_fn = roundrectGrob,
-  name = NULL
+  name = NULL,
+  badge_label = NULL,
+  badge_position = "top",
+  badge_gp = gpar(fill = "steelblue", col = NA),
+  badge_txt_gp = gpar(col = "white", cex = 0.7)
 )
 
 \method{print}{box}(x, ...)
@@ -49,6 +55,10 @@ See the \code{just} option for the \code{\link[grid]{viewport}}}
 \item{txt_gp}{The \code{\link[grid]{gpar}} style to apply to the text. Set \code{boxGrobTxt} option
 if you want to customize all the boxes at once.}
 
+\item{txt_padding}{Padding between text and box border. Can be provided as a
+\code{\link[grid]{unit}} or numeric (interpreted as millimetres). You can set
+a global default with \code{options(boxGrobTxtPadding = ...)}.}
+
 \item{box_gp}{The \code{\link[grid]{gpar}} style to apply to the box function of `box_fn` below.}
 
 \item{box_fn}{Function to create box for the text. Parameters of `x=0.5`, `y=0.5` and `box_gp` will
@@ -56,6 +66,14 @@ be passed to this function and return a \code{grob} object.}
 
 \item{name}{a character identifier for the \code{grob}. Used to find the \code{grob} on the display
 list and/or as a child of another grob.}
+
+\item{badge_label}{Optional badge text to display at the top of the box.}
+
+\item{badge_position}{The position of the badge: "top" (currently only "top" supported).}
+
+\item{badge_gp}{The \code{\link[grid]{gpar}} style to apply to the badge background.}
+
+\item{badge_txt_gp}{The \code{\link[grid]{gpar}} style to apply to the badge text.}
 
 \item{...}{Passed to \code{\link[grid]{grid.draw}}}
 }
@@ -94,14 +112,20 @@ passed to `boxGrob(..., box_fn = ...)`: \code{boxDiamondGrob},
 \code{boxDatabaseGrob}, \code{boxDocumentGrob}, \code{boxDocumentsGrob}, and
 \code{boxTapeGrob}. For examples see the vignette: \code{vignette("Grid-based_flowcharts", package = "Gmisc")}.
 
-Other flowchart components: 
-\code{\link{align}},
-\code{\link{boxPropGrob}()},
+Other flowchart components:
+\code{\link[=align]{align()}},
+\code{\link[=append]{append()}},
+\code{\link[=boxHeaderGrob]{boxHeaderGrob()}},
+\code{\link[=boxPropGrob]{boxPropGrob()}},
 \code{\link{boxShapes}},
-\code{\link{connectGrob}()},
-\code{\link{coords}()},
-\code{\link{distance}()},
-\code{\link{moveBox}()},
-\code{\link{spread}}
+\code{\link[=connectGrob]{connectGrob()}},
+\code{\link[=coords]{coords()}},
+\code{\link[=distance]{distance()}},
+\code{\link[=equalizeWidths]{equalizeWidths()}},
+\code{\link[=flowchart]{flowchart()}},
+\code{\link[=insert]{insert()}},
+\code{\link[=move]{move()}},
+\code{\link[=moveBox]{moveBox()}},
+\code{\link[=spread]{spread()}}
 }
 \concept{flowchart components}

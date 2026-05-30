@@ -79,7 +79,7 @@ mtcars %>%
 Integration with `htmlTable`
 ----------------------------
 
-Key to having a good descriptive statistics is to be able to output it into a table. I usually rely on `htmlTabl` for all my table requirements as it has a nice set of
+Key to having good descriptive statistics is to be able to output it into a table. I usually rely on `htmlTable` for all my table requirements as it has a nice set of
 advanced options that allow us to get publication ready tables that can simply be copy-pasted into our paper. *Note* that we here use html code &dagger; that we then explain
 in the footer. If we specify a name to the parameters like this we override the labels previously set.
 
@@ -120,7 +120,7 @@ mtcars %>%
 P-values
 ========
 
-Event though p-values are discouraged in the Table 1, they are [not uncommon](https://doi.org/10.1177/1741826711421688). I have therefore added basic statistics consisting that defaults to Fisher's exact test for proportions and Wilcoxon rank sum test for continuous values. 
+Even though p-values are discouraged in the Table 1, they are [not uncommon](https://doi.org/10.1177/1741826711421688). I have therefore added basic statistics consisting of tests that default to Fisher's exact test for proportions and Wilcoxon rank sum test for continuous values. 
 
 ```{r, warning=FALSE}
 mtcars %>% 

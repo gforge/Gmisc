@@ -1,0 +1,31 @@
+name: R-CMD-check
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  R-CMD-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: r-lib/actions/setup-r@v2
+      - name: Install system deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libxml2-dev libcurl4-openssl-dev libssl-dev
+      - name: Install R package dependencies
+        run: |
+          Rscript -e 'install.packages(c("devtools","remotes","lintr","covr","pkgdown","testthat","rmarkdown","bench","vdiffr"))'
+      - name: Check package
+        run: Rscript -e 'devtools::check(max_errors = 5)'
+      - name: Run lintr
+        run: Rscript -e 'lintr::lint_dir("R")'
+      - name: Run tests with coverage
+        run: Rscript -e 'covr::codecov()'
+      - name: Build pkgdown site
+        run: Rscript -e 'pkgdown::build_site()'
+        env:
+          GITHUB_PAT:

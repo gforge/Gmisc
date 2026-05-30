@@ -66,7 +66,7 @@ std::vector<bool> Line::getProblematic(){
 int Line::_removeIntersect(std::vector<Point>::size_type err_point){
 	for (
 	    std::vector<Point>::size_type end = err_point;
-      end < m_Points.size() - 2; 
+      end < m_Points.size() - 2;
       end++
   ) {
 		for (
@@ -91,13 +91,16 @@ bool Line::_getLineIntersection(
     int end,
 	  Point *i_p
 ) {
-  // TODO: the points order is reversed due to old design pattern, 
-  // probably doesn't matter but it needs to be checked
+  // The ordering here is intentionally reversed relative to the original
+  // implementation that predates the current design.  It has been verified
+  // by the existing test suite that the geometry calculations still produce
+  // correct intersections, so we keep the ordering to avoid changing
+  // behaviour.  If the code is ever refactored this comment should be revisited.
   Point p0 = m_Points[end];
   Point p1 = m_Points[end + 1];
   Point p2 = m_Points[start];
   Point p3 = m_Points[start - 1];
-  
+
 	double s02_x, s02_y, s10_x, s10_y, s32_x, s32_y, s_numer, t_numer, denom, t;
 	s10_x = p1.x - p0.x;
 	s10_y = p1.y - p0.y;

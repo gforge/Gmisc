@@ -311,11 +311,11 @@ invisible(readline(prompt = "Press [enter] to continue"))
 }
 }
 \seealso{
-Other descriptive functions: 
-\code{\link{describeFactors}()},
-\code{\link{describeMean}()},
-\code{\link{describeMedian}()},
-\code{\link{describeProp}()},
-\code{\link{getPvalWilcox}()}
+Other descriptive functions:
+\code{\link[=describeFactors]{describeFactors()}},
+\code{\link[=describeMean]{describeMean()}},
+\code{\link[=describeMedian]{describeMedian()}},
+\code{\link[=describeProp]{describeProp()}},
+\code{\link[=getPvalWilcox]{getPvalWilcox()}}
 }
 \concept{descriptive functions}

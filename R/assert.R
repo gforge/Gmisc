@@ -19,7 +19,7 @@ assert_unit <- function(var, allow_missing = TRUE) {
   )
 }
 
-#' Assert that its a string or number
+#' Assert that it's a string or number
 #'
 #' @param var Varible 2 check
 #' @param allow_missing Allow missing variables
