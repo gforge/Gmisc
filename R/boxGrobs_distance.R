@@ -54,7 +54,7 @@ distance <- function(box1,
   box_coords2 <- prConvert2Coords(box2)
 
   type <- match.arg(type)
-  converter_fn <- ifelse(type == "horizontal", prConvertWidthToMm, prConvertHeightToMm)
+  converter_fn <- if (type == "horizontal") prConvertWidthToMm else prConvertHeightToMm
   from <- NA
   to <- NA
   if (type == "vertical") {

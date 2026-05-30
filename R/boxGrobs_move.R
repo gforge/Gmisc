@@ -32,21 +32,6 @@ moveBox <- function(element,
                     subelement = NULL) {
   space <- match.arg(space)
 
-  # Handle legacy arguments
-  # We can't access '...' here so we rely on explicit checking if user passed it?
-  # Wait, moveBox definition doesn't use '...'.
-  # So if user passed subelement, it would go into '...' if it existed, but it doesn't.
-  # It would cause "unused argument" error if I just remove it.
-  # Safe way: add subelement=NULL to signature and warn.
-}
-
-moveBox <- function(element,
-                    x = NULL, y = NULL,
-                    space = c("absolute", "relative"),
-                    just = NULL,
-                    subelement = NULL) {
-  space <- match.arg(space)
-
   to_unit <- function(u) if (is.unit(u) || is.null(u)) u else unit(u, "npc")
 
   if (is.list(element) && !inherits(element, "box")) {

@@ -550,4 +550,3 @@ NEWS for the Gmisc package
 ## Changes for 0.4.8.1
 
 - Fixed a few bugs to the `forestplot2`
-plot2`

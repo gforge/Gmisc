@@ -79,7 +79,7 @@ mtcars %>%
 Integration with `htmlTable`
 ----------------------------
 
-Key to having a good descriptive statistics is to be able to output it into a table. I usually rely on `htmlTable` for all my table requirements as it has a nice set of
+Key to having good descriptive statistics is to be able to output it into a table. I usually rely on `htmlTable` for all my table requirements as it has a nice set of
 advanced options that allow us to get publication ready tables that can simply be copy-pasted into our paper. *Note* that we here use html code &dagger; that we then explain
 in the footer. If we specify a name to the parameters like this we override the labels previously set.
 

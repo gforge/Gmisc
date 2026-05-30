@@ -102,7 +102,7 @@ boxPropGrob <- function(label,
       name = "label",
       gp = txt_gp
     )
-    label_measures$height <- (prConvertWidthToMm(grobHeight(tg)) + 2)
+    label_measures$height <- (prConvertHeightToMm(grobHeight(tg)) + 2)
     label_measures$width <- prConvertWidthToMm(grobWidth(tg))
 
     main_label <- grobTree(

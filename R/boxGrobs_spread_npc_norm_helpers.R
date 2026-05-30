@@ -1,5 +1,4 @@
 #' Get default from/to values for an axis
-#' Get default from/to values for an axis
 #'
 #' When axis is "x", the default is from 0 to 1 npc, i.e. left to right.
 #' When axis is "y", the default is from 1 to 0 npc, i.e. top to bottom.
