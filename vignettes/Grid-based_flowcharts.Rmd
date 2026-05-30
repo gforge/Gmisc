@@ -151,6 +151,9 @@ flowchart(
   # Make arms and analysis boxes the same width so the same from/to spread
   # places their centres at matching x positions (otherwise the wider arm text
   # shifts centres relative to the narrower analysis text).
+  # Alternative: skip equalizeWidths() and explicitly align x-centres,
+  # e.g. with `align(axis = "x", reference = "analysis", subelement = "arms")`
+  # (equivalent to `alignHorizontal(reference = "analysis", subelement = "arms")`).
   equalizeWidths(subelement = list("arms", "analysis")) |>
   # Arms and analysis in the inner span; lost boxes spread across full width
   # so that lost_cast lands left of cast and lost_surgical right of surgical
