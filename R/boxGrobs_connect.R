@@ -54,6 +54,13 @@
 #' When connecting to or from a `boxPropGrob`, `subelmnt` controls whether the left
 #' or right sub-box x-coordinate is used as the anchor point.
 #'
+#' ## Using with spread/align
+#'
+#' `connectGrob()` always uses coordinates from the `start` and `end` objects
+#' you pass in. If those objects were positioned with `spread*()`/`align*()`,
+#' pass the returned objects (for example by assigning the spread/align result)
+#' rather than the original pre-spread variables.
+#'
 #' @param start A `boxGrob`/`boxPropGrob`, or a list of boxes (many-to-one).
 #' @param end A `boxGrob`/`boxPropGrob`, or a list of boxes (one-to-many).
 #' @param type Connector type, see Details.

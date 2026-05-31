@@ -1,5 +1,11 @@
 NEWS for the Gmisc package
 
+## Changes for 3.3.1
+
+- Updated flowchart examples to emphasize the `flowchart()` + pipe (`|>`) style API in `inst/examples/connectGrob_example.R`, `inst/examples/spreadBox_ex.R`, and `inst/examples/alignBox_ex.R`.
+- Clarified spread/connect documentation to state that spread/align return updated objects (no in-place mutation) and that connectors should use the returned boxes.
+- Improved interactive example ergonomics by pausing between graph pages in multi-plot examples.
+
 ## Changes for 3.3.0
 
 - Added `equalizeWidths()` for flowchart box lists, allowing selected boxes (including nested `subelement` paths and list-of-boxes targets) to share a common width while preserving center positions.
