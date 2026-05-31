@@ -25,7 +25,7 @@ jobs:
             any::bench
             any::vdiffr
       - name: Check package
-        run: Rscript -e 'devtools::check(max_errors = 5)'
+        run: Rscript -e 'devtools::check()'
       - name: Run lintr
         run: Rscript -e 'lintr::lint_dir("R")'
       - name: Run tests with coverage
