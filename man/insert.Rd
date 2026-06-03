@@ -6,11 +6,11 @@
 \alias{insert.Gmisc_list_of_boxes}
 \title{Insert element into a list of boxes (S3)}
 \usage{
-insert(x, element, ..., after = NULL, before = NULL)
+insert(x, element, ..., after = NULL, before = NULL, on_top = FALSE)
 
-\method{insert}{default}(x, element, ..., after = NULL, before = NULL)
+\method{insert}{default}(x, element, ..., after = NULL, before = NULL, on_top = FALSE)
 
-\method{insert}{Gmisc_list_of_boxes}(x, element, ..., after = NULL, before = NULL)
+\method{insert}{Gmisc_list_of_boxes}(x, element, ..., after = NULL, before = NULL, on_top = FALSE)
 }
 \arguments{
 \item{x}{A `Gmisc_list_of_boxes`.}
@@ -22,6 +22,13 @@ insert(x, element, ..., after = NULL, before = NULL)
 \item{after}{The name or index of the box after which to insert.}
 
 \item{before}{The name or index of the box before which to insert.}
+
+\item{on_top}{If `TRUE` the inserted box is marked to be drawn *on top* of the
+other boxes (after them and after any connections), regardless of where it
+sits in the list. This is useful for overlay boxes such as CONSORT-style
+stage headings that should remain visible even when they overlap the
+surrounding boxes. The marker is preserved through subsequent
+[`move`]/[`align`] operations.}
 }
 \value{
 The updated list of boxes with the new element inserted.
@@ -45,6 +52,7 @@ Other flowchart components:
 \code{\link[=flowchart]{flowchart()}},
 \code{\link[=move]{move()}},
 \code{\link[=moveBox]{moveBox()}},
+\code{\link[=phaseLabel]{phaseLabel()}},
 \code{\link[=spread]{spread()}}
 }
 \concept{flowchart components}

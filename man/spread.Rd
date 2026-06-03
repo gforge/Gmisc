@@ -137,6 +137,7 @@ Other flowchart components:
 \code{\link[=flowchart]{flowchart()}},
 \code{\link[=insert]{insert()}},
 \code{\link[=move]{move()}},
-\code{\link[=moveBox]{moveBox()}}
+\code{\link[=moveBox]{moveBox()}},
+\code{\link[=phaseLabel]{phaseLabel()}}
 }
 \concept{flowchart components}

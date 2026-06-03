@@ -108,6 +108,7 @@ Other flowchart components:
 \code{\link[=flowchart]{flowchart()}},
 \code{\link[=insert]{insert()}},
 \code{\link[=move]{move()}},
+\code{\link[=phaseLabel]{phaseLabel()}},
 \code{\link[=spread]{spread()}}
 }
 \concept{flowchart components}

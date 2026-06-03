@@ -15,3 +15,9 @@
 Outputs a list of boxes as produced by either the
 spread or align functions for boxGrobs.
 }
+\details{
+Boxes marked with the `draw_on_top` attribute (for example via
+ `insert(..., on_top = TRUE)`) are drawn last — after the other boxes and
+ after any stored connections — so they remain visible even when they
+ overlap surrounding boxes. All other boxes keep their list order.
+}

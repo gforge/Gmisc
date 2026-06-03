@@ -71,6 +71,79 @@ flowchart(
           smooth = TRUE)
 ```
 
+# CONSORT phase labels between grouped stages
+
+CONSORT diagrams use phase labels such as allocation, follow-up, and analysis.
+These are not part of the patient flow itself — they label a *stage* and sit
+just above it, centred between the randomisation arms.
+
+`phaseLabel()` does this in one call per stage:
+
+- It references the **stage it labels** (e.g. `"groups"`), so there is no
+  confusing "insert after X" step.
+- It places the label slightly above the stage, overlapping the top corners by
+  `overlap` (≈ 7% by default), and marks it to be drawn **on top** so it stays
+  visible.
+- The width adapts to the stage: for two arms the label spans the central gap
+  plus a small corner lap; for three or more arms it becomes a banner across the
+  full stage width. Pass `width` to override.
+
+The arms are given a clear central gap (boxes spread to `x = 0.27`/`0.73`). Equal
+arm widths give a symmetric corner overlap — use `equalizeWidths()` if the arms
+differ. For custom overlays beyond phase labels, the lower-level
+`insert(..., on_top = TRUE)` is still available.
+
+```{r consort-stage-headings, fig.height = 7, fig.width = 8}
+old_opts <- options(boxGrobTxtPadding = unit(2, "mm"))
+
+main_box_gp <- gpar(fill = "white", col = "black", lwd = 1)
+heading_gp  <- gpar(fill = "#c8daf7", col = "#2f5f9f", lwd = 1)
+con_gp      <- gpar(col = "#4f86c6", fill = "#4f86c6", lwd = 1.8)
+side_width  <- unit(70, "mm")
+
+flowchart(
+  rando = boxGrob("Randomised\nN = 100", box_gp = main_box_gp),
+  groups = list(
+    boxGrob("Allocated to intervention\nn = 50",
+            width = side_width, box_gp = main_box_gp),
+    boxGrob("Allocated to control\nn = 50",
+            width = side_width, box_gp = main_box_gp)
+  ),
+  followup = list(
+    boxGrob("Lost to follow-up\nn = 1",
+            width = side_width, box_gp = main_box_gp),
+    boxGrob("Lost to follow-up\nn = 2",
+            width = side_width, box_gp = main_box_gp)
+  ),
+  analysis = list(
+    boxGrob("Analysed\nn = 49",
+            width = side_width, box_gp = main_box_gp),
+    boxGrob("Analysed\nn = 48",
+            width = side_width, box_gp = main_box_gp)
+  )
+) |>
+  spread(axis = "y", margin = unit(0.04, "npc")) |>
+  # Give the two arms a clear central gap for the labels to sit in
+  move(subelement = list(c("groups", 1),
+                         c("followup", 1),
+                         c("analysis", 1)),
+       x = 0.27) |>
+  move(subelement = list(c("groups", 2),
+                         c("followup", 2),
+                         c("analysis", 2)),
+       x = 0.73) |>
+  # One call per stage: centred between the arms, slightly above, drawn on top
+  phaseLabel("groups",   "Allocation", box_gp = heading_gp) |>
+  phaseLabel("followup", "Follow-up",  box_gp = heading_gp) |>
+  phaseLabel("analysis", "Analysis",   box_gp = heading_gp) |>
+  connect("rando",    "groups",   type = "N", lty_gp = con_gp, arrow_size = 3,
+          smooth = TRUE) |>
+  connect("groups",   "followup", type = "v", lty_gp = con_gp, arrow_size = 3) |>
+  connect("followup", "analysis", type = "v", lty_gp = con_gp, arrow_size = 3)
+
+options(old_opts)
+```
+
 # CONSORT-style flowchart
 
 A CONSORT diagram represents patient flow through a clinical trial. This example
