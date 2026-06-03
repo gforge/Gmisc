@@ -46,7 +46,8 @@ Suggests:
     dplyr,
     jsonlite,
     testthat,
-    tidyselect
+    tidyselect,
+    webshot2
 Encoding: UTF-8
 NeedsCompilation: yes
 LinkingTo: Rcpp

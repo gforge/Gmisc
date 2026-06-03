@@ -1,35 +1,46 @@
+---
+output: github_document
+---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%",
+  dpi = 150,
+  message = FALSE,
+  warning = FALSE
+)
+options(boxGrobTxtPadding = grid::unit(2, "mm"))
+```
 
 # Gmisc
 
 <!-- badges: start -->
-
-[![CRAN
-status](https://www.r-pkg.org/badges/version/Gmisc)](https://CRAN.R-project.org/package=Gmisc)
-[![CRAN
-downloads](https://cranlogs.r-pkg.org/badges/Gmisc)](https://CRAN.R-project.org/package=Gmisc)
+[![CRAN status](https://www.r-pkg.org/badges/version/Gmisc)](https://CRAN.R-project.org/package=Gmisc)
+[![CRAN downloads](https://cranlogs.r-pkg.org/badges/Gmisc)](https://CRAN.R-project.org/package=Gmisc)
 [![R-CMD-check](https://github.com/gforge/Gmisc/actions/workflows/ci.yaml/badge.svg)](https://github.com/gforge/Gmisc/actions/workflows/ci.yaml)
 <!-- badges: end -->
 
-**Gmisc** collects utilities for the graphics and tables that recur in
-medical research papers — built so they compose with the native R pipe
-(`|>`):
+**Gmisc** collects utilities for the graphics and tables that recur in medical
+research papers — built so they compose with the native R pipe (`|>`):
 
-- **Descriptive “Table 1”** — `getDescriptionStatsBy()` + `htmlTable()`
-  for publication-ready, copy-paste descriptive tables.
-- **Grid-based flowcharts** — a
-  `flowchart() |> spread() |> move() |> connect()` pipeline for
-  CONSORT-style diagrams, including `phaseLabel()` headings.
+- **Descriptive "Table 1"** — `getDescriptionStatsBy()` + `htmlTable()` for
+  publication-ready, copy-paste descriptive tables.
+- **Grid-based flowcharts** — a `flowchart() |> spread() |> move() |> connect()`
+  pipeline for CONSORT-style diagrams, including `phaseLabel()` headings.
 - **Transition plots** — the `Transition` class for visualising how
   observations move between categories over time.
-- **SVD variable selection** — `getSvdMostInfluential()` for picking
-  influential variables.
+- **SVD variable selection** — `getSvdMostInfluential()` for picking influential
+  variables.
 - **Bézier arrows** — smooth arrows complementing the `grid` package.
 
 ## Installation
 
-``` r
+```r
 # From CRAN
 install.packages("Gmisc")
 
@@ -41,12 +52,11 @@ remotes::install_github("gforge/Gmisc")
 ## Flowcharts & CONSORT diagrams
 
 Build a flowchart as a named list of boxes, position the columns with
-`spread()`/`move()`, then add the connectors. Parallel arms are just
-lists, and `phaseLabel()` drops a CONSORT phase heading (“Allocation”,
-“Follow-up”, …) between the arms — centred, slightly overlapping, and
-drawn on top.
+`spread()`/`move()`, then add the connectors. Parallel arms are just lists, and
+`phaseLabel()` drops a CONSORT phase heading ("Allocation", "Follow-up", …)
+between the arms — centred, slightly overlapping, and drawn on top.
 
-``` r
+```{r flowchart, fig.width = 8, fig.height = 7}
 library(Gmisc)
 library(grid)
 
@@ -81,18 +91,14 @@ flowchart(
   connect("followup", "analysis", type = "v", lty_gp = con_gp, arrow_size = 3)
 ```
 
-<img src="man/figures/README-flowchart-1.png" alt="" width="100%" />
+See `vignette("Grid-based_flowcharts", package = "Gmisc")` for the full API.
 
-See `vignette("Grid-based_flowcharts", package = "Gmisc")` for the full
-API.
+## Descriptive "Table 1"
 
-## Descriptive “Table 1”
+`getDescriptionStatsBy()` summarises variables split by a grouping column and
+pipes straight into `htmlTable()` for a publication-ready table.
 
-`getDescriptionStatsBy()` summarises variables split by a grouping
-column and pipes straight into `htmlTable()` for a publication-ready
-table.
-
-``` r
+```{r table1-code, eval = FALSE}
 library(dplyr)
 
 mtcars |>
@@ -104,18 +110,41 @@ mtcars |>
   htmlTable(caption = "Baseline characteristics by transmission")
 ```
 
-<img src="man/figures/README-table1.png" alt="" width="85%" />
+```{r table1-snapshot, include = FALSE}
+library(dplyr)
 
-See `vignette("Descriptives", package = "Gmisc")` for the many
-formatting options.
+tab <- mtcars |>
+  mutate(am = factor(am, labels = c("Automatic", "Manual")),
+         gear = factor(gear)) |>
+  set_column_labels(mpg = "Gas", wt = "Weight", gear = "Gears") |>
+  set_column_units(mpg = "Miles/gallon", wt = "10<sup>3</sup> lbs") |>
+  getDescriptionStatsBy(mpg, wt, gear, by = am, statistics = TRUE) |>
+  htmlTable(caption = "Baseline characteristics by transmission")
+
+if (!dir.exists("man/figures")) dir.create("man/figures", recursive = TRUE)
+table_html <- paste(capture.output(print(tab)), collapse = "\n")
+html_file <- tempfile(fileext = ".html")
+writeLines(
+  paste0("<!DOCTYPE html><html><head><meta charset='utf-8'></head>",
+         "<body style='display:inline-block; padding:12px; font-family:sans-serif'>",
+         table_html, "</body></html>"),
+  html_file
+)
+invisible(webshot2::webshot(html_file, "man/figures/README-table1.png", selector = "table", zoom = 2))
+```
+
+```{r table1-img, echo = FALSE, out.width = "85%"}
+knitr::include_graphics("man/figures/README-table1.png")
+```
+
+See `vignette("Descriptives", package = "Gmisc")` for the many formatting options.
 
 ## Transition plots
 
-The `Transition` class shows how observations move between classes over
-time; a third dimension can be encoded as a colour split within each
-box.
+The `Transition` class shows how observations move between classes over time;
+a third dimension can be encoded as a colour split within each box.
 
-``` r
+```{r transition, fig.width = 6, fig.height = 6, out.width = "70%"}
 set.seed(1)
 n <- 100
 sex    <- sample(c("Male", "Female"), n, replace = TRUE)
@@ -131,8 +160,6 @@ transitions$title   <- "Charnley class before vs. after surgery"
 transitions$clr_bar <- "bottom"
 transitions$render()
 ```
-
-<img src="man/figures/README-transition-1.png" alt="" width="70%" />
 
 See `vignette("Transition-class", package = "Gmisc")` for customisation.
 
