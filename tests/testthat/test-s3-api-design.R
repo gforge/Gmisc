@@ -315,6 +315,28 @@ test_that("S3 Mutations: phaseLabel width adapts to arm count and honours width"
   expect_silent(print(fc3))
 })
 
+test_that("S3 Mutations: phaseLabel supports nested arm lists", {
+  pdf(NULL)
+  on.exit(dev.off())
+  grid.newpage()
+
+  # Flowchart with nested arms (a list of boxes as one arm)
+  fc <- flowchart(
+    rando = boxGrob("Randomised", x = .5, y = .8),
+    arms = list(
+      list(boxGrob("Arm 1a", x = .3, y = .4),
+           boxGrob("Arm 1b", x = .4, y = .4)),
+      boxGrob("Arm 2", x = .7, y = .4)
+    )
+  )
+
+  # Should not error
+  expect_silent({
+    fc_labeled <- phaseLabel(fc, "arms", "Allocation")
+  })
+  expect_equal(names(fc_labeled), c("rando", "arms", "arms_label"))
+})
+
 test_that("Complex chaining example", {
   # Mock components
   org_cohort <- boxGrob("Stockholm", x = .5, y = .9)

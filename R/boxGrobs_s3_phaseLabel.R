@@ -91,12 +91,14 @@ phaseLabel.Gmisc_list_of_boxes <- function(x, reference, label, ..., width = NUL
     target_w <- to_npc_w(width)
   } else if (n_arms == 2) {
     # Narrow label spanning the central gap plus a corner lap on each inner edge
-    x1 <- to_npc_x(coords(stage[[1]])$x)
-    x2 <- to_npc_x(coords(stage[[2]])$x)
-    left_arm  <- if (x1 <= x2) stage[[1]] else stage[[2]]
-    right_arm <- if (x1 <= x2) stage[[2]] else stage[[1]]
-    gap <- to_npc_x(coords(right_arm)$left) - to_npc_x(coords(left_arm)$right)
-    arm_w <- to_npc_w(coords(left_arm)$width)
+    c1 <- prConvert2Coords(stage[[1]])
+    c2 <- prConvert2Coords(stage[[2]])
+    x1 <- to_npc_x(c1$x)
+    x2 <- to_npc_x(c2$x)
+    left_coords  <- if (x1 <= x2) c1 else c2
+    right_coords <- if (x1 <= x2) c2 else c1
+    gap <- to_npc_x(right_coords$left) - to_npc_x(left_coords$right)
+    arm_w <- to_npc_w(left_coords$width)
     target_w <- max(gap + 2 * overlap * arm_w, auto_w)
   } else {
     # Banner spanning the full stage width
