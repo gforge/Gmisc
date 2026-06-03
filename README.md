@@ -89,22 +89,53 @@ API.
 ## Descriptive “Table 1”
 
 `getDescriptionStatsBy()` summarises variables split by a grouping
-column and pipes straight into `htmlTable()` for a publication-ready
-table.
+column. It is often used with `mergeDesc()` to group related variables
+into sections, and pipes straight into `htmlTable()` for a
+publication-ready table.
 
 ``` r
 library(dplyr)
+library(Gmisc)
 
-mtcars |>
+# A custom wrapper to keep statistics and formatting consistent
+# (e.g., same digits, p-values, and header count)
+get_stats <- function(data, ...) {
+  res <- data |>
+    getDescriptionStatsBy(...,
+                          by = am,
+                          statistics = TRUE,
+                          digits = 1,
+                          header_count = TRUE)
+  if (is.list(res)) {
+    return(do.call(rbind, res))
+  }
+  return(res)
+}
+
+mtcars_prep <- mtcars |>
   mutate(am = factor(am, labels = c("Automatic", "Manual")),
-         gear = factor(gear)) |>
-  set_column_labels(mpg = "Gas", wt = "Weight", gear = "Gears") |>
-  set_column_units(mpg = "Miles/gallon", wt = "10<sup>3</sup> lbs") |>
-  getDescriptionStatsBy(mpg, wt, gear, by = am, statistics = TRUE) |>
-  htmlTable(caption = "Baseline characteristics by transmission")
+         gear = factor(gear),
+         cyl = factor(cyl)) |>
+  set_column_labels(mpg = "Gas",
+                    wt = "Weight",
+                    hp = "Horsepower",
+                    cyl = "Cylinders",
+                    gear = "Gears") |>
+  set_column_units(mpg = "Miles/gallon",
+                   wt = "10<sup>3</sup> lbs",
+                   hp = "hp")
+
+# Group variables and merge them into a single table
+mergeDesc(
+  "Main" = mtcars_prep |> get_stats(mpg, wt),
+  "Engine" = mtcars_prep |> get_stats(hp, cyl),
+  "Transmission" = mtcars_prep |> get_stats(gear)
+) |>
+  htmlTable(caption = "Baseline characteristics by transmission",
+            tfoot = "&dagger; Statistics: Mean (SD) for continuous; n (%) for categorical")
 ```
 
-<img src="man/figures/README-table1.png" alt="" width="85%" />
+<img src="man/figures/README-table1.png" alt="" width="70%" />
 
 See `vignette("Descriptives", package = "Gmisc")` for the many
 formatting options.

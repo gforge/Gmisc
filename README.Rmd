@@ -95,45 +95,103 @@ See `vignette("Grid-based_flowcharts", package = "Gmisc")` for the full API.
 
 ## Descriptive "Table 1"
 
-`getDescriptionStatsBy()` summarises variables split by a grouping column and
+`getDescriptionStatsBy()` summarises variables split by a grouping column. It is
+often used with `mergeDesc()` to group related variables into sections, and
 pipes straight into `htmlTable()` for a publication-ready table.
 
 ```{r table1-code, eval = FALSE}
 library(dplyr)
+library(Gmisc)
 
-mtcars |>
+# A custom wrapper to keep statistics and formatting consistent
+# (e.g., same digits, p-values, and header count)
+get_stats <- function(data, ...) {
+  res <- data |>
+    getDescriptionStatsBy(...,
+                          by = am,
+                          statistics = TRUE,
+                          digits = 1,
+                          header_count = TRUE)
+  if (is.list(res)) {
+    return(do.call(rbind, res))
+  }
+  return(res)
+}
+
+mtcars_prep <- mtcars |>
   mutate(am = factor(am, labels = c("Automatic", "Manual")),
-         gear = factor(gear)) |>
-  set_column_labels(mpg = "Gas", wt = "Weight", gear = "Gears") |>
-  set_column_units(mpg = "Miles/gallon", wt = "10<sup>3</sup> lbs") |>
-  getDescriptionStatsBy(mpg, wt, gear, by = am, statistics = TRUE) |>
-  htmlTable(caption = "Baseline characteristics by transmission")
+         gear = factor(gear),
+         cyl = factor(cyl)) |>
+  set_column_labels(mpg = "Gas",
+                    wt = "Weight",
+                    hp = "Horsepower",
+                    cyl = "Cylinders",
+                    gear = "Gears") |>
+  set_column_units(mpg = "Miles/gallon",
+                   wt = "10<sup>3</sup> lbs",
+                   hp = "hp")
+
+# Group variables and merge them into a single table
+mergeDesc(
+  "Main" = mtcars_prep |> get_stats(mpg, wt),
+  "Engine" = mtcars_prep |> get_stats(hp, cyl),
+  "Transmission" = mtcars_prep |> get_stats(gear)
+) |>
+  htmlTable(caption = "Baseline characteristics by transmission",
+            tfoot = "&dagger; Statistics: Mean (SD) for continuous; n (%) for categorical")
 ```
 
 ```{r table1-snapshot, include = FALSE}
 library(dplyr)
+library(Gmisc)
 
-tab <- mtcars |>
+get_stats <- function(data, ...) {
+  res <- data |>
+    getDescriptionStatsBy(...,
+                          by = am,
+                          statistics = TRUE,
+                          digits = 1,
+                          header_count = TRUE)
+  if (is.list(res)) {
+    return(do.call(rbind, res))
+  }
+  return(res)
+}
+
+mtcars_prep <- mtcars |>
   mutate(am = factor(am, labels = c("Automatic", "Manual")),
-         gear = factor(gear)) |>
-  set_column_labels(mpg = "Gas", wt = "Weight", gear = "Gears") |>
-  set_column_units(mpg = "Miles/gallon", wt = "10<sup>3</sup> lbs") |>
-  getDescriptionStatsBy(mpg, wt, gear, by = am, statistics = TRUE) |>
-  htmlTable(caption = "Baseline characteristics by transmission")
+         gear = factor(gear),
+         cyl = factor(cyl)) |>
+  set_column_labels(mpg = "Gas",
+                    wt = "Weight",
+                    hp = "Horsepower",
+                    cyl = "Cylinders",
+                    gear = "Gears") |>
+  set_column_units(mpg = "Miles/gallon",
+                   wt = "10<sup>3</sup> lbs",
+                   hp = "hp")
+
+tab <- mergeDesc(
+  "Main" = mtcars_prep |> get_stats(mpg, wt),
+  "Engine" = mtcars_prep |> get_stats(hp, cyl),
+  "Transmission" = mtcars_prep |> get_stats(gear)
+) |>
+  htmlTable(caption = "Baseline characteristics by transmission",
+            tfoot = "&dagger; Statistics: Mean (SD) for continuous; n (%) for categorical")
 
 if (!dir.exists("man/figures")) dir.create("man/figures", recursive = TRUE)
 table_html <- paste(capture.output(print(tab)), collapse = "\n")
 html_file <- tempfile(fileext = ".html")
 writeLines(
   paste0("<!DOCTYPE html><html><head><meta charset='utf-8'></head>",
-         "<body style='display:inline-block; padding:12px; font-family:sans-serif'>",
+         "<body style='display:inline-block; padding:16px; font-family:sans-serif'>",
          table_html, "</body></html>"),
   html_file
 )
-invisible(webshot2::webshot(html_file, "man/figures/README-table1.png", selector = "table", zoom = 2))
+invisible(webshot2::webshot(html_file, "man/figures/README-table1.png", selector = "table", zoom = 1.5))
 ```
 
-```{r table1-img, echo = FALSE, out.width = "85%"}
+```{r table1-img, echo = FALSE, out.width = "70%"}
 knitr::include_graphics("man/figures/README-table1.png")
 ```
 
