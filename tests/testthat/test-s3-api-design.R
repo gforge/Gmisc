@@ -152,6 +152,191 @@ test_that("S3 Mutations: insert", {
   expect_equal(length(l_ins3), 3)
 })
 
+test_that("S3 Mutations: insert positions boxes between grouped stages", {
+  fc <- flowchart(
+    rando = boxGrob("Randomised N = 100", x = .5, y = .9),
+    groups = list(
+      boxGrob("Group1\nn = 50", x = .3, y = .7),
+      boxGrob("Group2\nn = 50", x = .7, y = .7)
+    ),
+    groups2 = list(
+      boxGrob("Excluded\nn = 1", x = .3, y = .5),
+      boxGrob("Excluded\nn = 2", x = .7, y = .5)
+    ),
+    groups3 = list(
+      boxGrob("Analysed\nn = 49", x = .3, y = .3),
+      boxGrob("Analysed\nn = 48", x = .7, y = .3)
+    )
+  )
+
+  inserted <- insert(fc, boxGrob("Followup"), after = "groups")
+  expect_equal(length(inserted), 5)
+  expect_equal(names(inserted), c("rando", "groups", "", "groups2", "groups3"))
+  expect_s3_class(inserted[[3]], "box")
+
+  prev_coords <- prConvert2Coords(fc$groups)
+  next_coords <- prConvert2Coords(fc$groups2)
+  expected_x <- convertX(prev_coords$x, "npc", valueOnly = TRUE) +
+    (convertX(next_coords$x, "npc", valueOnly = TRUE) -
+      convertX(prev_coords$x, "npc", valueOnly = TRUE)) * .5
+  expected_y <- convertY(prev_coords$y, "npc", valueOnly = TRUE) +
+    (convertY(next_coords$y, "npc", valueOnly = TRUE) -
+      convertY(prev_coords$y, "npc", valueOnly = TRUE)) * .5
+
+  inserted_coords <- coords(inserted[[3]])
+  expect_equal(convertX(inserted_coords$x, "npc", valueOnly = TRUE), expected_x, tolerance = .01)
+  expect_equal(convertY(inserted_coords$y, "npc", valueOnly = TRUE), expected_y, tolerance = .01)
+})
+
+test_that("S3 Mutations: insert preserves names between grouped stages", {
+  fc <- flowchart(
+    groups = list(
+      boxGrob("Group1", x = .3, y = .7),
+      boxGrob("Group2", x = .7, y = .7)
+    ),
+    groups2 = list(
+      boxGrob("Excluded 1", x = .3, y = .5),
+      boxGrob("Excluded 2", x = .7, y = .5)
+    )
+  )
+
+  inserted <- insert(fc, list(followup = boxGrob("Followup")), after = "groups")
+
+  expect_equal(names(inserted), c("groups", "followup", "groups2"))
+  expect_s3_class(inserted$followup, "box")
+  expect_equal(convertY(coords(inserted$followup)$y, "npc", valueOnly = TRUE), .6, tolerance = .01)
+})
+
+test_that("S3 Mutations: insert(on_top = TRUE) marks the box and survives align/move", {
+  fc <- flowchart(
+    rando = boxGrob("Randomised", x = .5, y = .9),
+    groups = list(
+      boxGrob("Group1", x = .3, y = .6),
+      boxGrob("Group2", x = .7, y = .6)
+    )
+  )
+
+  inserted <- insert(
+    fc,
+    list(heading = boxGrob("Allocation")),
+    after = "rando",
+    on_top = TRUE
+  )
+
+  # The marker is set on the inserted box, not on the existing ones
+  expect_true(isTRUE(attr(inserted$heading, "draw_on_top")))
+  expect_null(attr(inserted$rando, "draw_on_top"))
+
+  # Default (no on_top) leaves the box unmarked
+  plain <- insert(fc, list(plain = boxGrob("Plain")), after = "rando")
+  expect_false(isTRUE(attr(plain$plain, "draw_on_top")))
+
+  # The marker survives subsequent positioning (align + move both go via moveBox)
+  positioned <- inserted |>
+    align(axis = "x", reference = "groups", subelement = "heading", position = "center") |>
+    align(axis = "y", reference = "groups", subelement = "heading", position = "top") |>
+    move(subelement = "heading", y = unit(0.01, "npc"), space = "relative")
+  expect_true(isTRUE(attr(positioned$heading, "draw_on_top")))
+
+  # Drawing the marked flowchart completes without error
+  grid::grid.newpage()
+  expect_silent(print(positioned))
+})
+
+test_that("S3 Mutations: phaseLabel places a stage label above the stage", {
+  pdf(NULL)
+  on.exit(dev.off())
+  grid.newpage()
+
+  sw <- unit(40, "mm")
+  fc <- flowchart(
+    rando = boxGrob("Randomised", x = .5, y = .9),
+    groups = list(
+      boxGrob("Intervention", x = .3, y = .6, width = sw),
+      boxGrob("Control", x = .7, y = .6, width = sw)
+    )
+  ) |>
+    phaseLabel("groups", "Allocation")
+
+  # Added after the stage, named, and marked to draw on top
+  expect_equal(names(fc), c("rando", "groups", "groups_label"))
+  expect_s3_class(fc$groups_label, "box")
+  expect_true(isTRUE(attr(fc$groups_label, "draw_on_top")))
+
+  # Centred on the stage horizontally
+  stage_x <- convertX(prConvert2Coords(fc$groups)$x, "npc", valueOnly = TRUE)
+  label_x <- convertX(coords(fc$groups_label)$x, "npc", valueOnly = TRUE)
+  expect_equal(label_x, stage_x, tolerance = .01)
+
+  # Bottom edge dips just below the stage top (sits slightly above, overlapping)
+  stage_top <- convertY(prConvert2Coords(fc$groups)$top, "npc", valueOnly = TRUE)
+  label_bottom <- convertY(coords(fc$groups_label)$bottom, "npc", valueOnly = TRUE)
+  expect_lt(label_bottom, stage_top)
+  expect_gt(label_bottom, stage_top - 0.1)
+})
+
+test_that("S3 Mutations: phaseLabel width adapts to arm count and honours width", {
+  pdf(NULL)
+  on.exit(dev.off())
+  grid.newpage()
+
+  sw <- unit(40, "mm")
+
+  # Two arms -> narrow label (gap + corner lap), narrower than the full stage
+  fc2 <- flowchart(
+    g = list(boxGrob("A", x = .3, y = .5, width = sw),
+             boxGrob("B", x = .7, y = .5, width = sw))
+  ) |>
+    phaseLabel("g", "Label")
+  stage_w2 <- convertWidth(prConvert2Coords(fc2$g)$width, "npc", valueOnly = TRUE)
+  label_w2 <- convertWidth(coords(fc2$g_label)$width, "npc", valueOnly = TRUE)
+  expect_lt(label_w2, stage_w2)
+
+  # Three arms -> banner spanning the full stage width
+  fc3 <- flowchart(
+    g = list(boxGrob("A", x = .2, y = .5, width = sw),
+             boxGrob("B", x = .5, y = .5, width = sw),
+             boxGrob("C", x = .8, y = .5, width = sw))
+  ) |>
+    phaseLabel("g", "Label")
+  stage_w3 <- convertWidth(prConvert2Coords(fc3$g)$width, "npc", valueOnly = TRUE)
+  label_w3 <- convertWidth(coords(fc3$g_label)$width, "npc", valueOnly = TRUE)
+  expect_equal(label_w3, stage_w3, tolerance = .02)
+
+  # Explicit width override is honoured
+  fc4 <- flowchart(
+    g = list(boxGrob("A", x = .3, y = .5, width = sw),
+             boxGrob("B", x = .7, y = .5, width = sw))
+  ) |>
+    phaseLabel("g", "Label", width = unit(25, "mm"))
+  expect_equal(convertWidth(coords(fc4$g_label)$width, "mm", valueOnly = TRUE), 25, tolerance = .5)
+
+  # Drawing a multi-arm banner completes without error
+  expect_silent(print(fc3))
+})
+
+test_that("S3 Mutations: phaseLabel supports nested arm lists", {
+  pdf(NULL)
+  on.exit(dev.off())
+  grid.newpage()
+
+  # Flowchart with nested arms (a list of boxes as one arm)
+  fc <- flowchart(
+    rando = boxGrob("Randomised", x = .5, y = .8),
+    arms = list(
+      list(boxGrob("Arm 1a", x = .3, y = .4),
+           boxGrob("Arm 1b", x = .4, y = .4)),
+      boxGrob("Arm 2", x = .7, y = .4)
+    )
+  )
+
+  # Should not error
+  expect_silent({
+    fc_labeled <- phaseLabel(fc, "arms", "Allocation")
+  })
+  expect_equal(names(fc_labeled), c("rando", "arms", "arms_label"))
+})
+
 test_that("Complex chaining example", {
   # Mock components
   org_cohort <- boxGrob("Stockholm", x = .5, y = .9)

@@ -80,18 +80,18 @@ box <- boxGrob("A cool reference box",
 )
 
 # Create a group of boxes to align
-boxes <- list(
+boxes <- flowchart(
   another_box = boxGrob("A horizontal box", x = .1, y = .5),
   yet_another_box = boxGrob("Another horizontal box", x = .8, y = .3)
 )
 
-# Align the group and then individual boxes within that group
-# (do not pipe the list into the function, as the first argument is `reference`)
-aligned_boxes <- alignHorizontal(boxes, reference = box, position = "right") |>
-  alignVertical(reference = .5, position = "center")
+# Align the group in pipe style
+aligned_boxes <- boxes |>
+  align(axis = "x", reference = box, position = "right") |>
+  align(axis = "y", reference = .5, position = "center")
 
 # Example: align a nested element inside a complex list using a deep path
-complex_list <- list(
+complex_list <- flowchart(
   arms = list(
     early = list(boxGrob("Early", x = .2, y = .4)),
     late = list(boxGrob("Late", x = .8, y = .2))
@@ -104,7 +104,8 @@ complex_list <- list(
 
 # Align the first detail element to the early arm by deep path
 complex_list <- complex_list |>
-  alignHorizontal(
+  align(
+    axis = "x",
     reference = c("arms", "early"),
     position = "center",
     subelement = c("detail", 1)
@@ -130,6 +131,7 @@ Other flowchart components:
 \code{\link[=insert]{insert()}},
 \code{\link[=move]{move()}},
 \code{\link[=moveBox]{moveBox()}},
+\code{\link[=phaseLabel]{phaseLabel()}},
 \code{\link[=spread]{spread()}}
 }
 \concept{flowchart components}

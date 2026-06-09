@@ -2,8 +2,7 @@
 % Please edit documentation in R/boxGrobs_spread_npc_norm_helpers.R
 \name{prGetBoxAxisDefaults}
 \alias{prGetBoxAxisDefaults}
-\title{Get default from/to values for an axis
-Get default from/to values for an axis}
+\title{Get default from/to values for an axis}
 \usage{
 prGetBoxAxisDefaults(axis = c("x", "y"))
 }

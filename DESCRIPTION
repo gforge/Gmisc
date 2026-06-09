@@ -1,5 +1,5 @@
 Package: Gmisc
-Version: 3.3.0
+Version: 3.4.0
 Title: Descriptive Statistics, Transition Plots, and More
 Authors@R: c(
     person(given = "Max", family = "Gordon",
@@ -46,7 +46,8 @@ Suggests:
     dplyr,
     jsonlite,
     testthat,
-    tidyselect
+    tidyselect,
+    webshot2
 Encoding: UTF-8
 NeedsCompilation: yes
 LinkingTo: Rcpp

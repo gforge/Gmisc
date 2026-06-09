@@ -50,26 +50,32 @@ append.Gmisc_list_of_boxes <- function(x, values, after = length(x)) {
 #' @param ... Not used.
 #' @param after The name or index of the box after which to insert.
 #' @param before The name or index of the box before which to insert.
+#' @param on_top If `TRUE` the inserted box is marked to be drawn *on top* of the
+#'  other boxes (after them and after any connections), regardless of where it
+#'  sits in the list. This is useful for overlay boxes such as CONSORT-style
+#'  stage headings that should remain visible even when they overlap the
+#'  surrounding boxes. The marker is preserved through subsequent
+#'  [`move`]/[`align`] operations.
 #'
 #' @return The updated list of boxes with the new element inserted.
 #' @export
 #' @family flowchart components
-insert <- function(x, element, ..., after = NULL, before = NULL) {
+insert <- function(x, element, ..., after = NULL, before = NULL, on_top = FALSE) {
   UseMethod("insert")
 }
 
 #' @export
 #' @rdname insert
-insert.default <- function(x, element, ..., after = NULL, before = NULL) {
+insert.default <- function(x, element, ..., after = NULL, before = NULL, on_top = FALSE) {
   if (is.list(x) && !inherits(x, "box")) {
-    return(insert(prConvertListToBoxList(x), element, ..., after = after, before = before))
+    return(insert(prConvertListToBoxList(x), element, ..., after = after, before = before, on_top = on_top))
   }
   stop("insert() expects a list of boxes as first argument")
 }
 
 #' @export
 #' @rdname insert
-insert.Gmisc_list_of_boxes <- function(x, element, ..., after = NULL, before = NULL) {
+insert.Gmisc_list_of_boxes <- function(x, element, ..., after = NULL, before = NULL, on_top = FALSE) {
   if (!xor(is.null(after), is.null(before))) {
     stop("You must specify either 'after' or 'before' (but not both).")
   }
@@ -81,6 +87,10 @@ insert.Gmisc_list_of_boxes <- function(x, element, ..., after = NULL, before = N
   }
   if (!inherits(element, "box")) {
     stop("inserted element must be a box")
+  }
+
+  if (isTRUE(on_top)) {
+    attr(element, "draw_on_top") <- TRUE
   }
 
   # Find insertion index
@@ -116,8 +126,26 @@ insert.Gmisc_list_of_boxes <- function(x, element, ..., after = NULL, before = N
 
   if (!is.null(prev_box) && !is.null(next_box)) {
     # Position between
-    pc <- coords(prev_box)
-    nc <- coords(next_box)
+    pc <- tryCatch(
+      prConvert2Coords(prev_box),
+      error = function(e) {
+        stop(
+          "insert() could not determine coordinates for the previous flowchart element: ",
+          conditionMessage(e),
+          call. = FALSE
+        )
+      }
+    )
+    nc <- tryCatch(
+      prConvert2Coords(next_box),
+      error = function(e) {
+        stop(
+          "insert() could not determine coordinates for the next flowchart element: ",
+          conditionMessage(e),
+          call. = FALSE
+        )
+      }
+    )
 
     # Determine orientation?
     # Heuristic: mostly different X -> horizontal split

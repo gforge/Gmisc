@@ -26,6 +26,12 @@
 #'   The function will return the original list with the targeted element(s)
 #'   replaced by their spread version(s).
 #'
+#' @details
+#' `spreadVertical()`/`spreadHorizontal()` return updated box objects. They do
+#' not mutate box objects that are already bound to variables. To use the new
+#' coordinates in subsequent operations (for example `connectGrob()`), assign
+#' the result and use those returned boxes.
+#'
 #' @return A `list` with the boxes that have been spread.
 #'
 #' @md

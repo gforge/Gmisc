@@ -1,5 +1,15 @@
 NEWS for the Gmisc package
 
+## Changes for 3.4.0
+
+- Added `phaseLabel()` for flowchart box lists: a one-call-per-stage helper that adds a CONSORT-style phase label (e.g. *Allocation*, *Follow-up*, *Analysis*) centred between a stage's arms, sitting slightly above it and drawn on top. The label width adapts to the stage — spanning the central gap (plus a small corner overlap) for two arms, or the full stage width as a banner for three or more arms — and can be set explicitly via `width`. It correctly handles nested arm lists (arms that are themselves lists of boxes) by resolving their merged bounding box.
+- Added `on_top` to `insert()` for flowchart box lists. A box inserted with `insert(..., on_top = TRUE)` is drawn on top of the other boxes and connections, regardless of its position in the list, and the marker is preserved through subsequent `move()`/`align()` operations. This is the lower-level overlay mechanism that `phaseLabel()` builds on.
+- `insert()` now resolves grouped (list) neighbours via their merged bounding box, so a box can be inserted between grouped stages without error.
+- Added a CONSORT phase-label example to the grid-based flowchart vignette showing `phaseLabel()` centred between randomisation arms.
+- Updated flowchart examples to emphasize the `flowchart()` + pipe (`|>`) style API in `inst/examples/connectGrob_example.R`, `inst/examples/spreadBox_ex.R`, and `inst/examples/alignBox_ex.R`.
+- Clarified spread/connect documentation to state that spread/align return updated objects (no in-place mutation) and that connectors should use the returned boxes.
+- Improved interactive example ergonomics by pausing between graph pages in multi-plot examples.
+
 ## Changes for 3.3.0
 
 - Added `equalizeWidths()` for flowchart box lists, allowing selected boxes (including nested `subelement` paths and list-of-boxes targets) to share a common width while preserving center positions.
