@@ -18,6 +18,12 @@
 #' @param box_gp The \code{\link[grid]{gpar}} style to apply to the box function of `box_fn` below.
 #' @param box_fn Function to create box for the text. Parameters of `x=0.5`, `y=0.5` and `box_gp` will
 #'  be passed to this function and return a \code{grob} object.
+#' @param box_fn_args An optional named list of extra arguments forwarded to `box_fn`. This is useful
+#'  for controlling parameters such as the corner radius `r` of \code{\link[grid]{roundrectGrob}} so that
+#'  all boxes have the same absolute corner radius regardless of their size. Defaults to
+#'  \code{list(r = grid::unit(5, "pt"))} which gives every box a fixed 5 pt corner radius
+#'  (approximately equivalent to the widely-used 5 px CSS \code{border-radius}).
+#'  You can override per box or set a global default via \code{options(boxGrobFnArgs = list(r = grid::unit(5, "mm")))}.
 #' @seealso The package provides several convenience shape helpers that can be
 #' passed to `boxGrob(..., box_fn = ...)`: \code{boxDiamondGrob},
 #' \code{boxEllipseGrob}, \code{boxRackGrob}, \code{boxServerGrob},
@@ -56,6 +62,7 @@ boxGrob <- function(label,
                     txt_padding = getOption("boxGrobTxtPadding", default = unit(6 * ifelse(is.null(txt_gp$cex), 1, txt_gp$cex), "mm")),
                     box_gp = getOption("boxGrob", default = gpar(fill = "white")),
                     box_fn = roundrectGrob,
+                    box_fn_args = getOption("boxGrobFnArgs", default = list(r = unit(5, "pt"))),
                     name = NULL,
                     badge_label = NULL,
                     badge_position = "top",
@@ -66,6 +73,9 @@ boxGrob <- function(label,
     checkNumeric(label),
     is.language(label)
   )
+  if (!is.list(box_fn_args)) {
+    stop("`box_fn_args` must be a named list.", call. = FALSE)
+  }
   assert_unit(y)
   assert_unit(x)
   assert_unit(width)
@@ -83,10 +93,20 @@ boxGrob <- function(label,
   x <- prAsUnit(x)
   y <- prAsUnit(y)
 
+  # Filter box_fn_args to only the parameters box_fn actually accepts.
+  # This lets the default r = unit(5, "pt") be silently ignored for custom
+  # shape functions (e.g. diamond_rounded_box_fn) that have no `r` parameter.
+  # Functions that accept `...` receive all args unchanged.
+  fn_formals <- tryCatch(formals(box_fn), error = function(e) NULL)
+  if (!is.null(fn_formals) && !"..." %in% names(fn_formals)) {
+    accepted <- names(fn_formals)
+    box_fn_args <- box_fn_args[names(box_fn_args) %in% accepted]
+  }
+
   # Call the box function early to collect any suggested padding attributes
   # (e.g., diamonds may request extra padding). This allows the padding to
   # influence text layout and the computed box width/height.
-  rect <- do.call(box_fn, list(x = .5, y = .5, gp = box_gp))
+  rect <- do.call(box_fn, c(list(x = .5, y = .5, gp = box_gp), box_fn_args))
   extra_pad <- attr(rect, "box_fn_padding")
   if (!is.null(extra_pad)) {
     tryCatch(

@@ -9,6 +9,9 @@ NEWS for the Gmisc package
 - Updated flowchart examples to emphasize the `flowchart()` + pipe (`|>`) style API in `inst/examples/connectGrob_example.R`, `inst/examples/spreadBox_ex.R`, and `inst/examples/alignBox_ex.R`.
 - Clarified spread/connect documentation to state that spread/align return updated objects (no in-place mutation) and that connectors should use the returned boxes.
 - Improved interactive example ergonomics by pausing between graph pages in multi-plot examples.
+- Added `box_fn_args` parameter to `boxGrob()` for passing extra arguments directly to the box drawing function. The default is now `list(r = unit(5, "pt"))`, giving every box a fixed 5 pt corner radius (approximately equivalent to the widely-used 5 px CSS `border-radius`) regardless of box size — solving the issue where larger boxes had visibly rounder corners than smaller ones. Override per box or globally via `options(boxGrobFnArgs = list(...))`.
+- Added `equalizeHeights()` for flowchart box lists, mirroring the existing `equalizeWidths()`. It sets selected boxes to a shared height (defaulting to the tallest among the selection) and supports the same `subelement` path syntax as `equalizeWidths()`.
+
 
 ## Changes for 3.3.0
 
