@@ -13,9 +13,11 @@
 #'  (1) you only want to change the justification in the vertical direction you can retain the
 #'  existing justification by using `NA`, e.g. `c(NA, 'top')`, (2) if you specify only one string
 #'  and that string is either `top` or `bottom` it will assume vertical justification.
-#' @param subelement If a `list` of boxes is provided, this can be a name, index, a deep path (e.g. `c("detail", 1)`) or a
-#'  vector of names/indices to target a single nested element to move. You can also pass
-#'  multiple targets as a list of paths (e.g. `list(c("detail", 1), c("followup", 1))`).
+#' @param subelement If a `list` of boxes is provided, this can be a name,
+#'  index, a deep path (e.g. `c("detail", 1)`), a regex selector created with
+#'  [stringr::regex()] that is matched against top-level names
+#'  (e.g. `stringr::regex("^groups")`), or a list of any of the above.
+#'  Bare character strings are always treated as literal paths.
 #'  The function will return the original list with the targeted element(s) replaced by their moved version(s).
 #' @return The element with updated viewport and coordinates
 #'
@@ -45,7 +47,7 @@ moveBox <- function(element,
       }
 
       # Normalize into list of paths
-      paths <- if (is.list(subelement) && all(sapply(subelement, is.atomic))) subelement else list(subelement)
+      paths <- prResolveSubelementSelector(subelement, element)
 
       for (path in paths) {
         norm_seg <- function(s) {

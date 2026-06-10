@@ -4,10 +4,12 @@
 #' levels so corresponding boxes have consistent visual width and center points.
 #'
 #' @param x A list of boxes (or nested lists of boxes). Can also be a single box.
-#' @param subelement Optional target(s) inside `x`.
-#'  Can be a single path (e.g. `c("groups", 1)`) or a list of paths
-#'  (e.g. `list(c("groups", 1), c("groups2", 1))`).
-#'  If `NULL`, all top-level boxes in `x` are used.
+#' @param subelement Optional target(s) inside `x`. Can be a single path
+#'  (e.g. `"groups"` or `c("groups", 1)`), a list of paths
+#'  (e.g. `list(c("groups", 1), c("groups2", 1))`), or a regex selector
+#'  created with [stringr::regex()] that is matched against top-level names
+#'  (e.g. `stringr::regex("^groups")`). Bare character strings are always
+#'  treated as literal paths. If `NULL`, all top-level boxes in `x` are used.
 #' @param width Optional width to apply. If `NULL`, the maximum current width
 #'  among selected boxes is used.
 #'
@@ -57,10 +59,7 @@ equalizeWidths <- function(x, subelement = NULL, width = NULL) {
       idx <- which(vapply(obj, inherits, logical(1), "box"))
       return(lapply(idx, as.list))
     }
-    if (is.list(subelement) && all(vapply(subelement, is.atomic, logical(1)))) {
-      return(subelement)
-    }
-    list(subelement)
+    prResolveSubelementSelector(subelement, obj)
   }
 
   fetch_target <- function(obj, path) {
@@ -173,10 +172,12 @@ prSetBoxDimensions <- function(element, width = NULL, height = NULL) {
 #' of how much text they contain.
 #'
 #' @param x A list of boxes (or nested lists of boxes). Can also be a single box.
-#' @param subelement Optional target(s) inside `x`.
-#'  Can be a single path (e.g. `c("groups", 1)`) or a list of paths
-#'  (e.g. `list(c("groups", 1), c("groups2", 1))`).
-#'  If `NULL`, all top-level boxes in `x` are used.
+#' @param subelement Optional target(s) inside `x`. Can be a single path
+#'  (e.g. `"groups"` or `c("groups", 1)`), a list of paths
+#'  (e.g. `list(c("groups", 1), c("groups2", 1))`), or a regex selector
+#'  created with [stringr::regex()] that is matched against top-level names
+#'  (e.g. `stringr::regex("^groups")`). Bare character strings are always
+#'  treated as literal paths. If `NULL`, all top-level boxes in `x` are used.
 #' @param height Optional height to apply. If `NULL`, the maximum current height
 #'  among selected boxes is used.
 #'
@@ -222,10 +223,7 @@ equalizeHeights <- function(x, subelement = NULL, height = NULL) {
       idx <- which(vapply(obj, inherits, logical(1), "box"))
       return(lapply(idx, as.list))
     }
-    if (is.list(subelement) && all(vapply(subelement, is.atomic, logical(1)))) {
-      return(subelement)
-    }
-    list(subelement)
+    prResolveSubelementSelector(subelement, obj)
   }
 
   fetch_target <- function(obj, path) {
