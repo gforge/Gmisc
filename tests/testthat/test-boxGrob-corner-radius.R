@@ -22,13 +22,11 @@ test_that("boxGrob box_fn_args with fixed r produces same-sized corners for diff
 })
 
 test_that("boxGrob respects the boxGrobFnArgs global option", {
-  withr::with_options(
-    list(boxGrobFnArgs = list(r = unit(3, "mm"))),
-    {
-      b <- boxGrob("Option test")
-      expect_s3_class(b, "box")
-    }
-  )
+  old_opts <- options(boxGrobFnArgs = list(r = unit(3, "mm")))
+  on.exit(options(old_opts))
+
+  b <- boxGrob("Option test")
+  expect_s3_class(b, "box")
 })
 
 test_that("boxGrob rejects non-list box_fn_args", {

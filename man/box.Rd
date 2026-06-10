@@ -21,6 +21,7 @@ boxGrob(
     ifelse(is.null(txt_gp$cex), 1, txt_gp$cex), "mm")),
   box_gp = getOption("boxGrob", default = gpar(fill = "white")),
   box_fn = roundrectGrob,
+  box_fn_args = getOption("boxGrobFnArgs", default = list(r = unit(5, "pt"))),
   name = NULL,
   badge_label = NULL,
   badge_position = "top",
@@ -63,6 +64,13 @@ a global default with \code{options(boxGrobTxtPadding = ...)}.}
 
 \item{box_fn}{Function to create box for the text. Parameters of `x=0.5`, `y=0.5` and `box_gp` will
 be passed to this function and return a \code{grob} object.}
+
+\item{box_fn_args}{An optional named list of extra arguments forwarded to `box_fn`. This is useful
+for controlling parameters such as the corner radius `r` of \code{\link[grid]{roundrectGrob}} so that
+all boxes have the same absolute corner radius regardless of their size. Defaults to
+\code{list(r = grid::unit(5, "pt"))} which gives every box a fixed 5 pt corner radius
+(approximately equivalent to the widely-used 5 px CSS \code{border-radius}).
+You can override per box or set a global default via \code{options(boxGrobFnArgs = list(r = grid::unit(5, "mm")))}.}
 
 \item{name}{a character identifier for the \code{grob}. Used to find the \code{grob} on the display
 list and/or as a child of another grob.}
@@ -121,6 +129,7 @@ Other flowchart components:
 \code{\link[=connectGrob]{connectGrob()}},
 \code{\link[=coords]{coords()}},
 \code{\link[=distance]{distance()}},
+\code{\link[=equalizeHeights]{equalizeHeights()}},
 \code{\link[=equalizeWidths]{equalizeWidths()}},
 \code{\link[=flowchart]{flowchart()}},
 \code{\link[=insert]{insert()}},

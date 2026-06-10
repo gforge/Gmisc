@@ -51,6 +51,7 @@ Other flowchart components:
 \code{\link[=connectGrob]{connectGrob()}},
 \code{\link[=coords]{coords()}},
 \code{\link[=distance]{distance()}},
+\code{\link[=equalizeHeights]{equalizeHeights()}},
 \code{\link[=equalizeWidths]{equalizeWidths()}},
 \code{\link[=insert]{insert()}},
 \code{\link[=move]{move()}},
