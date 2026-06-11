@@ -82,6 +82,14 @@
 #'   A [grid::unit()] or numeric (interpreted as millimeters). Default `unit(3, "mm")`.
 #' @param side For `type = "side"`, which side of the start box to exit from.
 #'   `"auto"` (default) picks the side that faces the end box.
+#' @param end_side For `type = "side"`, which side of the end box to enter.
+#'   `"auto"` (default) picks the side that faces the start box.
+#' @param side_fan_in_route For grouped `connect(..., type = "side")` calls in
+#'   the S3 flowchart API, where to draw the shared vertical return path.
+#'   `"outside"` offsets it away from the source boxes; `"edge"` draws it on
+#'   the source box edge.
+#' @param side_fan_in_offset Offset used when `side_fan_in_route = "outside"`.
+#'   Numeric values are interpreted as millimeters.
 #' @param label Optional text label for one-to-one connectors (e.g. `"yes"` / `"no"`).
 #'   Only supported when both `start` and `end` are single boxes.
 #' @param label_gp A [grid::gpar()] controlling label appearance.
@@ -114,6 +122,9 @@ connectGrob <- function(
   smooth = FALSE,
   corner_radius = unit(3, "mm"),
   side = c("auto", "left", "right"),
+  end_side = c("auto", "left", "right"),
+  side_fan_in_route = c("outside", "edge"),
+  side_fan_in_offset = unit(5, "mm"),
   label = NULL,
   label_gp = grid::gpar(cex = 0.9),
   label_bg_gp = grid::gpar(fill = "white", col = NA),
@@ -124,6 +135,8 @@ connectGrob <- function(
   type <- match.arg(type)
   label_pos <- match.arg(label_pos)
   side <- match.arg(side)
+  end_side <- match.arg(end_side)
+  side_fan_in_route <- match.arg(side_fan_in_route)
 
   if (!is.null(arrow_size)) {
     ends_map <- c("1" = "first", "2" = "last", "3" = "both")
@@ -216,6 +229,9 @@ connectGrob <- function(
     smooth = smooth,
     corner_radius = corner_radius,
     side = side,
+    end_side = end_side,
+    side_fan_in_route = side_fan_in_route,
+    side_fan_in_offset = side_fan_in_offset,
     label = label,
     label_gp = label_gp,
     label_bg_gp = label_bg_gp,

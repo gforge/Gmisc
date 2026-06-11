@@ -27,6 +27,9 @@ connectGrob(
   smooth = FALSE,
   corner_radius = unit(3, "mm"),
   side = c("auto", "left", "right"),
+  end_side = c("auto", "left", "right"),
+  side_fan_in_route = c("outside", "edge"),
+  side_fan_in_offset = unit(5, "mm"),
   label = NULL,
   label_gp = grid::gpar(cex = 0.9),
   label_bg_gp = grid::gpar(fill = "white", col = NA),
@@ -85,6 +88,17 @@ A \code{\link[grid:unit]{grid::unit()}} or numeric (interpreted as millimeters).
 \item{side}{For \code{type = "side"}, which side of the start box to exit from.
 \code{"auto"} (default) picks the side that faces the end box.}
 
+\item{end_side}{For \code{type = "side"}, which side of the end box to enter.
+\code{"auto"} (default) picks the side that faces the start box.}
+
+\item{side_fan_in_route}{For grouped \code{connect(..., type = "side")} calls in
+the S3 flowchart API, where to draw the shared vertical return path.
+\code{"outside"} offsets it away from the source boxes; \code{"edge"} draws it on
+the source box edge.}
+
+\item{side_fan_in_offset}{Offset used when \code{side_fan_in_route = "outside"}.
+Numeric values are interpreted as millimeters.}
+
 \item{label}{Optional text label for one-to-one connectors (e.g. \code{"yes"} / \code{"no"}).
 Only supported when both \code{start} and \code{end} are single boxes.}
 
@@ -107,9 +121,11 @@ as millimeters.}
 \item{recording}{Passed to [grid::grid.draw()] when rendering each element in
 the list. Defaults to `TRUE` (record drawing for later replay).}
 
-\item{from}{The name (string) or index of the start box in `x`. Multiple values allowed.}
+\item{from}{The name (string), index, list of selectors, or `stringr::regex()`
+selector for the start box in `x`. Multiple values allowed.}
 
-\item{to}{The name (string) or index of the end box in `x`. Multiple values allowed.}
+\item{to}{The name (string), index, list of selectors, or `stringr::regex()`
+selector for the end box in `x`. Multiple values allowed.}
 }
 \value{
 \itemize{
@@ -290,6 +306,7 @@ Other flowchart components:
 \code{\link[=move]{move()}},
 \code{\link[=moveBox]{moveBox()}},
 \code{\link[=phaseLabel]{phaseLabel()}},
+\code{\link[=position]{position()}},
 \code{\link[=spread]{spread()}}
 }
 \concept{flowchart components}

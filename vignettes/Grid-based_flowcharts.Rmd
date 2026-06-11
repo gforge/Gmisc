@@ -1,7 +1,7 @@
 ---
 title: "Building a flowchart"
 author: "Max Gordon"
-date: "28 May 2026"
+date: "`r Sys.Date()`"
 output:
   rmarkdown::html_vignette:
     toc: true
@@ -253,6 +253,93 @@ flowchart(
 options(old_opts)
 ```
 
+# Dotted return arrows for censored participants
+
+In time-to-event analyses, participants who leave follow-up may still
+contribute information until censoring. Dotted side-entry arrows can show that
+these participants return to the analysis set instead of being dropped from the
+study.
+
+```{r consort_dotted_return_arrows, fig.width = 10, fig.height = 9}
+old_opts <- options(boxGrobTxtPadding = unit(1, "mm"))
+
+main_gp <- gpar(fill = "white", col = "black")
+main_con_gp <- gpar(col = "black", fill = "black")
+dotted_gp <- gpar(col = "black", fill = "black", lty = 2)
+arm_from <- .05
+arm_to <- .75
+box_width <- unit(56, "mm")
+ex_width <- unit(36, "mm")
+ex_gap <- unit(5, "mm")
+ex_offset <- box_width / 2 + ex_width / 2 + ex_gap
+
+grid.newpage()
+flowchart(
+  rando = boxGrob("Randomised\nN = 197", box_gp = main_gp),
+  groups = list(
+    boxGrob("96 assigned to\ndecompressive craniectomy\nplus best medical treatment\n95 received allocated\nintervention",
+            box_gp = main_gp),
+    boxGrob("101 assigned to best medical\ntreatment alone\n93 received allocated\nintervention",
+            box_gp = main_gp)
+  ),
+  ex1 = list(
+    boxGrob("8 died\n1 withdrew\nconsent", just = "left", box_gp = main_gp),
+    boxGrob("18 died\n1 withdrew\nconsent", just = "left", box_gp = main_gp)
+  ),
+  groups1 = list(
+    boxGrob("87 completed day 30\nfollow-up", box_gp = main_gp),
+    boxGrob("79 completed day 30\nfollow-up", box_gp = main_gp)
+  ),
+  ex2 = list(
+    boxGrob("8 died", just = "left", box_gp = main_gp),
+    boxGrob("9 died\n1 withdrew\nconsent\n2 lost to follow-up",
+            just = "left", box_gp = main_gp)
+  ),
+  groups2 = list(
+    boxGrob("79 completed day 180\nfollow-up", box_gp = main_gp),
+    boxGrob("68 completed day 180\nfollow-up", box_gp = main_gp)
+  ),
+  ex3 = list(
+    boxGrob("5 died\n2 lost to\nfollow-up", just = "left", box_gp = main_gp),
+    boxGrob("3 died\n2 withdrew\nconsent\n6 lost to follow-up",
+            just = "left", box_gp = main_gp)
+  ),
+  groups3 = list(
+    boxGrob("95 included in the primary\noutcome analysis\n1 withdrew consent",
+            box_gp = main_gp),
+    boxGrob("95 included in the primary\noutcome analysis\n2 withdrew consent\n2 lost to follow-up",
+            box_gp = main_gp)
+  )
+) |>
+  spread(axis = "y", margin = unit(0.02, "npc")) |>
+  equalizeWidths(subelement = stringr::regex("^groups"), width = box_width) |>
+  equalizeHeights(subelement = stringr::regex("^groups")) |>
+  equalizeWidths(subelement = stringr::regex("^ex"), width = ex_width) |>
+  spread(subelement = stringr::regex("^groups"), axis = "x", from = arm_from, to = arm_to,
+         type = "center") |>
+  move(subelement = "rando",
+       x = position("groups", position = "center", type = "x")) |>
+  move(subelement = list(c("ex1", 1), c("ex2", 1), c("ex3", 1)),
+       x = position(c("groups", 1), position = "center", type = "x") + ex_offset) |>
+  move(subelement = list(c("ex1", 2), c("ex2", 2), c("ex3", 2)),
+       x = position(c("groups", 2), position = "center", type = "x") + ex_offset) |>
+  connect("rando", "groups", type = "N", lty_gp = main_con_gp, arrow_size = 3) |>
+  connect("groups", "groups1", type = "vertical", lty_gp = main_con_gp, arrow_size = 3) |>
+  connect("groups1", "groups2", type = "vertical", lty_gp = main_con_gp, arrow_size = 3) |>
+  connect("groups2", "groups3", type = "vertical", lty_gp = main_con_gp, arrow_size = 3) |>
+  connect("groups", "ex1", type = "L", lty_gp = main_con_gp, arrow_size = 3) |>
+  connect("groups1", "ex2", type = "L", lty_gp = main_con_gp, arrow_size = 3) |>
+  connect("groups2", "ex3", type = "L", lty_gp = main_con_gp, arrow_size = 3) |>
+  connect(stringr::regex("^ex"), "groups3", type = "side",
+          lty_gp = dotted_gp, arrow_size = 3,
+          side = "right",
+          end_side = "right",
+          side_fan_in_route = "outside",
+          side_fan_in_offset = ex_gap)
+
+options(old_opts)
+```
+
 # Consistent grouped widths and global text padding
 
 When building grouped flows (for example CONSORT-style diagrams), it is often useful to:
@@ -338,7 +425,7 @@ boxPropGrob("A box with proportions",
 
 The boxes have coordinates that allow you to easily draw lines to and from it. The coordinates are stored in the `coords` attribute. Below is an illustration of the coordinates for the two boxes:
 
-```{r, fig.height = 3, fig.width = 4}
+```{r box_coordinates, fig.height = 3, fig.width = 4}
 grid.newpage()
 smpl_bx <- boxGrob(
   label = "A simple box",

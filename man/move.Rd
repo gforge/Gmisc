@@ -43,6 +43,7 @@ Other flowchart components:
 \code{\link[=insert]{insert()}},
 \code{\link[=moveBox]{moveBox()}},
 \code{\link[=phaseLabel]{phaseLabel()}},
+\code{\link[=position]{position()}},
 \code{\link[=spread]{spread()}}
 }
 \concept{flowchart components}

@@ -37,6 +37,9 @@ moveBox <- function(element,
   to_unit <- function(u) if (is.unit(u) || is.null(u)) u else unit(u, "npc")
 
   if (is.list(element) && !inherits(element, "box")) {
+    x <- prResolvePositionValue(x, element)
+    y <- prResolvePositionValue(y, element)
+
     if (is.null(x) && is.null(y)) {
       stop("You have to specify at least x or y move parameters")
     }

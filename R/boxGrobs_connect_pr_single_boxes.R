@@ -95,6 +95,9 @@ prConnect1 <- function(
   smooth = FALSE,
   corner_radius = unit(3, "mm"),
   side = c("auto", "left", "right"),
+  end_side = c("auto", "left", "right"),
+  side_fan_in_route = c("outside", "edge"),
+  side_fan_in_offset = unit(5, "mm"),
   label = NULL,
   label_gp = grid::gpar(cex = 0.9),
   label_bg_gp = grid::gpar(fill = "white", col = NA),
@@ -110,6 +113,8 @@ prConnect1 <- function(
 
   label_pos <- match.arg(label_pos)
   side <- match.arg(side)
+  end_side <- match.arg(end_side)
+  side_fan_in_route <- match.arg(side_fan_in_route)
 
   start <- coords(start)
   end <- coords(end)
@@ -194,20 +199,23 @@ prConnect1 <- function(
       line$y <- unit.c(start$bottom, end$top)
     }
   } else if (type == "side") {
-    # Horizontal-first exit: leave from start side, travel horizontally,
-    # then drop vertically to the end box.
+    # Horizontal-first exit: leave from a selected start side, travel vertically
+    # outside/alongside the flow, then enter the selected side of the end box.
     end_is_right <- prConvertWidthToMm(getX4elmnt(end, "x")) > prConvertWidthToMm(start$x)
     exit_x <- if (side == "right" || (side == "auto" && end_is_right)) {
       start$right
     } else {
       start$left
     }
-    line$x <- unit.c(exit_x, getX4elmnt(end, "x"), getX4elmnt(end, "x"))
-    if (prConvertHeightToMm(start$y) > prConvertHeightToMm(end$y)) {
-      line$y <- unit.c(start$y, start$y, end$top)
+
+    start_is_left <- prConvertWidthToMm(start$x) < prConvertWidthToMm(getX4elmnt(end, "x"))
+    entry_x <- if (end_side == "left" || (end_side == "auto" && start_is_left)) {
+      end$left
     } else {
-      line$y <- unit.c(start$y, start$y, end$bottom)
+      end$right
     }
+    line$x <- unit.c(exit_x, exit_x, entry_x)
+    line$y <- unit.c(start$y, end$y, end$y)
   } else { # horizontal
     line$y <- unit.c(start$y, end$y)
     if (prConvertWidthToMm(getX4elmnt(start, "x")) < prConvertWidthToMm(getX4elmnt(end, "x"))) {

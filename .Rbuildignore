@@ -28,3 +28,4 @@ Gmisc/inst/extdata/Full_test_suite_files/*
 ^docs/
 ^README\.Rmd$
 ^README\.html$
+^Rplots.pdf
