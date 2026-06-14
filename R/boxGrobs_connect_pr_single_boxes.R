@@ -198,6 +198,13 @@ prConnect1 <- function(
     } else {
       line$y <- unit.c(start$bottom, end$top)
     }
+  } else if (type == "vertical_axis") {
+    axis_x <- getX4elmnt(start, "x")
+    target_x <- prClampUnit(axis_x, end$left, end$right, axis = "x")
+    edges <- prVerticalAxisEdges(start, end)
+
+    line$x <- unit.c(axis_x, target_x)
+    line$y <- unit.c(edges$start_edge, edges$target_edge)
   } else if (type == "side") {
     # Horizontal-first exit: leave from a selected start side, travel vertically
     # outside/alongside the flow, then enter the selected side of the end box.
@@ -216,6 +223,13 @@ prConnect1 <- function(
     }
     line$x <- unit.c(exit_x, exit_x, entry_x)
     line$y <- unit.c(start$y, end$y, end$y)
+  } else if (type == "horizontal_axis") {
+    axis_y <- start$y
+    target_y <- prClampUnit(axis_y, end$bottom, end$top, axis = "y")
+    edges <- prHorizontalAxisEdges(start, end)
+
+    line$x <- unit.c(edges$start_edge, edges$target_edge)
+    line$y <- unit.c(axis_y, target_y)
   } else { # horizontal
     line$y <- unit.c(start$y, end$y)
     if (prConvertWidthToMm(getX4elmnt(start, "x")) < prConvertWidthToMm(getX4elmnt(end, "x"))) {

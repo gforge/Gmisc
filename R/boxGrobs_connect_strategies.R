@@ -25,7 +25,9 @@ prGetConnectorStrategy <- function(start, end, type) {
     # Map types to camelCase for class names
     type_map <- c(
         "vertical" = "Vertical",
+        "vertical_axis" = "VerticalAxis",
         "horizontal" = "Horizontal",
+        "horizontal_axis" = "HorizontalAxis",
         "L" = "L",
         "-" = "Dash",
         "Z" = "Z",

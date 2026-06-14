@@ -15,8 +15,8 @@
 connectGrob(
   start,
   end,
-  type = c("vertical", "horizontal", "L", "-", "Z", "N", "fan_in_top", "fan_in_center",
-    "side"),
+  type = c("vertical", "vertical_axis", "horizontal", "horizontal_axis", "L", "-", "Z",
+    "N", "fan_in_top", "fan_in_center", "side"),
   subelmnt = c("right", "left"),
   lty_gp = getOption("connectGrob", default = gpar(fill = "black")),
   arrow_obj = getOption("connectGrobArrow", default = arrow(ends = "last", type =
@@ -163,8 +163,16 @@ custom connectors using the calculated coordinates.
 
 \code{type} controls the connector shape:
 \itemize{
-\item \code{"vertical"}: straight vertical connector
-\item \code{"horizontal"}: straight horizontal connector
+\item \code{"vertical"}: straight connector between vertical faces (top/bottom).
+If the box centers differ on the x-axis, the line is diagonal.
+\item \code{"vertical_axis"}: strict vertical connector preserving the source box
+center x-coordinate and projecting that 90-degree axis onto the target
+boundary. Source and target must be vertically separated.
+\item \code{"horizontal"}: straight connector between horizontal faces (left/right).
+If the box centers differ on the y-axis, the line is diagonal.
+\item \code{"horizontal_axis"}: strict horizontal connector preserving the source box
+center y-coordinate and projecting that 90-degree axis onto the target
+boundary. Source and target must be horizontally separated.
 \item \code{"L"}: vertical then horizontal (direction chosen automatically)
 \item \code{"-"}: straight horizontal connector at the end box y-position
 \item \code{"Z"}: horizontal connector with two 90-degree turns
@@ -182,6 +190,11 @@ arrow to represent the merged flow (e.g. a middle trunk bus).
 For \code{type = "N"} and \code{type = "fan_in_top"} with multi-box connections, a shared
 bend position is computed so that the horizontal segment aligns visually across
 all connectors.
+
+Use \code{"vertical_axis"} or \code{"horizontal_axis"} when the visual requirement is a
+true axis-aligned connector. Use \code{"vertical"} or \code{"horizontal"} when you want
+the shortest straight connector between the corresponding box faces and a
+diagonal line is acceptable.
 }
 
 \subsection{Labels}{
@@ -227,6 +240,8 @@ boxes <- flowchart(
 )
 
 # Connect using the pipe-friendly S3 API
+# Note: type = "vertical" connects top/bottom faces with a straight segment;
+# if x positions differ, the segment may be diagonal.
 boxes <- boxes |>
   connect(from = "start", to = "end", type = "vertical") |>
   connect(from = "start", to = "side", type = "horizontal") |>
@@ -257,6 +272,33 @@ flowchart(
   end = boxes$end
 ) |>
   connect(from = c("start", "S2", "S3"), to = "end", type = "fan_in_center") |>
+  print()
+
+# Start a fresh page for axis-preserving connector examples.
+grid.newpage()
+
+# vertical_axis is the axis-preserving alternative: it preserves each source's
+# x-position when landing on the boundary of a wide shared target.
+flowchart(
+  A = boxGrob("A", x = .25, y = .75),
+  B = boxGrob("B", x = .50, y = .75),
+  C = boxGrob("C", x = .75, y = .75),
+  target = boxGrob("Shared target", x = .5, y = .2, width = unit(.75, "npc"))
+) |>
+  connect(from = c("A", "B", "C"), to = "target", type = "vertical_axis") |>
+  print()
+
+grid.newpage()
+
+# horizontal_axis is the axis-preserving alternative: it preserves each
+# source's y-position when landing on the boundary of a tall shared target.
+flowchart(
+  A = boxGrob("A", x = .20, y = .25),
+  B = boxGrob("B", x = .20, y = .50),
+  C = boxGrob("C", x = .20, y = .75),
+  target = boxGrob("Shared\ntarget", x = .8, y = .5, height = unit(.75, "npc"))
+) |>
+  connect(from = c("A", "B", "C"), to = "target", type = "horizontal_axis") |>
   print()
 
 # Start a fresh page for spread/assignment example.

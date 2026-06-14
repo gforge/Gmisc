@@ -2,6 +2,7 @@ NEWS for the Gmisc package
 
 ## Changes for 3.4.0
 
+- Added `vertical_axis` and `horizontal_axis` connector types for flowcharts. These opt-in connectors preserve the source box's x- or y-axis and project it onto the target boundary, giving true 90-degree vertical/horizontal arrows for shared wide or tall target boxes. Existing `vertical` and `horizontal` connector behavior is unchanged.
 - Added `phaseLabel()` for flowchart box lists: a one-call-per-stage helper that adds a CONSORT-style phase label (e.g. *Allocation*, *Follow-up*, *Analysis*) centred between a stage's arms, sitting slightly above it and drawn on top. The label width adapts to the stage — spanning the central gap (plus a small corner overlap) for two arms, or the full stage width as a banner for three or more arms — and can be set explicitly via `width`. It correctly handles nested arm lists (arms that are themselves lists of boxes) by resolving their merged bounding box.
 - Added `on_top` to `insert()` for flowchart box lists. A box inserted with `insert(..., on_top = TRUE)` is drawn on top of the other boxes and connections, regardless of its position in the list, and the marker is preserved through subsequent `move()`/`align()` operations. This is the lower-level overlay mechanism that `phaseLabel()` builds on.
 - `insert()` now resolves grouped (list) neighbours via their merged bounding box, so a box can be inserted between grouped stages without error.

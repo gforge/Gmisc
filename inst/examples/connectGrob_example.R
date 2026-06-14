@@ -17,6 +17,8 @@ boxes <- flowchart(
 )
 
 # Connect using the pipe-friendly S3 API
+# Note: type = "vertical" connects top/bottom faces with a straight segment;
+# if x positions differ, the segment may be diagonal.
 boxes <- boxes |>
   connect(from = "start", to = "end", type = "vertical") |>
   connect(from = "start", to = "side", type = "horizontal") |>
@@ -47,6 +49,33 @@ flowchart(
   end = boxes$end
 ) |>
   connect(from = c("start", "S2", "S3"), to = "end", type = "fan_in_center") |>
+  print()
+
+# Start a fresh page for axis-preserving connector examples.
+grid.newpage()
+
+# vertical_axis is the axis-preserving alternative: it preserves each source's
+# x-position when landing on the boundary of a wide shared target.
+flowchart(
+  A = boxGrob("A", x = .25, y = .75),
+  B = boxGrob("B", x = .50, y = .75),
+  C = boxGrob("C", x = .75, y = .75),
+  target = boxGrob("Shared target", x = .5, y = .2, width = unit(.75, "npc"))
+) |>
+  connect(from = c("A", "B", "C"), to = "target", type = "vertical_axis") |>
+  print()
+
+grid.newpage()
+
+# horizontal_axis is the axis-preserving alternative: it preserves each
+# source's y-position when landing on the boundary of a tall shared target.
+flowchart(
+  A = boxGrob("A", x = .20, y = .25),
+  B = boxGrob("B", x = .20, y = .50),
+  C = boxGrob("C", x = .20, y = .75),
+  target = boxGrob("Shared\ntarget", x = .8, y = .5, height = unit(.75, "npc"))
+) |>
+  connect(from = c("A", "B", "C"), to = "target", type = "horizontal_axis") |>
   print()
 
 # Start a fresh page for spread/assignment example.

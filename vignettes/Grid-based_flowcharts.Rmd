@@ -373,6 +373,49 @@ flowchart(
 options(old_opts)
 ```
 
+# Axis-preserving connectors for shared targets
+
+The regular `vertical` and `horizontal` connectors draw a straight line between
+the relevant box faces. If the box centres are offset, that straight line can be
+diagonal. Use `vertical_axis` or `horizontal_axis` when the connector itself must
+stay on the source box's x- or y-axis and land on the target boundary.
+
+This is useful for shared destination boxes: each upstream item can land cleanly
+on its own projected position without adding invisible helper boxes.
+
+```{r axis_preserving_connectors, fig.width = 10, fig.height = 6}
+axis_box_gp <- gpar(fill = "#F3F8FF", col = "#3B73C5", lwd = 1.3)
+target_gp   <- gpar(fill = "#FFF4C7", col = "#C69214", lwd = 1.3)
+axis_con_gp <- gpar(col = "#555555", fill = "#555555", lwd = 1.3)
+
+grid.newpage()
+flowchart(
+  web = boxGrob("Web form", x = .18, y = .78, box_gp = axis_box_gp),
+  api = boxGrob("API upload", x = .38, y = .78, box_gp = axis_box_gp),
+  manual = boxGrob("Manual entry", x = .58, y = .78, box_gp = axis_box_gp),
+  validation = boxGrob(
+    "Data validation queue",
+    x = .38, y = .42,
+    width = unit(.55, "npc"),
+    box_gp = target_gp
+  ),
+  missing = boxGrob("Missing fields", x = .12, y = .32, box_gp = axis_box_gp),
+  duplicate = boxGrob("Duplicate ID", x = .12, y = .21, box_gp = axis_box_gp),
+  outlier = boxGrob("Outlier value", x = .12, y = .10, box_gp = axis_box_gp),
+  log = boxGrob(
+    "Issue log",
+    x = .72, y = .21,
+    height = unit(.34, "npc"),
+    box_gp = target_gp
+  )
+) |>
+  connect(c("web", "api", "manual"), "validation",
+          type = "vertical_axis", lty_gp = axis_con_gp, arrow_size = 3) |>
+  connect(c("missing", "duplicate", "outlier"), "log",
+          type = "horizontal_axis", lty_gp = axis_con_gp, arrow_size = 3) |>
+  print()
+```
+
 # Basic components explained
 
 There is a basic set of components that are used for generating flowcharts:

@@ -21,8 +21,16 @@
 #'
 #' `type` controls the connector shape:
 #'
-#' - `"vertical"`: straight vertical connector
-#' - `"horizontal"`: straight horizontal connector
+#' - `"vertical"`: straight connector between vertical faces (top/bottom).
+#'   If the box centers differ on the x-axis, the line is diagonal.
+#' - `"vertical_axis"`: strict vertical connector preserving the source box
+#'   center x-coordinate and projecting that 90-degree axis onto the target
+#'   boundary. Source and target must be vertically separated.
+#' - `"horizontal"`: straight connector between horizontal faces (left/right).
+#'   If the box centers differ on the y-axis, the line is diagonal.
+#' - `"horizontal_axis"`: strict horizontal connector preserving the source box
+#'   center y-coordinate and projecting that 90-degree axis onto the target
+#'   boundary. Source and target must be horizontally separated.
 #' - `"L"`: vertical then horizontal (direction chosen automatically)
 #' - `"-"`: straight horizontal connector at the end box y-position
 #' - `"Z"`: horizontal connector with two 90-degree turns
@@ -39,6 +47,11 @@
 #' For `type = "N"` and `type = "fan_in_top"` with multi-box connections, a shared
 #' bend position is computed so that the horizontal segment aligns visually across
 #' all connectors.
+#'
+#' Use `"vertical_axis"` or `"horizontal_axis"` when the visual requirement is a
+#' true axis-aligned connector. Use `"vertical"` or `"horizontal"` when you want
+#' the shortest straight connector between the corresponding box faces and a
+#' diagonal line is acceptable.
 #'
 #' ## Labels
 #'
@@ -112,7 +125,8 @@
 connectGrob <- function(
   start,
   end,
-  type = c("vertical", "horizontal", "L", "-", "Z", "N", "fan_in_top", "fan_in_center", "side"),
+  type = c("vertical", "vertical_axis", "horizontal", "horizontal_axis",
+           "L", "-", "Z", "N", "fan_in_top", "fan_in_center", "side"),
   subelmnt = c("right", "left"),
   lty_gp = getOption("connectGrob", default = gpar(fill = "black")),
   arrow_obj = getOption("connectGrobArrow", default = arrow(ends = "last", type = "closed")),
@@ -132,6 +146,19 @@ connectGrob <- function(
   label_pos = c("mid", "near_start", "near_end"),
   label_offset = unit(2, "mm")
 ) {
+  if (length(type) == 1) {
+    type_aliases <- c(
+      "v" = "vertical",
+      "vert" = "vertical",
+      "h" = "horizontal",
+      "hor" = "horizontal",
+      "horiz" = "horizontal"
+    )
+    if (type %in% names(type_aliases)) {
+      type <- unname(type_aliases[type])
+    }
+  }
+
   type <- match.arg(type)
   label_pos <- match.arg(label_pos)
   side <- match.arg(side)
