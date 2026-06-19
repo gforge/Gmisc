@@ -21,3 +21,4 @@ inst/extdata/Full_test_suite_files/*
 /Meta/
 # Ignore generated R plots
 Rplots.pdf
+blog-posts/
