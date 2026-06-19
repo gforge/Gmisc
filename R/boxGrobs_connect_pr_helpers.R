@@ -66,6 +66,68 @@ prEdgeSlots <- function(left, right, n, margin = unit(0, "mm")) {
   unit.c(xs)
 }
 
+prClampUnit <- function(value, lower, upper, axis = c("x", "y")) {
+  axis <- match.arg(axis)
+  convert_fn <- if (axis == "x") prConvertWidthToMm else prConvertHeightToMm
+
+  value_mm <- convert_fn(value)
+  lower_mm <- convert_fn(lower)
+  upper_mm <- convert_fn(upper)
+
+  if (value_mm < lower_mm) {
+    return(lower)
+  }
+  if (value_mm > upper_mm) {
+    return(upper)
+  }
+  value
+}
+
+prSpansOverlap <- function(first_min, first_max, second_min, second_max,
+                           axis = c("x", "y")) {
+  axis <- match.arg(axis)
+  convert_fn <- if (axis == "x") prConvertWidthToMm else prConvertHeightToMm
+
+  first_min_mm <- convert_fn(first_min)
+  first_max_mm <- convert_fn(first_max)
+  second_min_mm <- convert_fn(second_min)
+  second_max_mm <- convert_fn(second_max)
+
+  max(first_min_mm, second_min_mm) < min(first_max_mm, second_max_mm)
+}
+
+prVerticalAxisEdges <- function(start, end) {
+  if (prSpansOverlap(start$bottom, start$top, end$bottom, end$top, axis = "y")) {
+    stop(
+      "`type = \"vertical_axis\"` requires source and target boxes to be vertically separated; ",
+      "use `type = \"vertical\"` or adjust the layout.",
+      call. = FALSE
+    )
+  }
+
+  target_below <- prConvertHeightToMm(start$bottom) >= prConvertHeightToMm(end$top)
+  if (target_below) {
+    return(list(start_edge = start$bottom, target_edge = end$top))
+  }
+  list(start_edge = start$top, target_edge = end$bottom)
+}
+
+prHorizontalAxisEdges <- function(start, end) {
+  if (prSpansOverlap(start$left, start$right, end$left, end$right, axis = "x")) {
+    stop(
+      "`type = \"horizontal_axis\"` requires source and target boxes to be horizontally separated; ",
+      "use `type = \"horizontal\"` or adjust the layout.",
+      call. = FALSE
+    )
+  }
+
+  target_right <- prConvertWidthToMm(start$right) <= prConvertWidthToMm(end$left)
+  if (target_right) {
+    return(list(start_edge = start$right, target_edge = end$left))
+  }
+  list(start_edge = start$left, target_edge = end$right)
+}
+
 # Find the first boxed element in a possibly nested container. Useful for
 # making many-to-one connectors robust to inputs where the intended `end`
 # was wrapped in container lists by layout pipelines.

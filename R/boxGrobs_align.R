@@ -9,9 +9,13 @@
 #' @param position How to align the boxes, differs slightly for vertical and horizontal alignment
 #'  see the accepted arguments
 #' @param subelement If a `list` of boxes is provided, this parameter can be used
-#'   to target a specific element (by name or index), or a deep path into nested
-#'   lists (e.g., `c("detail", 1)`), for the alignment operation. You can also
-#'   provide multiple targets by giving a list of paths (e.g., `list(c("detail", 1), c("followup", 1))`).
+#'   to target a specific element (by name or index), a deep path into nested
+#'   lists (e.g., `c("detail", 1)`), or a regex selector created with
+#'   [stringr::regex()] that is matched against top-level names
+#'   (e.g. `stringr::regex("^groups")`). You can also provide multiple targets
+#'   as a list of paths or selectors (e.g.,
+#'   `list(c("detail", 1), stringr::regex("^followup"))`).
+#'   Bare character strings are always treated as literal paths.
 #'   When a list of boxes is *piped* into `alignVertical()`/`alignHorizontal()` and a named `reference` is
 #'   provided (e.g. `my_boxes |> alignHorizontal(reference = c("grp","sub"), .subelement = ...)`), the
 #'   function will unwrap a single-element wrapper so nested `.subelement` targets are found as expected.
@@ -79,7 +83,7 @@ alignVertical <- function(reference, ..., position = c("center", "top", "bottom"
 
   if (!is.null(subelement)) {
     # Normalize into a list of paths (each path is an atomic vector)
-    paths <- if (is.list(subelement) && all(sapply(subelement, is.atomic))) subelement else list(subelement)
+    paths <- prResolveSubelementSelector(subelement, boxes2align)
 
     for (path in paths) {
       # Find target using helper (search top-level and first nested container)
@@ -197,7 +201,7 @@ alignHorizontal <- function(
 
   if (!is.null(subelement)) {
     # Normalize into a list of paths (each path is an atomic vector)
-    paths <- if (is.list(subelement) && all(sapply(subelement, is.atomic))) subelement else list(subelement)
+    paths <- prResolveSubelementSelector(subelement, boxes2align)
 
     for (path in paths) {
       # Find target using helper (search top-level and first nested container)

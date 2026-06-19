@@ -34,7 +34,7 @@ spread.Gmisc_list_of_boxes <- function(x, ..., axis = c("y", "x", "vertical", "h
   axis <- match.arg(axis)
 
   args <- list(...)
-  call_args <- c(x, args)
+  call_args <- c(list(x), args)
 
   if (axis %in% c("y", "vertical")) {
     return(do.call(spreadVertical, call_args))

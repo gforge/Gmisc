@@ -58,9 +58,13 @@ span comes from \code{from} / \code{to} or the viewport.}
 the centers of the boxes are equally distributed across the span.}
 
 \item{subelement}{If a \code{list} of boxes is provided, this parameter can be used
-to target a specific element (by name or index), or a deep path into nested
-lists (e.g., \code{c("detail", 1)}), for the spreading operation. You can also
-provide multiple targets by giving a list of paths (e.g., \code{list(c("detail", 1), c("followup", 1))}).
+to target a specific element (by name or index), a deep path into nested
+lists (e.g., \code{c("detail", 1)}), or a regex selector created with
+\code{\link[stringr:regex]{stringr::regex()}} that is matched against top-level names
+(e.g. \code{stringr::regex("^groups")}). You can also provide multiple targets
+as a list of paths or selectors (e.g.,
+\code{list(c("detail", 1), stringr::regex("^followup"))}).
+Bare character strings are always treated as literal paths.
 The function will return the original list with the targeted element(s)
 replaced by their spread version(s).}
 }
@@ -133,11 +137,13 @@ Other flowchart components:
 \code{\link[=connectGrob]{connectGrob()}},
 \code{\link[=coords]{coords()}},
 \code{\link[=distance]{distance()}},
+\code{\link[=equalizeHeights]{equalizeHeights()}},
 \code{\link[=equalizeWidths]{equalizeWidths()}},
 \code{\link[=flowchart]{flowchart()}},
 \code{\link[=insert]{insert()}},
 \code{\link[=move]{move()}},
 \code{\link[=moveBox]{moveBox()}},
-\code{\link[=phaseLabel]{phaseLabel()}}
+\code{\link[=phaseLabel]{phaseLabel()}},
+\code{\link[=position]{position()}}
 }
 \concept{flowchart components}

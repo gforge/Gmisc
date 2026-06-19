@@ -27,3 +27,5 @@ Gmisc/inst/extdata/Full_test_suite_files/*
 ^.github/
 ^docs/
 ^README\.Rmd$
+^README\.html$
+^Rplots\.pdf$

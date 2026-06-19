@@ -25,7 +25,9 @@ prGetConnectorStrategy <- function(start, end, type) {
     # Map types to camelCase for class names
     type_map <- c(
         "vertical" = "Vertical",
+        "vertical_axis" = "VerticalAxis",
         "horizontal" = "Horizontal",
+        "horizontal_axis" = "HorizontalAxis",
         "L" = "L",
         "-" = "Dash",
         "Z" = "Z",
@@ -104,6 +106,9 @@ prCalculateConnector.ConnectorStrategy <- function(strategy, ...) {
         smooth = args$smooth,
         corner_radius = args$corner_radius,
         side = args$side,
+        end_side = args$end_side,
+        side_fan_in_route = args$side_fan_in_route,
+        side_fan_in_offset = args$side_fan_in_offset,
         label = args$label,
         label_gp = args$label_gp,
         label_bg_gp = args$label_bg_gp,

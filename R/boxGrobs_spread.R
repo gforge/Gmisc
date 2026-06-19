@@ -20,9 +20,13 @@
 #' @param type If `between`, the space *between* boxes is identical. If `center`,
 #'   the centers of the boxes are equally distributed across the span.
 #' @param subelement If a `list` of boxes is provided, this parameter can be used
-#'   to target a specific element (by name or index), or a deep path into nested
-#'   lists (e.g., `c("detail", 1)`), for the spreading operation. You can also
-#'   provide multiple targets by giving a list of paths (e.g., `list(c("detail", 1), c("followup", 1))`).
+#'   to target a specific element (by name or index), a deep path into nested
+#'   lists (e.g., `c("detail", 1)`), or a regex selector created with
+#'   [stringr::regex()] that is matched against top-level names
+#'   (e.g. `stringr::regex("^groups")`). You can also provide multiple targets
+#'   as a list of paths or selectors (e.g.,
+#'   `list(c("detail", 1), stringr::regex("^followup"))`).
+#'   Bare character strings are always treated as literal paths.
 #'   The function will return the original list with the targeted element(s)
 #'   replaced by their spread version(s).
 #'
@@ -64,7 +68,7 @@ spreadVertical <- function(
   }
 
   if (!is.null(subelement)) {
-    paths <- if (is.list(subelement) && all(sapply(subelement, is.atomic))) subelement else list(subelement)
+    paths <- prResolveSubelementSelector(subelement, boxes2spread)
 
     # Resolve from/to if they are given as paths into the top-level list
     resolve_endpoint <- function(endpoint) {
@@ -164,7 +168,7 @@ spreadHorizontal <- function(..., from = NULL, to = NULL, margin = unit(0, "npc"
   }
 
   if (!is.null(subelement)) {
-    paths <- if (is.list(subelement) && all(sapply(subelement, is.atomic))) subelement else list(subelement)
+    paths <- prResolveSubelementSelector(subelement, boxes2spread)
 
     resolve_endpoint <- function(endpoint) {
       # Only attempt path resolution for character-like paths (e.g. c("detail", 1))

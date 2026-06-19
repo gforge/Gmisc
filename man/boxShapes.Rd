@@ -226,12 +226,14 @@ Other flowchart components:
 \code{\link[=connectGrob]{connectGrob()}},
 \code{\link[=coords]{coords()}},
 \code{\link[=distance]{distance()}},
+\code{\link[=equalizeHeights]{equalizeHeights()}},
 \code{\link[=equalizeWidths]{equalizeWidths()}},
 \code{\link[=flowchart]{flowchart()}},
 \code{\link[=insert]{insert()}},
 \code{\link[=move]{move()}},
 \code{\link[=moveBox]{moveBox()}},
 \code{\link[=phaseLabel]{phaseLabel()}},
+\code{\link[=position]{position()}},
 \code{\link[=spread]{spread()}}
 }
 \concept{flowchart components}

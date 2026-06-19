@@ -28,9 +28,11 @@ moveBox(
 existing justification by using \code{NA}, e.g. \code{c(NA, 'top')}, (2) if you specify only one string
 and that string is either \code{top} or \code{bottom} it will assume vertical justification.}
 
-\item{subelement}{If a \code{list} of boxes is provided, this can be a name, index, a deep path (e.g. \code{c("detail", 1)}) or a
-vector of names/indices to target a single nested element to move. You can also pass
-multiple targets as a list of paths (e.g. \code{list(c("detail", 1), c("followup", 1))}).
+\item{subelement}{If a \code{list} of boxes is provided, this can be a name,
+index, a deep path (e.g. \code{c("detail", 1)}), a regex selector created with
+\code{\link[stringr:regex]{stringr::regex()}} that is matched against top-level names
+(e.g. \code{stringr::regex("^groups")}), or a list of any of the above.
+Bare character strings are always treated as literal paths.
 The function will return the original list with the targeted element(s) replaced by their moved version(s).}
 }
 \value{
@@ -104,11 +106,13 @@ Other flowchart components:
 \code{\link[=connectGrob]{connectGrob()}},
 \code{\link[=coords]{coords()}},
 \code{\link[=distance]{distance()}},
+\code{\link[=equalizeHeights]{equalizeHeights()}},
 \code{\link[=equalizeWidths]{equalizeWidths()}},
 \code{\link[=flowchart]{flowchart()}},
 \code{\link[=insert]{insert()}},
 \code{\link[=move]{move()}},
 \code{\link[=phaseLabel]{phaseLabel()}},
+\code{\link[=position]{position()}},
 \code{\link[=spread]{spread()}}
 }
 \concept{flowchart components}

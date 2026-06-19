@@ -15,8 +15,8 @@
 connectGrob(
   start,
   end,
-  type = c("vertical", "horizontal", "L", "-", "Z", "N", "fan_in_top", "fan_in_center",
-    "side"),
+  type = c("vertical", "vertical_axis", "horizontal", "horizontal_axis", "L", "-", "Z",
+    "N", "fan_in_top", "fan_in_center", "side"),
   subelmnt = c("right", "left"),
   lty_gp = getOption("connectGrob", default = gpar(fill = "black")),
   arrow_obj = getOption("connectGrobArrow", default = arrow(ends = "last", type =
@@ -27,6 +27,9 @@ connectGrob(
   smooth = FALSE,
   corner_radius = unit(3, "mm"),
   side = c("auto", "left", "right"),
+  end_side = c("auto", "left", "right"),
+  side_fan_in_route = c("outside", "edge"),
+  side_fan_in_offset = unit(5, "mm"),
   label = NULL,
   label_gp = grid::gpar(cex = 0.9),
   label_bg_gp = grid::gpar(fill = "white", col = NA),
@@ -85,6 +88,17 @@ A \code{\link[grid:unit]{grid::unit()}} or numeric (interpreted as millimeters).
 \item{side}{For \code{type = "side"}, which side of the start box to exit from.
 \code{"auto"} (default) picks the side that faces the end box.}
 
+\item{end_side}{For \code{type = "side"}, which side of the end box to enter.
+\code{"auto"} (default) picks the side that faces the start box.}
+
+\item{side_fan_in_route}{For grouped \code{connect(..., type = "side")} calls in
+the S3 flowchart API, where to draw the shared vertical return path.
+\code{"outside"} offsets it away from the source boxes; \code{"edge"} draws it on
+the source box edge.}
+
+\item{side_fan_in_offset}{Offset used when \code{side_fan_in_route = "outside"}.
+Numeric values are interpreted as millimeters.}
+
 \item{label}{Optional text label for one-to-one connectors (e.g. \code{"yes"} / \code{"no"}).
 Only supported when both \code{start} and \code{end} are single boxes.}
 
@@ -107,9 +121,11 @@ as millimeters.}
 \item{recording}{Passed to [grid::grid.draw()] when rendering each element in
 the list. Defaults to `TRUE` (record drawing for later replay).}
 
-\item{from}{The name (string) or index of the start box in `x`. Multiple values allowed.}
+\item{from}{The name (string), index, list of selectors, or `stringr::regex()`
+selector for the start box in `x`. Multiple values allowed.}
 
-\item{to}{The name (string) or index of the end box in `x`. Multiple values allowed.}
+\item{to}{The name (string), index, list of selectors, or `stringr::regex()`
+selector for the end box in `x`. Multiple values allowed.}
 }
 \value{
 \itemize{
@@ -147,8 +163,16 @@ custom connectors using the calculated coordinates.
 
 \code{type} controls the connector shape:
 \itemize{
-\item \code{"vertical"}: straight vertical connector
-\item \code{"horizontal"}: straight horizontal connector
+\item \code{"vertical"}: straight connector between vertical faces (top/bottom).
+If the box centers differ on the x-axis, the line is diagonal.
+\item \code{"vertical_axis"}: strict vertical connector preserving the source box
+center x-coordinate and projecting that 90-degree axis onto the target
+boundary. Source and target must be vertically separated.
+\item \code{"horizontal"}: straight connector between horizontal faces (left/right).
+If the box centers differ on the y-axis, the line is diagonal.
+\item \code{"horizontal_axis"}: strict horizontal connector preserving the source box
+center y-coordinate and projecting that 90-degree axis onto the target
+boundary. Source and target must be horizontally separated.
 \item \code{"L"}: vertical then horizontal (direction chosen automatically)
 \item \code{"-"}: straight horizontal connector at the end box y-position
 \item \code{"Z"}: horizontal connector with two 90-degree turns
@@ -166,6 +190,11 @@ arrow to represent the merged flow (e.g. a middle trunk bus).
 For \code{type = "N"} and \code{type = "fan_in_top"} with multi-box connections, a shared
 bend position is computed so that the horizontal segment aligns visually across
 all connectors.
+
+Use \code{"vertical_axis"} or \code{"horizontal_axis"} when the visual requirement is a
+true axis-aligned connector. Use \code{"vertical"} or \code{"horizontal"} when you want
+the shortest straight connector between the corresponding box faces and a
+diagonal line is acceptable.
 }
 
 \subsection{Labels}{
@@ -211,6 +240,8 @@ boxes <- flowchart(
 )
 
 # Connect using the pipe-friendly S3 API
+# Note: type = "vertical" connects top/bottom faces with a straight segment;
+# if x positions differ, the segment may be diagonal.
 boxes <- boxes |>
   connect(from = "start", to = "end", type = "vertical") |>
   connect(from = "start", to = "side", type = "horizontal") |>
@@ -241,6 +272,33 @@ flowchart(
   end = boxes$end
 ) |>
   connect(from = c("start", "S2", "S3"), to = "end", type = "fan_in_center") |>
+  print()
+
+# Start a fresh page for axis-preserving connector examples.
+grid.newpage()
+
+# vertical_axis is the axis-preserving alternative: it preserves each source's
+# x-position when landing on the boundary of a wide shared target.
+flowchart(
+  A = boxGrob("A", x = .25, y = .75),
+  B = boxGrob("B", x = .50, y = .75),
+  C = boxGrob("C", x = .75, y = .75),
+  target = boxGrob("Shared target", x = .5, y = .2, width = unit(.75, "npc"))
+) |>
+  connect(from = c("A", "B", "C"), to = "target", type = "vertical_axis") |>
+  print()
+
+grid.newpage()
+
+# horizontal_axis is the axis-preserving alternative: it preserves each
+# source's y-position when landing on the boundary of a tall shared target.
+flowchart(
+  A = boxGrob("A", x = .20, y = .25),
+  B = boxGrob("B", x = .20, y = .50),
+  C = boxGrob("C", x = .20, y = .75),
+  target = boxGrob("Shared\ntarget", x = .8, y = .5, height = unit(.75, "npc"))
+) |>
+  connect(from = c("A", "B", "C"), to = "target", type = "horizontal_axis") |>
   print()
 
 # Start a fresh page for spread/assignment example.
@@ -283,12 +341,14 @@ Other flowchart components:
 \code{\link{boxShapes}},
 \code{\link[=coords]{coords()}},
 \code{\link[=distance]{distance()}},
+\code{\link[=equalizeHeights]{equalizeHeights()}},
 \code{\link[=equalizeWidths]{equalizeWidths()}},
 \code{\link[=flowchart]{flowchart()}},
 \code{\link[=insert]{insert()}},
 \code{\link[=move]{move()}},
 \code{\link[=moveBox]{moveBox()}},
 \code{\link[=phaseLabel]{phaseLabel()}},
+\code{\link[=position]{position()}},
 \code{\link[=spread]{spread()}}
 }
 \concept{flowchart components}

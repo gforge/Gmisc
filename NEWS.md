@@ -2,6 +2,7 @@ NEWS for the Gmisc package
 
 ## Changes for 3.4.0
 
+- Added `vertical_axis` and `horizontal_axis` connector types for flowcharts. These opt-in connectors preserve the source box's x- or y-axis and project it onto the target boundary, giving true 90-degree vertical/horizontal arrows for shared wide or tall target boxes. Existing `vertical` and `horizontal` connector behavior is unchanged.
 - Added `phaseLabel()` for flowchart box lists: a one-call-per-stage helper that adds a CONSORT-style phase label (e.g. *Allocation*, *Follow-up*, *Analysis*) centred between a stage's arms, sitting slightly above it and drawn on top. The label width adapts to the stage — spanning the central gap (plus a small corner overlap) for two arms, or the full stage width as a banner for three or more arms — and can be set explicitly via `width`. It correctly handles nested arm lists (arms that are themselves lists of boxes) by resolving their merged bounding box.
 - Added `on_top` to `insert()` for flowchart box lists. A box inserted with `insert(..., on_top = TRUE)` is drawn on top of the other boxes and connections, regardless of its position in the list, and the marker is preserved through subsequent `move()`/`align()` operations. This is the lower-level overlay mechanism that `phaseLabel()` builds on.
 - `insert()` now resolves grouped (list) neighbours via their merged bounding box, so a box can be inserted between grouped stages without error.
@@ -9,6 +10,11 @@ NEWS for the Gmisc package
 - Updated flowchart examples to emphasize the `flowchart()` + pipe (`|>`) style API in `inst/examples/connectGrob_example.R`, `inst/examples/spreadBox_ex.R`, and `inst/examples/alignBox_ex.R`.
 - Clarified spread/connect documentation to state that spread/align return updated objects (no in-place mutation) and that connectors should use the returned boxes.
 - Improved interactive example ergonomics by pausing between graph pages in multi-plot examples.
+- Added `box_fn_args` parameter to `boxGrob()` for passing extra arguments directly to the box drawing function. The default is now `list(r = unit(5, "pt"))`, giving every box a fixed 5 pt corner radius (approximately equivalent to the widely-used 5 px CSS `border-radius`) regardless of box size — solving the issue where larger boxes had visibly rounder corners than smaller ones. Override per box or globally via `options(boxGrobFnArgs = list(...))`.
+- Added `equalizeHeights()` for flowchart box lists, mirroring the existing `equalizeWidths()`. It sets selected boxes to a shared height (defaulting to the tallest among the selection) and supports the same `subelement` path syntax as `equalizeWidths()`.
+- Added `position()` with relative moves.
+- Added dotted arrows lines for flowcharts
+- Added regex selector for box lists
 
 ## Changes for 3.3.0
 

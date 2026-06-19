@@ -21,8 +21,16 @@
 #'
 #' `type` controls the connector shape:
 #'
-#' - `"vertical"`: straight vertical connector
-#' - `"horizontal"`: straight horizontal connector
+#' - `"vertical"`: straight connector between vertical faces (top/bottom).
+#'   If the box centers differ on the x-axis, the line is diagonal.
+#' - `"vertical_axis"`: strict vertical connector preserving the source box
+#'   center x-coordinate and projecting that 90-degree axis onto the target
+#'   boundary. Source and target must be vertically separated.
+#' - `"horizontal"`: straight connector between horizontal faces (left/right).
+#'   If the box centers differ on the y-axis, the line is diagonal.
+#' - `"horizontal_axis"`: strict horizontal connector preserving the source box
+#'   center y-coordinate and projecting that 90-degree axis onto the target
+#'   boundary. Source and target must be horizontally separated.
 #' - `"L"`: vertical then horizontal (direction chosen automatically)
 #' - `"-"`: straight horizontal connector at the end box y-position
 #' - `"Z"`: horizontal connector with two 90-degree turns
@@ -39,6 +47,11 @@
 #' For `type = "N"` and `type = "fan_in_top"` with multi-box connections, a shared
 #' bend position is computed so that the horizontal segment aligns visually across
 #' all connectors.
+#'
+#' Use `"vertical_axis"` or `"horizontal_axis"` when the visual requirement is a
+#' true axis-aligned connector. Use `"vertical"` or `"horizontal"` when you want
+#' the shortest straight connector between the corresponding box faces and a
+#' diagonal line is acceptable.
 #'
 #' ## Labels
 #'
@@ -82,6 +95,14 @@
 #'   A [grid::unit()] or numeric (interpreted as millimeters). Default `unit(3, "mm")`.
 #' @param side For `type = "side"`, which side of the start box to exit from.
 #'   `"auto"` (default) picks the side that faces the end box.
+#' @param end_side For `type = "side"`, which side of the end box to enter.
+#'   `"auto"` (default) picks the side that faces the start box.
+#' @param side_fan_in_route For grouped `connect(..., type = "side")` calls in
+#'   the S3 flowchart API, where to draw the shared vertical return path.
+#'   `"outside"` offsets it away from the source boxes; `"edge"` draws it on
+#'   the source box edge.
+#' @param side_fan_in_offset Offset used when `side_fan_in_route = "outside"`.
+#'   Numeric values are interpreted as millimeters.
 #' @param label Optional text label for one-to-one connectors (e.g. `"yes"` / `"no"`).
 #'   Only supported when both `start` and `end` are single boxes.
 #' @param label_gp A [grid::gpar()] controlling label appearance.
@@ -104,7 +125,8 @@
 connectGrob <- function(
   start,
   end,
-  type = c("vertical", "horizontal", "L", "-", "Z", "N", "fan_in_top", "fan_in_center", "side"),
+  type = c("vertical", "vertical_axis", "horizontal", "horizontal_axis",
+           "L", "-", "Z", "N", "fan_in_top", "fan_in_center", "side"),
   subelmnt = c("right", "left"),
   lty_gp = getOption("connectGrob", default = gpar(fill = "black")),
   arrow_obj = getOption("connectGrobArrow", default = arrow(ends = "last", type = "closed")),
@@ -114,6 +136,9 @@ connectGrob <- function(
   smooth = FALSE,
   corner_radius = unit(3, "mm"),
   side = c("auto", "left", "right"),
+  end_side = c("auto", "left", "right"),
+  side_fan_in_route = c("outside", "edge"),
+  side_fan_in_offset = unit(5, "mm"),
   label = NULL,
   label_gp = grid::gpar(cex = 0.9),
   label_bg_gp = grid::gpar(fill = "white", col = NA),
@@ -121,9 +146,24 @@ connectGrob <- function(
   label_pos = c("mid", "near_start", "near_end"),
   label_offset = unit(2, "mm")
 ) {
+  if (length(type) == 1) {
+    type_aliases <- c(
+      "v" = "vertical",
+      "vert" = "vertical",
+      "h" = "horizontal",
+      "hor" = "horizontal",
+      "horiz" = "horizontal"
+    )
+    if (type %in% names(type_aliases)) {
+      type <- unname(type_aliases[type])
+    }
+  }
+
   type <- match.arg(type)
   label_pos <- match.arg(label_pos)
   side <- match.arg(side)
+  end_side <- match.arg(end_side)
+  side_fan_in_route <- match.arg(side_fan_in_route)
 
   if (!is.null(arrow_size)) {
     ends_map <- c("1" = "first", "2" = "last", "3" = "both")
@@ -216,6 +256,9 @@ connectGrob <- function(
     smooth = smooth,
     corner_radius = corner_radius,
     side = side,
+    end_side = end_side,
+    side_fan_in_route = side_fan_in_route,
+    side_fan_in_offset = side_fan_in_offset,
     label = label,
     label_gp = label_gp,
     label_bg_gp = label_bg_gp,
