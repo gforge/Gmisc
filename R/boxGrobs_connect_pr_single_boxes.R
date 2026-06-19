@@ -206,7 +206,7 @@ prConnect1 <- function(
     line$x <- unit.c(axis_x, target_x)
     line$y <- unit.c(edges$start_edge, edges$target_edge)
   } else if (type == "side") {
-    # Horizontal-first exit: leave from a selected start side, travel vertically
+    # Vertical-first side route: leave from a selected start side, travel vertically
     # outside/alongside the flow, then enter the selected side of the end box.
     end_is_right <- prConvertWidthToMm(getX4elmnt(end, "x")) > prConvertWidthToMm(start$x)
     exit_x <- if (side == "right" || (side == "auto" && end_is_right)) {

@@ -73,8 +73,18 @@ boxGrob <- function(label,
     checkNumeric(label),
     is.language(label)
   )
-  if (!is.list(box_fn_args)) {
+  if (!is.list(box_fn_args) ||
+      is.null(names(box_fn_args)) ||
+      any(!nzchar(names(box_fn_args)))) {
     stop("`box_fn_args` must be a named list.", call. = FALSE)
+  }
+  reserved_box_fn_args <- intersect(names(box_fn_args), c("x", "y", "gp"))
+  if (length(reserved_box_fn_args) > 0) {
+    stop(
+      "`box_fn_args` cannot include reserved arguments: ",
+      paste(reserved_box_fn_args, collapse = ", "),
+      call. = FALSE
+    )
   }
   assert_unit(y)
   assert_unit(x)

@@ -35,3 +35,27 @@ test_that("boxGrob rejects non-list box_fn_args", {
     "`box_fn_args` must be a named list"
   )
 })
+
+test_that("boxGrob rejects unnamed box_fn_args", {
+  expect_error(
+    boxGrob("Test", box_fn_args = list(unit(5, "mm"))),
+    "`box_fn_args` must be a named list"
+  )
+  expect_error(
+    boxGrob("Test", box_fn_args = list(r = unit(5, "mm"), unit(3, "mm"))),
+    "`box_fn_args` must be a named list"
+  )
+})
+
+test_that("boxGrob rejects reserved box_fn_args", {
+  expect_error(
+    boxGrob("Test", box_fn_args = list(gp = gpar(fill = "red"))),
+    "`box_fn_args` cannot include reserved arguments: gp",
+    fixed = TRUE
+  )
+  expect_error(
+    boxGrob("Test", box_fn_args = list(x = .2, y = .3)),
+    "`box_fn_args` cannot include reserved arguments: x, y",
+    fixed = TRUE
+  )
+})
