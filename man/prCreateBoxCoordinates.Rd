@@ -15,6 +15,11 @@ prCreateBoxCoordinates(
 
 \item{extra_coordinate_functions}{A list with named functions if we want additional
 parameters}
+
+\item{box_fn_bounds}{Optional named list with `left`, `right`, `bottom`, and `top`
+proportions (each in `[0, 1]`, with `left < right` and `bottom < top`) describing the
+visible bounds of a non-rectangular box shape within its viewport. When supplied the
+coordinates are shrunk to these bounds so connectors anchor to the visible shape edge.}
 }
 \value{
 \code{list} of class \code{coords}

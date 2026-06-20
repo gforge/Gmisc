@@ -3,6 +3,10 @@
 #' @param viewport_data The arguments that will be used for generating the \code{viewport}
 #' @param extra_coordinate_functions A list with named functions if we want additional
 #'  parameters
+#' @param box_fn_bounds Optional named list with `left`, `right`, `bottom`, and `top`
+#'  proportions (each in `[0, 1]`, with `left < right` and `bottom < top`) describing the
+#'  visible bounds of a non-rectangular box shape within its viewport. When supplied the
+#'  coordinates are shrunk to these bounds so connectors anchor to the visible shape edge.
 #' @return \code{list} of class \code{coords}
 #' @importFrom checkmate assert_list
 prCreateBoxCoordinates <- function(viewport_data, extra_coordinate_functions = NULL, box_fn_bounds = NULL) {
