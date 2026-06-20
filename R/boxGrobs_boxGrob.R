@@ -199,6 +199,7 @@ boxGrob <- function(label,
 
   structure(gl,
     coords = prCreateBoxCoordinates(viewport_data = vp_args, box_fn_bounds = box_fn_bounds),
-    viewport_data = vp_args
+    viewport_data = vp_args,
+    box_fn_bounds = box_fn_bounds
   )
 }

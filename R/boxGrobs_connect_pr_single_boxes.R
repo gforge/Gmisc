@@ -100,7 +100,7 @@ prConnect1 <- function(
   side_offset = unit(5, "mm"),
   label = NULL,
   label_gp = grid::gpar(cex = 0.9),
-  label_bg_gp = grid::gpar(fill = "white", col = NA),
+  label_bg_gp = grid::gpar(fill = "white", col = NA, alpha = 0.85),
   label_pos = c("mid", "near_start", "near_end"),
   label_offset = unit(2, "mm"),
   label_pad = unit(1.5, "mm")

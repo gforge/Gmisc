@@ -387,36 +387,63 @@ stay on the source box's x- or y-axis and land on the target boundary.
 This is useful for shared destination boxes: each upstream item can land cleanly
 on its own projected position without adding invisible helper boxes.
 
-```{r axis_preserving_connectors, fig.width = 10, fig.height = 6}
-axis_box_gp <- gpar(fill = "#F3F8FF", col = "#3B73C5", lwd = 1.3)
-target_gp   <- gpar(fill = "#FFF4C7", col = "#C69214", lwd = 1.3)
-axis_con_gp <- gpar(col = "#555555", fill = "#555555", lwd = 1.3)
+The layout below is built entirely with `spread()`/`align()`/`move()` — no box is
+given an absolute `x`/`y`. The three inputs are spread across the top and drop
+onto the shared **validation** tape with `vertical_axis`, while the three issue
+diamonds are spread down a left column and project onto the tall **issue log**
+with `horizontal_axis`.
+
+```{r axis_preserving_connectors, fig.width = 10, fig.height = 7}
+input_gp     <- gpar(fill = "#F3F8FF", col = "#3B73C5", lwd = 1.3)
+process_gp   <- gpar(fill = "#FFF4C7", col = "#C69214", lwd = 1.3)
+issue_gp     <- gpar(fill = "#FCE4EC", col = "#AD1457", lwd = 1.2)
+output_gp    <- gpar(fill = "#E8F5E9", col = "#2E7D32", lwd = 1.3)
+con_gp       <- gpar(col = "#555555", fill = "#555555", lwd = 1.3)
+issue_con_gp <- gpar(col = "#AD1457", fill = "#AD1457", lwd = 1.1)
+main_path    <- list("validation", "clean")
 
 grid.newpage()
 flowchart(
-  web = boxGrob("Web form", x = .18, y = .78, box_gp = axis_box_gp),
-  api = boxGrob("API upload", x = .38, y = .78, box_gp = axis_box_gp),
-  manual = boxGrob("Manual entry", x = .58, y = .78, box_gp = axis_box_gp),
-  validation = boxGrob(
-    "Data validation queue",
-    x = .38, y = .42,
-    width = unit(.55, "npc"),
-    box_gp = target_gp
+  inputs = list(
+    web    = boxEllipseGrob("REDCap\nform",   width = unit(42, "mm"), height = unit(24, "mm"), box_gp = input_gp),
+    import = boxDatabaseGrob("CSV\nimport",    width = unit(42, "mm"), height = unit(24, "mm"), box_gp = input_gp),
+    manual = boxDocumentGrob("Manual\nentry",  width = unit(42, "mm"), height = unit(24, "mm"), box_gp = input_gp)
   ),
-  missing = boxGrob("Missing fields", x = .12, y = .32, box_gp = axis_box_gp),
-  duplicate = boxGrob("Duplicate ID", x = .12, y = .21, box_gp = axis_box_gp),
-  outlier = boxGrob("Outlier value", x = .12, y = .10, box_gp = axis_box_gp),
-  log = boxGrob(
-    "Issue log",
-    x = .72, y = .21,
-    height = unit(.34, "npc"),
-    box_gp = target_gp
+  validation = boxTapeGrob(
+    "Validation queue\nIDs, dates, ranges, missingness",
+    width = unit(.58, "npc"), height = unit(.14, "npc"), box_gp = process_gp
+  ),
+  issues = list(
+    missing   = boxDiamondGrob("Missing\nfields", width = unit(48, "mm"), height = unit(14, "mm"), box_gp = issue_gp),
+    duplicate = boxDiamondGrob("Duplicate\nID",   width = unit(48, "mm"), height = unit(14, "mm"), box_gp = issue_gp),
+    outlier   = boxDiamondGrob("Outlier\nvalue",  width = unit(48, "mm"), height = unit(14, "mm"), box_gp = issue_gp)
+  ),
+  log = boxDocumentsGrob(
+    "Issue log\nqueries sent\nchanges reviewed",
+    width = unit(48, "mm"), height = unit(.44, "npc"), box_gp = issue_gp
+  ),
+  clean = boxDatabaseGrob(
+    "Analysis-ready dataset\nlocked for report",
+    width = unit(.44, "npc"), height = unit(.16, "npc"), box_gp = output_gp
   )
 ) |>
-  connect(c("web", "api", "manual"), "validation",
-          type = "vertical_axis", lty_gp = axis_con_gp, arrow_size = 3) |>
-  connect(c("missing", "duplicate", "outlier"), "log",
-          type = "horizontal_axis", lty_gp = axis_con_gp, arrow_size = 3) |>
+  # Main vertical flow (inputs -> validation -> clean); issues are a side column
+  spread(axis = "y", margin = unit(7, "mm"), exclude = "issues") |>
+  spread(axis = "x", subelement = "inputs", from = 0, to = 0.7, margin = 0.05, type = "center") |>
+  equalizeWidths(subelement = main_path) |>
+  align(axis = "x", subelement = "validation", reference = "inputs") |>
+  align(axis = "x", subelement = "clean", reference = "validation") |>
+  # Place the issue log beside the main flow and stack the diamonds along it
+  align(axis = "y", subelement = "log", references = list("validation", "clean")) |>
+  spread(axis = "y", subelement = "issues",
+         from = position("log", position = "top", type = "y"),
+         to   = position("log", position = "bottom", type = "y"),
+         margin = unit(2, "mm")) |>
+  move(subelement = "issues", x = 0.08, just = "left") |>
+  move(subelement = "log",    x = 0.92, just = "right") |>
+  connect("inputs", "validation", type = "vertical_axis",   lty_gp = con_gp,       arrow_size = 3) |>
+  connect("issues", "log",        type = "horizontal_axis", lty_gp = issue_con_gp, arrow_size = 3) |>
+  connect("validation", "clean",  type = "vertical_axis",   lty_gp = con_gp,       arrow_size = 3, smooth = TRUE) |>
   print()
 ```
 
@@ -561,37 +588,27 @@ or use the convenience helpers `boxDiamondGrob()`, `boxEllipseGrob()` and
 `boxRackGrob()` that ship with the package.
 
 ```{r extra_shapes, fig.height = 3, fig.width = 6}
-# --- Branch labels + sharp diamond variant ---
+# --- Branch labels on alternate shapes ---
 grid.newpage()
 
-# rounded and sharp diamond examples
-d_rounded <- boxDiamondGrob("Decision", box_gp = gpar(fill = "#FFF4E6"))
-d_sharp   <- boxDiamondGrob("Decision\n(sharp)", rounded = FALSE, box_gp = gpar(fill = "#FFF4E6"))
+decision <- boxDiamondGrob("Decision", box_gp = gpar(fill = "#FFF4E6"))
+local    <- boxEllipseGrob("Local", box_gp = gpar(fill = "#E6FFF4"))
+server   <- boxServerGrob("Server", box_gp = gpar(fill = "#E8F0FF"))
 
-# outcomes
-e <- boxEllipseGrob("Local", box_gp = gpar(fill = "#E6FFF4"))
-r <- boxServerGrob("Server", box_gp = gpar(fill = "#E8F0FF"))
-
-# arrange and draw
-boxes <- list(decision = d_rounded, outcomes = list(e, r)) |>
+# Position the boxes, then draw them. The ellipse carries extra padding so its
+# text fits the curved outline, making it taller than the server box; equalize
+# the outcome heights so both branches line up symmetrically.
+boxes <- list(decision = decision, outcomes = list(local, server)) |>
+  equalizeHeights(subelement = "outcomes") |>
   spreadHorizontal(from = unit(.1, "npc"), to = unit(.9, "npc"), subelement = "outcomes") |>
   spreadVertical() |>
   print()
 
-# 1) quick many-to-many style connector (no labels)
-con <- connectGrob(boxes$decision, boxes$outcomes, type = "N")
-print(con)
-
-# 2) explicit per-branch connectors with labels (preferred when you want text)
-connectGrob(boxes$decision, boxes$outcomes[[1]], type = "N", label = "Local") |> print()
-connectGrob(boxes$decision, boxes$outcomes[[2]], type = "N", label = "Server") |> print()
-
-# 3) If you prefer the single connector and want labels on each branch:
-#    place text at the midpoint of each returned grob (example)
-con_list <- connectGrob(boxes$decision, boxes$outcomes, type = "N")
-# Preferred: attach labels and let `print()` handle rendering
-con_list <- setConnectorLabels(con_list, c("Local", "Server"))
-print(con_list)
+# Build one N connector for both branches and attach a label to each with
+# setConnectorLabels(); print() then draws the lines and labels together.
+connectGrob(boxes$decision, boxes$outcomes, type = "N") |>
+  setConnectorLabels(c("Local", "Server")) |>
+  print()
 ```
 
 # Standard flowchart shapes

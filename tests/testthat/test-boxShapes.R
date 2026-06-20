@@ -44,3 +44,17 @@ test_that("non-rectangular shapes expose visible bounds for sizing and connector
         convertHeight(attr(plain, "viewport_data")$height, "mm", valueOnly = TRUE)
     )
 })
+
+test_that("visible shape bounds survive move()/equalizeWidths() repositioning", {
+    tape <- boxTapeGrob("Tape", width = unit(100, "mm"), height = unit(50, "mm"))
+    visible0 <- convertWidth(coords(tape)$width, "mm", valueOnly = TRUE)
+    expect_equal(visible0, 84, tolerance = 1e-6)
+
+    moved <- moveBox(tape, x = 0.7, y = 0.3)
+    expect_equal(convertWidth(coords(moved)$width, "mm", valueOnly = TRUE), 84, tolerance = 1e-6)
+    expect_false(is.null(attr(moved, "box_fn_bounds")))
+
+    # Bounds are proportional, so they scale with an equalized width (0.84 * 120).
+    eq <- equalizeWidths(list(a = tape, b = boxGrob("x")), width = unit(120, "mm"))
+    expect_equal(convertWidth(coords(eq$a)$width, "mm", valueOnly = TRUE), 100.8, tolerance = 1e-6)
+})
