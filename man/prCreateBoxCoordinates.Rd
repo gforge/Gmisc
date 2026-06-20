@@ -4,7 +4,11 @@
 \alias{prCreateBoxCoordinates}
 \title{Creates coordinates for box}
 \usage{
-prCreateBoxCoordinates(viewport_data, extra_coordinate_functions = NULL)
+prCreateBoxCoordinates(
+  viewport_data,
+  extra_coordinate_functions = NULL,
+  box_fn_bounds = NULL
+)
 }
 \arguments{
 \item{viewport_data}{The arguments that will be used for generating the \code{viewport}}

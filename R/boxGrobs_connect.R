@@ -55,12 +55,15 @@
 #'
 #' ## Labels
 #'
-#' For one-to-one connectors you can add a text label (for example `"yes"` / `"no"`).
-#' The label is placed near the midpoint of the connector.
-
-#' The label is drawn with a white background for readability.
-#' Use `label_pad` to control padding around the text and `label_offset` to move
-#' the label away from the connector.
+#' For one-to-one connectors and grouped side fan-out connectors you can add a
+#' text label (for example `"yes"` / `"no"`). For one-to-one connectors the
+#' label is placed near the midpoint of the connector; for grouped side fan-out
+#' connectors it is centered at the offset fan-out bus and drawn on the
+#' outgoing line.
+#'
+#' The label is drawn with a semi-transparent white background for readability.
+#' Use `label_pad` to control padding around the text and `label_offset` to nudge
+#' the label away from the connector when needed.
 #'
 #' ## Split boxes
 #'
@@ -97,14 +100,14 @@
 #'   `"auto"` (default) picks the side that faces the end box.
 #' @param end_side For `type = "side"`, which side of the end box to enter.
 #'   `"auto"` (default) picks the side that faces the start box.
-#' @param side_fan_in_route For grouped `connect(..., type = "side")` calls in
+#' @param side_route For grouped `connect(..., type = "side")` calls in
 #'   the S3 flowchart API, where to draw the shared vertical return path.
 #'   `"outside"` offsets it away from the source boxes; `"edge"` draws it on
 #'   the source box edge.
-#' @param side_fan_in_offset Offset used when `side_fan_in_route = "outside"`.
+#' @param side_offset Offset used when `side_route = "outside"`.
 #'   Numeric values are interpreted as millimeters.
-#' @param label Optional text label for one-to-one connectors (e.g. `"yes"` / `"no"`).
-#'   Only supported when both `start` and `end` are single boxes.
+#' @param label Optional text label for one-to-one connectors and grouped
+#'   `type = "side"` fan-out connectors (e.g. `"yes"` / `"no"`).
 #' @param label_gp A [grid::gpar()] controlling label appearance.
 #' @param label_pos Where to place the label along the connector: `"mid"`, `"near_start"`, or `"near_end"`.
 #' @param label_offset Offset for the label away from the connector line.
@@ -137,8 +140,8 @@ connectGrob <- function(
   corner_radius = unit(3, "mm"),
   side = c("auto", "left", "right"),
   end_side = c("auto", "left", "right"),
-  side_fan_in_route = c("outside", "edge"),
-  side_fan_in_offset = unit(5, "mm"),
+  side_route = c("outside", "edge"),
+  side_offset = unit(5, "mm"),
   label = NULL,
   label_gp = grid::gpar(cex = 0.9),
   label_bg_gp = grid::gpar(fill = "white", col = NA),
@@ -163,7 +166,7 @@ connectGrob <- function(
   label_pos <- match.arg(label_pos)
   side <- match.arg(side)
   end_side <- match.arg(end_side)
-  side_fan_in_route <- match.arg(side_fan_in_route)
+  side_route <- match.arg(side_route)
 
   if (!is.null(arrow_size)) {
     ends_map <- c("1" = "first", "2" = "last", "3" = "both")
@@ -257,8 +260,8 @@ connectGrob <- function(
     corner_radius = corner_radius,
     side = side,
     end_side = end_side,
-    side_fan_in_route = side_fan_in_route,
-    side_fan_in_offset = side_fan_in_offset,
+    side_route = side_route,
+    side_offset = side_offset,
     label = label,
     label_gp = label_gp,
     label_bg_gp = label_bg_gp,

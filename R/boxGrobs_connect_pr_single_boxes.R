@@ -96,8 +96,8 @@ prConnect1 <- function(
   corner_radius = unit(3, "mm"),
   side = c("auto", "left", "right"),
   end_side = c("auto", "left", "right"),
-  side_fan_in_route = c("outside", "edge"),
-  side_fan_in_offset = unit(5, "mm"),
+  side_route = c("outside", "edge"),
+  side_offset = unit(5, "mm"),
   label = NULL,
   label_gp = grid::gpar(cex = 0.9),
   label_bg_gp = grid::gpar(fill = "white", col = NA),
@@ -114,7 +114,10 @@ prConnect1 <- function(
   label_pos <- match.arg(label_pos)
   side <- match.arg(side)
   end_side <- match.arg(end_side)
-  side_fan_in_route <- match.arg(side_fan_in_route)
+  side_route <- match.arg(side_route)
+  if (is.numeric(side_offset)) {
+    side_offset <- unit(side_offset, "mm")
+  }
 
   start <- coords(start)
   end <- coords(end)
@@ -206,13 +209,16 @@ prConnect1 <- function(
     line$x <- unit.c(axis_x, target_x)
     line$y <- unit.c(edges$start_edge, edges$target_edge)
   } else if (type == "side") {
-    # Vertical-first side route: leave from a selected start side, travel vertically
-    # outside/alongside the flow, then enter the selected side of the end box.
+    # Vertical-first side route: leave from a selected start side, optionally step
+    # out to an offset bus (side_route = "outside"), travel vertically
+    # alongside the flow, then enter the selected side of the end box.
     end_is_right <- prConvertWidthToMm(getX4elmnt(end, "x")) > prConvertWidthToMm(start$x)
-    exit_x <- if (side == "right" || (side == "auto" && end_is_right)) {
-      start$right
-    } else {
-      start$left
+    exit_is_right <- side == "right" || (side == "auto" && end_is_right)
+    exit_x <- if (exit_is_right) start$right else start$left
+
+    bus_x <- exit_x
+    if (side_route == "outside") {
+      bus_x <- if (exit_is_right) bus_x + side_offset else bus_x - side_offset
     }
 
     start_is_left <- prConvertWidthToMm(start$x) < prConvertWidthToMm(getX4elmnt(end, "x"))
@@ -221,8 +227,8 @@ prConnect1 <- function(
     } else {
       end$right
     }
-    line$x <- unit.c(exit_x, exit_x, entry_x)
-    line$y <- unit.c(start$y, end$y, end$y)
+    line$x <- unit.c(exit_x, bus_x, bus_x, entry_x)
+    line$y <- unit.c(start$y, start$y, end$y, end$y)
   } else if (type == "horizontal_axis") {
     axis_y <- start$y
     target_y <- prClampUnit(axis_y, end$bottom, end$top, axis = "y")

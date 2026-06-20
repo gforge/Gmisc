@@ -23,7 +23,8 @@ spreadVertical(
   to = NULL,
   margin = unit(0, "npc"),
   type = c("between", "center"),
-  subelement = NULL
+  subelement = NULL,
+  exclude = NULL
 )
 
 spreadHorizontal(
@@ -32,7 +33,8 @@ spreadHorizontal(
   to = NULL,
   margin = unit(0, "npc"),
   type = c("between", "center"),
-  subelement = NULL
+  subelement = NULL,
+  exclude = NULL
 )
 }
 \arguments{
@@ -67,6 +69,12 @@ as a list of paths or selectors (e.g.,
 Bare character strings are always treated as literal paths.
 The function will return the original list with the targeted element(s)
 replaced by their spread version(s).}
+
+\item{exclude}{Optional selector for elements to leave out of the spread.
+Uses the same selector syntax as \code{subelement}, but each excluded path must
+resolve to an element directly inside the list currently being spread. This
+is useful for side branches that should be positioned separately, such as
+lost-to-follow-up boxes centered between the rows before and after them.}
 }
 \value{
 The list of boxes with updated positions (class `Gmisc_list_of_boxes`).

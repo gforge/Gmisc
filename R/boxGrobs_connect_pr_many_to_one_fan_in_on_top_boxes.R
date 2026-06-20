@@ -129,7 +129,7 @@ prGenerateLines <- function(starts, end, bend_y, xs_end, lty_gp, arrow_obj, sube
 
     mk(
       x = unit.c(x_start, x_end),
-      y = unit.c(bend_y, e$top + unit(0.5, "mm")),
+      y = unit.c(bend_y, e$top),
       arrow = arrow_obj
     )
   })

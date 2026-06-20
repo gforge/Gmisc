@@ -24,6 +24,24 @@ test_that("Box move absolute", {
   expect_gt(cvt(attr(box1, "viewport_data")$x), cvt(attr(box3, "viewport_data")$x))
 })
 
+test_that("Box move absolute uses justification as the target edge", {
+  box <- boxGrob("A simple box", x = .5, y = .5)
+
+  right_aligned <- moveBox(box, x = .85, just = "right")
+  expect_equal(
+    convertX(coords(right_aligned)$right, "npc", valueOnly = TRUE),
+    .85,
+    tolerance = 1e-6
+  )
+
+  left_aligned <- moveBox(box, x = .15, just = "left")
+  expect_equal(
+    convertX(coords(left_aligned)$left, "npc", valueOnly = TRUE),
+    .15,
+    tolerance = 1e-6
+  )
+})
+
 
 test_that("subelement moves a single element in a list (shallow)", {
   b1 <- boxGrob("b1", x = .1, y = .1)

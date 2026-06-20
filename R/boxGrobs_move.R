@@ -12,7 +12,9 @@
 #' @param just The justification of an argument as used by [`viewport`][grid::viewport] some tiny differences:
 #'  (1) you only want to change the justification in the vertical direction you can retain the
 #'  existing justification by using `NA`, e.g. `c(NA, 'top')`, (2) if you specify only one string
-#'  and that string is either `top` or `bottom` it will assume vertical justification.
+#'  and that string is either `top` or `bottom` it will assume vertical justification. For absolute
+#'  moves, `just` also controls which part of the box is placed at `x`/`y`; for example
+#'  `just = "right"` makes `x` the right border and `just = "left"` makes `x` the left border.
 #' @param subelement If a `list` of boxes is provided, this can be a name,
 #'  index, a deep path (e.g. `c("detail", 1)`), a regex selector created with
 #'  [stringr::regex()] that is matched against top-level names

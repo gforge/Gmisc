@@ -50,7 +50,7 @@ test_that("connect() accepts regex selectors for arm-wise fan-in", {
       type = "side",
       lty_gp = gpar(lty = 2),
       side = "right",
-      side_fan_in_offset = unit(5, "mm")
+      side_offset = unit(5, "mm")
     )
 
   con <- tail(attr(fc, "connections"), 1)[[1]]
@@ -65,6 +65,93 @@ test_that("connect() accepts regex selectors for arm-wise fan-in", {
   expect_equal(tail(first_x, 1), target_left, tolerance = 1e-6)
   expect_equal(first_y[length(first_y) - 1], tail(first_y, 1), tolerance = 1e-6)
   expect_gt(first_x[1], convertX(coords(make_issue76_fc()$ex1[[1]])$right, "npc", valueOnly = TRUE))
+})
+
+test_that("one-to-many side connectors offset the fan-out bus from the source edge", {
+  offset <- unit(8, "mm")
+  fc <- flowchart(
+    start = boxGrob("Linked", x = .4, y = .7, width = unit(35, "mm")),
+    ends = list(
+      boxGrob("A", x = .85, y = .72),
+      boxGrob("B", x = .85, y = .60),
+      boxGrob("C", x = .85, y = .48)
+    )
+  ) |>
+    connect(
+      from = "start",
+      to = "ends",
+      type = "side",
+      side = "right",
+      end_side = "left",
+      side_offset = offset,
+      label = "Excluded\nn = 3"
+    )
+
+  con <- tail(attr(fc, "connections"), 1)[[1]]
+  line <- attr(con, "line")
+  xs <- convertX(line$x, "mm", valueOnly = TRUE)
+  start_right <- convertX(coords(fc$start)$right, "mm", valueOnly = TRUE)
+  offset_mm <- convertWidth(offset, "mm", valueOnly = TRUE)
+
+  expect_s3_class(con, "connect_boxes")
+  expect_equal(xs[2], start_right + offset_mm, tolerance = 1e-6)
+  expect_gte(length(con$children), 6)
+})
+
+test_that("many-to-one side fan-in routes the shared bus to the requested outer side", {
+  offset <- unit(4, "mm")
+  fc <- flowchart(
+    ex = list(
+      boxGrob("Ex 1", x = .15, y = .7),
+      boxGrob("Ex 2", x = .15, y = .45)
+    ),
+    target = boxGrob("Analysed", x = .6, y = .2)
+  ) |>
+    connect(
+      from = list("ex$1", "ex$2"),
+      to = "target",
+      type = "side",
+      side = "left",
+      end_side = "left",
+      side_offset = offset
+    )
+
+  con <- tail(attr(fc, "connections"), 1)[[1]]
+  expect_s3_class(con, "connect_boxes") # single merged fan-in grob, not a per-line list
+
+  xs <- convertX(attr(con, "line")$x, "mm", valueOnly = TRUE)
+  ex_left <- convertX(coords(fc$ex[[1]])$left, "mm", valueOnly = TRUE)
+  offset_mm <- convertWidth(offset, "mm", valueOnly = TRUE)
+  target_left <- convertX(coords(fc$target)$left, "mm", valueOnly = TRUE)
+
+  # Bus sits outside (to the left of) the excluded boxes, not on the closest side.
+  expect_equal(xs[1], ex_left - offset_mm, tolerance = 1e-6)
+  # The merged line enters the target on its left side.
+  expect_equal(tail(xs, 1), target_left, tolerance = 1e-6)
+})
+
+test_that("one-to-one side connectors offset the vertical segment from the source edge", {
+  start <- boxGrob("Source", x = .5, y = .7)
+  end <- boxGrob("Excluded", x = .1, y = .4)
+  offset <- unit(6, "mm")
+
+  con <- connectGrob(start, end, type = "side",
+                     side = "left", end_side = "right",
+                     side_offset = offset)
+  xs <- convertX(attr(con, "line")$x, "mm", valueOnly = TRUE)
+  start_left <- convertX(coords(start)$left, "mm", valueOnly = TRUE)
+  offset_mm <- convertWidth(offset, "mm", valueOnly = TRUE)
+
+  # The vertical bus steps out to the left of the source edge by the offset.
+  expect_equal(xs[2], start_left - offset_mm, tolerance = 1e-6)
+  expect_equal(xs[3], start_left - offset_mm, tolerance = 1e-6)
+
+  # `edge` keeps the vertical segment on the box edge (no offset).
+  con_edge <- connectGrob(start, end, type = "side",
+                          side = "left", end_side = "right",
+                          side_route = "edge")
+  xs_edge <- convertX(attr(con_edge, "line")$x, "mm", valueOnly = TRUE)
+  expect_equal(xs_edge[2], start_left, tolerance = 1e-6)
 })
 
 test_that("side connectors can enter a requested destination side", {

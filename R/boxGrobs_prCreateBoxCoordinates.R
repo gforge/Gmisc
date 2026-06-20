@@ -5,7 +5,7 @@
 #'  parameters
 #' @return \code{list} of class \code{coords}
 #' @importFrom checkmate assert_list
-prCreateBoxCoordinates <- function(viewport_data, extra_coordinate_functions = NULL) {
+prCreateBoxCoordinates <- function(viewport_data, extra_coordinate_functions = NULL, box_fn_bounds = NULL) {
   # Adjust center depending on the viewport position
   x <- prAdjustPos(viewport_data$just, viewport_data$x, viewport_data$width, axis = "x")
   y <- prAdjustPos(viewport_data$just, viewport_data$y, viewport_data$height, axis = "y")
@@ -31,6 +31,38 @@ prCreateBoxCoordinates <- function(viewport_data, extra_coordinate_functions = N
     half_height = half_height,
     half_width = half_width
   )
+
+  if (!is.null(box_fn_bounds)) {
+    if (!is.list(box_fn_bounds) ||
+        !all(c("left", "right", "bottom", "top") %in% names(box_fn_bounds))) {
+      stop("`box_fn_bounds` must be a list with left, right, bottom, and top.", call. = FALSE)
+    }
+
+    bounds <- unlist(box_fn_bounds[c("left", "right", "bottom", "top")], use.names = TRUE)
+    if (!is.numeric(bounds) ||
+        any(!is.finite(bounds)) ||
+        bounds[["left"]] < 0 ||
+        bounds[["right"]] > 1 ||
+        bounds[["bottom"]] < 0 ||
+        bounds[["top"]] > 1 ||
+        bounds[["left"]] >= bounds[["right"]] ||
+        bounds[["bottom"]] >= bounds[["top"]]) {
+      stop("`box_fn_bounds` values must be finite proportions with left < right and bottom < top.", call. = FALSE)
+    }
+
+    full_left <- x - half_width
+    full_bottom <- y - half_height
+    coordinates$left <- full_left + width * bounds[["left"]]
+    coordinates$right <- full_left + width * bounds[["right"]]
+    coordinates$bottom <- full_bottom + height * bounds[["bottom"]]
+    coordinates$top <- full_bottom + height * bounds[["top"]]
+    coordinates$x <- (coordinates$left + coordinates$right) / 2
+    coordinates$y <- (coordinates$bottom + coordinates$top) / 2
+    coordinates$width <- coordinates$right - coordinates$left
+    coordinates$height <- coordinates$top - coordinates$bottom
+    coordinates$half_width <- coordinates$width * 0.5
+    coordinates$half_height <- coordinates$height * 0.5
+  }
 
   if (!is.null(extra_coordinate_functions)) {
     assert_list(extra_coordinate_functions, names = "strict")

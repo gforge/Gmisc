@@ -88,7 +88,8 @@ just above it, centred between the randomisation arms.
   plus a small corner lap; for three or more arms it becomes a banner across the
   full stage width. Pass `width` to override.
 
-The arms are given a clear central gap (boxes spread to `x = 0.27`/`0.73`). Equal
+Each stage's arms are spread across the viewport with a small outer `margin`,
+leaving a clear central gap for the labels to sit in. Equal
 arm widths give a symmetric corner overlap — use `equalizeWidths()` if the arms
 differ. For custom overlays beyond phase labels, the lower-level
 `insert(..., on_top = TRUE)` is still available.
@@ -123,15 +124,11 @@ flowchart(
   )
 ) |>
   spread(axis = "y", margin = unit(0.04, "npc")) |>
-  # Give the two arms a clear central gap for the labels to sit in
-  move(subelement = list(c("groups", 1),
-                         c("followup", 1),
-                         c("analysis", 1)),
-       x = 0.27) |>
-  move(subelement = list(c("groups", 2),
-                         c("followup", 2),
-                         c("analysis", 2)),
-       x = 0.73) |>
+  # Spread each stage's arms within the viewport, leaving an outer margin —
+  # this gives the two arms a clear central gap for the labels to sit in
+  spread(subelement = "groups",   axis = "x", margin = unit(0.05, "npc")) |>
+  spread(subelement = "followup", axis = "x", margin = unit(0.05, "npc")) |>
+  spread(subelement = "analysis", axis = "x", margin = unit(0.05, "npc")) |>
   # One call per stage: centred between the arms, slightly above, drawn on top
   phaseLabel("groups",   "Allocation", box_gp = heading_gp) |>
   phaseLabel("followup", "Follow-up",  box_gp = heading_gp) |>
@@ -154,10 +151,14 @@ Key points:
 
 - `arms`, `lost`, and `analysis` are all **named lists** — `connect("arms", "lost", ...)`
   automatically creates one connector per matching pair (same list index).
+- `spread(..., exclude = "lost")` keeps side-branch boxes out of the main
+  vertical spacing, and `align(..., references = list("arms", "analysis"))`
+  then centres them between the rows they describe.
 - `type = "L"` exits the **bottom** of the assessed box and turns right, giving the
   classic "down then right" exclusion branch instead of a direct side-exit.
-- `insert()` places the exclusion box into the list at the right vertical position;
-  `move()` shifts it into the right-hand column.
+- `insert()` adds the exclusion box; `move(..., just = "right")` places its
+  right edge at the outer exclusion margin, and `align(..., references = ...)`
+  centres it between the before/after boxes.
 - Badge labels extend above the box top and are not counted in the height used by
   `spread()`, so a `margin` of 10 mm is used to leave room at the top.
 
@@ -171,12 +172,11 @@ excl_fill    <- gpar(fill = "#fff8e1", col = "#cc8800", lwd = 1.2)
 badge_gp     <- gpar(fill = "#336699", col = NA)
 badge_txt_gp <- gpar(col = "white", cex = 0.65)
 
-# Arms span the inner portion; lost boxes flank outside on each side.
-# Using 0.28–0.72 keeps the arm centres far enough from the viewport edges
-# that the lost boxes' right/left edges don't cross the arm centres.
-left_from <- 0.28
-left_to   <- 0.72
-main_x    <- (left_from + left_to) / 2   # centre of the arms column (= 0.5)
+# Main arms use an inner horizontal span; exclusions use the outer span.
+main_arm_margin  <- 0.28
+exclusion_margin <- 0.05
+main_x           <- 0.5
+exclusion_to     <- 1 - exclusion_margin
 
 grid.newpage()
 flowchart(
@@ -200,8 +200,8 @@ flowchart(
                        badge_label = "64",
                        badge_gp = badge_gp, badge_txt_gp = badge_txt_gp)
   ),
-  # Lost-to-follow-up: one per arm — spread from 0 to 1 so they land
-  # on the outside of each arm (left of cast, right of surgical)
+  # Lost-to-follow-up: one per arm, placed on the outer exclusion span
+  # and centred vertically between allocation and analysis.
   lost = list(
     lost_cast     = boxGrob("Lost to follow-up (n = 2)\n  1 No response\n  1 Other surgery",
                             just = "left", box_gp = excl_fill),
@@ -219,8 +219,10 @@ flowchart(
                                 badge_gp = badge_gp, badge_txt_gp = badge_txt_gp)
   )
 ) |>
-  # Vertical spacing — extra margin to keep badges from being clipped at the top
-  spread(axis = "y", margin = unit(5, "mm")) |>
+  # Vertical spacing — lost boxes are side branches, not main pathway rows
+  spread(axis = "y", margin = unit(5, "mm"), exclude = "lost") |>
+  align(axis = "y", subelement = "lost",
+        references = list("arms", "analysis")) |>
   # Make arms and analysis boxes the same width so the same from/to spread
   # places their centres at matching x positions (otherwise the wider arm text
   # shifts centres relative to the narrower analysis text).
@@ -228,27 +230,29 @@ flowchart(
   # e.g. with `align(axis = "x", reference = "analysis", subelement = "arms")`
   # (equivalent to `alignHorizontal(reference = "analysis", subelement = "arms")`).
   equalizeWidths(subelement = list("arms", "analysis")) |>
-  # Arms and analysis in the inner span; lost boxes spread across full width
+  # Arms and analysis in the inner span; lost boxes use the outer span
   # so that lost_cast lands left of cast and lost_surgical right of surgical
-  spread(axis = "x", subelement = "arms",     from = left_from, to = left_to) |>
-  spread(axis = "x", subelement = "analysis", from = left_from, to = left_to) |>
-  spread(axis = "x", subelement = "lost",     from = 0,         to = 1) |>
-  # Exclusion box: auto-positioned between assessed and randomised, then moved right
+  spread(axis = "x", subelement = "arms",     margin = main_arm_margin) |>
+  spread(axis = "x", subelement = "analysis", margin = main_arm_margin) |>
+  spread(axis = "x", subelement = "lost",     margin = exclusion_margin) |>
+  # Exclusion box: right edge on the outer span, vertically centred between rows
   insert(list(excluded = boxGrob(
     "Excluded (n = 714)\n  477 Stable ankle mortise\n   64 Incongruent ankle mortise\n   30 Previous serious trauma\n  143 Other reasons",
     just = "left", box_gp = excl_fill
   )), after = "assessed") |>
-  move(subelement = "excluded", x = 0.85) |>
-  # Main-flow connectors
-  connect("assessed",   "randomised", type = "v", lty_gp = con_gp,  arrow_size = 3, smooth = TRUE) |>
-  connect("randomised", "arms",       type = "N", lty_gp = con_gp,  arrow_size = 3, smooth = TRUE) |>
-  connect("arms",       "analysis",   type = "v", lty_gp = con_gp,  arrow_size = 3) |>
+  move(subelement = "excluded", x = exclusion_to, just = "right") |>
+  align(axis = "y", subelement = "excluded",
+        references = list("assessed", "randomised"))  |>
   # type = "L": exits assessed's *bottom* then turns right — the "down then right" branch
   connect("assessed", "excluded", type = "L", lty_gp = side_gp, arrow_size = 3, smooth = TRUE) |>
   # Pairwise arm -> lost: sharp corners (smooth = FALSE) avoid a colour-transition
   # artefact where the orange arc would diverge from the shared blue vertical path
   # a few mm above the junction, making the line appear doubled.
-  connect("arms", "lost", type = "L", lty_gp = side_gp, arrow_size = 3, smooth = TRUE)
+  connect("arms", "lost", type = "L", lty_gp = side_gp, arrow_size = 3, smooth = TRUE) |>
+  # Main-flow connectors, put last so that the main lines end up on top of the exclusion/lost lines
+  connect("assessed",   "randomised", type = "v", lty_gp = con_gp,  arrow_size = 3, smooth = TRUE) |>
+  connect("randomised", "arms",       type = "N", lty_gp = con_gp,  arrow_size = 3, smooth = TRUE) |>
+  connect("arms",       "analysis",   type = "v", lty_gp = con_gp,  arrow_size = 3)
 
 options(old_opts)
 ```
@@ -334,8 +338,8 @@ flowchart(
           lty_gp = dotted_gp, arrow_size = 3,
           side = "right",
           end_side = "right",
-          side_fan_in_route = "outside",
-          side_fan_in_offset = ex_gap)
+          side_route = "outside",
+          side_offset = ex_gap)
 
 options(old_opts)
 ```

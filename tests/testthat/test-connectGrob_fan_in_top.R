@@ -39,3 +39,24 @@ test_that("fan_in_top works with default margin and nested lists", {
     # trunks should be diagonal (start x != end x) at least for one trunk
     expect_true(any(abs(trunk_x_end_mm - trunk_x_start_mm) > 1e-6))
 })
+
+test_that("fan_in_top ends on the target top edge", {
+    starts <- list(
+        boxGrob("A", x = .2, y = .8),
+        boxGrob("B", x = .5, y = .8),
+        boxGrob("C", x = .8, y = .8)
+    )
+    end <- boxTapeGrob("Validation", x = .5, y = .45,
+                       width = unit(80, "mm"),
+                       height = unit(24, "mm"))
+
+    con <- connectGrob(starts, end, type = "fan_in_top")
+    trunks <- tail(con, length(starts))
+    target_top <- convertY(coords(end)$top, "mm", valueOnly = TRUE)
+
+    trunk_y_end <- vapply(trunks, function(g) {
+        convertY(tail(attr(g, "line")$y, 1), "mm", valueOnly = TRUE)
+    }, numeric(1))
+
+    expect_equal(trunk_y_end, rep(target_top, length(starts)), tolerance = 1e-6)
+})

@@ -128,6 +128,7 @@ boxGrob <- function(label,
       }
     )
   }
+  box_fn_bounds <- attr(rect, "box_fn_bounds")
 
   # Create text grob using the (possibly) adjusted padding
   txt <- textGrob(
@@ -197,7 +198,7 @@ boxGrob <- function(label,
   )
 
   structure(gl,
-    coords = prCreateBoxCoordinates(viewport_data = vp_args),
+    coords = prCreateBoxCoordinates(viewport_data = vp_args, box_fn_bounds = box_fn_bounds),
     viewport_data = vp_args
   )
 }
