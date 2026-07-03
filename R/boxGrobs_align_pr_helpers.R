@@ -77,6 +77,106 @@ prResolveReference <- function(reference, boxes2align) {
     reference
 }
 
+prValidateReferencePair <- function(references) {
+    if (!is.list(references) || length(references) != 2) {
+        stop("`references` must be a list containing exactly two references.", call. = FALSE)
+    }
+}
+
+prResolveReferenceStrict <- function(reference, boxes2align) {
+    resolved <- prResolveReference(reference, boxes2align)
+
+    if (identical(resolved, reference) &&
+        (is.atomic(reference) || is.list(reference)) &&
+        !inherits(reference, "box") &&
+        !inherits(reference, "coords") &&
+        !inherits(reference, "unit") &&
+        !is.numeric(reference)) {
+        stop(
+            "The reference '",
+            paste(reference, collapse = " -> "),
+            "' was not found in the provided boxes.",
+            call. = FALSE
+        )
+    }
+
+    resolved
+}
+
+prResolveAlignReferenceArgs <- function(reference, references, boxes2align, axis = c("vertical", "horizontal")) {
+    axis <- match.arg(axis)
+
+    if (is.null(references)) {
+        return(list(
+            reference = prResolveReference(reference, boxes2align),
+            references = NULL
+        ))
+    }
+
+    list(
+        reference = NULL,
+        references = lapply(references, prResolveReferenceStrict, boxes2align = boxes2align)
+    )
+}
+
+prResolveAlignReference <- function(reference, references, boxes2align, axis = c("vertical", "horizontal")) {
+    axis <- match.arg(axis)
+
+    if (is.null(references)) {
+        if (is.null(reference)) {
+            reference <- boxes2align[[1]]
+        }
+        return(prResolveReference(reference, boxes2align))
+    }
+
+    resolved <- prResolveAlignReferenceArgs(
+        reference = reference,
+        references = references,
+        boxes2align = boxes2align,
+        axis = axis
+    )$references
+
+    prReferencePairMidpoint(resolved, axis = axis)
+}
+
+prReferencePairMidpoint <- function(references, axis = c("vertical", "horizontal")) {
+    axis <- match.arg(axis)
+    coords_pair <- lapply(references, prConvert2Coords)
+
+    c1 <- coords_pair[[1]]
+    c2 <- coords_pair[[2]]
+
+    if (axis == "vertical") {
+        y <- c1$y + (c2$y - c1$y) * 0.5
+        return(structure(list(
+            x = unit(0.5, "npc"),
+            y = y,
+            top = y,
+            bottom = y,
+            left = unit(0.5, "npc"),
+            right = unit(0.5, "npc"),
+            width = unit(0, "npc"),
+            height = unit(0, "npc"),
+            half_width = unit(0, "npc"),
+            half_height = unit(0, "npc")
+        ), class = c("coords", "box_coords", "list")))
+    }
+
+    x <- c1$x + (c2$x - c1$x) * 0.5
+    structure(list(
+        x = x,
+        y = unit(0.5, "npc"),
+        top = unit(0.5, "npc"),
+        bottom = unit(0.5, "npc"),
+        left = x,
+        right = x,
+        width = unit(0, "npc"),
+        height = unit(0, "npc"),
+        half_width = unit(0, "npc"),
+        half_height = unit(0, "npc")
+    ), class = c("coords", "box_coords", "list"))
+}
+
 # Apply alignment given resolved boxes and ref positions
 prApplyAlign <- function(boxes2align, ref_positions, position, axis = c("vertical", "horizontal")) {
     axis <- match.arg(axis)

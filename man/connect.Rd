@@ -28,11 +28,11 @@ connectGrob(
   corner_radius = unit(3, "mm"),
   side = c("auto", "left", "right"),
   end_side = c("auto", "left", "right"),
-  side_fan_in_route = c("outside", "edge"),
-  side_fan_in_offset = unit(5, "mm"),
+  side_route = c("outside", "edge"),
+  side_offset = unit(5, "mm"),
   label = NULL,
   label_gp = grid::gpar(cex = 0.9),
-  label_bg_gp = grid::gpar(fill = "white", col = NA),
+  label_bg_gp = grid::gpar(fill = "white", col = NA, alpha = 0.85),
   label_pad = unit(1.5, "mm"),
   label_pos = c("mid", "near_start", "near_end"),
   label_offset = unit(2, "mm")
@@ -91,16 +91,16 @@ A \code{\link[grid:unit]{grid::unit()}} or numeric (interpreted as millimeters).
 \item{end_side}{For \code{type = "side"}, which side of the end box to enter.
 \code{"auto"} (default) picks the side that faces the start box.}
 
-\item{side_fan_in_route}{For grouped \code{connect(..., type = "side")} calls in
+\item{side_route}{For grouped \code{connect(..., type = "side")} calls in
 the S3 flowchart API, where to draw the shared vertical return path.
 \code{"outside"} offsets it away from the source boxes; \code{"edge"} draws it on
 the source box edge.}
 
-\item{side_fan_in_offset}{Offset used when \code{side_fan_in_route = "outside"}.
+\item{side_offset}{Offset used when \code{side_route = "outside"}.
 Numeric values are interpreted as millimeters.}
 
-\item{label}{Optional text label for one-to-one connectors (e.g. \code{"yes"} / \code{"no"}).
-Only supported when both \code{start} and \code{end} are single boxes.}
+\item{label}{Optional text label for one-to-one connectors and grouped
+\code{type = "side"} fan-out connectors (e.g. \code{"yes"} / \code{"no"}).}
 
 \item{label_gp}{A \code{\link[grid:gpar]{grid::gpar()}} controlling label appearance.}
 
@@ -199,11 +199,15 @@ diagonal line is acceptable.
 
 \subsection{Labels}{
 
-For one-to-one connectors you can add a text label (for example \code{"yes"} / \code{"no"}).
-The label is placed near the midpoint of the connector.
-The label is drawn with a white background for readability.
-Use \code{label_pad} to control padding around the text and \code{label_offset} to move
-the label away from the connector.
+For one-to-one connectors and grouped side fan-out connectors you can add a
+text label (for example \code{"yes"} / \code{"no"}). For one-to-one connectors the
+label is placed near the midpoint of the connector; for grouped side fan-out
+connectors it is centered at the offset fan-out bus and drawn on the
+outgoing line.
+
+The label is drawn with a semi-transparent white background for readability.
+Use \code{label_pad} to control padding around the text and \code{label_offset} to nudge
+the label away from the connector when needed.
 }
 
 \subsection{Split boxes}{

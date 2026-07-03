@@ -29,3 +29,5 @@ Gmisc/inst/extdata/Full_test_suite_files/*
 ^README\.Rmd$
 ^README\.html$
 ^Rplots\.pdf$
+^blog-posts$
+^blog-posts/.*$

@@ -158,10 +158,13 @@ prSetBoxDimensions <- function(element, width = NULL, height = NULL) {
 
   gl <- editGrob(element, vp = do.call(viewport, vp_args))
   attr(gl, "viewport_data") <- vp_args
+  box_fn_bounds <- attr(element, "box_fn_bounds")
   attr(gl, "coords") <- prCreateBoxCoordinates(
     viewport_data = vp_args,
-    extra_coordinate_functions = attr(element, "extra_coordinate_functions")
+    extra_coordinate_functions = attr(element, "extra_coordinate_functions"),
+    box_fn_bounds = box_fn_bounds
   )
+  attr(gl, "box_fn_bounds") <- box_fn_bounds
   gl
 }
 

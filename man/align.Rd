@@ -10,18 +10,20 @@
 \title{Align boxes}
 \usage{
 alignVertical(
-  reference,
+  reference = NULL,
   ...,
   position = c("center", "top", "bottom"),
-  subelement = NULL
+  subelement = NULL,
+  references = NULL
 )
 
 alignHorizontal(
-  reference,
+  reference = NULL,
   ...,
   position = c("center", "left", "right"),
   sub_position = c("none", "left", "right"),
-  subelement = NULL
+  subelement = NULL,
+  references = NULL
 )
 
 align(x, ...)
@@ -55,6 +57,13 @@ provided (e.g. \code{my_boxes |> alignHorizontal(reference = c("grp","sub"), .su
 function will unwrap a single-element wrapper so nested \code{.subelement} targets are found as expected.
 The function will return the original list with the targeted element(s)
 replaced by their aligned version(s).}
+
+\item{references}{Optional pair of references. When supplied, the alignment
+reference is the midpoint between the two references on the selected axis.
+This is useful for centering side boxes, such as excluded patients, between
+the main boxes before and after them. Each reference can be anything
+accepted by \code{reference}, including a path such as \code{"assessed"} or
+\code{c("arms", 1)}.}
 
 \item{sub_position}{When the box is a \code{\link{boxPropGrob}} it not only has the general \code{.positions} but
 also \code{left} and \code{right} which can be viewed as separate boxes that have simply been merged.}
@@ -115,10 +124,24 @@ complex_list <- complex_list |>
     subelement = c("detail", 1)
   )
 
+# Center a side branch between the boxes before and after it
+side_branch <- flowchart(
+  assessed = boxGrob("Assessed", y = .9),
+  randomised = boxGrob("Randomised", y = .5)
+) |>
+  insert(list(excluded = boxGrob("Excluded")), after = "assessed") |>
+  move(subelement = "excluded", x = .85) |>
+  align(
+    axis = "y",
+    subelement = "excluded",
+    references = list("assessed", "randomised")
+  )
+
 # Print the reference and the aligned boxes
 box
 aligned_boxes
 complex_list
+side_branch
 }
 \seealso{
 Other flowchart components:

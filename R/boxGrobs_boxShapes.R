@@ -92,7 +92,10 @@ ellipse_box_fn <- function(x = .5, y = .5, gp = gpar()) {
   t <- seq(0, 2 * pi, length.out = 80)
   xs <- .5 + .48 * cos(t)
   ys <- .5 + .36 * sin(t)
-  polygonGrob(x = xs, y = ys, gp = gp)
+  grob <- polygonGrob(x = xs, y = ys, gp = gp)
+  attr(grob, "box_fn_padding") <- unit(4, "mm")
+  attr(grob, "box_fn_bounds") <- list(left = .02, right = .98, bottom = .14, top = .86)
+  grob
 }
 
 
@@ -171,7 +174,10 @@ database_box_fn <- function(x = .5, y = .5, gp = gpar()) {
   col_edge <- if (!is.null(gp$col)) gp$col else "black"
   bot_edge <- linesGrob(x = xs_bot, y = ys_bot, gp = gpar(col = col_edge))
 
-  gTree(children = gList(body, bot_fill, top, bot_edge))
+  grob <- gTree(children = gList(body, bot_fill, top, bot_edge))
+  attr(grob, "box_fn_padding") <- unit(4, "mm")
+  attr(grob, "box_fn_bounds") <- list(left = .08, right = .92, bottom = .08, top = .92)
+  grob
 }
 
 #' @rdname boxShapes
@@ -206,7 +212,10 @@ document_box_fn <- function(x = .5, y = .5, gp = gpar()) {
 
   xpoly <- c(xs, rev(xs))
   ypoly <- c(rep(top_y, n), rev(wave))
-  polygonGrob(x = xpoly, y = ypoly, gp = gp)
+  grob <- polygonGrob(x = xpoly, y = ypoly, gp = gp)
+  attr(grob, "box_fn_padding") <- unit(3, "mm")
+  attr(grob, "box_fn_bounds") <- list(left = .08, right = .92, bottom = .085, top = .88)
+  grob
 }
 
 #' @rdname boxShapes
@@ -254,7 +263,10 @@ documents_box_fn <- function(x = .5, y = .5, gp = gpar()) {
     polygonGrob(x = xpoly, y = ypoly, gp = gp)
   })
 
-  gTree(children = do.call(gList, docs))
+  grob <- gTree(children = do.call(gList, docs))
+  attr(grob, "box_fn_padding") <- unit(3, "mm")
+  attr(grob, "box_fn_bounds") <- list(left = .08, right = .95, bottom = .065, top = .88)
+  grob
 }
 
 #' @rdname boxShapes
@@ -302,7 +314,10 @@ tape_box_fn <- function(x = .5, y = .5, gp = gpar()) {
   right_y <- 0.5 + cap_y_radius * sin(t)
   right_cap <- polygonGrob(x = c(right_x, right_x[1]), y = c(right_y, right_y[1]), gp = gp)
 
-  gTree(children = gList(body, left_cap, right_cap))
+  grob <- gTree(children = gList(body, left_cap, right_cap))
+  attr(grob, "box_fn_padding") <- unit(4, "mm")
+  attr(grob, "box_fn_bounds") <- list(left = .08, right = .92, bottom = .18, top = .82)
+  grob
 }
 
 #' @rdname boxShapes

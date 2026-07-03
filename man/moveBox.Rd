@@ -26,7 +26,9 @@ moveBox(
 \item{just}{The justification of an argument as used by \code{\link[grid:viewport]{viewport}} some tiny differences:
 (1) you only want to change the justification in the vertical direction you can retain the
 existing justification by using \code{NA}, e.g. \code{c(NA, 'top')}, (2) if you specify only one string
-and that string is either \code{top} or \code{bottom} it will assume vertical justification.}
+and that string is either \code{top} or \code{bottom} it will assume vertical justification. For absolute
+moves, \code{just} also controls which part of the box is placed at \code{x}/\code{y}; for example
+\code{just = "right"} makes \code{x} the right border and \code{just = "left"} makes \code{x} the left border.}
 
 \item{subelement}{If a \code{list} of boxes is provided, this can be a name,
 index, a deep path (e.g. \code{c("detail", 1)}), a regex selector created with

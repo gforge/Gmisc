@@ -39,7 +39,21 @@ complex_list <- complex_list |>
     subelement = c("detail", 1)
   )
 
+# Center a side branch between the boxes before and after it
+side_branch <- flowchart(
+  assessed = boxGrob("Assessed", y = .9),
+  randomised = boxGrob("Randomised", y = .5)
+) |>
+  insert(list(excluded = boxGrob("Excluded")), after = "assessed") |>
+  move(subelement = "excluded", x = .85) |>
+  align(
+    axis = "y",
+    subelement = "excluded",
+    references = list("assessed", "randomised")
+  )
+
 # Print the reference and the aligned boxes
 box
 aligned_boxes
 complex_list
+side_branch

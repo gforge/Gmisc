@@ -101,15 +101,15 @@ connect.Gmisc_list_of_boxes <- function(x, from = NULL, to = NULL, ...) {
     arrow_size <- get_arg("arrow_size", NULL)
     side <- match.arg(get_arg("side", "auto"), c("auto", "left", "right"))
     end_side <- match.arg(get_arg("end_side", "auto"), c("auto", "left", "right"))
-    side_fan_in_route <- match.arg(get_arg("side_fan_in_route", "outside"), c("outside", "edge"))
-    side_fan_in_offset <- get_arg("side_fan_in_offset", unit(5, "mm"))
+    side_route <- match.arg(get_arg("side_route", "outside"), c("outside", "edge"))
+    side_offset <- get_arg("side_offset", unit(5, "mm"))
     smooth <- get_arg("smooth", FALSE)
     corner_radius <- get_arg("corner_radius", unit(3, "mm"))
-    if (is.numeric(side_fan_in_offset)) {
-      side_fan_in_offset <- unit(side_fan_in_offset, "mm")
+    if (is.numeric(side_offset)) {
+      side_offset <- unit(side_offset, "mm")
     }
-    if (!inherits(side_fan_in_offset, "unit")) {
-      stop("`side_fan_in_offset` must be a unit or numeric.", call. = FALSE)
+    if (!inherits(side_offset, "unit")) {
+      stop("`side_offset` must be a unit or numeric.", call. = FALSE)
     }
 
     if (!is.null(arrow_size)) {
@@ -137,11 +137,11 @@ connect.Gmisc_list_of_boxes <- function(x, from = NULL, to = NULL, ...) {
     } else {
       exit_xs[[which.min(vapply(exit_xs, prConvertWidthToMm, numeric(1)))]]
     }
-    if (side_fan_in_route == "outside") {
+    if (side_route == "outside") {
       bus_x <- if (exit_side == "right") {
-        bus_x + side_fan_in_offset
+        bus_x + side_offset
       } else {
-        bus_x - side_fan_in_offset
+        bus_x - side_offset
       }
     }
     entry_x <- e[[entry_side]]
@@ -187,6 +187,125 @@ connect.Gmisc_list_of_boxes <- function(x, from = NULL, to = NULL, ...) {
       y = unit.c(bus_start_y, e$y, e$y)
     )
     gt <- grid::grobTree(do.call(grid::gList, c(stubs, list(spine, final))))
+    structure(gt, line = line, class = c("connect_boxes", class(gt)))
+  }
+
+  connect_side_fan_out <- function(start, ends) {
+    get_arg <- function(name, default) {
+      if (!is.null(args[[name]])) args[[name]] else default
+    }
+
+    lty_gp <- get_arg("lty_gp", getOption("connectGrob", default = gpar(fill = "black")))
+    arrow_obj <- get_arg("arrow_obj", getOption("connectGrobArrow", default = arrow(ends = "last", type = "closed")))
+    arrow_size <- get_arg("arrow_size", NULL)
+    side <- match.arg(get_arg("side", "auto"), c("auto", "left", "right"))
+    end_side <- match.arg(get_arg("end_side", "auto"), c("auto", "left", "right"))
+    side_route <- match.arg(get_arg("side_route", "outside"), c("outside", "edge"))
+    side_offset <- get_arg("side_offset", unit(5, "mm"))
+    smooth <- get_arg("smooth", FALSE)
+    corner_radius <- get_arg("corner_radius", unit(3, "mm"))
+    label <- get_arg("label", NULL)
+    label_gp <- get_arg("label_gp", grid::gpar(cex = 0.9))
+    label_bg_gp <- get_arg("label_bg_gp", grid::gpar(fill = "white", col = NA, alpha = 0.85))
+    label_pad <- get_arg("label_pad", unit(1.5, "mm"))
+    label_offset <- get_arg("label_offset", unit(0, "mm"))
+
+    if (is.numeric(side_offset)) {
+      side_offset <- unit(side_offset, "mm")
+    }
+    if (!inherits(side_offset, "unit")) {
+      stop("`side_offset` must be a unit or numeric.", call. = FALSE)
+    }
+    if (!is.null(label)) assert_class(label_gp, "gpar")
+    if (is.numeric(label_pad)) label_pad <- unit(label_pad, "mm")
+    if (is.numeric(label_offset)) label_offset <- unit(label_offset, "mm")
+
+    if (!is.null(arrow_size)) {
+      ends_map <- c("1" = "first", "2" = "last", "3" = "both")
+      type_map <- c("1" = "open", "2" = "closed")
+      arrow_obj <- arrow(
+        ends = ends_map[as.character(arrow_obj$ends)],
+        type = type_map[as.character(arrow_obj$type)],
+        angle = arrow_obj$angle,
+        length = unit(arrow_size, "mm")
+      )
+    }
+
+    s <- coords(start)
+    e_coords <- lapply(ends, coords)
+    ends_right <- mean(vapply(e_coords, function(e) prConvertWidthToMm(e$x), numeric(1))) >
+      prConvertWidthToMm(s$x)
+
+    exit_side <- if (side == "right" || (side == "auto" && ends_right)) "right" else "left"
+    entry_side <- if (end_side == "left" || (end_side == "auto" && ends_right)) "left" else "right"
+
+    exit_x <- s[[exit_side]]
+    bus_x <- exit_x
+    if (side_route == "outside") {
+      bus_x <- if (exit_side == "right") {
+        bus_x + side_offset
+      } else {
+        bus_x - side_offset
+      }
+    }
+
+    stub <- prRenderLine(
+      x = unit.c(exit_x, bus_x),
+      y = unit.c(s$y, s$y),
+      smooth = FALSE,
+      corner_radius = corner_radius,
+      gp = lty_gp,
+      arrow = NULL
+    )
+
+    y_mm <- vapply(e_coords, function(e) prConvertHeightToMm(e$y), numeric(1))
+    start_y_mm <- prConvertHeightToMm(s$y)
+    bus_end_y <- if (mean(y_mm) < start_y_mm) {
+      e_coords[[which.min(y_mm)]]$y
+    } else {
+      e_coords[[which.max(y_mm)]]$y
+    }
+
+    spine <- prRenderLine(
+      x = unit.c(bus_x, bus_x),
+      y = unit.c(s$y, bus_end_y),
+      smooth = FALSE,
+      corner_radius = corner_radius,
+      gp = lty_gp,
+      arrow = NULL
+    )
+
+    finals <- lapply(e_coords, function(e) {
+      prRenderLine(
+        x = unit.c(bus_x, e[[entry_side]]),
+        y = unit.c(e$y, e$y),
+        smooth = smooth,
+        corner_radius = corner_radius,
+        gp = lty_gp,
+        arrow = arrow_obj
+      )
+    })
+
+    line <- list(
+      x = unit.c(exit_x, bus_x, bus_x, e_coords[[1]][[entry_side]]),
+      y = unit.c(s$y, s$y, bus_end_y, e_coords[[1]]$y)
+    )
+    label_grobs <- list()
+    if (!is.null(label)) {
+      label_x <- bus_x
+      label_y <- s$y + label_offset
+      tg <- grid::textGrob(label, x = label_x, y = label_y, just = "center", gp = label_gp)
+      w <- grid::grobWidth(tg) + label_pad
+      h <- grid::grobHeight(tg) + label_pad
+      bg <- grid::roundrectGrob(
+        x = label_x, y = label_y,
+        width = w, height = h,
+        r = unit(1, "mm"),
+        gp = label_bg_gp
+      )
+      label_grobs <- list(bg, tg)
+    }
+    gt <- grid::grobTree(do.call(grid::gList, c(list(stub, spine), finals, label_grobs)))
     structure(gt, line = line, class = c("connect_boxes", class(gt)))
   }
 
@@ -246,6 +365,13 @@ connect.Gmisc_list_of_boxes <- function(x, from = NULL, to = NULL, ...) {
     cg <- connect_armwise(start_boxes, end_boxes)
   } else if (prIsBoxList(start_boxes) && is_list_of_box_lists(end_boxes)) {
     cg <- connect_armwise_to_groups(start_boxes, end_boxes)
+  } else if (inherits(start_boxes, "box") && prIsBoxList(end_boxes) && identical(args$type, "side")) {
+    cg <- connect_side_fan_out(start_boxes, end_boxes)
+  } else if (prIsBoxList(start_boxes) && inherits(end_boxes, "box") && identical(args$type, "side")) {
+    # Many-to-one side fan-in, e.g. connect(list("ex1", "ex2"), "analysis", type = "side").
+    # Routes the shared bus to the requested side (honoring side/end_side and the
+    # side_route/offset) instead of letting each line pick the closest side.
+    cg <- connect_side_fan_in(start_boxes, end_boxes)
   # Support pairwise list-to-list mapping in the S3 flowchart API.
   # This keeps connectGrob() many-to-many unsupported while making
   # connect("groups", "groups2") behave as users expect.
